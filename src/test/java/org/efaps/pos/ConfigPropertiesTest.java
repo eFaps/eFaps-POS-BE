@@ -41,6 +41,6 @@ public class ConfigPropertiesTest
        assertEquals("http://my.sso.com/pe", this.config.getSso().getUrl());
        assertEquals(4, this.config.getSso().getPostValues().size());
        assertEquals("http://localhost:8888/servlet/rest", this.config.getEFaps().getRestUrl().toString());
-       assertEquals("products", this.config.getEFaps().getProductPath());
+       assertEquals("/products", this.config.getEFaps().getProductPath());
     }
 }

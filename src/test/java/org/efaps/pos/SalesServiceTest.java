@@ -44,10 +44,14 @@ public class SalesServiceTest
 
     @Test
     public void test() {
-        final Product product = new Product();
+        final Product product = new Product()
+                        .setOid("1234.652")
+                        .setDescription("This is a description");
         this.mongoTemplate.save(product);
 
         final List<Product> products = this.salesService.getProducts();
         assertEquals(1, products.size());
+        assertEquals("1234.652", products.get(0).getOid());
+        assertEquals("This is a description", products.get(0).getDescription());
     }
 }

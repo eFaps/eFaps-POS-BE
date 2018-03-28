@@ -31,7 +31,6 @@ import org.springframework.context.annotation.Configuration;
 public class ConfigProperties
 {
 
-
     private String name;
 
     private SSO sso = new SSO();
@@ -63,7 +62,8 @@ public class ConfigProperties
         return this.efaps;
     }
 
-    public static class EFaps {
+    public static class EFaps
+    {
 
         private URI restUrl;
         private String productPath;
@@ -73,20 +73,15 @@ public class ConfigProperties
             return this.restUrl;
         }
 
-
         public void setRestUrl(final URI _restUrl)
         {
             this.restUrl = _restUrl;
         }
 
-
-
         public String getProductPath()
         {
             return this.productPath;
         }
-
-
 
         public void setProductPath(final String _productPath)
         {
@@ -98,9 +93,9 @@ public class ConfigProperties
     public static class SSO
     {
 
-
         private String url;
         private final Map<String, String> postValues = new HashMap<>();
+
         public String getUrl()
         {
             return this.url;
