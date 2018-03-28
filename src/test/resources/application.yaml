@@ -1,0 +1,13 @@
+
+spring:
+    profiles: test
+
+name: POS-Backend-Test
+
+sso:
+  url: http://my.sso.com/pe
+  postValues:
+    client_id: ${random.value}
+    username: ${random.value}
+    password: ${random.value}
+    grant_type: password
