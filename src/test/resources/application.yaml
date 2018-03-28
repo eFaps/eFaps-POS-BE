@@ -4,6 +4,10 @@ spring:
 
 name: POS-Backend-Test
 
+efaps:
+  restUrl: http://localhost:8888/servlet/rest
+  productPath: /products
+
 sso:
   url: http://my.sso.com/pe
   postValues:

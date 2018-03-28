@@ -14,51 +14,56 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.sso;
+package org.efaps.pos.client;
 
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-import org.efaps.pos.ConfigProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.Collections;
+import java.util.List;
+
+import org.efaps.pos.Product;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureMockRestServiceServer
 @ActiveProfiles(profiles = "test")
-public class SSOClientTest
+public class EFapsClientTest
 {
     @Autowired
-    private ConfigProperties config;
-
-    @Autowired
-    private SSOClient client;
+    private EFapsClient client;
 
     @Autowired
     private MockRestServiceServer server;
 
+    @Autowired
+    private ObjectMapper mapper;
+
     @Test
-    public void testClient() {
-        final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        this.config.getSso().getPostValues().forEach((key, value) -> {
-            map.add(key, value);
-        });
-        this.server.expect(requestTo("http://my.sso.com/pe"))
-            .andExpect(content().formData(map))
-            .andRespond(withSuccess());
-        this.client.login();
+    public void testGetProducts() throws JsonProcessingException {
+        final List<Product> products = Collections.singletonList(Product.builder().build());
+
+        this.server.expect(requestTo("http://localhost:8888/servlet/rest/products"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(products), MediaType.APPLICATION_JSON));
+
+        final List<Product> response = this.client.getProducts();
+
+        assertEquals(1, response.size());
         this.server.verify();
     }
 }

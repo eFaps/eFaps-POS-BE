@@ -1,0 +1,5 @@
+
+name: POS-Backend
+
+efaps:
+  productPath: /products

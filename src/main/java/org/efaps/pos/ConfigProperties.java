@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 package org.efaps.pos;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,9 +31,12 @@ import org.springframework.context.annotation.Configuration;
 public class ConfigProperties
 {
 
+
     private String name;
 
     private SSO sso = new SSO();
+
+    private final EFaps efaps = new EFaps();
 
     public SSO getSso()
     {
@@ -52,6 +56,43 @@ public class ConfigProperties
     public void setName(final String _name)
     {
         this.name = _name;
+    }
+
+    public EFaps getEFaps()
+    {
+        return this.efaps;
+    }
+
+    public static class EFaps {
+
+        private URI restUrl;
+        private String productPath;
+
+        public URI getRestUrl()
+        {
+            return this.restUrl;
+        }
+
+
+        public void setRestUrl(final URI _restUrl)
+        {
+            this.restUrl = _restUrl;
+        }
+
+
+
+        public String getProductPath()
+        {
+            return this.productPath;
+        }
+
+
+
+        public void setProductPath(final String _productPath)
+        {
+            this.productPath = _productPath;
+        }
+
     }
 
     public static class SSO
