@@ -14,32 +14,12 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos;
+package org.efaps.pos.respository;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.efaps.pos.entity.Product;
+import org.springframework.data.repository.CrudRepository;
 
-@JsonDeserialize(builder = Product.Builder.class)
-public class Product
+public interface ProductRepository extends CrudRepository<Product, Long>
 {
 
-    private Product(final Builder builder) {
-
-    }
-
-    /**
-     * Creates builder to build {@link AgendaDto}.
-     * @return created builder
-     */
-    public static Builder builder() {
-      return new Builder();
-    }
-
-    /**
-     * Builder to build {@link AgendaDto}.
-     */
-    public static final class Builder {
-        public Product build() {
-            return new Product(this);
-          }
-    }
 }

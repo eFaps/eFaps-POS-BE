@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
 
-import org.efaps.pos.Product;
+import org.efaps.pos.ProductDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,12 +56,12 @@ public class EFapsClientTest
 
     @Test
     public void testGetProducts() throws JsonProcessingException {
-        final List<Product> products = Collections.singletonList(Product.builder().build());
+        final List<ProductDto> products = Collections.singletonList(ProductDto.builder().build());
 
         this.server.expect(requestTo("http://localhost:8888/servlet/rest/products"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(products), MediaType.APPLICATION_JSON));
 
-        final List<Product> response = this.client.getProducts();
+        final List<ProductDto> response = this.client.getProducts();
 
         assertEquals(1, response.size());
         this.server.verify();

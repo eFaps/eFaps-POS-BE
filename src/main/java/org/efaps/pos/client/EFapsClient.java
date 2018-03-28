@@ -19,7 +19,7 @@ package org.efaps.pos.client;
 import java.util.List;
 
 import org.efaps.pos.ConfigProperties;
-import org.efaps.pos.Product;
+import org.efaps.pos.ProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.RequestEntity;
@@ -44,14 +44,14 @@ public class EFapsClient
         this.restTemplate = _restTemplate;
     }
 
-    public List<Product> getProducts()
+    public List<ProductDto> getProducts()
     {
         final UriComponents uriComponents = UriComponentsBuilder.fromUri(this.config.getEFaps().getRestUrl()).path(
                         this.config.getEFaps().getProductPath()).build();
 
         final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).build();
-        final ResponseEntity<List<Product>> ret = this.restTemplate.exchange(requestEntity,
-                        new ParameterizedTypeReference<List<Product>>()
+        final ResponseEntity<List<ProductDto>> ret = this.restTemplate.exchange(requestEntity,
+                        new ParameterizedTypeReference<List<ProductDto>>()
                         {
                         });
         return ret.getBody();
