@@ -17,22 +17,36 @@
 package org.efaps.pos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.Arrays;
 import java.util.List;
 
+import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.entity.Product;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.client.MockRestServiceServer;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureMockRestServiceServer
 @ActiveProfiles(profiles = "test")
 public class SalesServiceTest
 {
@@ -41,6 +55,17 @@ public class SalesServiceTest
 
     @Autowired
     private SalesService salesService;
+
+    @Autowired
+    private MockRestServiceServer server;
+
+    @Autowired
+    private ObjectMapper mapper;
+
+    @BeforeEach
+    public void setup() {
+        this.mongoTemplate.remove(new Query(), Product.class);
+    }
 
     @Test
     public void test() {
@@ -53,5 +78,25 @@ public class SalesServiceTest
         assertEquals(1, products.size());
         assertEquals("1234.652", products.get(0).getOid());
         assertEquals("This is a description", products.get(0).getDescription());
+    }
+
+    @Test
+    public void testSyncProductsFirstTime() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Product.class).isEmpty());
+
+        final ProductDto product1 = ProductDto.builder()
+                        .withDescription("A product description")
+                        .withOID("5586.1651")
+                        .build();
+
+        final List<ProductDto> productDtos = Arrays.asList(product1);
+
+        this.server.expect(requestTo("http://localhost:8888/servlet/rest/products"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
+
+        this.salesService.syncProducts();
+
+        final List<Product> products = this.mongoTemplate.findAll(Product.class);
+        assertEquals(1, products.size());
     }
 }

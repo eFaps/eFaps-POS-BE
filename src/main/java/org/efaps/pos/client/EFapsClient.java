@@ -19,7 +19,7 @@ package org.efaps.pos.client;
 import java.util.List;
 
 import org.efaps.pos.ConfigProperties;
-import org.efaps.pos.ProductDto;
+import org.efaps.pos.dto.ProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.RequestEntity;

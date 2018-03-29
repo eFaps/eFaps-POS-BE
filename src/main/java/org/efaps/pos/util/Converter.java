@@ -14,32 +14,21 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos;
+package org.efaps.pos.util;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.entity.Product;
 
-@JsonDeserialize(builder = ProductDto.Builder.class)
-public class ProductDto
+public final class Converter
 {
-
-    private ProductDto(final Builder builder) {
+    private Converter() {
 
     }
 
-    /**
-     * Creates builder to build {@link AgendaDto}.
-     * @return created builder
-     */
-    public static Builder builder() {
-      return new Builder();
-    }
-
-    /**
-     * Builder to build {@link AgendaDto}.
-     */
-    public static final class Builder {
-        public ProductDto build() {
-            return new ProductDto(this);
-          }
+    public static Product fromDto(final ProductDto _dto) {
+        final Product ret = new Product()
+                        .setOid(_dto.getOid())
+                        .setDescription(_dto.getDescription());
+        return ret;
     }
 }

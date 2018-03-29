@@ -18,8 +18,11 @@
 package org.efaps.pos;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -27,14 +30,22 @@ import org.springframework.stereotype.Service;
 public class SalesService
 {
     private final MongoTemplate mongoTemplate;
-
+    private final EFapsClient eFapsClient;
     @Autowired
-    public SalesService(final MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
+    public SalesService(final MongoTemplate _mongoTemplate, final EFapsClient _eFapsClient) {
+        this.mongoTemplate = _mongoTemplate;
+        this.eFapsClient = _eFapsClient;
     }
 
     public List<Product> getProducts() {
         final List<Product> ret = this.mongoTemplate.findAll(Product.class);
         return ret;
+    }
+
+    public void syncProducts() {
+        final List<Product> products = this.eFapsClient.getProducts().stream()
+                        .map(dto -> Converter.fromDto(dto))
+                        .collect(Collectors.toList());
+        products.forEach(product -> this.mongoTemplate.save(product));
     }
 }
