@@ -99,4 +99,58 @@ public class SalesServiceTest
         final List<Product> products = this.mongoTemplate.findAll(Product.class);
         assertEquals(1, products.size());
     }
+
+    @Test
+    public void testSyncProductsUpdate() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Product.class).isEmpty());
+
+        final Product product = new Product()
+                        .setOid("5586.1651")
+                        .setDescription("Some old description");
+        this.mongoTemplate.save(product);
+
+        final ProductDto product1 = ProductDto.builder()
+                        .withDescription("An updated product description")
+                        .withOID("5586.1651")
+                        .build();
+
+        final List<ProductDto> productDtos = Arrays.asList(product1);
+
+        this.server.expect(requestTo("http://localhost:8888/servlet/rest/products"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
+
+        this.salesService.syncProducts();
+
+        final List<Product> products = this.mongoTemplate.findAll(Product.class);
+        assertEquals(1, products.size());
+        assertEquals("5586.1651", products.get(0).getOid());
+        assertEquals("An updated product description", products.get(0).getDescription());
+    }
+
+    @Test
+    public void testSyncProductsRemoveObsolete() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Product.class).isEmpty());
+
+        final Product product = new Product()
+                        .setOid("5586.1650")
+                        .setDescription("This product should be removed");
+        this.mongoTemplate.save(product);
+
+        final ProductDto product1 = ProductDto.builder()
+                        .withDescription("An updated product description")
+                        .withOID("5586.1651")
+                        .build();
+
+        final List<ProductDto> productDtos = Arrays.asList(product1);
+
+        this.server.expect(requestTo("http://localhost:8888/servlet/rest/products"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
+
+        this.salesService.syncProducts();
+
+        final List<Product> products = this.mongoTemplate.findAll(Product.class);
+        assertEquals(1, products.size());
+        assertEquals("5586.1651", products.get(0).getOid());
+        assertEquals("An updated product description", products.get(0).getDescription());
+    }
 }

@@ -46,6 +46,14 @@ public class SalesService
         final List<Product> products = this.eFapsClient.getProducts().stream()
                         .map(dto -> Converter.fromDto(dto))
                         .collect(Collectors.toList());
+        final List<Product> existingProducts = this.mongoTemplate.findAll(Product.class);
+        existingProducts.forEach(existing -> {
+            if (!products.stream()
+                .filter(product -> product.getOid().equals(existing.getOid()))
+                .findFirst().isPresent()) {
+                this.mongoTemplate.remove(existing);
+            }
+        });
         products.forEach(product -> this.mongoTemplate.save(product));
     }
 }
