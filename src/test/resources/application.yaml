@@ -1,6 +1,9 @@
 
 spring:
-    profiles: test
+  profiles: test
+  data:
+    mongodb:
+      host: localhost
 
 name: POS-Backend-Test
 
@@ -15,3 +18,4 @@ sso:
     username: ${random.value}
     password: ${random.value}
     grant_type: password
+    client_secret: ${random.value}

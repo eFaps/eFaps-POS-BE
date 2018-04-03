@@ -39,14 +39,19 @@ public class ConfigProperties
 
     private final BasicAuth auth = new BasicAuth();
 
-    public SSO getSso()
-    {
-        return this.sso;
-    }
-
     public String getName()
     {
         return this.name;
+    }
+
+    public void setName(final String _name)
+    {
+        this.name = _name;
+    }
+
+    public SSO getSso()
+    {
+        return this.sso;
     }
 
     public EFaps getEFaps()

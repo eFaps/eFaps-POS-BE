@@ -39,7 +39,7 @@ public class ConfigPropertiesTest
     public void testProperties() {
        assertEquals("POS-Backend-Test", this.config.getName());
        assertEquals("http://my.sso.com/pe", this.config.getSso().getUrl());
-       assertEquals(4, this.config.getSso().getPostValues().size());
+       assertEquals(5, this.config.getSso().getPostValues().size());
        assertEquals("http://localhost:8888/servlet/rest", this.config.getEFaps().getRestUrl().toString());
        assertEquals("/products", this.config.getEFaps().getProductPath());
     }

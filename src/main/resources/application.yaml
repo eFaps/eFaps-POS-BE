@@ -1,6 +1,11 @@
 
 name: POS-Backend
 
+spring:
+    data:
+      mongodb:
+        database: efapsPOS
+
 efaps:
   restUrl: http://localhost:8888/eFaps/servlet/rest
   productPath: /pos/products
