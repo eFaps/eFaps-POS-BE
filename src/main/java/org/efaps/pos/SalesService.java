@@ -31,6 +31,7 @@ public class SalesService
 {
     private final MongoTemplate mongoTemplate;
     private final EFapsClient eFapsClient;
+
     @Autowired
     public SalesService(final MongoTemplate _mongoTemplate, final EFapsClient _eFapsClient) {
         this.mongoTemplate = _mongoTemplate;

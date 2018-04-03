@@ -2,4 +2,9 @@
 name: POS-Backend
 
 efaps:
-  productPath: /products
+  restUrl: http://localhost:8888/eFaps/servlet/rest
+  productPath: /pos/products
+
+auth:
+  user: Administrator
+  password: Administrator

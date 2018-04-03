@@ -37,6 +37,8 @@ public class ConfigProperties
 
     private final EFaps efaps = new EFaps();
 
+    private final BasicAuth auth = new BasicAuth();
+
     public SSO getSso()
     {
         return this.sso;
@@ -60,6 +62,40 @@ public class ConfigProperties
     public EFaps getEFaps()
     {
         return this.efaps;
+    }
+
+    public BasicAuth getAuth()
+    {
+        return this.auth;
+    }
+
+    public static class BasicAuth
+    {
+
+        private String user;
+        private String password;
+
+        public String getPassword()
+        {
+            return this.password;
+        }
+
+        public void setPassword(final String _password)
+        {
+            this.password = _password;
+        }
+
+
+        public String getUser()
+        {
+            return this.user;
+        }
+
+
+        public void setUser(final String _user)
+        {
+            this.user = _user;
+        }
     }
 
     public static class EFaps

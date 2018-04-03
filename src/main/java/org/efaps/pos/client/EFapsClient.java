@@ -16,6 +16,8 @@
  */
 package org.efaps.pos.client;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 import org.efaps.pos.ConfigProperties;
@@ -44,12 +46,27 @@ public class EFapsClient
         this.restTemplate = _restTemplate;
     }
 
+
+   private String getAuth() {
+       String auth = "";
+       if (this.config.getAuth() != null) {
+           auth = "Basic " + Base64.getEncoder().encodeToString(
+                   (this.config.getAuth().getUser() + ":" + this.config.getAuth().getPassword()).getBytes(StandardCharsets.UTF_8));
+       }
+       return auth;
+   }
+
+
     public List<ProductDto> getProducts()
     {
-        final UriComponents uriComponents = UriComponentsBuilder.fromUri(this.config.getEFaps().getRestUrl()).path(
-                        this.config.getEFaps().getProductPath()).build();
+        final UriComponents uriComponents = UriComponentsBuilder
+                        .fromUri(this.config.getEFaps().getRestUrl())
+                        .path(this.config.getEFaps().getProductPath())
+                        .build();
 
-        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).build();
+        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri())
+                        .header("Authorization", getAuth())
+                        .build();
         final ResponseEntity<List<ProductDto>> ret = this.restTemplate.exchange(requestEntity,
                         new ParameterizedTypeReference<List<ProductDto>>()
                         {
