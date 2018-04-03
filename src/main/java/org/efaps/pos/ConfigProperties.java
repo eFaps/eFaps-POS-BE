@@ -33,7 +33,7 @@ public class ConfigProperties
 
     private String name;
 
-    private SSO sso = new SSO();
+    private final SSO sso = new SSO();
 
     private final EFaps efaps = new EFaps();
 
@@ -44,19 +44,9 @@ public class ConfigProperties
         return this.sso;
     }
 
-    public void setSso(final SSO _sso)
-    {
-        this.sso = _sso;
-    }
-
     public String getName()
     {
         return this.name;
-    }
-
-    public void setName(final String _name)
-    {
-        this.name = _name;
     }
 
     public EFaps getEFaps()
@@ -85,12 +75,10 @@ public class ConfigProperties
             this.password = _password;
         }
 
-
         public String getUser()
         {
             return this.user;
         }
-
 
         public void setUser(final String _user)
         {

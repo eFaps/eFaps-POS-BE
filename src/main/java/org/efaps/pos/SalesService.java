@@ -26,32 +26,36 @@ import org.efaps.pos.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+
 @Service
 public class SalesService
 {
+
     private final MongoTemplate mongoTemplate;
     private final EFapsClient eFapsClient;
 
     @Autowired
-    public SalesService(final MongoTemplate _mongoTemplate, final EFapsClient _eFapsClient) {
+    public SalesService(final MongoTemplate _mongoTemplate,
+                        final EFapsClient _eFapsClient)
+    {
         this.mongoTemplate = _mongoTemplate;
         this.eFapsClient = _eFapsClient;
     }
 
-    public List<Product> getProducts() {
+    public List<Product> getProducts()
+    {
         final List<Product> ret = this.mongoTemplate.findAll(Product.class);
         return ret;
     }
 
-    public void syncProducts() {
-        final List<Product> products = this.eFapsClient.getProducts().stream()
-                        .map(dto -> Converter.fromDto(dto))
+    public void syncProducts()
+    {
+        final List<Product> products = this.eFapsClient.getProducts().stream().map(dto -> Converter.fromDto(dto))
                         .collect(Collectors.toList());
         final List<Product> existingProducts = this.mongoTemplate.findAll(Product.class);
         existingProducts.forEach(existing -> {
-            if (!products.stream()
-                .filter(product -> product.getOid().equals(existing.getOid()))
-                .findFirst().isPresent()) {
+            if (!products.stream().filter(product -> product.getOid().equals(existing.getOid())).findFirst()
+                            .isPresent()) {
                 this.mongoTemplate.remove(existing);
             }
         });

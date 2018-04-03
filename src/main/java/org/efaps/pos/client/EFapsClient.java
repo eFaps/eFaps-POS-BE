@@ -46,16 +46,15 @@ public class EFapsClient
         this.restTemplate = _restTemplate;
     }
 
-
-   private String getAuth() {
-       String auth = "";
-       if (this.config.getAuth() != null) {
-           auth = "Basic " + Base64.getEncoder().encodeToString(
-                   (this.config.getAuth().getUser() + ":" + this.config.getAuth().getPassword()).getBytes(StandardCharsets.UTF_8));
-       }
-       return auth;
-   }
-
+    private String getAuth()
+    {
+        String auth = "";
+        if (this.config.getAuth() != null) {
+            auth = "Basic " + Base64.getEncoder().encodeToString((this.config.getAuth().getUser() + ":" + this.config
+                            .getAuth().getPassword()).getBytes(StandardCharsets.UTF_8));
+        }
+        return auth;
+    }
 
     public List<ProductDto> getProducts()
     {
@@ -64,9 +63,8 @@ public class EFapsClient
                         .path(this.config.getEFaps().getProductPath())
                         .build();
 
-        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri())
-                        .header("Authorization", getAuth())
-                        .build();
+        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).header("Authorization",
+                        getAuth()).build();
         final ResponseEntity<List<ProductDto>> ret = this.restTemplate.exchange(requestEntity,
                         new ParameterizedTypeReference<List<ProductDto>>()
                         {

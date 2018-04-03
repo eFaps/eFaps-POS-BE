@@ -21,11 +21,13 @@ import org.efaps.pos.entity.Product;
 
 public final class Converter
 {
-    private Converter() {
 
+    private Converter()
+    {
     }
 
-    public static Product fromDto(final ProductDto _dto) {
+    public static Product fromDto(final ProductDto _dto)
+    {
         final Product ret = new Product()
                         .setOid(_dto.getOid())
                         .setDescription(_dto.getDescription());

@@ -32,13 +32,16 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class SSOClient
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(SSOClient.class);
 
     private final ConfigProperties config;
     private final RestTemplate restTemplate;
 
     @Autowired
-    public SSOClient(final ConfigProperties _config, final RestTemplate _restTemplate) {
+    public SSOClient(final ConfigProperties _config,
+                     final RestTemplate _restTemplate)
+    {
         this.config = _config;
         this.restTemplate = _restTemplate;
     }
@@ -55,7 +58,8 @@ public class SSOClient
 
         final HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        final ResponseEntity<String> response = this.restTemplate.postForEntity(this.config.getSso().getUrl(), request, String.class);
+        final ResponseEntity<String> response = this.restTemplate.postForEntity(this.config.getSso().getUrl(), request,
+                        String.class);
         LOG.info(response.getBody());
     }
 }
