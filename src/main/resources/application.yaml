@@ -6,6 +6,11 @@ spring:
       mongodb:
         database: efapsPOS
 
+server:
+  servlet:
+    contextPath: /pos
+
+
 efaps:
   restUrl: http://localhost:8888/eFaps/servlet/rest
   productPath: /pos/products

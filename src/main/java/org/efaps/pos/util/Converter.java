@@ -26,11 +26,19 @@ public final class Converter
     {
     }
 
-    public static Product fromDto(final ProductDto _dto)
+    public static Product toEntity(final ProductDto _dto)
     {
         final Product ret = new Product()
                         .setOid(_dto.getOid())
                         .setDescription(_dto.getDescription());
         return ret;
+    }
+
+    public static ProductDto toDto(final Product _entity)
+    {
+        return ProductDto.builder()
+                        .withDescription(_entity.getDescription())
+                        .withOID(_entity.getOid())
+                        .build();
     }
 }

@@ -50,7 +50,8 @@ public class SalesService
 
     public void syncProducts()
     {
-        final List<Product> products = this.eFapsClient.getProducts().stream().map(dto -> Converter.fromDto(dto))
+        final List<Product> products = this.eFapsClient.getProducts().stream()
+                        .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         final List<Product> existingProducts = this.mongoTemplate.findAll(Product.class);
         existingProducts.forEach(existing -> {
