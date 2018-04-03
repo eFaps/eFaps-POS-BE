@@ -43,6 +43,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <!-- must use 2.19.1 to get junit to work -->
                 <version>2.19.1</version>
                 <dependencies>
                     <dependency>
@@ -55,6 +56,17 @@
         </plugins>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>org.efaps</groupId>
+            <artifactId>efaps-pos-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
