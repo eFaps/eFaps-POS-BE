@@ -27,23 +27,27 @@ public class ConverterTest
     @Test
     public void testProductToEntity() {
         final ProductDto dto = ProductDto.builder()
+                        .withSKU("100612.001")
                         .withDescription("This is the product Description")
                         .withOID("123.4561")
                         .build();
 
         final Product product = Converter.toEntity(dto);
         assertEquals(dto.getOid(), product.getOid());
+        assertEquals(dto.getSKU(), product.getSKU());
         assertEquals(dto.getDescription(), product.getDescription());
     }
 
     @Test
     public void testProductToDto() {
         final Product entity = new Product()
+                        .setSKU("100612.001")
                         .setDescription("This is the product Description")
                         .setOid("165165.14651");
 
         final ProductDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getSKU(), dto.getSKU());
         assertEquals(entity.getDescription(), dto.getDescription());
     }
 }

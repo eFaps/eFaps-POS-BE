@@ -27,6 +27,8 @@ public class Product
 
     private String oid;
 
+    private String sku;
+
     private String description;
 
     public String getOid()
@@ -38,6 +40,17 @@ public class Product
     {
         this.oid = _oid;
         this.id = _oid;
+        return this;
+    }
+
+    public String getSKU()
+    {
+        return this.sku;
+    }
+
+    public Product setSKU(final String _sku)
+    {
+        this.sku = _sku;
         return this;
     }
 
