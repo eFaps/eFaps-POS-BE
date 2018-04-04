@@ -91,8 +91,13 @@ public class JwtTokenUtil
     {
         final Date createdDate = this.clock.now();
         final Date expirationDate = calculateExpirationDate(createdDate);
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(createdDate).setExpiration(
-                        expirationDate).signWith(SignatureAlgorithm.HS512, this.secret).compact();
+        return Jwts.builder()
+                        .setClaims(claims)
+                        .setSubject(subject)
+                        .setIssuedAt(createdDate)
+                        .setExpiration(expirationDate)
+                        .signWith(SignatureAlgorithm.HS512, this.secret)
+                        .compact();
     }
 
     private Date calculateExpirationDate(final Date createdDate)

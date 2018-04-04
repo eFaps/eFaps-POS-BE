@@ -2,9 +2,9 @@
 name: POS-Backend
 
 spring:
-    data:
-      mongodb:
-        database: efapsPOS
+  data:
+    mongodb:
+      database: efapsPOS
 
 server:
   servlet:
@@ -22,3 +22,4 @@ auth:
 jwt:
   secret: ThisIsNotVerySecret
   expiration: 1000
+

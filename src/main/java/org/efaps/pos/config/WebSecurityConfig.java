@@ -92,10 +92,9 @@ public class WebSecurityConfig
     public void configure(final WebSecurity web)
         throws Exception
     {
-        // AuthenticationTokenFilter will ignore the below paths
         web.ignoring().antMatchers(HttpMethod.POST, "authenticate")
-                        // allow anonymous resource requests
-                        .and().ignoring().antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html",
-                                        "/**/*.css", "/**/*.js");
+            .and().ignoring().antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html",
+                                        "/**/*.css", "/**/*.js")
+            .and().ignoring().antMatchers(HttpMethod.OPTIONS);
     }
 }
