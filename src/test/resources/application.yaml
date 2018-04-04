@@ -19,3 +19,7 @@ sso:
     password: ${random.value}
     grant_type: password
     client_secret: ${random.value}
+
+jwt:
+  secret: ThisIsNotVerySecret
+  expiration: 1000

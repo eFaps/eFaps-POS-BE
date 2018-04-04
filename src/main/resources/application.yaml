@@ -8,7 +8,7 @@ spring:
 
 server:
   servlet:
-    contextPath: /pos
+    contextPath: /pos/api
 
 
 efaps:
@@ -18,3 +18,7 @@ efaps:
 auth:
   user: Administrator
   password: Administrator
+
+jwt:
+  secret: ThisIsNotVerySecret
+  expiration: 1000
