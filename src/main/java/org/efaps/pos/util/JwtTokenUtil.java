@@ -60,11 +60,6 @@ public class JwtTokenUtil
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    public Date getIssuedAtDateFromToken(final String token)
-    {
-        return getClaimFromToken(token, Claims::getIssuedAt);
-    }
-
     public String getUsernameFromToken(final String _authToken)
     {
         return getClaimFromToken(_authToken, Claims::getSubject);
@@ -84,10 +79,10 @@ public class JwtTokenUtil
     public String generateToken(final UserDetails _userDetails)
     {
         final Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, _userDetails.getUsername());
+        return generateToken(claims, _userDetails.getUsername());
     }
 
-    private String doGenerateToken(final Map<String, Object> claims, final String subject)
+    protected String generateToken(final Map<String, Object> claims, final String subject)
     {
         final Date createdDate = this.clock.now();
         final Date expirationDate = calculateExpirationDate(createdDate);
