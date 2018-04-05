@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos;
+package org.efaps.pos.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.service.SyncService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,13 +49,13 @@ import org.springframework.test.web.client.MockRestServiceServer;
 @AutoConfigureMockMvc
 @AutoConfigureMockRestServiceServer
 @ActiveProfiles(profiles = "test")
-public class SalesServiceTest
+public class SyncServiceTest
 {
     @Autowired
     private MongoTemplate mongoTemplate;
 
     @Autowired
-    private SalesService salesService;
+    private SyncService salesService;
 
     @Autowired
     private MockRestServiceServer server;

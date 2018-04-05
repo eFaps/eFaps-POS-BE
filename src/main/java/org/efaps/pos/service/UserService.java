@@ -16,9 +16,9 @@
  */
 package org.efaps.pos.service;
 
+import org.efaps.pos.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,11 +29,14 @@ import org.springframework.stereotype.Service;
 public class UserService
     implements UserDetailsService
 {
+    private final MongoTemplate mongoTemplate;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(final PasswordEncoder _passwordEncoder)
+    public UserService(final MongoTemplate _mongoTemplate,
+                       final PasswordEncoder _passwordEncoder)
     {
+        this.mongoTemplate = _mongoTemplate;
         this.passwordEncoder = _passwordEncoder;
     }
 
@@ -41,13 +44,12 @@ public class UserService
     public UserDetails loadUserByUsername(final String _username)
         throws UsernameNotFoundException
     {
-        final String encodedPwd = this.passwordEncoder.encode("password");
-        return User.withUsername(_username)
-                    .password(encodedPwd)
-                    .authorities(new SimpleGrantedAuthority("admin"))
-                    .build();
+        final UserDetails user = this.mongoTemplate.findById(_username, User.class);
+        if (user == null) {
+            throw new UsernameNotFoundException(_username);
+        }
+        return user;
     }
-
 
     public PasswordEncoder getPasswordEncoder()
     {

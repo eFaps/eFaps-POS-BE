@@ -15,7 +15,7 @@
  *
  */
 
-package org.efaps.pos;
+package org.efaps.pos.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,15 +28,15 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SalesService
+public class SyncService
 {
 
     private final MongoTemplate mongoTemplate;
     private final EFapsClient eFapsClient;
 
     @Autowired
-    public SalesService(final MongoTemplate _mongoTemplate,
-                        final EFapsClient _eFapsClient)
+    public SyncService(final MongoTemplate _mongoTemplate,
+                       final EFapsClient _eFapsClient)
     {
         this.mongoTemplate = _mongoTemplate;
         this.eFapsClient = _eFapsClient;

@@ -33,7 +33,7 @@ public class Application
 {
     private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
-    public static void main(final String args[]) {
+    public static void main(final String _args[]) {
         SpringApplication.run(Application.class);
     }
 

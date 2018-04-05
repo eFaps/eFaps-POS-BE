@@ -17,6 +17,8 @@
 
 package org.efaps.pos;
 
+import org.efaps.pos.service.DemoService;
+import org.efaps.pos.service.SyncService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -27,17 +29,25 @@ import org.springframework.stereotype.Component;
 public class ApplicationStartup
     implements ApplicationListener<ApplicationReadyEvent>
 {
+    private final ConfigProperties config;
+    private final SyncService service;
+    private final DemoService demoService;
 
-    private final SalesService service;
-
-    public ApplicationStartup(final SalesService _service)
+    public ApplicationStartup(final ConfigProperties _config, final SyncService _service,
+                              final DemoService _demoService)
     {
+        this.config = _config;
         this.service = _service;
+        this.demoService = _demoService;
     }
 
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent _event)
     {
-        this.service.syncProducts();
+        if (this.config.isDemoMode()) {
+            this.demoService.init();
+        } else {
+            this.service.syncProducts();
+        }
     }
 }

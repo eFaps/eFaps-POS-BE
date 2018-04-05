@@ -19,8 +19,8 @@ package org.efaps.pos.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.efaps.pos.SalesService;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.service.SyncService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,9 +34,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("products")
 public class ProductController
 {
-    private final SalesService service;
+    private final SyncService service;
 
-    public ProductController(final SalesService _service) {
+    public ProductController(final SyncService _service) {
         this.service = _service;
     }
 

@@ -1,0 +1,82 @@
+package org.efaps.pos.entity;
+
+import java.util.Collection;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+public class User
+    implements UserDetails
+{
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    private String id;
+
+    private String oid;
+
+    private String username;
+
+    private String password;
+
+    public String getOid()
+    {
+        return this.oid;
+    }
+
+    public User setOid(final String _oid)
+    {
+        this.oid = _oid;
+        return this;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities()
+    {
+        return null;
+    }
+
+    @Override
+    public String getPassword()
+    {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername()
+    {
+        return this.username;
+    }
+
+    public void setUsername(final String _username)
+    {
+        this.username = _username;
+        this.id = this.username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled()
+    {
+        return true;
+    }
+}

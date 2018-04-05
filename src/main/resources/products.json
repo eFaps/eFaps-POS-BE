@@ -1,0 +1,30 @@
+[
+    {
+        "_id": "8183.1",
+        "oid": "8183.1",
+        "sku": "001.1563",
+        "description": "Product1",
+        "_class": "org.efaps.pos.entity.Product"
+    },
+    {
+        "_id": "8183.2",
+        "oid": "8183.2",
+        "sku": "001.1555",
+        "description": "Product2",
+        "_class": "org.efaps.pos.entity.Product"
+    },
+    {
+        "_id": "8183.3",
+        "oid": "8183.3",
+        "sku": "0056.5622",
+        "description": "Product3",
+        "_class": "org.efaps.pos.entity.Product"
+    },
+    {
+        "_id": "8183.4",
+        "oid": "8183.4",
+        "sku": "5651.5555",
+        "description": "Product4",
+        "_class": "org.efaps.pos.entity.Product"
+    }
+]
