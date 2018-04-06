@@ -16,9 +16,11 @@
  */
 package org.efaps.pos.util;
 
+import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.WorkspaceDto;
+import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
@@ -59,11 +61,20 @@ public final class Converter
                         .build();
     }
 
-    public static WorkspaceDto toDto(final Workspace _workspace)
+    public static WorkspaceDto toDto(final Workspace _entity)
     {
         return WorkspaceDto.builder()
-                        .withName(_workspace.getName())
-                        .withOID(_workspace.getOid())
+                        .withOID(_entity.getOid())
+                        .withName(_entity.getName())
+                        .withPosOid(_entity.getPosOid())
+                        .build();
+    }
+
+    public static PosDto toDto(final Pos _entity)
+    {
+        return PosDto.builder()
+                        .withOID(_entity.getOid())
+                        .withName(_entity.getName())
                         .build();
     }
 }

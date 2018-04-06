@@ -18,9 +18,11 @@ package org.efaps.pos.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.WorkspaceDto;
+import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
@@ -76,10 +78,23 @@ public class ConverterTest
     @Test
     public void testWorkspaceToDto() {
         final Workspace entity = new Workspace()
+                        .setOid("165165.14651")
+                        .setName("Caja 1")
+                        .setPosOid("9999.514651");
+
+        final WorkspaceDto dto = Converter.toDto(entity);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getName(), dto.getName());
+        assertEquals(entity.getPosOid(), dto.getPosOid());
+    }
+
+    @Test
+    public void testPosToDto() {
+        final Pos entity = new Pos()
                         .setName("Caja 1")
                         .setOid("165165.14651");
 
-        final WorkspaceDto dto = Converter.toDto(entity);
+        final PosDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getName(), dto.getName());
     }

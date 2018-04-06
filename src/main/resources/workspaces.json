@@ -2,16 +2,19 @@
     {
         "_id": "4183.1",
         "oid": "4183.1",
-        "name": "Caja 1 desktop"
+        "name": "Caja 1 desktop",
+        "posOid": "5243.1"
     },
     {
         "_id": "4183.2",
         "oid": "4183.2",
-        "name": "Caja 1 tablet"
+        "name": "Caja 1 tablet",
+        "posOid": "5243.1"
     },
     {
         "_id": "4183.3",
         "oid": "4183.3",
-        "name": "Caja 2"
+        "name": "Caja 2",
+        "posOid": "5243.2"
     }
 ]

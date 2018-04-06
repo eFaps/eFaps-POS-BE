@@ -21,8 +21,8 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "workspaces")
-public class Workspace
+@Document(collection = "poss")
+public class Pos
 {
 
     @Id
@@ -32,14 +32,12 @@ public class Workspace
 
     private String name;
 
-    private String posOid;
-
     public String getOid()
     {
         return this.oid;
     }
 
-    public Workspace setOid(final String _oid)
+    public Pos setOid(final String _oid)
     {
         this.oid = _oid;
         this.id = _oid;
@@ -51,20 +49,9 @@ public class Workspace
         return this.name;
     }
 
-    public Workspace setName(final String _name)
+    public Pos setName(final String _name)
     {
         this.name = _name;
-        return this;
-    }
-
-    public String getPosOid()
-    {
-        return this.posOid;
-    }
-
-    public Workspace setPosOid(final String _posOid)
-    {
-        this.posOid = _posOid;
         return this;
     }
 
