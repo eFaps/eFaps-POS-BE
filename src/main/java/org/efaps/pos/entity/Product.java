@@ -18,10 +18,11 @@ package org.efaps.pos.entity;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "products")
 public class Product
 {
-
     @Id
     private String id;
 
@@ -30,6 +31,8 @@ public class Product
     private String sku;
 
     private String description;
+
+    private String imageOid;
 
     public String getOid()
     {
@@ -62,6 +65,17 @@ public class Product
     public Product setDescription(final String _description)
     {
         this.description = _description;
+        return this;
+    }
+
+    public String getImageOid()
+    {
+        return this.imageOid;
+    }
+
+    public Product setImageOid(final String _imageOid)
+    {
+        this.imageOid = _imageOid;
         return this;
     }
 

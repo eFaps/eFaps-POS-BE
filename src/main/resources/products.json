@@ -4,6 +4,7 @@
         "oid": "8183.1",
         "sku": "001.1563",
         "description": "Product1",
+        "imageOid" : "1234.1",
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -11,6 +12,7 @@
         "oid": "8183.2",
         "sku": "001.1555",
         "description": "Product2",
+        "imageOid" : "1234.2",
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -18,6 +20,7 @@
         "oid": "8183.3",
         "sku": "0056.5622",
         "description": "Product3",
+        "imageOid" : "1234.1",
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -25,6 +28,7 @@
         "oid": "8183.4",
         "sku": "5651.5555",
         "description": "Product4",
+        "imageOid" : "1234.2",
         "_class": "org.efaps.pos.entity.Product"
     }
 ]

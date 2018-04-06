@@ -33,6 +33,7 @@ public final class Converter
         final Product ret = new Product()
                         .setOid(_dto.getOid())
                         .setSKU(_dto.getSKU())
+                        .setImageOid(_dto.getImageOid())
                         .setDescription(_dto.getDescription());
         return ret;
     }
@@ -42,6 +43,7 @@ public final class Converter
         return ProductDto.builder()
                         .withSKU(_entity.getSKU())
                         .withDescription(_entity.getDescription())
+                        .withImageOid(_entity.getImageOid())
                         .withOID(_entity.getOid())
                         .build();
     }

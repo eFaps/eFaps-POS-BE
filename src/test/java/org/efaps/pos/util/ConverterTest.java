@@ -31,6 +31,7 @@ public class ConverterTest
         final ProductDto dto = ProductDto.builder()
                         .withSKU("100612.001")
                         .withDescription("This is the product Description")
+                        .withImageOid("1234.1")
                         .withOID("123.4561")
                         .build();
 
@@ -38,6 +39,7 @@ public class ConverterTest
         assertEquals(dto.getOid(), product.getOid());
         assertEquals(dto.getSKU(), product.getSKU());
         assertEquals(dto.getDescription(), product.getDescription());
+        assertEquals(dto.getImageOid(), product.getImageOid());
     }
 
     @Test
@@ -45,12 +47,14 @@ public class ConverterTest
         final Product entity = new Product()
                         .setSKU("100612.001")
                         .setDescription("This is the product Description")
+                        .setImageOid("1234.1")
                         .setOid("165165.14651");
 
         final ProductDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getSKU(), dto.getSKU());
         assertEquals(entity.getDescription(), dto.getDescription());
+        assertEquals(entity.getImageOid(), dto.getImageOid());
     }
 
     @Test
