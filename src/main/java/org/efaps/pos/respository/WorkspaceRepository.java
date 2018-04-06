@@ -16,11 +16,11 @@
  */
 package org.efaps.pos.respository;
 
-import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Workspace;
 import org.springframework.data.repository.CrudRepository;
 
-public interface UserRepository
-    extends CrudRepository<User, Long>
+public interface WorkspaceRepository
+    extends CrudRepository<Workspace, Long>
 {
 
 }

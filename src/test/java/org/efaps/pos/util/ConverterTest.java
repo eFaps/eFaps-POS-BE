@@ -20,8 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Workspace;
 import org.junit.jupiter.api.Test;
 
 public class ConverterTest
@@ -29,10 +31,10 @@ public class ConverterTest
     @Test
     public void testProductToEntity() {
         final ProductDto dto = ProductDto.builder()
+                        .withOID("Asda")
                         .withSKU("100612.001")
                         .withDescription("This is the product Description")
                         .withImageOid("1234.1")
-                        .withOID("123.4561")
                         .build();
 
         final Product product = Converter.toEntity(dto);
@@ -69,5 +71,16 @@ public class ConverterTest
         assertEquals(entity.getUsername(), dto.getUsername());
         assertEquals(entity.getFirstName(), dto.getFirstName());
         assertEquals(entity.getSurName(), dto.getSurName());
+    }
+
+    @Test
+    public void testWorkspaceToDto() {
+        final Workspace entity = new Workspace()
+                        .setName("Caja 1")
+                        .setOid("165165.14651");
+
+        final WorkspaceDto dto = Converter.toDto(entity);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getName(), dto.getName());
     }
 }

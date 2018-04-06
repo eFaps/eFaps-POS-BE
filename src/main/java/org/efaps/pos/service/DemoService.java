@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +61,10 @@ public class DemoService
     public void init()
     {
         try {
-            clean(User.class, Product.class);
+            clean(User.class, Product.class, Workspace.class);
             init("users.json", new TypeReference<List<User>>(){});
             init("products.json", new TypeReference<List<Product>>(){});
+            init("workspaces.json", new TypeReference<List<Workspace>>(){});
             loadImages(new String[] { "apple.jpeg", "1234.1" },
                             new String[] { "orange.jpeg", "1234.2" });
         } catch (final IOException e) {

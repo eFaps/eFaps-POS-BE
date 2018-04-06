@@ -19,8 +19,8 @@ package org.efaps.pos.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.efaps.pos.dto.ProductDto;
-import org.efaps.pos.service.ProductService;
+import org.efaps.pos.dto.WorkspaceDto;
+import org.efaps.pos.service.WorkspaceService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,18 +31,18 @@ import org.springframework.web.bind.annotation.RestController;
  * The Class ProductController.
  */
 @RestController
-@RequestMapping("products")
-public class ProductController
+@RequestMapping("workspaces")
+public class WorkspaceController
 {
-    private final ProductService service;
+    private final WorkspaceService service;
 
-    public ProductController(final ProductService _service) {
+    public WorkspaceController(final WorkspaceService _service) {
         this.service = _service;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ProductDto> getProducts() {
-        return this.service.getProducts().stream()
+    public List<WorkspaceDto> getWorkspaces() {
+        return this.service.getWorkspaces().stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }

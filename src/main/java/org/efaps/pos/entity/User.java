@@ -2,6 +2,7 @@ package org.efaps.pos.entity;
 
 import java.util.Collection;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
@@ -108,5 +109,11 @@ public class User
     {
         this.surName = _surName;
         return this;
+    }
+
+    @Override
+    public String toString()
+    {
+        return ReflectionToStringBuilder.toString(this);
     }
 }

@@ -18,42 +18,28 @@
 package org.efaps.pos.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.entity.Product;
-import org.efaps.pos.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SyncService
+public class ProductService
 {
-
     private final MongoTemplate mongoTemplate;
-    private final EFapsClient eFapsClient;
 
     @Autowired
-    public SyncService(final MongoTemplate _mongoTemplate,
+    public ProductService(final MongoTemplate _mongoTemplate,
                        final EFapsClient _eFapsClient)
     {
         this.mongoTemplate = _mongoTemplate;
-        this.eFapsClient = _eFapsClient;
     }
 
-    public void syncProducts()
+    public List<Product> getProducts()
     {
-        final List<Product> products = this.eFapsClient.getProducts().stream()
-                        .map(dto -> Converter.toEntity(dto))
-                        .collect(Collectors.toList());
-        final List<Product> existingProducts = this.mongoTemplate.findAll(Product.class);
-        existingProducts.forEach(existing -> {
-            if (!products.stream().filter(product -> product.getOid().equals(existing.getOid())).findFirst()
-                            .isPresent()) {
-                this.mongoTemplate.remove(existing);
-            }
-        });
-        products.forEach(product -> this.mongoTemplate.save(product));
+        final List<Product> ret = this.mongoTemplate.findAll(Product.class);
+        return ret;
     }
 }

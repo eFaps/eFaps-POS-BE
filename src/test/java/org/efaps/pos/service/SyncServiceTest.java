@@ -29,7 +29,6 @@ import java.util.List;
 
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.entity.Product;
-import org.efaps.pos.service.SyncService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,7 +54,7 @@ public class SyncServiceTest
     private MongoTemplate mongoTemplate;
 
     @Autowired
-    private SyncService salesService;
+    private SyncService syncService;
 
     @Autowired
     private MockRestServiceServer server;
@@ -66,19 +65,6 @@ public class SyncServiceTest
     @BeforeEach
     public void setup() {
         this.mongoTemplate.remove(new Query(), Product.class);
-    }
-
-    @Test
-    public void test() {
-        final Product product = new Product()
-                        .setOid("1234.652")
-                        .setDescription("This is a description");
-        this.mongoTemplate.save(product);
-
-        final List<Product> products = this.salesService.getProducts();
-        assertEquals(1, products.size());
-        assertEquals("1234.652", products.get(0).getOid());
-        assertEquals("This is a description", products.get(0).getDescription());
     }
 
     @Test
@@ -95,7 +81,7 @@ public class SyncServiceTest
         this.server.expect(requestTo("http://localhost:8888/servlet/rest/products"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
-        this.salesService.syncProducts();
+        this.syncService.syncProducts();
 
         final List<Product> products = this.mongoTemplate.findAll(Product.class);
         assertEquals(1, products.size());
@@ -120,7 +106,7 @@ public class SyncServiceTest
         this.server.expect(requestTo("http://localhost:8888/servlet/rest/products"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
-        this.salesService.syncProducts();
+        this.syncService.syncProducts();
 
         final List<Product> products = this.mongoTemplate.findAll(Product.class);
         assertEquals(1, products.size());
@@ -147,7 +133,7 @@ public class SyncServiceTest
         this.server.expect(requestTo("http://localhost:8888/servlet/rest/products"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
-        this.salesService.syncProducts();
+        this.syncService.syncProducts();
 
         final List<Product> products = this.mongoTemplate.findAll(Product.class);
         assertEquals(1, products.size());
