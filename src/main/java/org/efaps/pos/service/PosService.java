@@ -42,4 +42,9 @@ public class PosService
         final List<Pos> ret = this.mongoTemplate.findAll(Pos.class);
         return ret;
     }
+
+    public Pos getPos(final String _oid)
+    {
+        return this.mongoTemplate.findById(_oid, Pos.class);
+    }
 }

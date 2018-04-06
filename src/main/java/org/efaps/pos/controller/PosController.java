@@ -24,6 +24,7 @@ import org.efaps.pos.service.PosService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,5 +46,10 @@ public class PosController
         return this.service.getPoss().stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "/{oid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosDto getPos(@PathVariable("oid") final String _oid) {
+        return Converter.toDto(this.service.getPos(_oid));
     }
 }

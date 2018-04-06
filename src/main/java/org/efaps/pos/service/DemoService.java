@@ -26,6 +26,7 @@ import com.mongodb.DBObject;
 import java.io.IOException;
 import java.util.List;
 
+import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
@@ -61,10 +62,11 @@ public class DemoService
     public void init()
     {
         try {
-            clean(User.class, Product.class, Workspace.class);
+            clean(User.class, Product.class, Workspace.class, Pos.class);
             init("users.json", new TypeReference<List<User>>(){});
             init("products.json", new TypeReference<List<Product>>(){});
             init("workspaces.json", new TypeReference<List<Workspace>>(){});
+            init("poss.json", new TypeReference<List<Pos>>(){});
             loadImages(new String[] { "apple.jpeg", "1234.1" },
                             new String[] { "orange.jpeg", "1234.2" });
         } catch (final IOException e) {
