@@ -17,9 +17,11 @@
 package org.efaps.pos.controller;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.efaps.pos.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +47,9 @@ public class ImageController
         throws IllegalStateException, IOException
     {
         final byte[] image = this.imageService.getImage(_oid);
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
+        return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .cacheControl(CacheControl.maxAge(24, TimeUnit.HOURS))
+                        .body(image);
     }
 }
