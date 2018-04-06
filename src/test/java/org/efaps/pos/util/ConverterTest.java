@@ -18,8 +18,10 @@ package org.efaps.pos.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.User;
 import org.junit.jupiter.api.Test;
 
 public class ConverterTest
@@ -49,5 +51,19 @@ public class ConverterTest
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getSKU(), dto.getSKU());
         assertEquals(entity.getDescription(), dto.getDescription());
+    }
+
+    @Test
+    public void testUserToDto() {
+        final User entity = new User()
+                        .setUsername("a username")
+                        .setFirstName("Juan")
+                        .setSurName("Perez")
+                        .setOid("165165.14651");
+
+        final PosUserDto dto = Converter.toDto(entity);
+        assertEquals(entity.getUsername(), dto.getUsername());
+        assertEquals(entity.getFirstName(), dto.getFirstName());
+        assertEquals(entity.getSurName(), dto.getSurName());
     }
 }

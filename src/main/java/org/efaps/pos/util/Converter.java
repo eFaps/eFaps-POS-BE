@@ -16,8 +16,10 @@
  */
 package org.efaps.pos.util;
 
+import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.User;
 
 public final class Converter
 {
@@ -41,6 +43,15 @@ public final class Converter
                         .withSKU(_entity.getSKU())
                         .withDescription(_entity.getDescription())
                         .withOID(_entity.getOid())
+                        .build();
+    }
+
+    public static PosUserDto toDto(final User _user)
+    {
+        return PosUserDto.builder()
+                        .withUsername(_user.getUsername())
+                        .withFirstName(_user.getFirstName())
+                        .withSurName(_user.getSurName())
                         .build();
     }
 }

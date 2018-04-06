@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class User
     implements UserDetails
 {
+
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
@@ -20,6 +21,10 @@ public class User
     private String username;
 
     private String password;
+
+    private String firstName;
+
+    private String surName;
 
     public String getOid()
     {
@@ -50,10 +55,11 @@ public class User
         return this.username;
     }
 
-    public void setUsername(final String _username)
+    public User setUsername(final String _username)
     {
         this.username = _username;
         this.id = this.username;
+        return this;
     }
 
     @Override
@@ -78,5 +84,27 @@ public class User
     public boolean isEnabled()
     {
         return true;
+    }
+
+    public String getFirstName()
+    {
+        return this.firstName;
+    }
+
+    public User setFirstName(final String _firstName)
+    {
+        this.firstName = _firstName;
+        return this;
+    }
+
+    public String getSurName()
+    {
+        return this.surName;
+    }
+
+    public User setSurName(final String _surName)
+    {
+        this.surName = _surName;
+        return this;
     }
 }

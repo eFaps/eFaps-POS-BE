@@ -3,6 +3,8 @@
         "_id": "admin",
         "oid": "1234.1",
         "username": "admin",
+        "firstName": "Juan",
+        "surName": "Perez",
         "password": "$2a$10$FV3p0teors1xgEe7aacuIu2L7KyhxMdmOUclB9XTVmWvL9odIfN2a",
         "_class": "org.efaps.pos.entity.User"
     },
@@ -10,6 +12,8 @@
         "_id": "user",
         "oid": "1234.2",
         "username": "user",
+        "firstName": "Diego",
+        "surName": "Martinez",
         "password": "$2a$10$FV3p0teors1xgEe7aacuIu2L7KyhxMdmOUclB9XTVmWvL9odIfN2a",
         "_class": "org.efaps.pos.entity.User"
     }

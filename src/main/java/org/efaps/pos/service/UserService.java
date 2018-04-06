@@ -16,9 +16,12 @@
  */
 package org.efaps.pos.service;
 
+import java.util.List;
+
 import org.efaps.pos.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -56,4 +59,7 @@ public class UserService
         return this.passwordEncoder;
     }
 
+    public List<User> getUsers() {
+        return this.mongoTemplate.find(new Query(), User.class);
+    }
 }

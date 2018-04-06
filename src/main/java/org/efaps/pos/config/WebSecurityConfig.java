@@ -73,19 +73,22 @@ public class WebSecurityConfig
     }
 
     @Override
-    protected void configure(final HttpSecurity httpSecurity)
+    protected void configure(final HttpSecurity _httpSecurity)
         throws Exception
     {
-        httpSecurity.csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(this.unauthorizedHandler)
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().authorizeRequests()
+        _httpSecurity.csrf().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(this.unauthorizedHandler)
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
                 .antMatchers("/authenticate/**").permitAll().anyRequest().authenticated();
 
         // Custom JWT based security filter
         final JwtAuthorizationTokenFilter authenticationTokenFilter = new JwtAuthorizationTokenFilter(
                         userDetailsService(), this.jwtTokenUtil);
-        httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        _httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
@@ -93,8 +96,12 @@ public class WebSecurityConfig
         throws Exception
     {
         web.ignoring().antMatchers(HttpMethod.POST, "authenticate")
-            .and().ignoring().antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html",
+            .and()
+            .ignoring().antMatchers(HttpMethod.GET, "/users/**")
+            .and()
+            .ignoring().antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html",
                                         "/**/*.css", "/**/*.js")
-            .and().ignoring().antMatchers(HttpMethod.OPTIONS);
+            .and()
+            .ignoring().antMatchers(HttpMethod.OPTIONS);
     }
 }
