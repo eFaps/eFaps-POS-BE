@@ -23,9 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -34,6 +31,7 @@ import org.efaps.pos.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
@@ -73,14 +71,13 @@ public class DemoService
     }
 
     private void loadImages(final String[]... _images)
-        throws FileNotFoundException
+        throws IOException
     {
         for (final String[] image : _images) {
-            final ClassLoader classLoader = getClass().getClassLoader();
-            final File file = new File(classLoader.getResource(image[0]).getFile());
+            final ClassPathResource resource = new ClassPathResource(image[0]);
             final DBObject metaData = new BasicDBObject();
             metaData.put("oid", image[1]);
-            this.gridFsTemplate.store(new FileInputStream(file), image[0], "image/jpeg", metaData);
+            this.gridFsTemplate.store(resource.getInputStream(), image[0], "image/jpeg", metaData);
         }
     }
 
@@ -95,10 +92,8 @@ public class DemoService
     private void init(final String _fileName, @SuppressWarnings("rawtypes") final TypeReference _valueTypeRef)
         throws JsonParseException, JsonMappingException, IOException
     {
-        final ClassLoader classLoader = getClass().getClassLoader();
-        final File file = new File(classLoader.getResource(_fileName).getFile());
-        final List<?> values = this.objectMapper.readValue(file, _valueTypeRef);
+        final ClassPathResource resource = new ClassPathResource(_fileName);
+        final List<?> values = this.objectMapper.readValue(resource.getInputStream(), _valueTypeRef);
         values.forEach(value -> this.mongoTemplate.save(value));
     }
-
 }
