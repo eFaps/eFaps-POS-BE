@@ -5,6 +5,8 @@
         "sku": "001.1563",
         "description": "Product1",
         "imageOid" : "1234.1",
+        "netPrice" : "11.45",
+        "crossPrice" : "13.45",
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -13,6 +15,8 @@
         "sku": "001.1555",
         "description": "Product2",
         "imageOid" : "1234.2",
+        "netPrice" : "12.45",
+        "crossPrice" : "14.45",
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -21,6 +25,8 @@
         "sku": "0056.5622",
         "description": "Product3",
         "imageOid" : "1234.1",
+        "netPrice" : "13.45",
+        "crossPrice" : "15.45",
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -29,6 +35,8 @@
         "sku": "5651.5555",
         "description": "Product4",
         "imageOid" : "1234.2",
+        "netPrice" : "14.45",
+        "crossPrice" : "16.45",
         "_class": "org.efaps.pos.entity.Product"
     }
 ]

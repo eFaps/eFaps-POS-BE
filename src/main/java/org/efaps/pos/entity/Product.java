@@ -16,6 +16,8 @@
  */
 package org.efaps.pos.entity;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,6 +25,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "products")
 public class Product
 {
+
     @Id
     private String id;
 
@@ -33,6 +36,9 @@ public class Product
     private String description;
 
     private String imageOid;
+
+    private BigDecimal netPrice;
+    private BigDecimal crossPrice;
 
     public String getOid()
     {
@@ -76,6 +82,28 @@ public class Product
     public Product setImageOid(final String _imageOid)
     {
         this.imageOid = _imageOid;
+        return this;
+    }
+
+    public BigDecimal getNetPrice()
+    {
+        return this.netPrice;
+    }
+
+    public Product setNetPrice(final BigDecimal _netPrice)
+    {
+        this.netPrice = _netPrice;
+        return this;
+    }
+
+    public BigDecimal getCrossPrice()
+    {
+        return this.crossPrice;
+    }
+
+    public Product setCrossPrice(final BigDecimal _crossPrice)
+    {
+        this.crossPrice = _crossPrice;
         return this;
     }
 

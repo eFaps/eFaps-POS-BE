@@ -36,9 +36,11 @@ public final class Converter
     {
         final Product ret = new Product()
                         .setOid(_dto.getOid())
-                        .setSKU(_dto.getSKU())
+                        .setSKU(_dto.getSku())
                         .setImageOid(_dto.getImageOid())
-                        .setDescription(_dto.getDescription());
+                        .setDescription(_dto.getDescription())
+                        .setNetPrice(_dto.getNetPrice())
+                        .setCrossPrice(_dto.getCrossPrice());
         return ret;
     }
 
@@ -49,6 +51,8 @@ public final class Converter
                         .withDescription(_entity.getDescription())
                         .withImageOid(_entity.getImageOid())
                         .withOID(_entity.getOid())
+                        .withNetPrice(_entity.getNetPrice())
+                        .withCrossPrice(_entity.getCrossPrice())
                         .build();
     }
 
