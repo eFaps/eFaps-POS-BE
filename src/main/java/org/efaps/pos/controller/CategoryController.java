@@ -19,8 +19,8 @@ package org.efaps.pos.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.efaps.pos.dto.WorkspaceDto;
-import org.efaps.pos.service.WorkspaceService;
+import org.efaps.pos.dto.CategoryDto;
+import org.efaps.pos.service.CategoryService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,24 +32,24 @@ import org.springframework.web.bind.annotation.RestController;
  * The Class ProductController.
  */
 @RestController
-@RequestMapping("workspaces")
-public class WorkspaceController
+@RequestMapping("categories")
+public class CategoryController
 {
-    private final WorkspaceService service;
+    private final CategoryService service;
 
-    public WorkspaceController(final WorkspaceService _service) {
+    public CategoryController(final CategoryService _service) {
         this.service = _service;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<WorkspaceDto> getWorkspaces() {
-        return this.service.getWorkspaces().stream()
+    public List<CategoryDto> getCategorys() {
+        return this.service.getCategories().stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(path = "/{oid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public WorkspaceDto getWorkspace(@PathVariable("oid") final String _oid) {
-        return Converter.toDto(this.service.getWorkspace(_oid));
+    public CategoryDto getCategory(@PathVariable("oid") final String _oid) {
+        return Converter.toDto(this.service.getCategory(_oid));
     }
 }

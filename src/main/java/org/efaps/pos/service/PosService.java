@@ -19,7 +19,6 @@ package org.efaps.pos.service;
 
 import java.util.List;
 
-import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.entity.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -31,8 +30,7 @@ public class PosService
     private final MongoTemplate mongoTemplate;
 
     @Autowired
-    public PosService(final MongoTemplate _mongoTemplate,
-                       final EFapsClient _eFapsClient)
+    public PosService(final MongoTemplate _mongoTemplate)
     {
         this.mongoTemplate = _mongoTemplate;
     }

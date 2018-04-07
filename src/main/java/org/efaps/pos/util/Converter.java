@@ -16,10 +16,12 @@
  */
 package org.efaps.pos.util;
 
+import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.WorkspaceDto;
+import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.User;
@@ -40,7 +42,8 @@ public final class Converter
                         .setImageOid(_dto.getImageOid())
                         .setDescription(_dto.getDescription())
                         .setNetPrice(_dto.getNetPrice())
-                        .setCrossPrice(_dto.getCrossPrice());
+                        .setCrossPrice(_dto.getCrossPrice())
+                        .setCategoryOids(_dto.getCategoryOids());
         return ret;
     }
 
@@ -53,6 +56,7 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withNetPrice(_entity.getNetPrice())
                         .withCrossPrice(_entity.getCrossPrice())
+                        .withCategoryOids(_entity.getCategoryOids())
                         .build();
     }
 
@@ -77,6 +81,14 @@ public final class Converter
     public static PosDto toDto(final Pos _entity)
     {
         return PosDto.builder()
+                        .withOID(_entity.getOid())
+                        .withName(_entity.getName())
+                        .build();
+    }
+
+    public static CategoryDto toDto(final Category _entity)
+    {
+        return CategoryDto.builder()
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
                         .build();

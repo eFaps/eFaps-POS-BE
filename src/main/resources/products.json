@@ -4,9 +4,12 @@
         "oid": "8183.1",
         "sku": "001.1563",
         "description": "Product1",
-        "imageOid" : "1234.1",
-        "netPrice" : "11.45",
-        "crossPrice" : "13.45",
+        "imageOid": "1234.1",
+        "netPrice": "11.45",
+        "crossPrice": "13.45",
+        "categoryOids": [
+            "8562.1"
+        ],
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -14,9 +17,12 @@
         "oid": "8183.2",
         "sku": "001.1555",
         "description": "Product2",
-        "imageOid" : "1234.2",
-        "netPrice" : "12.45",
-        "crossPrice" : "14.45",
+        "imageOid": "1234.2",
+        "netPrice": "12.45",
+        "crossPrice": "14.45",
+        "categoryOids": [
+            "8562.1"
+        ],
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -24,9 +30,12 @@
         "oid": "8183.3",
         "sku": "0056.5622",
         "description": "Product3",
-        "imageOid" : "1234.1",
-        "netPrice" : "13.45",
-        "crossPrice" : "15.45",
+        "imageOid": "1234.1",
+        "netPrice": "13.45",
+        "crossPrice": "15.45",
+        "categoryOids": [
+            "8562.1"
+        ],
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -34,9 +43,38 @@
         "oid": "8183.4",
         "sku": "5651.5555",
         "description": "Product4",
-        "imageOid" : "1234.2",
-        "netPrice" : "14.45",
-        "crossPrice" : "16.45",
+        "imageOid": "1234.2",
+        "netPrice": "14.45",
+        "crossPrice": "16.45",
+        "categoryOids": [
+            "8562.1"
+        ],
+        "_class": "org.efaps.pos.entity.Product"
+    },
+    {
+        "_id": "8183.5",
+        "oid": "8183.5",
+        "sku": "5651.006",
+        "description": "Desktop PC",
+        "imageOid": "1234.3",
+        "netPrice": "140.45",
+        "crossPrice": "160.45",
+        "categoryOids": [
+            "8562.2"
+        ],
+        "_class": "org.efaps.pos.entity.Product"
+    },
+    {
+        "_id": "8183.6",
+        "oid": "8183.6",
+        "sku": "5651.007",
+        "description": "Laptop",
+        "imageOid": "1234.4",
+        "netPrice": "14.45",
+        "crossPrice": "16.45",
+        "categoryOids": [
+            "8562.2"
+        ],
         "_class": "org.efaps.pos.entity.Product"
     }
 ]

@@ -17,6 +17,7 @@
 package org.efaps.pos.entity;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
@@ -28,17 +29,13 @@ public class Product
 
     @Id
     private String id;
-
     private String oid;
-
     private String sku;
-
     private String description;
-
     private String imageOid;
-
     private BigDecimal netPrice;
     private BigDecimal crossPrice;
+    private Set<String> categoryOids;
 
     public String getOid()
     {
@@ -104,6 +101,17 @@ public class Product
     public Product setCrossPrice(final BigDecimal _crossPrice)
     {
         this.crossPrice = _crossPrice;
+        return this;
+    }
+
+    public Set<String> getCategoryOids()
+    {
+        return this.categoryOids;
+    }
+
+    public Product setCategoryOids(final Set<String> _categoryOids)
+    {
+        this.categoryOids = _categoryOids;
         return this;
     }
 

@@ -19,11 +19,14 @@ package org.efaps.pos.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 
+import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.WorkspaceDto;
+import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.User;
@@ -41,6 +44,7 @@ public class ConverterTest
                         .withImageOid("1234.1")
                         .withNetPrice(new BigDecimal("12.50"))
                         .withCrossPrice(new BigDecimal("14.40"))
+                        .withCategoryOids(Collections.singleton("555.1651"))
                         .build();
 
         final Product product = Converter.toEntity(dto);
@@ -50,6 +54,7 @@ public class ConverterTest
         assertEquals(dto.getImageOid(), product.getImageOid());
         assertEquals(dto.getNetPrice(), product.getNetPrice());
         assertEquals(dto.getCrossPrice(), product.getCrossPrice());
+        assertEquals(dto.getCategoryOids(), product.getCategoryOids());
     }
 
     @Test
@@ -60,7 +65,8 @@ public class ConverterTest
                         .setImageOid("1234.1")
                         .setNetPrice(new BigDecimal("12.50"))
                         .setCrossPrice(new BigDecimal("14.40"))
-                        .setOid("165165.14651");
+                        .setOid("165165.14651")
+                        .setCategoryOids(Collections.singleton("5515.1651"));
 
         final ProductDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
@@ -69,6 +75,7 @@ public class ConverterTest
         assertEquals(entity.getImageOid(), dto.getImageOid());
         assertEquals(entity.getNetPrice(), dto.getNetPrice());
         assertEquals(entity.getCrossPrice(), dto.getCrossPrice());
+        assertEquals(entity.getCategoryOids(), dto.getCategoryOids());
     }
 
     @Test
@@ -105,6 +112,17 @@ public class ConverterTest
                         .setOid("165165.14651");
 
         final PosDto dto = Converter.toDto(entity);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getName(), dto.getName());
+    }
+
+    @Test
+    public void testCategoryToDto() {
+        final Category entity = new Category()
+                        .setName("Caja 1")
+                        .setOid("165165.14651");
+
+        final CategoryDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getName(), dto.getName());
     }

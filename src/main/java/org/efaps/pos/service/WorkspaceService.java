@@ -19,7 +19,6 @@ package org.efaps.pos.service;
 
 import java.util.List;
 
-import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.entity.Workspace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -28,11 +27,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class WorkspaceService
 {
+
     private final MongoTemplate mongoTemplate;
 
     @Autowired
-    public WorkspaceService(final MongoTemplate _mongoTemplate,
-                       final EFapsClient _eFapsClient)
+    public WorkspaceService(final MongoTemplate _mongoTemplate)
     {
         this.mongoTemplate = _mongoTemplate;
     }
@@ -41,5 +40,10 @@ public class WorkspaceService
     {
         final List<Workspace> ret = this.mongoTemplate.findAll(Workspace.class);
         return ret;
+    }
+
+    public Workspace getWorkspace(final String _oid)
+    {
+        return this.mongoTemplate.findById(_oid, Workspace.class);
     }
 }
