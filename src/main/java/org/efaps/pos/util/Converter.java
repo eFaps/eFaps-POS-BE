@@ -20,10 +20,12 @@ import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 
@@ -32,6 +34,22 @@ public final class Converter
 
     private Converter()
     {
+    }
+
+    public static Receipt toEntity(final ReceiptDto _dto)
+    {
+        final Receipt ret = new Receipt()
+                        .setOid(_dto.getOid())
+                        .setNumber(_dto.getNumber());
+        return ret;
+    }
+
+    public static ReceiptDto toDto(final Receipt _entity)
+    {
+        return ReceiptDto.builder()
+                        .withOID(_entity.getOid())
+                        .withNumber(_entity.getNumber())
+                        .build();
     }
 
     public static Product toEntity(final ProductDto _dto)
