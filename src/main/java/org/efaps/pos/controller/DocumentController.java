@@ -42,7 +42,7 @@ public class DocumentController
     }
 
     @PostMapping(path = "orders", produces = MediaType.APPLICATION_JSON_VALUE)
-    public OrderDto createReceipt(@RequestBody final OrderDto _orderDto) {
+    public OrderDto createOrder(@RequestBody final OrderDto _orderDto) {
         return Converter.toDto(this.service.createOrder(Converter.toEntity(_orderDto)));
     }
 }

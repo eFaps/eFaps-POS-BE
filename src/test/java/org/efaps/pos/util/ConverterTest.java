@@ -22,12 +22,14 @@ import java.math.BigDecimal;
 import java.util.Collections;
 
 import org.efaps.pos.dto.CategoryDto;
+import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.WorkspaceDto;
+import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
@@ -159,21 +161,48 @@ public class ConverterTest
         final OrderDto dto = OrderDto.builder()
                         .withOID("16515.5165")
                         .withNumber("B001-1651651")
+                        .withItems(Collections.singleton(DocItemDto.builder().build()))
                         .build();
 
         final Order entity = Converter.toEntity(dto);
         assertEquals(dto.getOid(), entity.getOid());
         assertEquals(dto.getNumber(), entity.getNumber());
+        assertEquals(1, entity.getItems().size());
     }
 
     @Test
     public void testOrderToDto() {
         final Order entity = new Order()
                         .setOid("165165.14651")
-                        .setNumber("B001-165165");
+                        .setNumber("B001-165165")
+                        .setItems(Collections.singleton(new Item()));
 
         final OrderDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getNumber(), dto.getNumber());
+        assertEquals(1, dto.getItems().size());
+    }
+
+    @Test
+    public void testItemToDto() {
+        final Item entity = new Item()
+                        .setIndex(1)
+                        .setOid("5555.622");;
+
+        final DocItemDto dto = Converter.toDto(entity);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getIndex(), dto.getIndex());
+    }
+
+    @Test
+    public void testItemToEntity() {
+        final DocItemDto dto = DocItemDto.builder()
+                        .withOID("16515.5165")
+                        .withIndex(2)
+                        .build();
+
+        final Item entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getIndex(), entity.getIndex());
     }
 }

@@ -16,13 +16,17 @@
  */
 package org.efaps.pos.util;
 
+import java.util.stream.Collectors;
+
 import org.efaps.pos.dto.CategoryDto;
+import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.WorkspaceDto;
+import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
@@ -51,6 +55,9 @@ public final class Converter
         return OrderDto.builder()
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())
+                        .withItems(_entity.getItems().stream()
+                                        .map(_item -> Converter.toDto(_item))
+                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -58,8 +65,24 @@ public final class Converter
     {
         final Order ret = new Order()
                         .setOid(_dto.getOid())
-                        .setNumber(_dto.getNumber());
+                        .setNumber(_dto.getNumber())
+                        .setItems(_dto.getItems().stream()
+                                        .map(_item -> Converter.toEntity((DocItemDto) _item))
+                                        .collect(Collectors.toSet()));
         return ret;
+    }
+
+    public static AbstractDocument.Item toEntity(final DocItemDto _dto) {
+        return new AbstractDocument.Item()
+                        .setOid(_dto.getOid())
+                        .setIndex(_dto.getIndex());
+    }
+
+    public static DocItemDto toDto(final AbstractDocument.Item _entity) {
+        return DocItemDto.builder()
+                        .withOID(_entity.getOid())
+                        .withIndex(_entity.getIndex())
+                        .build();
     }
 
     public static ReceiptDto toDto(final Receipt _entity)
