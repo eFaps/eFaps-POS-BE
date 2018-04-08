@@ -17,9 +17,15 @@
 package org.efaps.pos.service;
 
 import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.Sequence;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class DocumentService
@@ -34,8 +40,20 @@ public class DocumentService
 
     public Receipt createReceipt(final Receipt _receipt)
     {
+        _receipt.setNumber(getNextNumber(getNumberKey()));
         this.mongoTemplate.insert(_receipt);
         return this.mongoTemplate.findById(_receipt.getId(), Receipt.class);
     }
 
+    public String getNextNumber(final String _numberKey) {
+        final Sequence sequence = this.mongoTemplate.findAndModify(new Query(Criteria.where("_id").is(_numberKey)),
+                        new Update().inc("seq", 1),
+                        FindAndModifyOptions.options().returnNew(true),
+                        Sequence.class);
+        return String.format(sequence.getFormat() == null ? "%05d" : sequence.getFormat(), sequence.getSeq());
+    }
+
+    public String getNumberKey() {
+        return "5243.1-Receipt";
+    }
 }

@@ -29,6 +29,7 @@ import java.util.List;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 import org.slf4j.Logger;
@@ -63,12 +64,13 @@ public class DemoService
     public void init()
     {
         try {
-            clean(User.class, Product.class, Workspace.class, Pos.class, Category.class);
+            clean(User.class, Product.class, Workspace.class, Pos.class, Category.class, Sequence.class);
             init("users.json", new TypeReference<List<User>>(){});
             init("products.json", new TypeReference<List<Product>>(){});
             init("workspaces.json", new TypeReference<List<Workspace>>(){});
             init("poss.json", new TypeReference<List<Pos>>(){});
             init("categories.json", new TypeReference<List<Category>>(){});
+            init("sequences.json", new TypeReference<List<Sequence>>(){});
             loadImages(new String[] { "apple.jpeg", "1234.1" },
                             new String[] { "orange.jpeg", "1234.2" },
                             new String[] { "desktoppc.jpeg", "1234.3" },

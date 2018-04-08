@@ -1,6 +1,6 @@
 [
     {
-        "_id": "admin",
+        "id": "admin",
         "oid": "1234.1",
         "username": "admin",
         "firstName": "Juan",
@@ -9,7 +9,7 @@
         "_class": "org.efaps.pos.entity.User"
     },
      {
-        "_id": "user",
+        "id": "user",
         "oid": "1234.2",
         "username": "user",
         "firstName": "Diego",
