@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.controller;
 
+import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.util.Converter;
@@ -38,5 +39,10 @@ public class DocumentController
     @PostMapping(path = "receipts", produces = MediaType.APPLICATION_JSON_VALUE)
     public ReceiptDto createReceipt(@RequestBody final ReceiptDto _receiptDto) {
         return Converter.toDto(this.service.createReceipt(Converter.toEntity(_receiptDto)));
+    }
+
+    @PostMapping(path = "orders", produces = MediaType.APPLICATION_JSON_VALUE)
+    public OrderDto createReceipt(@RequestBody final OrderDto _orderDto) {
+        return Converter.toDto(this.service.createOrder(Converter.toEntity(_orderDto)));
     }
 }

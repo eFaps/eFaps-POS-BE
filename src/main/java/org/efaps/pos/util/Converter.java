@@ -17,12 +17,14 @@
 package org.efaps.pos.util;
 
 import org.efaps.pos.dto.CategoryDto;
+import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
@@ -44,6 +46,22 @@ public final class Converter
         return ret;
     }
 
+    public static OrderDto toDto(final Order _entity)
+    {
+        return OrderDto.builder()
+                        .withOID(_entity.getOid())
+                        .withNumber(_entity.getNumber())
+                        .build();
+    }
+
+    public static Order toEntity(final OrderDto _dto)
+    {
+        final Order ret = new Order()
+                        .setOid(_dto.getOid())
+                        .setNumber(_dto.getNumber());
+        return ret;
+    }
+
     public static ReceiptDto toDto(final Receipt _entity)
     {
         return ReceiptDto.builder()
@@ -51,6 +69,7 @@ public final class Converter
                         .withNumber(_entity.getNumber())
                         .build();
     }
+
 
     public static Product toEntity(final ProductDto _dto)
     {

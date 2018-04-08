@@ -22,12 +22,14 @@ import java.math.BigDecimal;
 import java.util.Collections;
 
 import org.efaps.pos.dto.CategoryDto;
+import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
@@ -148,6 +150,29 @@ public class ConverterTest
                         .setNumber("B001-165165");
 
         final ReceiptDto dto = Converter.toDto(entity);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getNumber(), dto.getNumber());
+    }
+
+    @Test
+    public void testOrderToEntity() {
+        final OrderDto dto = OrderDto.builder()
+                        .withOID("16515.5165")
+                        .withNumber("B001-1651651")
+                        .build();
+
+        final Order entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getNumber(), entity.getNumber());
+    }
+
+    @Test
+    public void testOrderToDto() {
+        final Order entity = new Order()
+                        .setOid("165165.14651")
+                        .setNumber("B001-165165");
+
+        final OrderDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getNumber(), dto.getNumber());
     }

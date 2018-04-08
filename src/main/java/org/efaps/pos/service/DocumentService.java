@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.service;
 
+import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +41,16 @@ public class DocumentService
 
     public Receipt createReceipt(final Receipt _receipt)
     {
-        _receipt.setNumber(getNextNumber(getNumberKey()));
+        _receipt.setNumber(getNextNumber(getNumberKey(Receipt.class.getSimpleName())));
         this.mongoTemplate.insert(_receipt);
         return this.mongoTemplate.findById(_receipt.getId(), Receipt.class);
+    }
+
+    public Order createOrder(final Order _order)
+    {
+        _order.setNumber(getNextNumber(getNumberKey(Order.class.getSimpleName())));
+        this.mongoTemplate.insert(_order);
+        return this.mongoTemplate.findById(_order.getId(), Order.class);
     }
 
     public String getNextNumber(final String _numberKey) {
@@ -50,10 +58,14 @@ public class DocumentService
                         new Update().inc("seq", 1),
                         FindAndModifyOptions.options().returnNew(true),
                         Sequence.class);
+        if (sequence == null) {
+            this.mongoTemplate.insert(new Sequence().setId(_numberKey).setSeq(0));
+            return getNextNumber(_numberKey);
+        }
         return String.format(sequence.getFormat() == null ? "%05d" : sequence.getFormat(), sequence.getSeq());
     }
 
-    public String getNumberKey() {
-        return "5243.1-Receipt";
+    public String getNumberKey(final String _key) {
+        return _key;
     }
 }
