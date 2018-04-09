@@ -30,8 +30,6 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties
 public class ConfigProperties
 {
-    private boolean demoMode;
-
     private String name;
 
     private final SSO sso = new SSO();
@@ -39,16 +37,6 @@ public class ConfigProperties
     private final EFaps efaps = new EFaps();
 
     private final BasicAuth auth = new BasicAuth();
-
-    public boolean isDemoMode()
-    {
-        return this.demoMode;
-    }
-
-    public void setDemoMode(final boolean _demoMode)
-    {
-        this.demoMode = _demoMode;
-    }
 
     public String getName()
     {

@@ -17,11 +17,13 @@
 
 package org.efaps.pos;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.efaps.pos.service.DemoService;
 import org.efaps.pos.service.SyncService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,14 +31,15 @@ import org.springframework.stereotype.Component;
 public class ApplicationStartup
     implements ApplicationListener<ApplicationReadyEvent>
 {
-    private final ConfigProperties config;
     private final SyncService service;
     private final DemoService demoService;
+    private final Environment env;
 
-    public ApplicationStartup(final ConfigProperties _config, final SyncService _service,
+    public ApplicationStartup(final Environment _env,
+                              final SyncService _service,
                               final DemoService _demoService)
     {
-        this.config = _config;
+        this.env = _env;
         this.service = _service;
         this.demoService = _demoService;
     }
@@ -44,7 +47,7 @@ public class ApplicationStartup
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent _event)
     {
-        if (this.config.isDemoMode()) {
+        if (ArrayUtils.contains(this.env.getActiveProfiles(), "demo")) {
             this.demoService.init();
         } else {
             this.service.syncProducts();

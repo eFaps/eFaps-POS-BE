@@ -2,6 +2,9 @@
 name: POS-Backend
 
 spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
   data:
     mongodb:
       database: efapsPOS
@@ -23,3 +26,15 @@ jwt:
   secret: ThisIsNotVerySecret
   expiration: 1000
 
+
+---
+
+spring:
+  profiles: demo
+  autoconfigure:
+    exclude:
+  data:
+    mongodb:
+      database: efapsDemoPOS
+
+name: POS-Demo-Backend
