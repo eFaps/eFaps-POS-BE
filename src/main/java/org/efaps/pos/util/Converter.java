@@ -45,30 +45,36 @@ public final class Converter
     public static Receipt toEntity(final ReceiptDto _dto)
     {
         final Receipt ret = new Receipt()
+                        .setId(_dto.getId())
                         .setOid(_dto.getOid())
-                        .setNumber(_dto.getNumber());
+                        .setNumber(_dto.getNumber())
+                        .setStatus(_dto.getStatus());
         return ret;
     }
 
     public static OrderDto toDto(final Order _entity)
     {
         return OrderDto.builder()
+                        .withId(_entity.getId())
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())
                         .withItems(_entity.getItems().stream()
                                         .map(_item -> Converter.toDto(_item))
                                         .collect(Collectors.toSet()))
+                        .withStatus(_entity.getStatus())
                         .build();
     }
 
     public static Order toEntity(final OrderDto _dto)
     {
         final Order ret = new Order()
+                        .setId(_dto.getId())
                         .setOid(_dto.getOid())
                         .setNumber(_dto.getNumber())
                         .setItems(_dto.getItems().stream()
                                         .map(_item -> Converter.toEntity((DocItemDto) _item))
-                                        .collect(Collectors.toSet()));
+                                        .collect(Collectors.toSet()))
+                        .setStatus(_dto.getStatus());
         return ret;
     }
 
@@ -88,8 +94,10 @@ public final class Converter
     public static ReceiptDto toDto(final Receipt _entity)
     {
         return ReceiptDto.builder()
+                        .withId(_entity.getId())
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())
+                        .withStatus(_entity.getStatus())
                         .build();
     }
 

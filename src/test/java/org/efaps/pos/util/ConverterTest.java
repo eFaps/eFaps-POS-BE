@@ -23,6 +23,7 @@ import java.util.Collections;
 
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.DocItemDto;
+import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosUserDto;
@@ -138,22 +139,26 @@ public class ConverterTest
         final ReceiptDto dto = ReceiptDto.builder()
                         .withOID("16515.5165")
                         .withNumber("B001-1651651")
+                        .withStatus(DocStatus.CLOSED)
                         .build();
 
         final Receipt entity = Converter.toEntity(dto);
         assertEquals(dto.getOid(), entity.getOid());
         assertEquals(dto.getNumber(), entity.getNumber());
+        assertEquals(dto.getStatus(), entity.getStatus());
     }
 
     @Test
     public void testReceiptToDto() {
         final Receipt entity = new Receipt()
                         .setOid("165165.14651")
-                        .setNumber("B001-165165");
+                        .setNumber("B001-165165")
+                        .setStatus(DocStatus.CLOSED);
 
         final ReceiptDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getNumber(), dto.getNumber());
+        assertEquals(entity.getStatus(), dto.getStatus());
     }
 
     @Test
@@ -162,12 +167,14 @@ public class ConverterTest
                         .withOID("16515.5165")
                         .withNumber("B001-1651651")
                         .withItems(Collections.singleton(DocItemDto.builder().build()))
+                        .withStatus(DocStatus.CLOSED)
                         .build();
 
         final Order entity = Converter.toEntity(dto);
         assertEquals(dto.getOid(), entity.getOid());
         assertEquals(dto.getNumber(), entity.getNumber());
         assertEquals(1, entity.getItems().size());
+        assertEquals(dto.getStatus(), entity.getStatus());
     }
 
     @Test
@@ -175,12 +182,14 @@ public class ConverterTest
         final Order entity = new Order()
                         .setOid("165165.14651")
                         .setNumber("B001-165165")
-                        .setItems(Collections.singleton(new Item()));
+                        .setItems(Collections.singleton(new Item()))
+                        .setStatus(DocStatus.CLOSED);
 
         final OrderDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getNumber(), dto.getNumber());
         assertEquals(1, dto.getItems().size());
+        assertEquals(dto.getStatus(), entity.getStatus());
     }
 
     @Test

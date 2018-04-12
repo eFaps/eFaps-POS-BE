@@ -2,6 +2,7 @@ package org.efaps.pos.entity;
 
 import java.util.Set;
 
+import org.efaps.pos.dto.DocStatus;
 import org.springframework.data.annotation.Id;
 
 public abstract class AbstractDocument<T>
@@ -12,10 +13,18 @@ public abstract class AbstractDocument<T>
     private String oid;
     private String number;
     private Set<Item> items;
+    private DocStatus status;
 
     public String getId()
     {
         return this.id;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setId(final String _id)
+    {
+        this.id = _id;
+        return (T) this;
     }
 
     public String getOid()
@@ -51,6 +60,18 @@ public abstract class AbstractDocument<T>
     public T setItems(final Set<Item> _items)
     {
         this.items = _items;
+        return (T) this;
+    }
+
+    public DocStatus getStatus()
+    {
+        return this.status;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setStatus(final DocStatus _status)
+    {
+        this.status = _status;
         return (T) this;
     }
 

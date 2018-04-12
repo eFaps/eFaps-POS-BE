@@ -16,9 +16,12 @@
  */
 package org.efaps.pos.service;
 
+import java.util.List;
+
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.respository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -32,11 +35,28 @@ import org.springframework.stereotype.Service;
 public class DocumentService
 {
     private final MongoTemplate mongoTemplate;
+    private final OrderRepository orderRepository;
 
     @Autowired
-    public DocumentService(final MongoTemplate _mongoTemplate)
+    public DocumentService(final MongoTemplate _mongoTemplate, final OrderRepository _orderRepository)
     {
         this.mongoTemplate = _mongoTemplate;
+        this.orderRepository = _orderRepository;
+    }
+
+    public List<Order> getOrders() {
+        return this.mongoTemplate.findAll(Order.class);
+    }
+
+    public Order createOrder(final Order _order)
+    {
+        _order.setNumber(getNextNumber(getNumberKey(Order.class.getSimpleName())));
+        return this.orderRepository.insert(_order);
+    }
+
+    public Order updateOrder(final Order _entity)
+    {
+        return this.orderRepository.save(_entity);
     }
 
     public Receipt createReceipt(final Receipt _receipt)
@@ -44,13 +64,6 @@ public class DocumentService
         _receipt.setNumber(getNextNumber(getNumberKey(Receipt.class.getSimpleName())));
         this.mongoTemplate.insert(_receipt);
         return this.mongoTemplate.findById(_receipt.getId(), Receipt.class);
-    }
-
-    public Order createOrder(final Order _order)
-    {
-        _order.setNumber(getNextNumber(getNumberKey(Order.class.getSimpleName())));
-        this.mongoTemplate.insert(_order);
-        return this.mongoTemplate.findById(_order.getId(), Order.class);
     }
 
     public String getNextNumber(final String _numberKey) {

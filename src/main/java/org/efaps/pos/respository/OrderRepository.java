@@ -14,13 +14,14 @@
  * limitations under the License.
  *
  */
+
 package org.efaps.pos.respository;
 
-import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.Order;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface ProductRepository
-    extends MongoRepository<Product, Long>
+public interface OrderRepository
+    extends MongoRepository<Order, String>
 {
 
 }

@@ -16,12 +16,18 @@
  */
 package org.efaps.pos.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,5 +50,18 @@ public class DocumentController
     @PostMapping(path = "orders", produces = MediaType.APPLICATION_JSON_VALUE)
     public OrderDto createOrder(@RequestBody final OrderDto _orderDto) {
         return Converter.toDto(this.service.createOrder(Converter.toEntity(_orderDto)));
+    }
+
+    @PutMapping(path = "orders/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public OrderDto updateOrder(@PathVariable(name= "orderId") final String _orderId,
+                                @RequestBody final OrderDto _orderDto) {
+        return Converter.toDto(this.service.updateOrder(Converter.toEntity(_orderDto).setId(_orderId)));
+    }
+
+    @GetMapping(path = "orders", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<OrderDto> getOrder() {
+        return this.service.getOrders().stream()
+                        .map(_order -> Converter.toDto(_order))
+                        .collect(Collectors.toList());
     }
 }
