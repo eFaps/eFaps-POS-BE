@@ -48,7 +48,10 @@ public final class Converter
                         .setId(_dto.getId())
                         .setOid(_dto.getOid())
                         .setNumber(_dto.getNumber())
-                        .setStatus(_dto.getStatus());
+                        .setStatus(_dto.getStatus())
+                        .setItems(_dto.getItems().stream()
+                                        .map(_item -> Converter.toEntity((DocItemDto) _item))
+                                        .collect(Collectors.toSet()));
         return ret;
     }
 
@@ -98,6 +101,9 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())
                         .withStatus(_entity.getStatus())
+                        .withItems(_entity.getItems().stream()
+                                        .map(_item -> Converter.toDto(_item))
+                                        .collect(Collectors.toSet()))
                         .build();
     }
 

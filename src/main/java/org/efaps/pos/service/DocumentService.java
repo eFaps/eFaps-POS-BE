@@ -18,11 +18,18 @@ package org.efaps.pos.service;
 
 import java.util.List;
 
+import org.efaps.pos.IReceiptListener;
+import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.respository.OrderRepository;
+import org.efaps.pos.respository.ReceiptRepository;
+import org.efaps.pos.util.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -34,14 +41,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class DocumentService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
+
+    private final ServiceListFactoryBean serviceListFactoryBean;
     private final MongoTemplate mongoTemplate;
     private final OrderRepository orderRepository;
+    private final ReceiptRepository receiptRepository;
 
     @Autowired
-    public DocumentService(final MongoTemplate _mongoTemplate, final OrderRepository _orderRepository)
+    public DocumentService(final ServiceListFactoryBean _serviceListFactoryBean, final MongoTemplate _mongoTemplate,
+                           final OrderRepository _orderRepository, final ReceiptRepository _receiptRepository)
     {
+        this.serviceListFactoryBean = _serviceListFactoryBean;
         this.mongoTemplate = _mongoTemplate;
         this.orderRepository = _orderRepository;
+        this.receiptRepository = _receiptRepository;
     }
 
     public List<Order> getOrders() {
@@ -62,8 +76,21 @@ public class DocumentService
     public Receipt createReceipt(final Receipt _receipt)
     {
         _receipt.setNumber(getNextNumber(getNumberKey(Receipt.class.getSimpleName())));
-        this.mongoTemplate.insert(_receipt);
-        return this.mongoTemplate.findById(_receipt.getId(), Receipt.class);
+        Receipt ret = this.receiptRepository.insert(_receipt);
+        try {
+            @SuppressWarnings("unchecked")
+            final List<IReceiptListener> listeners =  (List<IReceiptListener>) this.serviceListFactoryBean.getObject();
+            if (listeners != null) {
+                ReceiptDto dto = Converter.toDto(ret);
+                for (final IReceiptListener listener  :listeners) {
+                    dto = listener.onCreate(dto);
+                }
+                ret = this.receiptRepository.save(Converter.toEntity(dto));
+            }
+        } catch (final Exception e) {
+            LOG.error("Wow that should not happen", e);
+        }
+        return ret;
     }
 
     public String getNextNumber(final String _numberKey) {

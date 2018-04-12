@@ -18,6 +18,7 @@ package org.efaps.pos;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -58,5 +59,13 @@ public class Application
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public ServiceListFactoryBean serviceListFactoryBean()
+    {
+        final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
+        serviceListFactoryBean.setServiceType(IReceiptListener.class);
+        return serviceListFactoryBean;
     }
 }
