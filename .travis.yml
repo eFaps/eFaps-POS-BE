@@ -7,6 +7,10 @@ cache:
 jdk:
   - oraclejdk8
 
+before_install:
+  - sudo apt-get install jq
+  - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
+
 install:
   - wget https://raw.githubusercontent.com/eFaps/Utils/master/settings/settings.xml -O mySettings.xml
   - mvn install -s mySettings.xml -DskipTests=true -B -V
@@ -15,4 +19,5 @@ script:
   - mvn test -s mySettings.xml -B
 
 after_success:
+ - java -jar ~/codacy-coverage-reporter-assembly-latest.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
  - "[[ $TRAVIS_BRANCH == \"master\" ]] && [[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && mvn deploy -DskipTests -s mySettings.xml"
