@@ -1,3 +1,20 @@
+/*
+ * Copyright 2003 - 2018 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package org.efaps.pos;
 
 import java.io.IOException;
@@ -26,21 +43,21 @@ public class JwtAuthorizationTokenFilter
     private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
 
-    public JwtAuthorizationTokenFilter(final UserDetailsService userDetailsService,
-                                       final JwtTokenUtil jwtTokenUtil)
+    public JwtAuthorizationTokenFilter(final UserDetailsService _userDetailsService,
+                                       final JwtTokenUtil _jwtTokenUtil)
     {
-        this.userDetailsService = userDetailsService;
-        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = _userDetailsService;
+        this.jwtTokenUtil = _jwtTokenUtil;
     }
 
     @Override
-    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
-                                    final FilterChain chain)
+    protected void doFilterInternal(final HttpServletRequest _request, final HttpServletResponse _response,
+                                    final FilterChain _chain)
         throws ServletException, IOException
     {
-        LOG.debug("processing authentication for '{}'", request.getRequestURL());
+        LOG.debug("processing authentication for '{}'", _request.getRequestURL());
 
-        final String requestHeader = request.getHeader("Authorization");
+        final String requestHeader = _request.getHeader("Authorization");
 
         String username = null;
         String authToken = null;
@@ -59,23 +76,16 @@ public class JwtAuthorizationTokenFilter
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             LOG.debug("security context was null, so authorizating user");
 
-            // It is not compelling necessary to load the use details from the
-            // database. You could also store the information
-            // in the token and read it from it. It's up to you ;)
             final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            // For simple validation it is completely sufficient to just check
-            // the token integrity. You don't have to call
-            // the database compellingly. Again it's up to you ;)
             if (this.jwtTokenUtil.validateToken(authToken, userDetails)) {
                 final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(_request));
                 LOG.info("authorizated user '{}', setting security context", username);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-
-        chain.doFilter(request, response);
+        _chain.doFilter(_request, _response);
     }
 }
