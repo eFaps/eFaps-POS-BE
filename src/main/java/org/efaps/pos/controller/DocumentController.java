@@ -29,11 +29,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("documents")
 public class DocumentController
 {
     private final DocumentService service;
@@ -42,23 +40,23 @@ public class DocumentController
         this.service = _service;
     }
 
-    @PostMapping(path = "receipts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ReceiptDto createReceipt(@RequestBody final ReceiptDto _receiptDto) {
-        return Converter.toDto(this.service.createReceipt(Converter.toEntity(_receiptDto)));
+    @PostMapping(path = "workspaces/{oid}/documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ReceiptDto createReceipt(@PathVariable("oid") final String _oid, @RequestBody final ReceiptDto _receiptDto) {
+        return Converter.toDto(this.service.createReceipt(_oid, Converter.toEntity(_receiptDto)));
     }
 
-    @PostMapping(path = "orders", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)
     public OrderDto createOrder(@RequestBody final OrderDto _orderDto) {
         return Converter.toDto(this.service.createOrder(Converter.toEntity(_orderDto)));
     }
 
-    @PutMapping(path = "orders/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "documents/orders/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public OrderDto updateOrder(@PathVariable(name= "orderId") final String _orderId,
                                 @RequestBody final OrderDto _orderDto) {
         return Converter.toDto(this.service.updateOrder(Converter.toEntity(_orderDto).setId(_orderId)));
     }
 
-    @GetMapping(path = "orders", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<OrderDto> getOrder() {
         return this.service.getOrders().stream()
                         .map(_order -> Converter.toDto(_order))

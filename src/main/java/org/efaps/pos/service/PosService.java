@@ -20,29 +20,35 @@ package org.efaps.pos.service;
 import java.util.List;
 
 import org.efaps.pos.entity.Pos;
+import org.efaps.pos.respository.PosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PosService
 {
-    private final MongoTemplate mongoTemplate;
+    private final WorkspaceService workspaceService;
+    private final PosRepository posRepository;
 
     @Autowired
-    public PosService(final MongoTemplate _mongoTemplate)
+    public PosService(final WorkspaceService _workspaceService, final PosRepository _posRepository)
     {
-        this.mongoTemplate = _mongoTemplate;
+        this.posRepository = _posRepository;
+        this.workspaceService = _workspaceService;
     }
 
     public List<Pos> getPoss()
     {
-        final List<Pos> ret = this.mongoTemplate.findAll(Pos.class);
-        return ret;
+        return this.posRepository.findAll();
     }
 
     public Pos getPos(final String _oid)
     {
-        return this.mongoTemplate.findById(_oid, Pos.class);
+        return this.posRepository.findById(_oid).get();
+    }
+
+    public Pos getPos4Workspace(final String _workspaceOid)
+    {
+        return getPos(this.workspaceService.getWorkspace(_workspaceOid).getPosOid());
     }
 }

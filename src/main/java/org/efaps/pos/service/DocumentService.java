@@ -44,15 +44,18 @@ public class DocumentService
     private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
 
     private final ServiceListFactoryBean serviceListFactoryBean;
+    private final PosService posService;
     private final MongoTemplate mongoTemplate;
     private final OrderRepository orderRepository;
     private final ReceiptRepository receiptRepository;
 
     @Autowired
-    public DocumentService(final ServiceListFactoryBean _serviceListFactoryBean, final MongoTemplate _mongoTemplate,
-                           final OrderRepository _orderRepository, final ReceiptRepository _receiptRepository)
+    public DocumentService(final ServiceListFactoryBean _serviceListFactoryBean, final PosService _posService,
+                           final MongoTemplate _mongoTemplate, final OrderRepository _orderRepository,
+                           final ReceiptRepository _receiptRepository)
     {
         this.serviceListFactoryBean = _serviceListFactoryBean;
+        this.posService = _posService;
         this.mongoTemplate = _mongoTemplate;
         this.orderRepository = _orderRepository;
         this.receiptRepository = _receiptRepository;
@@ -73,7 +76,7 @@ public class DocumentService
         return this.orderRepository.save(_entity);
     }
 
-    public Receipt createReceipt(final Receipt _receipt)
+    public Receipt createReceipt(final String _workspaceOid, final Receipt _receipt)
     {
         _receipt.setNumber(getNextNumber(getNumberKey(Receipt.class.getSimpleName())));
         Receipt ret = this.receiptRepository.insert(_receipt);
@@ -83,7 +86,7 @@ public class DocumentService
             if (listeners != null) {
                 ReceiptDto dto = Converter.toDto(ret);
                 for (final IReceiptListener listener  :listeners) {
-                    dto = listener.onCreate(dto);
+                    dto = listener.onCreate(Converter.toDto(this.posService.getPos4Workspace(_workspaceOid)), dto);
                 }
                 ret = this.receiptRepository.save(Converter.toEntity(dto));
             }

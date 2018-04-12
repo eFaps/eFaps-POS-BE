@@ -32,6 +32,8 @@ public class Pos
 
     private String name;
 
+    private Company company;
+
     public String getOid()
     {
         return this.oid;
@@ -55,9 +57,49 @@ public class Pos
         return this;
     }
 
+    public Company getCompany()
+    {
+        return this.company;
+    }
+
+    public Pos setCompany(final Company _company)
+    {
+        this.company = _company;
+        return this;
+    }
+
     @Override
     public String toString()
     {
         return ReflectionToStringBuilder.toString(this);
+    }
+
+    public static class Company
+    {
+
+        private String name;
+        private String taxNumber;
+
+        public String getName()
+        {
+            return this.name;
+        }
+
+        public Company setName(final String _name)
+        {
+            this.name = _name;
+            return this;
+        }
+
+        public String getTaxNumber()
+        {
+            return this.taxNumber;
+        }
+
+        public Company setTaxNumber(final String _taxNumber)
+        {
+            this.taxNumber = _taxNumber;
+            return this;
+        }
     }
 }

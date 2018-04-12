@@ -19,6 +19,7 @@ package org.efaps.pos.util;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.dto.CategoryDto;
+import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PosDto;
@@ -30,6 +31,7 @@ import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
+import org.efaps.pos.entity.Pos.Company;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.User;
@@ -53,6 +55,19 @@ public final class Converter
                                         .map(_item -> Converter.toEntity((DocItemDto) _item))
                                         .collect(Collectors.toSet()));
         return ret;
+    }
+
+    public static ReceiptDto toDto(final Receipt _entity)
+    {
+        return ReceiptDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withNumber(_entity.getNumber())
+                        .withStatus(_entity.getStatus())
+                        .withItems(_entity.getItems().stream()
+                                        .map(_item -> Converter.toDto(_item))
+                                        .collect(Collectors.toSet()))
+                        .build();
     }
 
     public static OrderDto toDto(final Order _entity)
@@ -93,20 +108,6 @@ public final class Converter
                         .withIndex(_entity.getIndex())
                         .build();
     }
-
-    public static ReceiptDto toDto(final Receipt _entity)
-    {
-        return ReceiptDto.builder()
-                        .withId(_entity.getId())
-                        .withOID(_entity.getOid())
-                        .withNumber(_entity.getNumber())
-                        .withStatus(_entity.getStatus())
-                        .withItems(_entity.getItems().stream()
-                                        .map(_item -> Converter.toDto(_item))
-                                        .collect(Collectors.toSet()))
-                        .build();
-    }
-
 
     public static Product toEntity(final ProductDto _dto)
     {
@@ -157,7 +158,22 @@ public final class Converter
         return PosDto.builder()
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
+                        .withCompany(CompanyDto.builder()
+                                        .withName(_entity.getCompany().getName())
+                                        .withTaxNumber(_entity.getCompany().getTaxNumber())
+                                        .build())
                         .build();
+    }
+
+    public static Pos toEntity(final PosDto _dto)
+    {
+        final Pos ret = new Pos()
+                        .setOid(_dto.getOid())
+                        .setName(_dto.getName())
+                        .setCompany(new Company()
+                                        .setName(_dto.getCompany().getName())
+                                        .setTaxNumber(_dto.getCompany().getTaxNumber()));
+        return ret;
     }
 
     public static CategoryDto toDto(final Category _entity)
