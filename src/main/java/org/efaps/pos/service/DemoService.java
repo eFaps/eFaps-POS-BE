@@ -71,23 +71,23 @@ public class DemoService
             init("poss.json", new TypeReference<List<Pos>>(){});
             init("categories.json", new TypeReference<List<Category>>(){});
             init("sequences.json", new TypeReference<List<Sequence>>(){});
-            loadImages(new String[] { "apple.jpeg", "1234.1" },
-                            new String[] { "orange.jpeg", "1234.2" },
-                            new String[] { "desktoppc.jpeg", "1234.3" },
-                            new String[] { "laptop.jpg", "1234.4" });
+            loadImages();
         } catch (final IOException e) {
             LOG.error("Errors during init", e);
         }
     }
 
-    private void loadImages(final String[]... _images)
+    private void loadImages()
         throws IOException
     {
-        for (final String[] image : _images) {
-            final ClassPathResource resource = new ClassPathResource(image[0]);
+        final ClassPathResource resource = new ClassPathResource("images.json");
+        final List<Image> images = this.objectMapper.readValue(resource.getInputStream(),
+                        new TypeReference<List<Image>>(){});
+        for (final Image image : images) {
+            final ClassPathResource imgResource = new ClassPathResource("images/" + image.getFileName());
             final DBObject metaData = new BasicDBObject();
-            metaData.put("oid", image[1]);
-            this.gridFsTemplate.store(resource.getInputStream(), image[0], "image/jpeg", metaData);
+            metaData.put("oid", image.getOid());
+            this.gridFsTemplate.store(imgResource.getInputStream(), image.getFileName(), "image/jpeg", metaData);
         }
     }
 
@@ -105,5 +105,30 @@ public class DemoService
         final ClassPathResource resource = new ClassPathResource(_fileName);
         final List<?> values = this.objectMapper.readValue(resource.getInputStream(), _valueTypeRef);
         values.forEach(value -> this.mongoTemplate.save(value));
+    }
+
+    public static class Image {
+        private String oid;
+        private String fileName;
+
+        public String getOid()
+        {
+            return this.oid;
+        }
+
+        public void setOid(final String _oid)
+        {
+            this.oid = _oid;
+        }
+
+        public String getFileName()
+        {
+            return this.fileName;
+        }
+
+        public void setFileName(final String _fileName)
+        {
+            this.fileName = _fileName;
+        }
     }
 }
