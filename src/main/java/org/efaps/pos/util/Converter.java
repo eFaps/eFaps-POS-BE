@@ -64,7 +64,9 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())
                         .withStatus(_entity.getStatus())
-                        .withItems(_entity.getItems().stream()
+                        .withItems(_entity.getItems() == null
+                            ? null
+                            : _entity.getItems().stream()
                                         .map(_item -> Converter.toDto(_item))
                                         .collect(Collectors.toSet()))
                         .build();
@@ -158,7 +160,9 @@ public final class Converter
         return PosDto.builder()
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
-                        .withCompany(CompanyDto.builder()
+                        .withCompany(_entity.getCompany() == null
+                            ? null
+                            : CompanyDto.builder()
                                         .withName(_entity.getCompany().getName())
                                         .withTaxNumber(_entity.getCompany().getTaxNumber())
                                         .build())
