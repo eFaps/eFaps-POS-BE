@@ -18,11 +18,11 @@ package org.efaps.pos.service;
 
 import java.util.List;
 
-import org.efaps.pos.IReceiptListener;
-import org.efaps.pos.dto.ReceiptDto;
+import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.respository.OrderRepository;
 import org.efaps.pos.respository.ReceiptRepository;
 import org.efaps.pos.util.Converter;
@@ -84,9 +84,10 @@ public class DocumentService
             @SuppressWarnings("unchecked")
             final List<IReceiptListener> listeners =  (List<IReceiptListener>) this.serviceListFactoryBean.getObject();
             if (listeners != null) {
-                ReceiptDto dto = Converter.toDto(ret);
+                PosReceiptDto dto = null;//Converter.toDto(ret);
                 for (final IReceiptListener listener  :listeners) {
-                    dto = listener.onCreate(Converter.toDto(this.posService.getPos4Workspace(_workspaceOid)), dto);
+                    dto = (PosReceiptDto) listener.onCreate(
+                                    Converter.toDto(this.posService.getPos4Workspace(_workspaceOid)), dto);
                 }
                 ret = this.receiptRepository.save(Converter.toEntity(dto));
             }

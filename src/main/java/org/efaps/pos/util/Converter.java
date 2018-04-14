@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.CompanyDto;
-import org.efaps.pos.dto.DocItemDto;
-import org.efaps.pos.dto.OrderDto;
+import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
+import org.efaps.pos.dto.PosOrderDto;
+import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
-import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Category;
@@ -44,7 +44,7 @@ public final class Converter
     {
     }
 
-    public static Receipt toEntity(final ReceiptDto _dto)
+    public static Receipt toEntity(final PosReceiptDto _dto)
     {
         final Receipt ret = new Receipt()
                         .setId(_dto.getId())
@@ -52,63 +52,36 @@ public final class Converter
                         .setNumber(_dto.getNumber())
                         .setStatus(_dto.getStatus())
                         .setItems(_dto.getItems().stream()
-                                        .map(_item -> Converter.toEntity((DocItemDto) _item))
+                                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
                                         .collect(Collectors.toSet()));
         return ret;
     }
 
-    public static ReceiptDto toDto(final Receipt _entity)
-    {
-        return ReceiptDto.builder()
-                        .withId(_entity.getId())
-                        .withOID(_entity.getOid())
-                        .withNumber(_entity.getNumber())
-                        .withStatus(_entity.getStatus())
-                        .withItems(_entity.getItems() == null
-                            ? null
-                            : _entity.getItems().stream()
-                                        .map(_item -> Converter.toDto(_item))
-                                        .collect(Collectors.toSet()))
-                        .build();
-    }
-
-    public static OrderDto toDto(final Order _entity)
-    {
-        return OrderDto.builder()
-                        .withId(_entity.getId())
-                        .withOID(_entity.getOid())
-                        .withNumber(_entity.getNumber())
-                        .withItems(_entity.getItems().stream()
-                                        .map(_item -> Converter.toDto(_item))
-                                        .collect(Collectors.toSet()))
-                        .withStatus(_entity.getStatus())
-                        .build();
-    }
-
-    public static Order toEntity(final OrderDto _dto)
+    public static Order toEntity(final PosOrderDto _dto)
     {
         final Order ret = new Order()
                         .setId(_dto.getId())
                         .setOid(_dto.getOid())
                         .setNumber(_dto.getNumber())
                         .setItems(_dto.getItems().stream()
-                                        .map(_item -> Converter.toEntity((DocItemDto) _item))
+                                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
                                         .collect(Collectors.toSet()))
                         .setStatus(_dto.getStatus());
         return ret;
     }
 
-    public static AbstractDocument.Item toEntity(final DocItemDto _dto) {
+    public static AbstractDocument.Item toEntity(final PosDocItemDto _dto) {
         return new AbstractDocument.Item()
                         .setOid(_dto.getOid())
-                        .setIndex(_dto.getIndex());
-    }
-
-    public static DocItemDto toDto(final AbstractDocument.Item _entity) {
-        return DocItemDto.builder()
-                        .withOID(_entity.getOid())
-                        .withIndex(_entity.getIndex())
-                        .build();
+                        .setIndex(_dto.getIndex())
+                        .setCrossPrice(_dto.getCrossPrice())
+                        .setCrossUnitPrice(_dto.getCrossUnitPrice())
+                        .setNetPrice(_dto.getNetPrice())
+                        .setNetUnitPrice(_dto.getNetUnitPrice())
+                        .setQuantity(_dto.getQuantity())
+                        .setProductOid(_dto.getProduct() == null
+                            ? _dto.getProductOid()
+                            : _dto.getProduct().getOid());
     }
 
     public static Product toEntity(final ProductDto _dto)

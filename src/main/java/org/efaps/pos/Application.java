@@ -16,6 +16,7 @@
  */
 package org.efaps.pos;
 
+import org.efaps.pos.interfaces.IReceiptListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;

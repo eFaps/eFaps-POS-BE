@@ -20,24 +20,28 @@ package org.efaps.pos.service;
 import java.util.List;
 
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.respository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService
 {
-    private final MongoTemplate mongoTemplate;
+    private final ProductRepository productRepository;
 
     @Autowired
-    public ProductService(final MongoTemplate _mongoTemplate)
+    public ProductService(final ProductRepository _productRepository)
     {
-        this.mongoTemplate = _mongoTemplate;
+        this.productRepository = _productRepository;
     }
 
     public List<Product> getProducts()
     {
-        final List<Product> ret = this.mongoTemplate.findAll(Product.class);
-        return ret;
+        return this.productRepository.findAll();
+    }
+
+    public Product getProduct(final String _oid)
+    {
+        return _oid == null ? null : this.productRepository.findById(_oid).get();
     }
 }

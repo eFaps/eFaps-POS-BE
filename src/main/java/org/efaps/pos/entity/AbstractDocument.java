@@ -1,5 +1,6 @@
 package org.efaps.pos.entity;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import org.efaps.pos.dto.DocStatus;
@@ -80,6 +81,12 @@ public abstract class AbstractDocument<T>
 
         private String oid;
         private Integer index;
+        private String productOid;
+        private BigDecimal quantity;
+        private BigDecimal netUnitPrice;
+        private BigDecimal crossUnitPrice;
+        private BigDecimal netPrice;
+        private BigDecimal crossPrice;
 
         public Integer getIndex()
         {
@@ -100,6 +107,72 @@ public abstract class AbstractDocument<T>
         public Item setOid(final String _oid)
         {
             this.oid = _oid;
+            return this;
+        }
+
+        public String getProductOid()
+        {
+            return this.productOid;
+        }
+
+        public Item setProductOid(final String _productOid)
+        {
+            this.productOid = _productOid;
+            return this;
+        }
+
+        public BigDecimal getQuantity()
+        {
+            return this.quantity;
+        }
+
+        public Item setQuantity(final BigDecimal _quantity)
+        {
+            this.quantity = _quantity;
+            return this;
+        }
+
+        public BigDecimal getNetUnitPrice()
+        {
+            return this.netUnitPrice;
+        }
+
+        public Item setNetUnitPrice(final BigDecimal _netUnitPrice)
+        {
+            this.netUnitPrice = _netUnitPrice;
+            return this;
+        }
+
+        public BigDecimal getCrossUnitPrice()
+        {
+            return this.crossUnitPrice;
+        }
+
+        public Item setCrossUnitPrice(final BigDecimal _crossUnitPrice)
+        {
+            this.crossUnitPrice = _crossUnitPrice;
+            return this;
+        }
+
+        public BigDecimal getNetPrice()
+        {
+            return this.netPrice;
+        }
+
+        public Item setNetPrice(final BigDecimal _netPrice)
+        {
+            this.netPrice = _netPrice;
+            return this;
+        }
+
+        public BigDecimal getCrossPrice()
+        {
+            return this.crossPrice;
+        }
+
+        public Item setCrossPrice(final BigDecimal _crossPrice)
+        {
+            this.crossPrice = _crossPrice;
             return this;
         }
     }

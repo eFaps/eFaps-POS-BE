@@ -22,13 +22,13 @@ import java.math.BigDecimal;
 import java.util.Collections;
 
 import org.efaps.pos.dto.CategoryDto;
-import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.DocStatus;
-import org.efaps.pos.dto.OrderDto;
+import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
+import org.efaps.pos.dto.PosOrderDto;
+import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
-import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
@@ -136,7 +136,7 @@ public class ConverterTest
 
     @Test
     public void testReceiptToEntity() {
-        final ReceiptDto dto = ReceiptDto.builder()
+        final PosReceiptDto dto = PosReceiptDto.builder()
                         .withOID("16515.5165")
                         .withNumber("B001-1651651")
                         .withStatus(DocStatus.CLOSED)
@@ -149,24 +149,11 @@ public class ConverterTest
     }
 
     @Test
-    public void testReceiptToDto() {
-        final Receipt entity = new Receipt()
-                        .setOid("165165.14651")
-                        .setNumber("B001-165165")
-                        .setStatus(DocStatus.CLOSED);
-
-        final ReceiptDto dto = Converter.toDto(entity);
-        assertEquals(entity.getOid(), dto.getOid());
-        assertEquals(entity.getNumber(), dto.getNumber());
-        assertEquals(entity.getStatus(), dto.getStatus());
-    }
-
-    @Test
     public void testOrderToEntity() {
-        final OrderDto dto = OrderDto.builder()
+        final PosOrderDto dto = PosOrderDto.builder()
                         .withOID("16515.5165")
                         .withNumber("B001-1651651")
-                        .withItems(Collections.singleton(DocItemDto.builder().build()))
+                        .withItems(Collections.singleton(PosDocItemDto.builder().build()))
                         .withStatus(DocStatus.CLOSED)
                         .build();
 
@@ -178,40 +165,37 @@ public class ConverterTest
     }
 
     @Test
-    public void testOrderToDto() {
-        final Order entity = new Order()
-                        .setOid("165165.14651")
-                        .setNumber("B001-165165")
-                        .setItems(Collections.singleton(new Item()))
-                        .setStatus(DocStatus.CLOSED);
-
-        final OrderDto dto = Converter.toDto(entity);
-        assertEquals(entity.getOid(), dto.getOid());
-        assertEquals(entity.getNumber(), dto.getNumber());
-        assertEquals(1, dto.getItems().size());
-        assertEquals(dto.getStatus(), entity.getStatus());
-    }
-
-    @Test
-    public void testItemToDto() {
-        final Item entity = new Item()
-                        .setIndex(1)
-                        .setOid("5555.622");;
-
-        final DocItemDto dto = Converter.toDto(entity);
-        assertEquals(entity.getOid(), dto.getOid());
-        assertEquals(entity.getIndex(), dto.getIndex());
-    }
-
-    @Test
     public void testItemToEntity() {
-        final DocItemDto dto = DocItemDto.builder()
+        final PosDocItemDto dto = PosDocItemDto.builder()
                         .withOID("16515.5165")
                         .withIndex(2)
+                        .withCrossPrice(new BigDecimal("1.11"))
+                        .withCrossUnitPrice(new BigDecimal("1.12"))
+                        .withNetPrice(new BigDecimal("1.13"))
+                        .withNetUnitPrice(new BigDecimal("1.14"))
+                        .withQuantity(new BigDecimal("1.15"))
+                        .withProductOid("ProductOid")
                         .build();
 
         final Item entity = Converter.toEntity(dto);
         assertEquals(dto.getOid(), entity.getOid());
         assertEquals(dto.getIndex(), entity.getIndex());
+        assertEquals(dto.getCrossPrice(), entity.getCrossPrice());
+        assertEquals(dto.getCrossUnitPrice(), entity.getCrossUnitPrice());
+        assertEquals(dto.getNetPrice(), entity.getNetPrice());
+        assertEquals(dto.getNetUnitPrice(), entity.getNetUnitPrice());
+        assertEquals(dto.getQuantity(), entity.getQuantity());
+        assertEquals(dto.getProductOid(), entity.getProductOid());
+    }
+
+    @Test
+    public void testItemToEntityWithProduct() {
+        final PosDocItemDto dto = PosDocItemDto.builder()
+                        .withProductOid("ProductOid")
+                        .withProduct(ProductDto.builder().withOID("ThisOid").build())
+                        .build();
+
+        final Item entity = Converter.toEntity(dto);
+        assertEquals("ThisOid", entity.getProductOid());
     }
 }
