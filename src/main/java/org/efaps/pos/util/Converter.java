@@ -26,6 +26,7 @@ import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.TaxDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Category;
@@ -34,6 +35,7 @@ import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Pos.Company;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.Tax;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 
@@ -93,7 +95,10 @@ public final class Converter
                         .setDescription(_dto.getDescription())
                         .setNetPrice(_dto.getNetPrice())
                         .setCrossPrice(_dto.getCrossPrice())
-                        .setCategoryOids(_dto.getCategoryOids());
+                        .setCategoryOids(_dto.getCategoryOids())
+                        .setTaxes(_dto.getTaxes().stream()
+                                        .map(_tax -> toEntity(_tax))
+                                        .collect(Collectors.toSet()));
         return ret;
     }
 
@@ -107,6 +112,11 @@ public final class Converter
                         .withNetPrice(_entity.getNetPrice())
                         .withCrossPrice(_entity.getCrossPrice())
                         .withCategoryOids(_entity.getCategoryOids())
+                        .withTaxes(_entity.getTaxes() == null
+                                ? null
+                                :_entity.getTaxes().stream()
+                                        .map(_tax -> toDto(_tax))
+                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -159,5 +169,23 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
                         .build();
+    }
+
+    public static TaxDto toDto(final Tax _entity)
+    {
+        return TaxDto.builder()
+                        .withOID(_entity.getOid())
+                        .withName(_entity.getName())
+                        .withPercent(_entity.getPercent())
+                        .build();
+    }
+
+    public static Tax toEntity(final TaxDto _dto)
+    {
+        final Tax ret = new Tax()
+                        .setOid(_dto.getOid())
+                        .setName(_dto.getName())
+                        .setPercent(_dto.getPercent());
+        return ret;
     }
 }

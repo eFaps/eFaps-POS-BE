@@ -36,6 +36,7 @@ public class Product
     private BigDecimal netPrice;
     private BigDecimal crossPrice;
     private Set<String> categoryOids;
+    private Set<Tax> taxes;
 
     public String getOid()
     {
@@ -112,6 +113,17 @@ public class Product
     public Product setCategoryOids(final Set<String> _categoryOids)
     {
         this.categoryOids = _categoryOids;
+        return this;
+    }
+
+    public Set<Tax> getTaxes()
+    {
+        return this.taxes;
+    }
+
+    public Product setTaxes(final Set<Tax> _taxes)
+    {
+        this.taxes = _taxes;
         return this;
     }
 

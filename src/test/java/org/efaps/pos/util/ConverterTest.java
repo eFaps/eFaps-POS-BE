@@ -29,6 +29,7 @@ import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.TaxDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
@@ -36,6 +37,7 @@ import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.Tax;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 import org.junit.jupiter.api.Test;
@@ -52,6 +54,7 @@ public class ConverterTest
                         .withNetPrice(new BigDecimal("12.50"))
                         .withCrossPrice(new BigDecimal("14.40"))
                         .withCategoryOids(Collections.singleton("555.1651"))
+                        .withTaxes(Collections.singleton(TaxDto.builder().build()))
                         .build();
 
         final Product product = Converter.toEntity(dto);
@@ -62,6 +65,7 @@ public class ConverterTest
         assertEquals(dto.getNetPrice(), product.getNetPrice());
         assertEquals(dto.getCrossPrice(), product.getCrossPrice());
         assertEquals(dto.getCategoryOids(), product.getCategoryOids());
+        assertEquals(dto.getTaxes().size(), product.getTaxes().size());
     }
 
     @Test
@@ -197,5 +201,32 @@ public class ConverterTest
 
         final Item entity = Converter.toEntity(dto);
         assertEquals("ThisOid", entity.getProductOid());
+    }
+
+    @Test
+    public void testTaxToEntity() {
+        final TaxDto dto = TaxDto.builder()
+                        .withOID("653.25")
+                        .withName("VAT")
+                        .withPercent(new BigDecimal("18"))
+                        .build();
+
+        final Tax entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getName(), entity.getName());
+        assertEquals(dto.getPercent(), entity.getPercent());
+    }
+
+    @Test
+    public void testTaxToDto() {
+        final Tax entity = new Tax()
+                        .setOid("123.44")
+                        .setName("VAT")
+                        .setPercent(new BigDecimal("18"));
+
+        final TaxDto dto = Converter.toDto(entity);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getName(), dto.getName());
+        assertEquals(entity.getPercent(), dto.getPercent());
     }
 }

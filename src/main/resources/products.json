@@ -10,6 +10,13 @@
         "categoryOids": [
             "8562.1"
         ],
+        "taxes": [
+            {
+                "oid": "566.12",
+                "name": "VAT",
+                "percent": "18"
+            }
+        ],
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -22,6 +29,13 @@
         "crossPrice": "14.45",
         "categoryOids": [
             "8562.1"
+        ],
+        "taxes": [
+            {
+                "oid": "566.12",
+                "name": "VAT",
+                "percent": "18"
+            }
         ],
         "_class": "org.efaps.pos.entity.Product"
     },
@@ -36,6 +50,13 @@
         "categoryOids": [
             "8562.1"
         ],
+        "taxes": [
+            {
+                "oid": "566.12",
+                "name": "VAT",
+                "percent": "18"
+            }
+        ],
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -48,6 +69,13 @@
         "crossPrice": "16.45",
         "categoryOids": [
             "8562.1"
+        ],
+        "taxes": [
+            {
+                "oid": "566.12",
+                "name": "VAT",
+                "percent": "18"
+            }
         ],
         "_class": "org.efaps.pos.entity.Product"
     },
@@ -62,6 +90,13 @@
         "categoryOids": [
             "8562.2"
         ],
+        "taxes": [
+            {
+                "oid": "566.12",
+                "name": "VAT",
+                "percent": "18"
+            }
+        ],
         "_class": "org.efaps.pos.entity.Product"
     },
     {
@@ -74,6 +109,13 @@
         "crossPrice": "16.45",
         "categoryOids": [
             "8562.2"
+        ],
+        "taxes": [
+            {
+                "oid": "566.12",
+                "name": "VAT",
+                "percent": "18"
+            }
         ],
         "_class": "org.efaps.pos.entity.Product"
     }
