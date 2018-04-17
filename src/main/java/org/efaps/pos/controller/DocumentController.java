@@ -96,6 +96,11 @@ public class DocumentController
                         .withProduct(_entity.getProductOid() == null
                             ? null
                             : Converter.toDto(this.productService.getProduct(_entity.getProductOid())))
+                        .withTaxes(_entity.getTaxes() == null
+                            ? null
+                            : _entity.getTaxes().stream()
+                                .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
                         .build();
     }
 

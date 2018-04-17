@@ -5,8 +5,8 @@
         "sku": "001.1563",
         "description": "Product1",
         "imageOid": "1234.1",
-        "netPrice": "11.45",
-        "crossPrice": "13.45",
+        "netPrice": "8.47",
+        "crossPrice": "9.99",
         "categoryOids": [
             "8562.1"
         ],

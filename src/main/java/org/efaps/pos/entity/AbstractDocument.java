@@ -87,6 +87,7 @@ public abstract class AbstractDocument<T>
         private BigDecimal crossUnitPrice;
         private BigDecimal netPrice;
         private BigDecimal crossPrice;
+        private Set<TaxEntry> taxes;
 
         public Integer getIndex()
         {
@@ -173,6 +174,46 @@ public abstract class AbstractDocument<T>
         public Item setCrossPrice(final BigDecimal _crossPrice)
         {
             this.crossPrice = _crossPrice;
+            return this;
+        }
+
+        public Set<TaxEntry> getTaxes()
+        {
+            return this.taxes;
+        }
+
+        public Item setTaxes(final Set<TaxEntry> _taxes)
+        {
+            this.taxes = _taxes;
+            return this;
+        }
+    }
+
+    public static class TaxEntry
+    {
+
+        private Tax tax;
+        private BigDecimal amount;
+
+        public BigDecimal getAmount()
+        {
+            return this.amount;
+        }
+
+        public TaxEntry setAmount(final BigDecimal _amount)
+        {
+            this.amount = _amount;
+            return this;
+        }
+
+        public Tax getTax()
+        {
+            return this.tax;
+        }
+
+        public TaxEntry setTax(final Tax _tax)
+        {
+            this.tax = _tax;
             return this;
         }
     }

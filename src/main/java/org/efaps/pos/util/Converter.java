@@ -27,8 +27,10 @@ import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.TaxDto;
+import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument;
+import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
@@ -83,7 +85,12 @@ public final class Converter
                         .setQuantity(_dto.getQuantity())
                         .setProductOid(_dto.getProduct() == null
                             ? _dto.getProductOid()
-                            : _dto.getProduct().getOid());
+                            : _dto.getProduct().getOid())
+                        .setTaxes(_dto.getTaxes() ==  null
+                            ? null
+                            : _dto.getTaxes().stream()
+                                .map(_tax -> Converter.toEntity(_tax))
+                                .collect(Collectors.toSet()));
     }
 
     public static Product toEntity(final ProductDto _dto)
@@ -187,5 +194,21 @@ public final class Converter
                         .setName(_dto.getName())
                         .setPercent(_dto.getPercent());
         return ret;
+    }
+
+    public static TaxEntry toEntity(final TaxEntryDto _dto)
+    {
+        final TaxEntry ret = new TaxEntry()
+                        .setTax(Converter.toEntity(_dto.getTax()))
+                        .setAmount(_dto.getAmount());
+        return ret;
+    }
+
+    public static TaxEntryDto toDto(final TaxEntry _entity)
+    {
+        return TaxEntryDto.builder()
+                        .withTax(Converter.toDto(_entity.getTax()))
+                        .withAmount(_entity.getAmount())
+                        .build();
     }
 }
