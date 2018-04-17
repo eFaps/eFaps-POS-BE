@@ -70,7 +70,14 @@ public final class Converter
                         .setItems(_dto.getItems().stream()
                                         .map(_item -> Converter.toEntity((PosDocItemDto) _item))
                                         .collect(Collectors.toSet()))
-                        .setStatus(_dto.getStatus());
+                        .setNetTotal(_dto.getNetTotal())
+                        .setCrossTotal(_dto.getCrossTotal())
+                        .setStatus(_dto.getStatus())
+                        .setTaxes(_dto.getTaxes() ==  null
+                            ? null
+                            : _dto.getTaxes().stream()
+                                .map(_tax -> Converter.toEntity(_tax))
+                                .collect(Collectors.toSet()));
         return ret;
     }
 
@@ -104,7 +111,7 @@ public final class Converter
                         .setCrossPrice(_dto.getCrossPrice())
                         .setCategoryOids(_dto.getCategoryOids())
                         .setTaxes(_dto.getTaxes().stream()
-                                        .map(_tax -> toEntity(_tax))
+                                        .map(_tax -> _tax == null ? null : toEntity(_tax))
                                         .collect(Collectors.toSet()));
         return ret;
     }
@@ -199,7 +206,7 @@ public final class Converter
     public static TaxEntry toEntity(final TaxEntryDto _dto)
     {
         final TaxEntry ret = new TaxEntry()
-                        .setTax(Converter.toEntity(_dto.getTax()))
+                        .setTax(_dto.getTax() == null ? null : Converter.toEntity(_dto.getTax()))
                         .setAmount(_dto.getAmount());
         return ret;
     }

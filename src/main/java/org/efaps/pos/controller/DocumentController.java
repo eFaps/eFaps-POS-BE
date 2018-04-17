@@ -80,6 +80,13 @@ public class DocumentController
                                         .map(_item -> toDto(_item))
                                         .collect(Collectors.toSet()))
                         .withStatus(_entity.getStatus())
+                        .withNetTotal(_entity.getNetTotal())
+                        .withCrossTotal(_entity.getCrossTotal())
+                        .withTaxes(_entity.getTaxes() == null
+                            ? null
+                            : _entity.getTaxes().stream()
+                                .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
                         .build();
     }
 

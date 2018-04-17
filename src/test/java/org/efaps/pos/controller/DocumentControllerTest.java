@@ -49,13 +49,19 @@ public class DocumentControllerTest
                         .setOid("165165.14651")
                         .setNumber("B001-165165")
                         .setItems(Collections.singleton(new Item()))
-                        .setStatus(DocStatus.CLOSED);
+                        .setStatus(DocStatus.CLOSED)
+                        .setTaxes(Collections.emptySet())
+                        .setNetTotal(new BigDecimal("12.44"))
+                        .setCrossTotal(new BigDecimal("32.44"));
 
         final PosOrderDto dto = this.documentController.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getNumber(), dto.getNumber());
         assertEquals(1, dto.getItems().size());
         assertEquals(dto.getStatus(), entity.getStatus());
+        assertEquals(0, dto.getTaxes().size());
+        assertEquals(entity.getNetTotal(), dto.getNetTotal());
+        assertEquals(entity.getCrossTotal(), dto.getCrossTotal());
     }
 
     @Test

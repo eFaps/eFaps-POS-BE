@@ -15,6 +15,9 @@ public abstract class AbstractDocument<T>
     private String number;
     private Set<Item> items;
     private DocStatus status;
+    private BigDecimal netTotal;
+    private BigDecimal crossTotal;
+    private Set<TaxEntry> taxes;
 
     public String getId()
     {
@@ -73,6 +76,42 @@ public abstract class AbstractDocument<T>
     public T setStatus(final DocStatus _status)
     {
         this.status = _status;
+        return (T) this;
+    }
+
+    public BigDecimal getNetTotal()
+    {
+        return this.netTotal;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setNetTotal(final BigDecimal _netTotal)
+    {
+        this.netTotal = _netTotal;
+        return (T) this;
+    }
+
+    public BigDecimal getCrossTotal()
+    {
+        return this.crossTotal;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setCrossTotal(final BigDecimal _crossTotal)
+    {
+        this.crossTotal = _crossTotal;
+        return (T) this;
+    }
+
+    public Set<TaxEntry> getTaxes()
+    {
+        return this.taxes;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setTaxes(final Set<TaxEntry> _taxes)
+    {
+        this.taxes = _taxes;
         return (T) this;
     }
 

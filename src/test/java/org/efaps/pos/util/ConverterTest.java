@@ -30,6 +30,7 @@ import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.TaxDto;
+import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
@@ -159,6 +160,9 @@ public class ConverterTest
                         .withNumber("B001-1651651")
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))
                         .withStatus(DocStatus.CLOSED)
+                        .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
+                        .withNetTotal(new BigDecimal("12.44"))
+                        .withCrossTotal(new BigDecimal("32.44"))
                         .build();
 
         final Order entity = Converter.toEntity(dto);
@@ -166,6 +170,9 @@ public class ConverterTest
         assertEquals(dto.getNumber(), entity.getNumber());
         assertEquals(1, entity.getItems().size());
         assertEquals(dto.getStatus(), entity.getStatus());
+        assertEquals(dto.getNetTotal(), entity.getNetTotal());
+        assertEquals(dto.getCrossTotal(), entity.getCrossTotal());
+        assertEquals(1, entity.getTaxes().size());
     }
 
     @Test
