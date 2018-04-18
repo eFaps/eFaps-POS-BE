@@ -118,5 +118,26 @@
             }
         ],
         "_class": "org.efaps.pos.entity.Product"
+    },
+    {
+        "id": "8183.7",
+        "oid": "8183.7",
+        "sku": "5651.008",
+        "description": "Laptop no Image",
+        "imageOid": "null",
+        "netPrice": "14.45",
+        "crossPrice": "16.45",
+        "categoryOids": [
+            "8562.1",
+            "8562.2"
+        ],
+        "taxes": [
+            {
+                "oid": "566.12",
+                "name": "VAT",
+                "percent": "18"
+            }
+        ],
+        "_class": "org.efaps.pos.entity.Product"
     }
 ]
