@@ -63,6 +63,7 @@ public final class Converter
                         .setOid(_dto.getOid())
                         .setNumber(_dto.getNumber())
                         .setStatus(_dto.getStatus())
+                        .setDate(_dto.getDate())
                         .setItems(_dto.getItems().stream()
                                         .map(_item -> Converter.toEntity((PosDocItemDto) _item))
                                         .collect(Collectors.toSet()));
@@ -75,6 +76,7 @@ public final class Converter
                         .setId(_dto.getId())
                         .setOid(_dto.getOid())
                         .setNumber(_dto.getNumber())
+                        .setDate(_dto.getDate())
                         .setItems(_dto.getItems().stream()
                                         .map(_item -> Converter.toEntity((PosDocItemDto) _item))
                                         .collect(Collectors.toSet()))
@@ -227,12 +229,13 @@ public final class Converter
                         .build();
     }
 
-    public static  PosOrderDto toDto(final Order _entity)
+    public static PosOrderDto toDto(final Order _entity)
     {
         return PosOrderDto.builder()
                         .withId(_entity.getId())
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())
+                        .withDate(_entity.getDate())
                         .withItems(_entity.getItems().stream()
                                         .map(_item -> toDto(_item))
                                         .collect(Collectors.toSet()))
@@ -274,6 +277,7 @@ public final class Converter
                         .withId(_entity.getId())
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())
+                        .withDate(_entity.getDate())
                         .withStatus(_entity.getStatus())
                         .withItems(_entity.getItems() == null
                             ? null

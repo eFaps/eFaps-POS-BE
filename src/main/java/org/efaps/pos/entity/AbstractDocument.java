@@ -1,6 +1,7 @@
 package org.efaps.pos.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Set;
 
 import org.efaps.pos.dto.DocStatus;
@@ -15,6 +16,7 @@ public abstract class AbstractDocument<T>
     private String number;
     private Set<Item> items;
     private DocStatus status;
+    private LocalDate date;
     private BigDecimal netTotal;
     private BigDecimal crossTotal;
     private Set<TaxEntry> taxes;
@@ -53,6 +55,18 @@ public abstract class AbstractDocument<T>
     public String getNumber()
     {
         return this.number;
+    }
+
+    public LocalDate getDate()
+    {
+        return this.date;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setDate(final LocalDate _date)
+    {
+        this.date = _date;
+        return (T) this;
     }
 
     public Set<Item> getItems()
