@@ -84,7 +84,7 @@ public class DocumentService
             @SuppressWarnings("unchecked")
             final List<IReceiptListener> listeners =  (List<IReceiptListener>) this.serviceListFactoryBean.getObject();
             if (listeners != null) {
-                PosReceiptDto dto = null;//Converter.toDto(ret);
+               PosReceiptDto dto = Converter.toDto(ret);
                 for (final IReceiptListener listener  :listeners) {
                     dto = (PosReceiptDto) listener.onCreate(
                                     Converter.toDto(this.posService.getPos4Workspace(_workspaceOid)), dto);

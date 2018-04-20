@@ -40,12 +40,20 @@ import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Tax;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.service.ProductService;
+import org.springframework.stereotype.Component;
 
+@Component
 public final class Converter
 {
+    private static Converter INSTANCE;
 
-    private Converter()
+    private final ProductService productService;
+
+    public Converter(final ProductService _productService)
     {
+        INSTANCE = this;
+        this.productService = _productService;
     }
 
     public static Receipt toEntity(final PosReceiptDto _dto)
@@ -216,6 +224,62 @@ public final class Converter
         return TaxEntryDto.builder()
                         .withTax(Converter.toDto(_entity.getTax()))
                         .withAmount(_entity.getAmount())
+                        .build();
+    }
+
+    public static  PosOrderDto toDto(final Order _entity)
+    {
+        return PosOrderDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withNumber(_entity.getNumber())
+                        .withItems(_entity.getItems().stream()
+                                        .map(_item -> toDto(_item))
+                                        .collect(Collectors.toSet()))
+                        .withStatus(_entity.getStatus())
+                        .withNetTotal(_entity.getNetTotal())
+                        .withCrossTotal(_entity.getCrossTotal())
+                        .withTaxes(_entity.getTaxes() == null
+                            ? null
+                            : _entity.getTaxes().stream()
+                                .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
+                        .build();
+    }
+
+    public static PosDocItemDto toDto(final AbstractDocument.Item _entity) {
+        return PosDocItemDto.builder()
+                        .withOID(_entity.getOid())
+                        .withIndex(_entity.getIndex())
+                        .withCrossPrice(_entity.getCrossPrice())
+                        .withCrossUnitPrice(_entity.getCrossUnitPrice())
+                        .withNetPrice(_entity.getNetPrice())
+                        .withNetUnitPrice(_entity.getNetUnitPrice())
+                        .withQuantity(_entity.getQuantity())
+                        .withProductOid(_entity.getProductOid())
+                        .withProduct(_entity.getProductOid() == null
+                            ? null
+                            : Converter.toDto(INSTANCE.productService.getProduct(_entity.getProductOid())))
+                        .withTaxes(_entity.getTaxes() == null
+                            ? null
+                            : _entity.getTaxes().stream()
+                                .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
+                        .build();
+    }
+
+    public static PosReceiptDto toDto(final Receipt _entity)
+    {
+        return PosReceiptDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withNumber(_entity.getNumber())
+                        .withStatus(_entity.getStatus())
+                        .withItems(_entity.getItems() == null
+                            ? null
+                            : _entity.getItems().stream()
+                                        .map(_item -> toDto(_item))
+                                        .collect(Collectors.toSet()))
                         .build();
     }
 }
