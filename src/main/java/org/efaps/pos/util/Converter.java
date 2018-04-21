@@ -62,6 +62,7 @@ public final class Converter
                         .setId(_dto.getId())
                         .setOid(_dto.getOid())
                         .setNumber(_dto.getNumber())
+                        .setCurrency(_dto.getCurrency())
                         .setStatus(_dto.getStatus())
                         .setDate(_dto.getDate())
                         .setItems(_dto.getItems().stream()
@@ -81,7 +82,9 @@ public final class Converter
                         .setId(_dto.getId())
                         .setOid(_dto.getOid())
                         .setNumber(_dto.getNumber())
+                        .setCurrency(_dto.getCurrency())
                         .setDate(_dto.getDate())
+                        .setCurrency(_dto.getCurrency())
                         .setItems(_dto.getItems().stream()
                                         .map(_item -> Converter.toEntity((PosDocItemDto) _item))
                                         .collect(Collectors.toSet()))
@@ -174,6 +177,7 @@ public final class Converter
         return PosDto.builder()
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
+                        .withCurrency(_entity.getCurrency())
                         .withCompany(_entity.getCompany() == null
                             ? null
                             : CompanyDto.builder()
@@ -188,6 +192,7 @@ public final class Converter
         final Pos ret = new Pos()
                         .setOid(_dto.getOid())
                         .setName(_dto.getName())
+                        .setCurrency(_dto.getCurrency())
                         .setCompany(new Company()
                                         .setName(_dto.getCompany().getName())
                                         .setTaxNumber(_dto.getCompany().getTaxNumber()));
@@ -242,6 +247,7 @@ public final class Converter
                         .withId(_entity.getId())
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())
+                        .withCurrency(_entity.getCurrency())
                         .withDate(_entity.getDate())
                         .withItems(_entity.getItems().stream()
                                         .map(_item -> toDto(_item))
@@ -285,6 +291,7 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())
                         .withDate(_entity.getDate())
+                        .withCurrency(_entity.getCurrency())
                         .withStatus(_entity.getStatus())
                         .withItems(_entity.getItems() == null
                             ? null

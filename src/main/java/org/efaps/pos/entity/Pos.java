@@ -32,6 +32,8 @@ public class Pos
 
     private String name;
 
+    private String currency;
+
     private Company company;
 
     public String getOid()
@@ -54,6 +56,17 @@ public class Pos
     public Pos setName(final String _name)
     {
         this.name = _name;
+        return this;
+    }
+
+    public String getCurrency()
+    {
+        return this.currency;
+    }
+
+    public Pos setCurrency(final String _currency)
+    {
+        this.currency = _currency;
         return this;
     }
 

@@ -3,6 +3,7 @@
         "id": "5243.1",
         "oid": "5243.1",
         "name": "Caja 1",
+        "currency": "PEN",
         "company": {
             "name": "Empresa Ejemplar S.A.C",
             "taxNumber": "12345678901"
@@ -12,6 +13,7 @@
         "id": "5243.2",
         "oid": "5243.2",
         "name": "Caja 2",
+        "currency": "USD",
         "company": {
             "name": "Empresa De Venta S.A.C",
             "taxNumber": "10987654321"

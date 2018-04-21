@@ -17,6 +17,7 @@ public abstract class AbstractDocument<T>
     private Set<Item> items;
     private DocStatus status;
     private LocalDate date;
+    private String currency;
     private BigDecimal netTotal;
     private BigDecimal crossTotal;
     private Set<TaxEntry> taxes;
@@ -90,6 +91,18 @@ public abstract class AbstractDocument<T>
     public T setStatus(final DocStatus _status)
     {
         this.status = _status;
+        return (T) this;
+    }
+
+    public String getCurrency()
+    {
+        return this.currency;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setCurrency(final String _currency)
+    {
+        this.currency = _currency;
         return (T) this;
     }
 
