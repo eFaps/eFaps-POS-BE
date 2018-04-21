@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.math.BigDecimal;
 import java.util.Collections;
 
-import org.efaps.pos.controller.DocumentController;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.PosDocItemDto;
@@ -63,9 +62,6 @@ public class ConverterTest
 {
     @Autowired
     private MongoTemplate mongoTemplate;
-
-    @Autowired
-    private DocumentController documentController;
 
     @BeforeEach
     public void setup() {

@@ -42,6 +42,6 @@ public class ProductService
 
     public Product getProduct(final String _oid)
     {
-        return _oid == null ? null : this.productRepository.findById(_oid).get();
+        return _oid == null ? null : this.productRepository.findById(_oid).orElse(null);
     }
 }

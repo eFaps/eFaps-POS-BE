@@ -139,7 +139,9 @@ public final class Converter
 
     public static ProductDto toDto(final Product _entity)
     {
-        return ProductDto.builder()
+        return _entity == null
+                    ? null
+                    : ProductDto.builder()
                         .withSKU(_entity.getSKU())
                         .withDescription(_entity.getDescription())
                         .withImageOid(_entity.getImageOid())

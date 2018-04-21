@@ -19,6 +19,7 @@ package org.efaps.pos.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.efaps.pos.interfaces.IReceipt;
 import org.efaps.pos.interfaces.IReceiptItem;
@@ -34,11 +35,10 @@ public class PosReceiptDto
         super(_builder);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Set<IReceiptItem> getReceiptItems()
     {
-        return (Set<IReceiptItem>) getItems();
+        return getItems().stream().map(item -> (IReceiptItem) item).collect(Collectors.toSet());
     }
 
     public static Builder builder()
