@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -79,6 +80,9 @@ public class JwtTokenUtil
     public String generateToken(final UserDetails _userDetails)
     {
         final Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", _userDetails.getAuthorities().stream()
+                        .map(authority -> authority.getAuthority())
+                        .collect(Collectors.toSet()));
         return generateToken(claims, _userDetails.getUsername());
     }
 

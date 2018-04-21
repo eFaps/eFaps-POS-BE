@@ -6,6 +6,9 @@
         "firstName": "Juan",
         "surName": "Perez",
         "password": "$2a$10$FV3p0teors1xgEe7aacuIu2L7KyhxMdmOUclB9XTVmWvL9odIfN2a",
+        "roles": [
+            "ADMIN", "USER"
+        ],
         "_class": "org.efaps.pos.entity.User"
     },
      {
@@ -14,6 +17,9 @@
         "username": "user",
         "firstName": "Diego",
         "surName": "Martinez",
+        "roles": [
+            "USER"
+        ],
         "password": "$2a$10$FV3p0teors1xgEe7aacuIu2L7KyhxMdmOUclB9XTVmWvL9odIfN2a",
         "_class": "org.efaps.pos.entity.User"
     }

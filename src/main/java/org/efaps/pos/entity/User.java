@@ -1,11 +1,15 @@
 package org.efaps.pos.entity;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.efaps.pos.dto.Roles;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Document(collection = "users")
@@ -29,6 +33,8 @@ public class User
 
     private String surName;
 
+    private Set<Roles> roles;
+
     public String getOid()
     {
         return this.oid;
@@ -43,7 +49,9 @@ public class User
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities()
     {
-        return null;
+        return getRoles().stream()
+                        .map(_role -> new SimpleGrantedAuthority(_role.name()))
+                        .collect(Collectors.toSet());
     }
 
     @Override
@@ -109,6 +117,16 @@ public class User
     {
         this.surName = _surName;
         return this;
+    }
+
+    public Set<Roles> getRoles()
+    {
+        return this.roles;
+    }
+
+    public void setRoles(final Set<Roles> _roles)
+    {
+        this.roles = _roles;
     }
 
     @Override
