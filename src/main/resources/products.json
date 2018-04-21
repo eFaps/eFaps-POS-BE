@@ -26,8 +26,8 @@
         "sku": "001.1555",
         "description": "Product2",
         "imageOid": "1234.2",
-        "netPrice": "12.45",
-        "crossPrice": "14.45",
+        "netPrice": "6.68",
+        "crossPrice": "7.95",
         "uoM": "UND",
         "categoryOids": [
             "8562.1"
@@ -47,8 +47,8 @@
         "sku": "0056.5622",
         "description": "Product3",
         "imageOid": "1234.1",
-        "netPrice": "13.45",
-        "crossPrice": "15.45",
+        "netPrice": "16.91",
+        "crossPrice": "19.95",
         "uoM": "UND",
         "categoryOids": [
             "8562.1"

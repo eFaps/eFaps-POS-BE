@@ -16,11 +16,15 @@
  */
 package org.efaps.pos.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.PosReceiptDto;
+import org.efaps.pos.entity.AbstractDocument;
+import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Receipt;
@@ -75,12 +79,26 @@ public class DocumentService
     public Order createOrder(final Order _order)
     {
         _order.setNumber(getNextNumber(getNumberKey(Order.class.getSimpleName())));
+        verifyDocument(_order);
         return this.orderRepository.insert(_order);
     }
 
-    public Order updateOrder(final Order _entity)
+    public Order updateOrder(final Order _order)
     {
-        return this.orderRepository.save(_entity);
+        verifyDocument(_order);
+        return this.orderRepository.save(_order);
+    }
+
+    private void verifyDocument(final AbstractDocument<?> _document) {
+        final BigDecimal netTotal = _document.getNetTotal().setScale(2, RoundingMode.HALF_UP);
+        _document.setNetTotal(netTotal);
+        BigDecimal taxTotal = BigDecimal.ZERO;
+        for (final TaxEntry taxEntry : _document.getTaxes()) {
+            final BigDecimal amount = taxEntry.getAmount().setScale(2, RoundingMode.HALF_UP);
+            taxEntry.setAmount(amount);
+            taxTotal = taxTotal.add(amount);
+        }
+        _document.setCrossTotal(netTotal.add(taxTotal).setScale(2, RoundingMode.HALF_UP));
     }
 
     public Receipt createReceipt(final String _workspaceOid, final Receipt _receipt)
