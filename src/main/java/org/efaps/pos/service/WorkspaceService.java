@@ -20,30 +20,30 @@ package org.efaps.pos.service;
 import java.util.List;
 
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.respository.WorkspaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class WorkspaceService
 {
 
-    private final MongoTemplate mongoTemplate;
+    private final WorkspaceRepository workspaceRepository;
 
     @Autowired
-    public WorkspaceService(final MongoTemplate _mongoTemplate)
+    public WorkspaceService(final WorkspaceRepository _workspaceRepository)
     {
-        this.mongoTemplate = _mongoTemplate;
+        this.workspaceRepository = _workspaceRepository;
     }
 
     public List<Workspace> getWorkspaces()
     {
-        final List<Workspace> ret = this.mongoTemplate.findAll(Workspace.class);
+        final List<Workspace> ret = this.workspaceRepository.findAll();
         return ret;
     }
 
     public Workspace getWorkspace(final String _oid)
     {
-        return this.mongoTemplate.findById(_oid, Workspace.class);
+        return this.workspaceRepository.findById(_oid).get();
     }
 }

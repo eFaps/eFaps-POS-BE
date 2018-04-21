@@ -20,29 +20,29 @@ package org.efaps.pos.service;
 import java.util.List;
 
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.respository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CategoryService
 {
-    private final MongoTemplate mongoTemplate;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    public CategoryService(final MongoTemplate _mongoTemplate)
+    public CategoryService(final CategoryRepository _categoryRepository)
     {
-        this.mongoTemplate = _mongoTemplate;
+        this.categoryRepository = _categoryRepository;
     }
 
     public List<Category> getCategories()
     {
-        final List<Category> ret = this.mongoTemplate.findAll(Category.class);
+        final List<Category> ret = this.categoryRepository.findAll();
         return ret;
     }
 
     public Category getCategory(final String _oid)
     {
-        return this.mongoTemplate.findById(_oid, Category.class);
+        return this.categoryRepository.findById(_oid).get();
     }
 }

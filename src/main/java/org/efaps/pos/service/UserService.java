@@ -19,9 +19,8 @@ package org.efaps.pos.service;
 import java.util.List;
 
 import org.efaps.pos.entity.User;
+import org.efaps.pos.respository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,14 +31,15 @@ import org.springframework.stereotype.Service;
 public class UserService
     implements UserDetailsService
 {
-    private final MongoTemplate mongoTemplate;
+
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(final MongoTemplate _mongoTemplate,
+    public UserService(final UserRepository _userRepository,
                        final PasswordEncoder _passwordEncoder)
     {
-        this.mongoTemplate = _mongoTemplate;
+        this.userRepository = _userRepository;
         this.passwordEncoder = _passwordEncoder;
     }
 
@@ -47,11 +47,7 @@ public class UserService
     public UserDetails loadUserByUsername(final String _username)
         throws UsernameNotFoundException
     {
-        final UserDetails user = this.mongoTemplate.findById(_username, User.class);
-        if (user == null) {
-            throw new UsernameNotFoundException(_username);
-        }
-        return user;
+        return this.userRepository.findById(_username).orElseThrow(() -> new UsernameNotFoundException(_username));
     }
 
     public PasswordEncoder getPasswordEncoder()
@@ -59,7 +55,8 @@ public class UserService
         return this.passwordEncoder;
     }
 
-    public List<User> getUsers() {
-        return this.mongoTemplate.find(new Query(), User.class);
+    public List<User> getUsers()
+    {
+        return this.userRepository.findAll();
     }
 }

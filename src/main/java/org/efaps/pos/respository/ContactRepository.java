@@ -22,7 +22,7 @@ import org.efaps.pos.entity.Contact;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ContactRepository
-    extends MongoRepository<Contact, Long>
+    extends MongoRepository<Contact, String>
 {
     public Optional<Contact> findByOid(String _oid);
 }

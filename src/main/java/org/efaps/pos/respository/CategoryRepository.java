@@ -16,11 +16,11 @@
  */
 package org.efaps.pos.respository;
 
-import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Category;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface UserRepository
-    extends MongoRepository<User, String>
+public interface CategoryRepository
+    extends MongoRepository<Category, String>
 {
 
 }

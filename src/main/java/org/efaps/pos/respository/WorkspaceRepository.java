@@ -20,7 +20,7 @@ import org.efaps.pos.entity.Workspace;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface WorkspaceRepository
-    extends MongoRepository<Workspace, Long>
+    extends MongoRepository<Workspace, String>
 {
 
 }
