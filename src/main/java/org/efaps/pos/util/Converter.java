@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.CompanyDto;
+import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosOrderDto;
@@ -32,6 +33,7 @@ import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Pos.Company;
@@ -303,6 +305,14 @@ public final class Converter
                             : _entity.getTaxes().stream()
                                 .map(_tax -> Converter.toDto(_tax))
                                 .collect(Collectors.toSet()))
+                        .build();
+    }
+
+    public static ContactDto toDto(final Contact _entity) {
+        return ContactDto.builder()
+                        .withOID(_entity.getOid())
+                        .withName(_entity.getName())
+                        .withTaxNumber(_entity.getTaxNumber())
                         .build();
     }
 }

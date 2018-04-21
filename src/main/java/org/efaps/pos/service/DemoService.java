@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Sequence;
@@ -71,6 +72,7 @@ public class DemoService
             init("poss.json", new TypeReference<List<Pos>>(){});
             init("categories.json", new TypeReference<List<Category>>(){});
             init("sequences.json", new TypeReference<List<Sequence>>(){});
+            init("contacts.json", new TypeReference<List<Contact>>(){});
             loadImages();
         } catch (final IOException e) {
             LOG.error("Errors during init", e);

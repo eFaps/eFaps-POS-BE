@@ -36,6 +36,8 @@ public class Pos
 
     private Company company;
 
+    private String defaultContactOid;
+
     public String getOid()
     {
         return this.oid;
@@ -79,6 +81,16 @@ public class Pos
     {
         this.company = _company;
         return this;
+    }
+
+    public String getDefaultContactOid()
+    {
+        return this.defaultContactOid;
+    }
+
+    public void setDefaultContactOid(final String _defaultContactOid)
+    {
+        this.defaultContactOid = _defaultContactOid;
     }
 
     @Override

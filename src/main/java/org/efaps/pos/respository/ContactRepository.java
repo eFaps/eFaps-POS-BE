@@ -16,11 +16,13 @@
  */
 package org.efaps.pos.respository;
 
-import org.efaps.pos.entity.User;
+import java.util.Optional;
+
+import org.efaps.pos.entity.Contact;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface UserRepository
-    extends MongoRepository<User, Long>
+public interface ContactRepository
+    extends MongoRepository<Contact, Long>
 {
-
+    public Optional<Contact> findByOid(String _oid);
 }

@@ -1,0 +1,14 @@
+[
+    {
+        "oid": "5394.1",
+        "name": "Cliente default",
+        "taxNumber": "",
+        "_class": "org.efaps.pos.entity.Contact"
+    },
+    {
+        "oid": "5394.2",
+        "name": "Some client",
+        "taxNumber": "98765423581",
+        "_class": "org.efaps.pos.entity.Contact"
+    }
+]

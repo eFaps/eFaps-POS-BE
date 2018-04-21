@@ -14,13 +14,27 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.respository;
 
-import org.efaps.pos.entity.User;
-import org.springframework.data.mongodb.repository.MongoRepository;
+package org.efaps.pos.service;
 
-public interface UserRepository
-    extends MongoRepository<User, Long>
+import org.efaps.pos.entity.Contact;
+import org.efaps.pos.respository.ContactRepository;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ContactService
 {
+    private final ContactRepository contactRepository;
+
+    public ContactService(final ContactRepository _contactRepository)
+    {
+        this.contactRepository = _contactRepository;
+    }
+
+    public Contact get(final String _oid)
+    {
+        final Contact ret = this.contactRepository.findByOid(_oid).get();
+        return ret;
+    }
 
 }

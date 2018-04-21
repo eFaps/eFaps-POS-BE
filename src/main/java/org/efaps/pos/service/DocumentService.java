@@ -18,10 +18,14 @@ package org.efaps.pos.service;
 
 import java.util.List;
 
+import org.efaps.pos.dto.CompanyDto;
+import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.entity.Order;
+import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.interfaces.IPos;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.respository.OrderRepository;
 import org.efaps.pos.respository.ReceiptRepository;
@@ -45,20 +49,23 @@ public class DocumentService
 
     private final ServiceListFactoryBean serviceListFactoryBean;
     private final PosService posService;
+    private final ContactService contactService;
     private final MongoTemplate mongoTemplate;
     private final OrderRepository orderRepository;
     private final ReceiptRepository receiptRepository;
 
+
     @Autowired
     public DocumentService(final ServiceListFactoryBean _serviceListFactoryBean, final PosService _posService,
-                           final MongoTemplate _mongoTemplate, final OrderRepository _orderRepository,
-                           final ReceiptRepository _receiptRepository)
+                           final ContactService _contactService, final MongoTemplate _mongoTemplate,
+                           final OrderRepository _orderRepository, final ReceiptRepository _receiptRepository)
     {
         this.serviceListFactoryBean = _serviceListFactoryBean;
         this.posService = _posService;
         this.mongoTemplate = _mongoTemplate;
         this.orderRepository = _orderRepository;
         this.receiptRepository = _receiptRepository;
+        this.contactService = _contactService;
     }
 
     public List<Order> getOrders() {
@@ -87,7 +94,7 @@ public class DocumentService
                PosReceiptDto dto = Converter.toDto(ret);
                 for (final IReceiptListener listener  :listeners) {
                     dto = (PosReceiptDto) listener.onCreate(
-                                    Converter.toDto(this.posService.getPos4Workspace(_workspaceOid)), dto);
+                                    getPos(this.posService.getPos4Workspace(_workspaceOid)), dto);
                 }
                 ret = this.receiptRepository.save(Converter.toEntity(dto));
             }
@@ -95,6 +102,43 @@ public class DocumentService
             LOG.error("Wow that should not happen", e);
         }
         return ret;
+    }
+
+    private IPos getPos(final Pos _pos) {
+        final String name = _pos.getName();
+        final String currency = _pos.getCurrency();
+        final CompanyDto companyDto = CompanyDto.builder()
+                        .withName(_pos.getCompany().getName())
+                        .withTaxNumber(_pos.getCompany().getTaxNumber())
+                        .build();
+        final ContactDto contactDto = Converter.toDto(this.contactService.get(_pos.getDefaultContactOid()));
+
+        return new IPos() {
+
+            @Override
+            public String getName()
+            {
+                return name;
+            }
+
+            @Override
+            public String getCurrency()
+            {
+                return currency;
+            }
+
+            @Override
+            public CompanyDto getCompany()
+            {
+                return companyDto;
+            }
+
+            @Override
+            public ContactDto getDefaultContact()
+            {
+                return contactDto;
+            }
+        };
     }
 
     public String getNextNumber(final String _numberKey) {

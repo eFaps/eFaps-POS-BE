@@ -17,10 +17,10 @@
 package org.efaps.pos.respository;
 
 import org.efaps.pos.entity.Workspace;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface WorkspaceRepository
-    extends CrudRepository<Workspace, Long>
+    extends MongoRepository<Workspace, Long>
 {
 
 }
