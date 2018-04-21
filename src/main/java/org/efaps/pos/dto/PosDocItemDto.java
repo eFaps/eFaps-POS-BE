@@ -19,9 +19,12 @@ package org.efaps.pos.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import org.efaps.pos.interfaces.IReceiptItem;
+
 @JsonDeserialize(builder = PosDocItemDto.Builder.class)
 public class PosDocItemDto
     extends AbstractDocItemDto
+    implements IReceiptItem
 {
 
     private final ProductDto product;
@@ -35,6 +38,24 @@ public class PosDocItemDto
     public ProductDto getProduct()
     {
         return this.product;
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return getProduct().getDescription();
+    }
+
+    @Override
+    public String getSku()
+    {
+        return getProduct().getSku();
+    }
+
+    @Override
+    public String getUoM()
+    {
+        return getProduct().getUoM();
     }
 
     /**

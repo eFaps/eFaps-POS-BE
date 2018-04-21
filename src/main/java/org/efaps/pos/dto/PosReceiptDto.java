@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Set;
 
 import org.efaps.pos.interfaces.IReceipt;
+import org.efaps.pos.interfaces.IReceiptItem;
 
 @JsonDeserialize(builder = PosReceiptDto.Builder.class)
 public class PosReceiptDto
@@ -31,6 +32,13 @@ public class PosReceiptDto
     public PosReceiptDto(final Builder _builder)
     {
         super(_builder);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Set<IReceiptItem> getReceiptItems()
+    {
+        return (Set<IReceiptItem>) getItems();
     }
 
     public static Builder builder()

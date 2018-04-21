@@ -7,6 +7,7 @@
         "imageOid": "1234.1",
         "netPrice": "8.47",
         "crossPrice": "9.99",
+        "uoM": "UND",
         "categoryOids": [
             "8562.1"
         ],
@@ -27,6 +28,7 @@
         "imageOid": "1234.2",
         "netPrice": "12.45",
         "crossPrice": "14.45",
+        "uoM": "UND",
         "categoryOids": [
             "8562.1"
         ],
@@ -47,6 +49,7 @@
         "imageOid": "1234.1",
         "netPrice": "13.45",
         "crossPrice": "15.45",
+        "uoM": "UND",
         "categoryOids": [
             "8562.1"
         ],
@@ -67,6 +70,7 @@
         "imageOid": "1234.2",
         "netPrice": "14.45",
         "crossPrice": "16.45",
+        "uoM": "UND",
         "categoryOids": [
             "8562.1"
         ],
@@ -87,6 +91,7 @@
         "imageOid": "1234.3",
         "netPrice": "140.45",
         "crossPrice": "160.45",
+        "uoM": "UND",
         "categoryOids": [
             "8562.2"
         ],
@@ -107,6 +112,7 @@
         "imageOid": "1234.4",
         "netPrice": "14.45",
         "crossPrice": "16.45",
+        "uoM": "UND",
         "categoryOids": [
             "8562.2"
         ],
@@ -127,6 +133,7 @@
         "imageOid": "null",
         "netPrice": "14.45",
         "crossPrice": "16.45",
+        "uoM": "UND",
         "categoryOids": [
             "8562.1",
             "8562.2"

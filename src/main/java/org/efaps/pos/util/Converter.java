@@ -122,7 +122,8 @@ public final class Converter
                         .setCategoryOids(_dto.getCategoryOids())
                         .setTaxes(_dto.getTaxes().stream()
                                         .map(_tax -> _tax == null ? null : toEntity(_tax))
-                                        .collect(Collectors.toSet()));
+                                        .collect(Collectors.toSet()))
+                        .setUoM(_dto.getUoM());
         return ret;
     }
 
@@ -141,6 +142,7 @@ public final class Converter
                                 :_entity.getTaxes().stream()
                                         .map(_tax -> toDto(_tax))
                                         .collect(Collectors.toSet()))
+                        .withUoM(_entity.getUoM())
                         .build();
     }
 
