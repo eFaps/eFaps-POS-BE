@@ -66,7 +66,12 @@ public final class Converter
                         .setDate(_dto.getDate())
                         .setItems(_dto.getItems().stream()
                                         .map(_item -> Converter.toEntity((PosDocItemDto) _item))
-                                        .collect(Collectors.toSet()));
+                                        .collect(Collectors.toSet()))
+                        .setTaxes(_dto.getTaxes() ==  null
+                            ? null
+                            : _dto.getTaxes().stream()
+                                .map(_tax -> Converter.toEntity(_tax))
+                                .collect(Collectors.toSet()));
         return ret;
     }
 
@@ -286,6 +291,11 @@ public final class Converter
                             : _entity.getItems().stream()
                                         .map(_item -> toDto(_item))
                                         .collect(Collectors.toSet()))
+                        .withTaxes(_entity.getTaxes() == null
+                            ? null
+                            : _entity.getTaxes().stream()
+                                .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
                         .build();
     }
 }
