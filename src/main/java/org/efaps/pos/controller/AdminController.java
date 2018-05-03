@@ -25,5 +25,7 @@ public class AdminController
     {
         this.syncService.syncProducts();
         this.syncService.syncCategories();
+        this.syncService.syncPOSs();
+        this.syncService.syncWorkspaces();
     }
 }

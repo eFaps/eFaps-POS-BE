@@ -18,6 +18,8 @@ efaps:
   restUrl: http://localhost:8888/eFaps/servlet/rest
   productPath: /pos/products
   categoryPath: /pos/categories
+  workspacePath: /pos/workspaces
+  posPath: /pos/poss
 
 auth:
   user: Administrator

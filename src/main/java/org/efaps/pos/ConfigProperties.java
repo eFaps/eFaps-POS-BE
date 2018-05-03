@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties
 public class ConfigProperties
 {
+
     private String name;
 
     private final SSO sso = new SSO();
@@ -96,6 +97,8 @@ public class ConfigProperties
         private URI restUrl;
         private String productPath;
         private String categoryPath;
+        private String workspacePath;
+        private String posPath;
 
         public URI getRestUrl()
         {
@@ -117,16 +120,34 @@ public class ConfigProperties
             this.productPath = _productPath;
         }
 
-
         public String getCategoryPath()
         {
             return this.categoryPath;
         }
 
-
         public void setCategoryPath(final String _categoryPath)
         {
             this.categoryPath = _categoryPath;
+        }
+
+        public String getWorkspacePath()
+        {
+            return this.workspacePath;
+        }
+
+        public void setWorkspacePath(final String _workspacePath)
+        {
+            this.workspacePath = _workspacePath;
+        }
+
+        public String getPosPath()
+        {
+            return this.posPath;
+        }
+
+        public void setPosPath(final String _posPath)
+        {
+            this.posPath = _posPath;
         }
     }
 

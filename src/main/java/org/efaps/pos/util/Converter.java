@@ -176,6 +176,14 @@ public final class Converter
                         .build();
     }
 
+    public static Workspace toEntity(final WorkspaceDto _dto)
+    {
+        return new Workspace()
+                        .setOid(_dto.getOid())
+                        .setName(_dto.getName())
+                        .setPosOid(_dto.getPosOid());
+    }
+
     public static PosDto toDto(final Pos _entity)
     {
         return PosDto.builder()
@@ -197,9 +205,10 @@ public final class Converter
                         .setOid(_dto.getOid())
                         .setName(_dto.getName())
                         .setCurrency(_dto.getCurrency())
+                        .setDefaultContactOid(_dto.getDefaultContactOid())
                         .setCompany(new Company()
-                                        .setName(_dto.getCompany().getName())
-                                        .setTaxNumber(_dto.getCompany().getTaxNumber()));
+                                    .setName(_dto.getCompany() == null ? null : _dto.getCompany().getName())
+                                    .setTaxNumber(_dto.getCompany() == null ? null : _dto.getCompany().getTaxNumber()));
         return ret;
     }
 

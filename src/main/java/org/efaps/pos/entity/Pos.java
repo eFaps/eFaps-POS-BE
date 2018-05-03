@@ -88,9 +88,10 @@ public class Pos
         return this.defaultContactOid;
     }
 
-    public void setDefaultContactOid(final String _defaultContactOid)
+    public Pos setDefaultContactOid(final String _defaultContactOid)
     {
         this.defaultContactOid = _defaultContactOid;
+        return this;
     }
 
     @Override

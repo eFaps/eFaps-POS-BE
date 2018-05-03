@@ -22,7 +22,9 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -63,8 +65,8 @@ public class SyncService
         final List<Category> categories = this.eFapsClient.getCategories().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
-        final List<Category> existingProducts = this.mongoTemplate.findAll(Category.class);
-        existingProducts.forEach(existing -> {
+        final List<Category> existingCategories = this.mongoTemplate.findAll(Category.class);
+        existingCategories.forEach(existing -> {
             if (!categories.stream()
                             .filter(category -> category.getOid().equals(existing.getOid())).findFirst()
                             .isPresent()) {
@@ -72,5 +74,37 @@ public class SyncService
             }
         });
         categories.forEach(category -> this.mongoTemplate.save(category));
+    }
+
+    public void syncWorkspaces()
+    {
+        final List<Workspace> workspaces = this.eFapsClient.getWorkspaces().stream()
+                        .map(dto -> Converter.toEntity(dto))
+                        .collect(Collectors.toList());
+        final List<Workspace> existingWorkspaces = this.mongoTemplate.findAll(Workspace.class);
+        existingWorkspaces.forEach(existing -> {
+            if (!workspaces.stream()
+                            .filter(workspace -> workspace.getOid().equals(existing.getOid())).findFirst()
+                            .isPresent()) {
+                this.mongoTemplate.remove(existing);
+            }
+        });
+        workspaces.forEach(workspace -> this.mongoTemplate.save(workspace));
+    }
+
+    public void syncPOSs()
+    {
+        final List<Pos> poss = this.eFapsClient.getPOSs().stream()
+                        .map(dto -> Converter.toEntity(dto))
+                        .collect(Collectors.toList());
+        final List<Pos> existingPoss = this.mongoTemplate.findAll(Pos.class);
+        existingPoss.forEach(existing -> {
+            if (!poss.stream()
+                            .filter(pos -> pos.getOid().equals(existing.getOid())).findFirst()
+                            .isPresent()) {
+                this.mongoTemplate.remove(existing);
+            }
+        });
+        poss.forEach(pos -> this.mongoTemplate.save(pos));
     }
 }

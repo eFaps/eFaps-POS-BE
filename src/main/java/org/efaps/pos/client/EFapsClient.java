@@ -22,7 +22,9 @@ import java.util.List;
 
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.CategoryDto;
+import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.WorkspaceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.RequestEntity;
@@ -84,6 +86,38 @@ public class EFapsClient
                         getAuth()).build();
         final ResponseEntity<List<CategoryDto>> ret = this.restTemplate.exchange(requestEntity,
                         new ParameterizedTypeReference<List<CategoryDto>>()
+                        {
+                        });
+        return ret.getBody();
+    }
+
+    public List<WorkspaceDto> getWorkspaces()
+    {
+        final UriComponents uriComponents = UriComponentsBuilder
+                        .fromUri(this.config.getEFaps().getRestUrl())
+                        .path(this.config.getEFaps().getWorkspacePath())
+                        .build();
+
+        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).header("Authorization",
+                        getAuth()).build();
+        final ResponseEntity<List<WorkspaceDto>> ret = this.restTemplate.exchange(requestEntity,
+                        new ParameterizedTypeReference<List<WorkspaceDto>>()
+                        {
+                        });
+        return ret.getBody();
+    }
+
+    public List<PosDto> getPOSs()
+    {
+        final UriComponents uriComponents = UriComponentsBuilder
+                        .fromUri(this.config.getEFaps().getRestUrl())
+                        .path(this.config.getEFaps().getPosPath())
+                        .build();
+
+        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).header("Authorization",
+                        getAuth()).build();
+        final ResponseEntity<List<PosDto>> ret = this.restTemplate.exchange(requestEntity,
+                        new ParameterizedTypeReference<List<PosDto>>()
                         {
                         });
         return ret.getBody();

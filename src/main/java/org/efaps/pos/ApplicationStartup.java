@@ -52,6 +52,8 @@ public class ApplicationStartup
         } else {
             this.service.syncProducts();
             this.service.syncCategories();
+            this.service.syncPOSs();
+            this.service.syncWorkspaces();
         }
     }
 }
