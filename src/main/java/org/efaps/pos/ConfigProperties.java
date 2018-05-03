@@ -95,6 +95,7 @@ public class ConfigProperties
 
         private URI restUrl;
         private String productPath;
+        private String categoryPath;
 
         public URI getRestUrl()
         {
@@ -114,6 +115,18 @@ public class ConfigProperties
         public void setProductPath(final String _productPath)
         {
             this.productPath = _productPath;
+        }
+
+
+        public String getCategoryPath()
+        {
+            return this.categoryPath;
+        }
+
+
+        public void setCategoryPath(final String _categoryPath)
+        {
+            this.categoryPath = _categoryPath;
         }
     }
 

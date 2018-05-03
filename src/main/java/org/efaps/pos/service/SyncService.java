@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,5 +56,21 @@ public class SyncService
             }
         });
         products.forEach(product -> this.mongoTemplate.save(product));
+    }
+
+    public void syncCategories()
+    {
+        final List<Category> categories = this.eFapsClient.getCategories().stream()
+                        .map(dto -> Converter.toEntity(dto))
+                        .collect(Collectors.toList());
+        final List<Category> existingProducts = this.mongoTemplate.findAll(Category.class);
+        existingProducts.forEach(existing -> {
+            if (!categories.stream()
+                            .filter(category -> category.getOid().equals(existing.getOid())).findFirst()
+                            .isPresent()) {
+                this.mongoTemplate.remove(existing);
+            }
+        });
+        categories.forEach(category -> this.mongoTemplate.save(category));
     }
 }

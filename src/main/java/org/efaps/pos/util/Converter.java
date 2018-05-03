@@ -211,6 +211,11 @@ public final class Converter
                         .build();
     }
 
+    public static Category toEntity(final CategoryDto _dto)
+    {
+        return new Category().setName(_dto.getName()).setOid(_dto.getOid());
+    }
+
     public static TaxDto toDto(final Tax _entity)
     {
         return TaxDto.builder()

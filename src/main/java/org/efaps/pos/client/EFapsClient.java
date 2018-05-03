@@ -21,6 +21,7 @@ import java.util.Base64;
 import java.util.List;
 
 import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -67,6 +68,22 @@ public class EFapsClient
                         getAuth()).build();
         final ResponseEntity<List<ProductDto>> ret = this.restTemplate.exchange(requestEntity,
                         new ParameterizedTypeReference<List<ProductDto>>()
+                        {
+                        });
+        return ret.getBody();
+    }
+
+    public List<CategoryDto> getCategories()
+    {
+        final UriComponents uriComponents = UriComponentsBuilder
+                        .fromUri(this.config.getEFaps().getRestUrl())
+                        .path(this.config.getEFaps().getCategoryPath())
+                        .build();
+
+        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).header("Authorization",
+                        getAuth()).build();
+        final ResponseEntity<List<CategoryDto>> ret = this.restTemplate.exchange(requestEntity,
+                        new ParameterizedTypeReference<List<CategoryDto>>()
                         {
                         });
         return ret.getBody();

@@ -1,6 +1,7 @@
 package org.efaps.pos.entity;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,9 +50,11 @@ public class User
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities()
     {
-        return getRoles().stream()
-                        .map(_role -> new SimpleGrantedAuthority(_role.name()))
-                        .collect(Collectors.toSet());
+        return getRoles() == null
+                        ? Collections.emptyList()
+                        : getRoles().stream()
+                            .map(_role -> new SimpleGrantedAuthority(_role.name()))
+                            .collect(Collectors.toSet());
     }
 
     @Override
