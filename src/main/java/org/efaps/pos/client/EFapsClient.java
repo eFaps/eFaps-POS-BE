@@ -24,6 +24,7 @@ import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -118,6 +119,22 @@ public class EFapsClient
                         getAuth()).build();
         final ResponseEntity<List<PosDto>> ret = this.restTemplate.exchange(requestEntity,
                         new ParameterizedTypeReference<List<PosDto>>()
+                        {
+                        });
+        return ret.getBody();
+    }
+
+    public List<UserDto> getUsers()
+    {
+        final UriComponents uriComponents = UriComponentsBuilder
+                        .fromUri(this.config.getEFaps().getRestUrl())
+                        .path(this.config.getEFaps().getUserPath())
+                        .build();
+
+        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).header("Authorization",
+                        getAuth()).build();
+        final ResponseEntity<List<UserDto>> ret = this.restTemplate.exchange(requestEntity,
+                        new ParameterizedTypeReference<List<UserDto>>()
                         {
                         });
         return ret.getBody();

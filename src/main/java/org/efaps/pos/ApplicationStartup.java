@@ -54,6 +54,7 @@ public class ApplicationStartup
             this.service.syncCategories();
             this.service.syncPOSs();
             this.service.syncWorkspaces();
+            this.service.syncUsers();
         }
     }
 }

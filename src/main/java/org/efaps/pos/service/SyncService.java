@@ -24,6 +24,7 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,5 +107,21 @@ public class SyncService
             }
         });
         poss.forEach(pos -> this.mongoTemplate.save(pos));
+    }
+
+    public void syncUsers()
+    {
+        final List<User> users = this.eFapsClient.getUsers().stream()
+                        .map(dto -> Converter.toEntity(dto))
+                        .collect(Collectors.toList());
+        final List<User> existingUsers = this.mongoTemplate.findAll(User.class);
+        existingUsers.forEach(existing -> {
+            if (!users.stream()
+                            .filter(user -> user.getOid().equals(existing.getOid())).findFirst()
+                            .isPresent()) {
+                this.mongoTemplate.remove(existing);
+            }
+        });
+        users.forEach(user -> this.mongoTemplate.save(user));
     }
 }

@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.util;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.dto.CategoryDto;
@@ -29,6 +30,7 @@ import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.TaxDto;
 import org.efaps.pos.dto.TaxEntryDto;
+import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
@@ -167,6 +169,16 @@ public final class Converter
                         .build();
     }
 
+    public static User toEntity(final UserDto _dto)
+    {
+        return new User().setOid(_dto.getOid())
+                        .setUsername(_dto.getUsername())
+                        .setPassword(_dto.getPassword())
+                        .setFirstName(_dto.getFirstName())
+                        .setSurName(_dto.getSurName())
+                        .setRoles(_dto.getRoles());
+    }
+
     public static WorkspaceDto toDto(final Workspace _entity)
     {
         return WorkspaceDto.builder()
@@ -267,7 +279,9 @@ public final class Converter
                         .withNumber(_entity.getNumber())
                         .withCurrency(_entity.getCurrency())
                         .withDate(_entity.getDate())
-                        .withItems(_entity.getItems().stream()
+                        .withItems(_entity.getItems() == null
+                            ? Collections.emptySet()
+                            : _entity.getItems().stream()
                                         .map(_item -> toDto(_item))
                                         .collect(Collectors.toSet()))
                         .withStatus(_entity.getStatus())

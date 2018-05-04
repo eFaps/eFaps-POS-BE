@@ -99,6 +99,7 @@ public class ConfigProperties
         private String categoryPath;
         private String workspacePath;
         private String posPath;
+        private String userPath;
 
         public URI getRestUrl()
         {
@@ -148,6 +149,18 @@ public class ConfigProperties
         public void setPosPath(final String _posPath)
         {
             this.posPath = _posPath;
+        }
+
+
+        public String getUserPath()
+        {
+            return this.userPath;
+        }
+
+
+        public void setUserPath(final String _userPath)
+        {
+            this.userPath = _userPath;
         }
     }
 

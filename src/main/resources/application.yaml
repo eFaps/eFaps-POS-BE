@@ -20,6 +20,7 @@ efaps:
   categoryPath: /pos/categories
   workspacePath: /pos/workspaces
   posPath: /pos/poss
+  userPath: /pos/users
 
 auth:
   user: Administrator

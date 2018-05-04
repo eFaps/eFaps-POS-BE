@@ -17,6 +17,8 @@
 package org.efaps.pos;
 
 import org.efaps.pos.interfaces.IReceiptListener;
+import org.jasypt.util.password.PasswordEncryptor;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
@@ -24,7 +26,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -58,8 +59,25 @@ public class Application
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder()
+    {
+        return new PasswordEncoder()
+        {
+
+            private final PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+
+            @Override
+            public String encode(final CharSequence _rawPassword)
+            {
+                return this.passwordEncryptor.encryptPassword(_rawPassword.toString());
+            }
+
+            @Override
+            public boolean matches(final CharSequence _rawPassword, final String _encodedPassword)
+            {
+                return this.passwordEncryptor.checkPassword(_rawPassword.toString(), _encodedPassword);
+            }
+        };
     }
 
     @Bean

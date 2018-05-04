@@ -63,6 +63,12 @@ public class User
         return this.password;
     }
 
+    public User setPassword(final String _password)
+    {
+        this.password = _password;
+        return this;
+    }
+
     @Override
     public String getUsername()
     {
@@ -127,9 +133,10 @@ public class User
         return this.roles;
     }
 
-    public void setRoles(final Set<Roles> _roles)
+    public User setRoles(final Set<Roles> _roles)
     {
         this.roles = _roles;
+        return this;
     }
 
     @Override
