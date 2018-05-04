@@ -5,7 +5,7 @@
         "username": "admin",
         "firstName": "Juan",
         "surName": "Perez",
-        "password": "$2a$10$FV3p0teors1xgEe7aacuIu2L7KyhxMdmOUclB9XTVmWvL9odIfN2a",
+        "password": "r0f2haGklaVd/jrOdWL+CRG22zBCUplNh9qjeGgsSl89nwYc7PYtcmSpu7ciZEeA",
         "roles": [
             "ADMIN", "USER"
         ],
@@ -20,7 +20,7 @@
         "roles": [
             "USER"
         ],
-        "password": "$2a$10$FV3p0teors1xgEe7aacuIu2L7KyhxMdmOUclB9XTVmWvL9odIfN2a",
+        "password": "r0f2haGklaVd/jrOdWL+CRG22zBCUplNh9qjeGgsSl89nwYc7PYtcmSpu7ciZEeA",
         "_class": "org.efaps.pos.entity.User"
     }
 ]
