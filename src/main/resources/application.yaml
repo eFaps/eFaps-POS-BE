@@ -9,6 +9,14 @@ spring:
     mongodb:
       database: efapsPOS
 
+org:
+  quartz:
+    threadPool:
+      threadCount: 2
+    jobs:
+      syncReceipts:
+        interval: 30  #Interval in seconds
+
 server:
   servlet:
     contextPath: /pos/api
