@@ -22,12 +22,14 @@ import java.util.stream.Collectors;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.TaxDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.dto.UserDto;
@@ -343,6 +345,45 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
                         .withTaxNumber(_entity.getTaxNumber())
+                        .build();
+    }
+
+    public static ReceiptDto toReceiptDto(final Receipt _entity) {
+        return ReceiptDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withNumber(_entity.getNumber())
+                        .withDate(_entity.getDate())
+                        .withCurrency(_entity.getCurrency())
+                        .withStatus(_entity.getStatus())
+                        .withItems(_entity.getItems() == null
+                            ? null
+                            : _entity.getItems().stream()
+                                    .map(_item -> toItemDto(_item))
+                                    .collect(Collectors.toSet()))
+                        .withTaxes(_entity.getTaxes() == null
+                            ? null
+                            : _entity.getTaxes().stream()
+                                .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
+                        .build();
+    }
+
+    public static DocItemDto toItemDto(final AbstractDocument.Item _entity) {
+        return DocItemDto.builder()
+                        .withOID(_entity.getOid())
+                        .withIndex(_entity.getIndex())
+                        .withCrossPrice(_entity.getCrossPrice())
+                        .withCrossUnitPrice(_entity.getCrossUnitPrice())
+                        .withNetPrice(_entity.getNetPrice())
+                        .withNetUnitPrice(_entity.getNetUnitPrice())
+                        .withQuantity(_entity.getQuantity())
+                        .withProductOid(_entity.getProductOid())
+                        .withTaxes(_entity.getTaxes() == null
+                            ? null
+                            : _entity.getTaxes().stream()
+                                .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
                         .build();
     }
 }

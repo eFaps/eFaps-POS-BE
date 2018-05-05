@@ -17,16 +17,21 @@
 
 package org.efaps.pos.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.respository.ReceiptRepository;
 import org.efaps.pos.util.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -35,19 +40,27 @@ import org.springframework.stereotype.Service;
 public class SyncService
 {
 
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(SyncService.class);
+
     private final MongoTemplate mongoTemplate;
     private final EFapsClient eFapsClient;
+    private final ReceiptRepository receiptRepository;
 
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
+                       final ReceiptRepository _receiptRepository,
                        final EFapsClient _eFapsClient)
     {
         this.mongoTemplate = _mongoTemplate;
+        this.receiptRepository = _receiptRepository;
         this.eFapsClient = _eFapsClient;
+
     }
 
     public void syncProducts()
     {
+        LOG.info("Syncing Products");
         final List<Product> products = this.eFapsClient.getProducts().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
@@ -63,6 +76,7 @@ public class SyncService
 
     public void syncCategories()
     {
+        LOG.info("Syncing Categories");
         final List<Category> categories = this.eFapsClient.getCategories().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
@@ -79,6 +93,7 @@ public class SyncService
 
     public void syncWorkspaces()
     {
+        LOG.info("Syncing Workspaces");
         final List<Workspace> workspaces = this.eFapsClient.getWorkspaces().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
@@ -95,6 +110,7 @@ public class SyncService
 
     public void syncPOSs()
     {
+        LOG.info("Syncing POSs");
         final List<Pos> poss = this.eFapsClient.getPOSs().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
@@ -111,6 +127,7 @@ public class SyncService
 
     public void syncUsers()
     {
+        LOG.info("Syncing Users");
         final List<User> users = this.eFapsClient.getUsers().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
@@ -124,4 +141,18 @@ public class SyncService
         });
         users.forEach(user -> this.mongoTemplate.save(user));
     }
+
+    public void syncReceipts()
+    {
+        LOG.info("Syncing Receipts");
+        final Collection<ReceiptDto> tosync = this.receiptRepository.findByOidIsNull().stream()
+                        .map(receipt -> Converter.toReceiptDto(receipt))
+                        .collect(Collectors.toList());
+        for (final ReceiptDto dto : tosync) {
+            LOG.debug("Syncing Receipt: {}", dto);
+            final ReceiptDto recDto = this.eFapsClient.postReceipt(dto);
+            LOG.debug("received Receipt: {}", recDto);
+        }
+    }
+
 }

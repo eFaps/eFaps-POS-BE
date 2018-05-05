@@ -17,11 +17,13 @@
 
 package org.efaps.pos.respository;
 
+import java.util.Collection;
+
 import org.efaps.pos.entity.Receipt;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ReceiptRepository
     extends MongoRepository<Receipt, String>
 {
-
+    Collection<Receipt> findByOidIsNull();
 }

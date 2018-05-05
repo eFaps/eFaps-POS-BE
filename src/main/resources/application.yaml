@@ -21,6 +21,7 @@ efaps:
   workspacePath: /pos/workspaces
   posPath: /pos/poss
   userPath: /pos/users
+  receiptPath:  /pos/receipts
 
 auth:
   user: Administrator

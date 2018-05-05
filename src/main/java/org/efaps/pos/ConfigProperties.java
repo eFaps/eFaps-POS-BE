@@ -100,6 +100,7 @@ public class ConfigProperties
         private String workspacePath;
         private String posPath;
         private String userPath;
+        private String receiptPath;
 
         public URI getRestUrl()
         {
@@ -151,16 +152,24 @@ public class ConfigProperties
             this.posPath = _posPath;
         }
 
-
         public String getUserPath()
         {
             return this.userPath;
         }
 
-
         public void setUserPath(final String _userPath)
         {
             this.userPath = _userPath;
+        }
+
+        public String getReceiptPath()
+        {
+            return this.receiptPath;
+        }
+
+        public void setReceiptPath(final String _receiptPath)
+        {
+            this.receiptPath = _receiptPath;
         }
     }
 

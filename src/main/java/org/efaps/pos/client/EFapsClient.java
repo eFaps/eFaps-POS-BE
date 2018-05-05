@@ -24,10 +24,12 @@ import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -50,25 +52,9 @@ public class EFapsClient
         this.restTemplate = _restTemplate;
     }
 
-    private String getAuth()
-    {
-        String auth = "";
-        if (this.config.getAuth() != null) {
-            auth = "Basic " + Base64.getEncoder().encodeToString((this.config.getAuth().getUser() + ":" + this.config
-                            .getAuth().getPassword()).getBytes(StandardCharsets.UTF_8));
-        }
-        return auth;
-    }
-
     public List<ProductDto> getProducts()
     {
-        final UriComponents uriComponents = UriComponentsBuilder
-                        .fromUri(this.config.getEFaps().getRestUrl())
-                        .path(this.config.getEFaps().getProductPath())
-                        .build();
-
-        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).header("Authorization",
-                        getAuth()).build();
+        final RequestEntity<?> requestEntity = get(this.config.getEFaps().getProductPath());
         final ResponseEntity<List<ProductDto>> ret = this.restTemplate.exchange(requestEntity,
                         new ParameterizedTypeReference<List<ProductDto>>()
                         {
@@ -78,13 +64,7 @@ public class EFapsClient
 
     public List<CategoryDto> getCategories()
     {
-        final UriComponents uriComponents = UriComponentsBuilder
-                        .fromUri(this.config.getEFaps().getRestUrl())
-                        .path(this.config.getEFaps().getCategoryPath())
-                        .build();
-
-        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).header("Authorization",
-                        getAuth()).build();
+        final RequestEntity<?> requestEntity = get(this.config.getEFaps().getCategoryPath());
         final ResponseEntity<List<CategoryDto>> ret = this.restTemplate.exchange(requestEntity,
                         new ParameterizedTypeReference<List<CategoryDto>>()
                         {
@@ -94,13 +74,7 @@ public class EFapsClient
 
     public List<WorkspaceDto> getWorkspaces()
     {
-        final UriComponents uriComponents = UriComponentsBuilder
-                        .fromUri(this.config.getEFaps().getRestUrl())
-                        .path(this.config.getEFaps().getWorkspacePath())
-                        .build();
-
-        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).header("Authorization",
-                        getAuth()).build();
+        final RequestEntity<?> requestEntity = get(this.config.getEFaps().getWorkspacePath());
         final ResponseEntity<List<WorkspaceDto>> ret = this.restTemplate.exchange(requestEntity,
                         new ParameterizedTypeReference<List<WorkspaceDto>>()
                         {
@@ -110,13 +84,7 @@ public class EFapsClient
 
     public List<PosDto> getPOSs()
     {
-        final UriComponents uriComponents = UriComponentsBuilder
-                        .fromUri(this.config.getEFaps().getRestUrl())
-                        .path(this.config.getEFaps().getPosPath())
-                        .build();
-
-        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).header("Authorization",
-                        getAuth()).build();
+        final RequestEntity<?> requestEntity = get(this.config.getEFaps().getPosPath());
         final ResponseEntity<List<PosDto>> ret = this.restTemplate.exchange(requestEntity,
                         new ParameterizedTypeReference<List<PosDto>>()
                         {
@@ -126,17 +94,52 @@ public class EFapsClient
 
     public List<UserDto> getUsers()
     {
-        final UriComponents uriComponents = UriComponentsBuilder
-                        .fromUri(this.config.getEFaps().getRestUrl())
-                        .path(this.config.getEFaps().getUserPath())
-                        .build();
-
-        final RequestEntity<?> requestEntity = RequestEntity.get(uriComponents.toUri()).header("Authorization",
-                        getAuth()).build();
+        final RequestEntity<?> requestEntity = get(this.config.getEFaps().getUserPath());
         final ResponseEntity<List<UserDto>> ret = this.restTemplate.exchange(requestEntity,
                         new ParameterizedTypeReference<List<UserDto>>()
                         {
                         });
         return ret.getBody();
+    }
+
+    public ReceiptDto postReceipt(final ReceiptDto _receipt) {
+        final RequestEntity<ReceiptDto> requestEntity = post(this.config.getEFaps().getReceiptPath(), _receipt);
+
+        final ResponseEntity<ReceiptDto> ret = this.restTemplate.exchange(requestEntity, ReceiptDto.class);
+        return ret.getBody();
+    }
+
+    private String getAuth()
+    {
+        String auth = "";
+        if (this.config.getAuth() != null) {
+            auth = "Basic " + Base64.getEncoder()
+                .encodeToString((this.config.getAuth().getUser() + ":" + this.config.getAuth().getPassword())
+                                .getBytes(StandardCharsets.UTF_8));
+        }
+        return auth;
+    }
+
+    private UriComponents getUriComponent(final String _path)
+    {
+        return UriComponentsBuilder
+                        .fromUri(this.config.getEFaps().getRestUrl())
+                        .path(_path)
+                        .build();
+    }
+
+    private RequestEntity<?> get(final String _path)
+    {
+        return RequestEntity.get(getUriComponent(_path).toUri())
+                        .header("Authorization", getAuth())
+                        .build();
+    }
+
+    private <T> RequestEntity<T> post(final String _path, final T _body)
+    {
+        return RequestEntity.post(getUriComponent(_path).toUri())
+                        .header("Authorization", getAuth())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .body(_body);
     }
 }
