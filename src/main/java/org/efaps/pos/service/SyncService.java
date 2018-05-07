@@ -19,6 +19,7 @@ package org.efaps.pos.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.client.EFapsClient;
@@ -26,6 +27,7 @@ import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.respository.ReceiptRepository;
@@ -152,6 +154,14 @@ public class SyncService
             LOG.debug("Syncing Receipt: {}", dto);
             final ReceiptDto recDto = this.eFapsClient.postReceipt(dto);
             LOG.debug("received Receipt: {}", recDto);
+            if (recDto.getOid() != null) {
+                final Optional<Receipt> receiptOpt = this.receiptRepository.findById(recDto.getId());
+                if (receiptOpt.isPresent()) {
+                    final Receipt receipt = receiptOpt.get();
+                    receipt.setOid(recDto.getOid());
+                    this.receiptRepository.save(receipt);
+                }
+            }
         }
     }
 
