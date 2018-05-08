@@ -44,6 +44,6 @@ public class WorkspaceService
 
     public Workspace getWorkspace(final String _oid)
     {
-        return this.workspaceRepository.findById(_oid).get();
+        return this.workspaceRepository.findById(_oid).orElse(null);
     }
 }

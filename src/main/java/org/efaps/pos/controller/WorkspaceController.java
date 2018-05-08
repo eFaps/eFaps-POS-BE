@@ -17,12 +17,14 @@
 package org.efaps.pos.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.service.WorkspaceService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +51,9 @@ public class WorkspaceController
     }
 
     @GetMapping(path = "/{oid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public WorkspaceDto getWorkspace(@PathVariable("oid") final String _oid) {
-        return Converter.toDto(this.service.getWorkspace(_oid));
+    public ResponseEntity<WorkspaceDto> getWorkspace(@PathVariable("oid") final String _oid) {
+        return Optional.ofNullable( this.service.getWorkspace(_oid) )
+                        .map(ws -> ResponseEntity.ok().body(Converter.toDto(ws)))
+                        .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
