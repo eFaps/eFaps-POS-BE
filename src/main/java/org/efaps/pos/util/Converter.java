@@ -74,6 +74,8 @@ public final class Converter
                         .setItems(_dto.getItems().stream()
                                         .map(_item -> Converter.toEntity((PosDocItemDto) _item))
                                         .collect(Collectors.toSet()))
+                        .setNetTotal(_dto.getNetTotal())
+                        .setCrossTotal(_dto.getCrossTotal())
                         .setTaxes(_dto.getTaxes() ==  null
                             ? null
                             : _dto.getTaxes().stream()
@@ -356,6 +358,8 @@ public final class Converter
                         .withDate(_entity.getDate())
                         .withCurrency(_entity.getCurrency())
                         .withStatus(_entity.getStatus())
+                        .withCrossTotal(_entity.getCrossTotal())
+                        .withNetTotal(_entity.getNetTotal())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
