@@ -1,9 +1,16 @@
-
 spring:
   profiles: test
   data:
     mongodb:
       host: localhost
+
+org:
+  quartz:
+    threadPool:
+      threadCount: 2
+    jobs:
+      syncReceipts:
+        interval: 30  #Interval in seconds
 
 name: POS-Backend-Test
 
