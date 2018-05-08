@@ -33,8 +33,7 @@ public class ContactService
 
     public Contact get(final String _oid)
     {
-        final Contact ret = this.contactRepository.findByOid(_oid).get();
-        return ret;
+        return this.contactRepository.findByOid(_oid).orElse(null);
     }
 
 }
