@@ -16,6 +16,9 @@
  */
 package org.efaps.pos.sso;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
 import org.efaps.pos.ConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +37,10 @@ public class SSOClient
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(SSOClient.class);
-
     private final ConfigProperties config;
     private final RestTemplate restTemplate;
+    private String token;
+    private LocalDateTime expires;
 
     @Autowired
     public SSOClient(final ConfigProperties _config,
@@ -46,8 +50,10 @@ public class SSOClient
         this.restTemplate = _restTemplate;
     }
 
+    @SuppressWarnings("rawtypes")
     public void login()
     {
+        LOG.debug("Getting new Token from SSO");
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -58,8 +64,18 @@ public class SSOClient
 
         final HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        final ResponseEntity<String> response = this.restTemplate.postForEntity(this.config.getSso().getUrl(), request,
-                        String.class);
-        LOG.info(response.getBody());
+        final ResponseEntity<Map> response = this.restTemplate.postForEntity(this.config.getSso().getUrl(), request,
+                        Map.class);
+        this.token = (String) response.getBody().get("access_token");
+        final Integer expiresIn = (Integer) response.getBody().get("expires_in");
+        this.expires = LocalDateTime.now().plusSeconds(expiresIn - 10);
+    }
+
+    public String getToken()
+    {
+        if (this.expires == null || !LocalDateTime.now().isBefore(this.expires)) {
+            login();
+        }
+        return this.token;
     }
 }

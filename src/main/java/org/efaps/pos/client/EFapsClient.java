@@ -27,6 +27,7 @@ import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WorkspaceDto;
+import org.efaps.pos.sso.SSOClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -43,13 +44,16 @@ public class EFapsClient
 
     private final ConfigProperties config;
     private final RestTemplate restTemplate;
+    private final SSOClient ssoClient;
 
     @Autowired
     public EFapsClient(final ConfigProperties _config,
-                       final RestTemplate _restTemplate)
+                       final RestTemplate _restTemplate,
+                       final SSOClient _ssoClient)
     {
         this.config = _config;
         this.restTemplate = _restTemplate;
+        this.ssoClient = _ssoClient;
     }
 
     public List<ProductDto> getProducts()
@@ -112,7 +116,9 @@ public class EFapsClient
     private String getAuth()
     {
         String auth = "";
-        if (this.config.getAuth() != null) {
+        if (this.config.getSso() != null && this.config.getSso().getUrl() != null) {
+            auth = "Bearer " + this.ssoClient.getToken();
+        } else if (this.config.getAuth() != null) {
             auth = "Basic " + Base64.getEncoder()
                 .encodeToString((this.config.getAuth().getUser() + ":" + this.config.getAuth().getPassword())
                                 .getBytes(StandardCharsets.UTF_8));
