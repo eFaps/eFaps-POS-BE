@@ -343,7 +343,9 @@ public final class Converter
     }
 
     public static ContactDto toDto(final Contact _entity) {
-        return ContactDto.builder()
+        return _entity == null
+                    ? null
+                    : ContactDto.builder()
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
                         .withTaxNumber(_entity.getTaxNumber())

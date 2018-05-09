@@ -43,19 +43,19 @@ public class PosDocItemDto
     @Override
     public String getDescription()
     {
-        return getProduct().getDescription();
+        return getProduct() == null ? "Missing Product" : getProduct().getDescription();
     }
 
     @Override
     public String getSku()
     {
-        return getProduct().getSku();
+        return  getProduct() == null ? "Missing Product" : getProduct().getSku();
     }
 
     @Override
     public String getUoM()
     {
-        return getProduct().getUoM();
+        return  getProduct() == null ? "Missing Product" : getProduct().getUoM();
     }
 
     /**
