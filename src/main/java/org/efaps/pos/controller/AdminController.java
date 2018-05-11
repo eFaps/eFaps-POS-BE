@@ -28,5 +28,6 @@ public class AdminController
         this.syncService.syncPOSs();
         this.syncService.syncWorkspaces();
         this.syncService.syncUsers();
+        this.syncService.syncImages();
     }
 }

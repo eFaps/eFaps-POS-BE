@@ -182,6 +182,7 @@ public class SyncService
 
     public void syncImages()
     {
+        LOG.info("Syncing Images");
         final List<Product> products = this.productRepository.findAll();
         for (final Product product : products) {
             if (product.getImageOid() != null) {
