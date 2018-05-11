@@ -17,11 +17,16 @@
 
 package org.efaps.pos.service;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
+import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.entity.Category;
@@ -30,12 +35,16 @@ import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.respository.ProductRepository;
 import org.efaps.pos.respository.ReceiptRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -46,16 +55,22 @@ public class SyncService
     private static final Logger LOG = LoggerFactory.getLogger(SyncService.class);
 
     private final MongoTemplate mongoTemplate;
+    private final GridFsTemplate gridFsTemplate;
     private final EFapsClient eFapsClient;
     private final ReceiptRepository receiptRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
+                       final GridFsTemplate _gridFsTemplate,
                        final ReceiptRepository _receiptRepository,
+                       final ProductRepository _productRepository,
                        final EFapsClient _eFapsClient)
     {
         this.mongoTemplate = _mongoTemplate;
+        this.gridFsTemplate = _gridFsTemplate;
         this.receiptRepository = _receiptRepository;
+        this.productRepository = _productRepository;
         this.eFapsClient = _eFapsClient;
 
     }
@@ -165,4 +180,21 @@ public class SyncService
         }
     }
 
+    public void syncImages()
+    {
+        final List<Product> products = this.productRepository.findAll();
+        for (final Product product : products) {
+            if (product.getImageOid() != null) {
+                final Checkout checkout = this.eFapsClient.checkout(product.getImageOid());
+                if (checkout != null) {
+                    this.gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(product.getImageOid())));
+                    final DBObject metaData = new BasicDBObject();
+                    metaData.put("oid", product.getImageOid());
+                    metaData.put("contentType", checkout.getContentType().toString());
+                    this.gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
+                                    metaData);
+                }
+            }
+        }
+    }
 }

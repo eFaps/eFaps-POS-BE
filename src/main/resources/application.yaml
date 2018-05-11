@@ -23,13 +23,14 @@ server:
 
 
 efaps:
-  restUrl: http://localhost:8888/eFaps/servlet/rest
-  productPath: /pos/products
-  categoryPath: /pos/categories
-  workspacePath: /pos/workspaces
-  posPath: /pos/poss
-  userPath: /pos/users
-  receiptPath:  /pos/receipts
+  baseUrl: http://localhost:8888/eFaps
+  productPath: /servlet/rest/pos/products
+  categoryPath: /servlet/rest/pos/categories
+  workspacePath: /servlet/rest/pos/workspaces
+  posPath: /servlet/rest/pos/poss
+  userPath: /servlet/rest/pos/users
+  receiptPath: /servlet/rest/pos/receipts
+  checkoutPath: /servlet/checkout
 
 auth:
   user: Administrator

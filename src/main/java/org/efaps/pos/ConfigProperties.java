@@ -94,22 +94,23 @@ public class ConfigProperties
     public static class EFaps
     {
 
-        private URI restUrl;
+        private URI baseUrl;
         private String productPath;
         private String categoryPath;
         private String workspacePath;
         private String posPath;
         private String userPath;
         private String receiptPath;
+        private String checkoutPath;
 
-        public URI getRestUrl()
+        public URI getBaseUrl()
         {
-            return this.restUrl;
+            return this.baseUrl;
         }
 
-        public void setRestUrl(final URI _restUrl)
+        public void setBaseUrl(final URI _baseUrl)
         {
-            this.restUrl = _restUrl;
+            this.baseUrl = _baseUrl;
         }
 
         public String getProductPath()
@@ -170,6 +171,16 @@ public class ConfigProperties
         public void setReceiptPath(final String _receiptPath)
         {
             this.receiptPath = _receiptPath;
+        }
+
+        public String getCheckoutPath()
+        {
+            return this.checkoutPath;
+        }
+
+        public void setCheckoutPath(final String _checkoutPath)
+        {
+            this.checkoutPath = _checkoutPath;
         }
     }
 

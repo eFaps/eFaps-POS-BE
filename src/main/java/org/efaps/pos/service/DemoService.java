@@ -89,7 +89,8 @@ public class DemoService
             final ClassPathResource imgResource = new ClassPathResource("images/" + image.getFileName());
             final DBObject metaData = new BasicDBObject();
             metaData.put("oid", image.getOid());
-            this.gridFsTemplate.store(imgResource.getInputStream(), image.getFileName(), "image/jpeg", metaData);
+            metaData.put("contentType", "image/jpeg");
+            this.gridFsTemplate.store(imgResource.getInputStream(), image.getFileName(), metaData);
         }
     }
 

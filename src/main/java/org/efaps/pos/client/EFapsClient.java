@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.client;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
@@ -113,6 +114,22 @@ public class EFapsClient
         return ret.getBody();
     }
 
+    public Checkout checkout(final String _oid) {
+        final URI uri = UriComponentsBuilder
+            .fromUri(this.config.getEFaps().getBaseUrl())
+            .path(this.config.getEFaps().getCheckoutPath())
+            .queryParam("oid", _oid)
+            .build()
+            .toUri();
+        final RequestEntity<?> requestEntity = get(uri);
+        final ResponseEntity<byte[]> response = this.restTemplate.exchange(requestEntity, byte[].class);
+        final Checkout ret = new Checkout();
+        ret.setContent(response.getBody());
+        ret.setContentType(response.getHeaders().getContentType());
+        ret.setFilename(response.getHeaders().getContentDisposition().getFilename());
+        return ret;
+    }
+
     private String getAuth()
     {
         String auth = "";
@@ -129,16 +146,21 @@ public class EFapsClient
     private UriComponents getUriComponent(final String _path)
     {
         return UriComponentsBuilder
-                        .fromUri(this.config.getEFaps().getRestUrl())
+                        .fromUri(this.config.getEFaps().getBaseUrl())
                         .path(_path)
+                        .build();
+    }
+
+    private RequestEntity<?> get(final URI _uri)
+    {
+        return RequestEntity.get(_uri)
+                        .header("Authorization", getAuth())
                         .build();
     }
 
     private RequestEntity<?> get(final String _path)
     {
-        return RequestEntity.get(getUriComponent(_path).toUri())
-                        .header("Authorization", getAuth())
-                        .build();
+        return get(getUriComponent(_path).toUri());
     }
 
     private <T> RequestEntity<T> post(final String _path, final T _body)

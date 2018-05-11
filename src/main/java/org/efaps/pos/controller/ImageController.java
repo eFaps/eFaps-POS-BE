@@ -42,14 +42,15 @@ public class ImageController
         this.imageService = _imageService;
     }
 
-    @GetMapping(path = "/{oid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{oid}",
+                    produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
     public ResponseEntity<byte[]> getImage(@PathVariable("oid") final String _oid)
         throws IllegalStateException, IOException
     {
-        final byte[] image = this.imageService.getImage(_oid);
+        final Object[] image = this.imageService.getImage(_oid);
         return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG)
+                        .contentType(MediaType.parseMediaType((String) image[0]))
                         .cacheControl(CacheControl.maxAge(24, TimeUnit.HOURS))
-                        .body(image);
+                        .body((byte[]) image[1]);
     }
 }

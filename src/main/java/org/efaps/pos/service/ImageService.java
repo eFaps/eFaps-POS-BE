@@ -49,13 +49,13 @@ public class ImageService
 
     }
 
-    public byte[] getImage(final String _oid)
+    public Object[] getImage(final String _oid)
         throws IllegalStateException, IOException
     {
         final GridFSFile imageFile = this.gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(_oid)));
         final InputStream resource = new GridFsResource(imageFile, getGridFs().openDownloadStream(imageFile.getId()))
                         .getInputStream();
-        return IOUtils.toByteArray(resource);
+        return new Object[] { imageFile.getMetadata().getString("contentType"), IOUtils.toByteArray(resource) };
     }
 
     private GridFSBucket getGridFs()
