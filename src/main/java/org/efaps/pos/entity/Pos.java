@@ -38,6 +38,10 @@ public class Pos
 
     private String defaultContactOid;
 
+    private String receiptSeqOid;
+    private String invoiceSeqOid;
+    private String ticketSeqOid;
+
     public String getOid()
     {
         return this.oid;
@@ -92,6 +96,36 @@ public class Pos
     {
         this.defaultContactOid = _defaultContactOid;
         return this;
+    }
+
+    public String getReceiptSeqOid()
+    {
+        return this.receiptSeqOid;
+    }
+
+    public void setReceiptSeqOid(final String _receiptSeqOid)
+    {
+        this.receiptSeqOid = _receiptSeqOid;
+    }
+
+    public String getInvoiceSeqOid()
+    {
+        return this.invoiceSeqOid;
+    }
+
+    public void setInvoiceSeqOid(final String _invoiceSeqOid)
+    {
+        this.invoiceSeqOid = _invoiceSeqOid;
+    }
+
+    public String getTicketSeqOid()
+    {
+        return this.ticketSeqOid;
+    }
+
+    public void setTicketSeqOid(final String _ticketSeqOid)
+    {
+        this.ticketSeqOid = _ticketSeqOid;
     }
 
     @Override

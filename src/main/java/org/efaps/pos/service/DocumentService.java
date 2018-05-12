@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
@@ -31,7 +32,6 @@ import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Receipt;
-import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IPos;
@@ -47,11 +47,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
-import org.springframework.data.mongodb.core.FindAndModifyOptions;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 
@@ -64,8 +59,8 @@ public class DocumentService
     private final ServiceListFactoryBean invoiceListeners;
     private final ServiceListFactoryBean ticketListeners;
     private final PosService posService;
+    private final SequenceService sequenceService;
     private final ContactService contactService;
-    private final MongoTemplate mongoTemplate;
     private final OrderRepository orderRepository;
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
@@ -75,16 +70,16 @@ public class DocumentService
     public DocumentService(@Qualifier("receiptListeners") final ServiceListFactoryBean _receiptListeners,
                            @Qualifier("invoiceListeners") final ServiceListFactoryBean _invoiceListeners,
                            @Qualifier("ticketListeners") final ServiceListFactoryBean _ticketListeners,
-                           final PosService _posService,
-                           final ContactService _contactService, final MongoTemplate _mongoTemplate,
-                           final OrderRepository _orderRepository, final ReceiptRepository _receiptRepository,
-                           final InvoiceRepository _invoiceRepository, final TicketRepository _ticketRepository)
+                           final PosService _posService, final SequenceService _sequenceService,
+                           final ContactService _contactService, final OrderRepository _orderRepository,
+                           final ReceiptRepository _receiptRepository, final InvoiceRepository _invoiceRepository,
+                           final TicketRepository _ticketRepository)
     {
         this.receiptListeners = _receiptListeners;
         this.invoiceListeners = _invoiceListeners;
         this.ticketListeners = _ticketListeners;
         this.posService = _posService;
-        this.mongoTemplate = _mongoTemplate;
+        this.sequenceService = _sequenceService;
         this.orderRepository = _orderRepository;
         this.receiptRepository = _receiptRepository;
         this.contactService = _contactService;
@@ -93,12 +88,12 @@ public class DocumentService
     }
 
     public List<Order> getOrders() {
-        return this.mongoTemplate.findAll(Order.class);
+        return this.orderRepository.findAll();
     }
 
     public Order createOrder(final Order _order)
     {
-        _order.setNumber(getNextNumber(getNumberKey(Order.class.getSimpleName())));
+        _order.setNumber(this.sequenceService.getNextOrder());
         verifyDocument(_order);
         return this.orderRepository.insert(_order);
     }
@@ -123,7 +118,7 @@ public class DocumentService
 
     public Receipt createReceipt(final String _workspaceOid, final Receipt _receipt)
     {
-        _receipt.setNumber(getNextNumber(getNumberKey(Receipt.class.getSimpleName())));
+        _receipt.setNumber(this.sequenceService.getNext(_workspaceOid, DocType.RECEIPT));
         Receipt ret = this.receiptRepository.insert(_receipt);
         try {
             @SuppressWarnings("unchecked")
@@ -144,7 +139,7 @@ public class DocumentService
 
     public Invoice createInvoice(final String _workspaceOid, final Invoice _invoice)
     {
-        _invoice.setNumber(getNextNumber(getNumberKey(Invoice.class.getSimpleName())));
+        _invoice.setNumber(this.sequenceService.getNext(_workspaceOid, DocType.INVOICE));
         Invoice ret = this.invoiceRepository.insert(_invoice);
         try {
             @SuppressWarnings("unchecked")
@@ -165,7 +160,7 @@ public class DocumentService
 
     public Ticket createTicket(final String _workspaceOid, final Ticket _ticket)
     {
-        _ticket.setNumber(getNextNumber(getNumberKey(Ticket.class.getSimpleName())));
+        _ticket.setNumber(this.sequenceService.getNext(_workspaceOid, DocType.TICKET));
         Ticket ret = this.ticketRepository.insert(_ticket);
         try {
             @SuppressWarnings("unchecked")
@@ -223,19 +218,5 @@ public class DocumentService
         };
     }
 
-    public String getNextNumber(final String _numberKey) {
-        final Sequence sequence = this.mongoTemplate.findAndModify(new Query(Criteria.where("_id").is(_numberKey)),
-                        new Update().inc("seq", 1),
-                        FindAndModifyOptions.options().returnNew(true),
-                        Sequence.class);
-        if (sequence == null) {
-            this.mongoTemplate.insert(new Sequence().setId(_numberKey).setSeq(0));
-            return getNextNumber(_numberKey);
-        }
-        return String.format(sequence.getFormat() == null ? "%05d" : sequence.getFormat(), sequence.getSeq());
-    }
 
-    public String getNumberKey(final String _key) {
-        return _key;
-    }
 }

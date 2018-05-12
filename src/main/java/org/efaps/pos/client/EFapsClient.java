@@ -71,6 +71,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
+
         } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of products", e);
         }

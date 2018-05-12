@@ -28,6 +28,8 @@ public class Sequence
     @Id
     private String id;
 
+    private String oid;
+
     private long seq;
 
     private String format;
@@ -40,6 +42,17 @@ public class Sequence
     public Sequence setId(final String _id)
     {
         this.id = _id;
+        return this;
+    }
+
+    public String getOid()
+    {
+        return this.oid;
+    }
+
+    public Sequence setOid(final String _oid)
+    {
+        this.oid = _oid;
         return this;
     }
 
