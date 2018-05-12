@@ -3,18 +3,30 @@
         "id": "4183.1",
         "oid": "4183.1",
         "name": "Caja 1 desktop",
-        "posOid": "5243.1"
+        "posOid": "5243.1",
+        "docTypes":[
+            "RECEIPT"
+        ]
     },
     {
         "id": "4183.2",
         "oid": "4183.2",
         "name": "Caja 1 tablet",
-        "posOid": "5243.1"
+        "posOid": "5243.1",
+        "docTypes":[
+            "RECEIPT",
+            "INVOICE",
+            "TICKET"
+        ]
     },
     {
         "id": "4183.3",
         "oid": "4183.3",
         "name": "Caja 2",
-        "posOid": "5243.2"
+        "posOid": "5243.2",
+        "docTypes":[
+            "RECEIPT",
+            "INVOICE"
+        ]
     }
 ]

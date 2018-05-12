@@ -238,6 +238,7 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
                         .withPosOid(_entity.getPosOid())
+                        .withDocTypes(_entity.getDocTypes())
                         .build();
     }
 
@@ -246,7 +247,8 @@ public final class Converter
         return new Workspace()
                         .setOid(_dto.getOid())
                         .setName(_dto.getName())
-                        .setPosOid(_dto.getPosOid());
+                        .setPosOid(_dto.getPosOid())
+                        .setDocTypes(_dto.getDocTypes());
     }
 
     public static PosDto toDto(final Pos _entity)

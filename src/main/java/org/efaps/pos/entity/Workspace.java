@@ -17,7 +17,10 @@
 
 package org.efaps.pos.entity;
 
+import java.util.Set;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.efaps.pos.dto.DocType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -33,6 +36,8 @@ public class Workspace
     private String name;
 
     private String posOid;
+
+    private Set<DocType> docTypes;
 
     public String getOid()
     {
@@ -65,6 +70,17 @@ public class Workspace
     public Workspace setPosOid(final String _posOid)
     {
         this.posOid = _posOid;
+        return this;
+    }
+
+    public Set<DocType> getDocTypes()
+    {
+        return this.docTypes;
+    }
+
+    public Workspace setDocTypes(final Set<DocType> _docTypes)
+    {
+        this.docTypes = _docTypes;
         return this;
     }
 
