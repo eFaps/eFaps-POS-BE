@@ -1,5 +1,7 @@
 package org.efaps.pos.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -48,6 +50,7 @@ public class User
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities()
     {
         return getRoles() == null
