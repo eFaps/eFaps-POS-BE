@@ -18,15 +18,6 @@ efaps:
   baseUrl: http://localhost:8888/eFaps
   productPath: /servlet/rest/pos/products
 
-sso:
-  url: http://my.sso.com/pe
-  postValues:
-    client_id: ${random.value}
-    username: ${random.value}
-    password: ${random.value}
-    grant_type: password
-    client_secret: ${random.value}
-
 jwt:
   secret: ThisIsNotVerySecret
   expiration: 1000

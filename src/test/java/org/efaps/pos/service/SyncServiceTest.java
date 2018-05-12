@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
 
-import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.entity.Product;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,9 +51,6 @@ import org.springframework.test.web.client.MockRestServiceServer;
 public class SyncServiceTest
 {
     @Autowired
-    private ConfigProperties config;
-
-    @Autowired
     private MongoTemplate mongoTemplate;
 
     @Autowired
@@ -69,7 +65,6 @@ public class SyncServiceTest
     @BeforeEach
     public void setup() {
         this.mongoTemplate.remove(new Query(), Product.class);
-        this.config.getSso().setUrl(null);
     }
 
     @Test

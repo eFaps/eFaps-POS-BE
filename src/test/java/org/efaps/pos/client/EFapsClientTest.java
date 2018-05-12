@@ -26,9 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
 
-import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.ProductDto;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +46,6 @@ import org.springframework.test.web.client.MockRestServiceServer;
 public class EFapsClientTest
 {
     @Autowired
-    private ConfigProperties config;
-
-    @Autowired
     private EFapsClient client;
 
     @Autowired
@@ -58,11 +53,6 @@ public class EFapsClientTest
 
     @Autowired
     private ObjectMapper mapper;
-
-    @BeforeEach
-    public void setup() {
-        this.config.getSso().setUrl(null);
-    }
 
     @Test
     public void testGetProducts() throws JsonProcessingException {
