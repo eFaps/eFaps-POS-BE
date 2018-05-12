@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -57,7 +58,8 @@ public class SSOClientTest
         });
         this.server.expect(requestTo("http://my.sso.com/pe"))
             .andExpect(content().formData(map))
-            .andRespond(withSuccess());
+            .andRespond(withSuccess("{ \"access_token\": \"sometokenstuff\", \"expires_in\": 100 }",
+                            MediaType.APPLICATION_JSON));
         this.client.login();
         this.server.verify();
     }
