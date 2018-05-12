@@ -16,7 +16,9 @@
  */
 package org.efaps.pos;
 
+import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IReceiptListener;
+import org.efaps.pos.interfaces.ITicketListener;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.slf4j.Logger;
@@ -80,11 +82,27 @@ public class Application
         };
     }
 
-    @Bean
-    public ServiceListFactoryBean serviceListFactoryBean()
+    @Bean(name = "receiptListeners")
+    public ServiceListFactoryBean receiptListeners()
     {
         final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
         serviceListFactoryBean.setServiceType(IReceiptListener.class);
+        return serviceListFactoryBean;
+    }
+
+    @Bean(name = "invoiceListeners")
+    public ServiceListFactoryBean invoiceListeners()
+    {
+        final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
+        serviceListFactoryBean.setServiceType(IInvoiceListener.class);
+        return serviceListFactoryBean;
+    }
+
+    @Bean(name = "ticketListeners")
+    public ServiceListFactoryBean ticketListeners()
+    {
+        final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
+        serviceListFactoryBean.setServiceType(ITicketListener.class);
         return serviceListFactoryBean;
     }
 }

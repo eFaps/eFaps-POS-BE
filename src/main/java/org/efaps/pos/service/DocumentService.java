@@ -45,6 +45,7 @@ import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -59,7 +60,9 @@ public class DocumentService
 {
     private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
 
-    private final ServiceListFactoryBean serviceListFactoryBean;
+    private final ServiceListFactoryBean receiptListeners;
+    private final ServiceListFactoryBean invoiceListeners;
+    private final ServiceListFactoryBean ticketListeners;
     private final PosService posService;
     private final ContactService contactService;
     private final MongoTemplate mongoTemplate;
@@ -69,12 +72,17 @@ public class DocumentService
     private final TicketRepository ticketRepository;
 
     @Autowired
-    public DocumentService(final ServiceListFactoryBean _serviceListFactoryBean, final PosService _posService,
+    public DocumentService(@Qualifier("receiptListeners") final ServiceListFactoryBean _receiptListeners,
+                           @Qualifier("invoiceListeners") final ServiceListFactoryBean _invoiceListeners,
+                           @Qualifier("ticketListeners") final ServiceListFactoryBean _ticketListeners,
+                           final PosService _posService,
                            final ContactService _contactService, final MongoTemplate _mongoTemplate,
                            final OrderRepository _orderRepository, final ReceiptRepository _receiptRepository,
                            final InvoiceRepository _invoiceRepository, final TicketRepository _ticketRepository)
     {
-        this.serviceListFactoryBean = _serviceListFactoryBean;
+        this.receiptListeners = _receiptListeners;
+        this.invoiceListeners = _invoiceListeners;
+        this.ticketListeners = _ticketListeners;
         this.posService = _posService;
         this.mongoTemplate = _mongoTemplate;
         this.orderRepository = _orderRepository;
@@ -119,7 +127,7 @@ public class DocumentService
         Receipt ret = this.receiptRepository.insert(_receipt);
         try {
             @SuppressWarnings("unchecked")
-            final List<IReceiptListener> listeners =  (List<IReceiptListener>) this.serviceListFactoryBean.getObject();
+            final List<IReceiptListener> listeners =  (List<IReceiptListener>) this.receiptListeners.getObject();
             if (listeners != null) {
                PosReceiptDto dto = Converter.toDto(ret);
                 for (final IReceiptListener listener  :listeners) {
@@ -140,7 +148,7 @@ public class DocumentService
         Invoice ret = this.invoiceRepository.insert(_invoice);
         try {
             @SuppressWarnings("unchecked")
-            final List<IInvoiceListener> listeners = (List<IInvoiceListener>) this.serviceListFactoryBean.getObject();
+            final List<IInvoiceListener> listeners = (List<IInvoiceListener>) this.invoiceListeners.getObject();
             if (listeners != null) {
                 PosInvoiceDto dto = Converter.toDto(ret);
                 for (final IInvoiceListener listener : listeners) {
@@ -161,7 +169,7 @@ public class DocumentService
         Ticket ret = this.ticketRepository.insert(_ticket);
         try {
             @SuppressWarnings("unchecked")
-            final List<ITicketListener> listeners = (List<ITicketListener>) this.serviceListFactoryBean.getObject();
+            final List<ITicketListener> listeners = (List<ITicketListener>) this.ticketListeners.getObject();
             if (listeners != null) {
                 PosTicketDto dto = Converter.toDto(ret);
                 for (final ITicketListener listener : listeners) {

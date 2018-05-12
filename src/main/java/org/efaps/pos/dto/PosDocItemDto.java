@@ -19,12 +19,14 @@ package org.efaps.pos.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import org.efaps.pos.interfaces.IInvoiceItem;
 import org.efaps.pos.interfaces.IReceiptItem;
+import org.efaps.pos.interfaces.ITicketItem;
 
 @JsonDeserialize(builder = PosDocItemDto.Builder.class)
 public class PosDocItemDto
     extends AbstractDocItemDto
-    implements IReceiptItem
+    implements IReceiptItem, IInvoiceItem, ITicketItem
 {
 
     private final ProductDto product;
