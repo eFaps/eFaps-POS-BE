@@ -25,8 +25,10 @@ import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
+import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
+import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
@@ -38,12 +40,14 @@ import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Pos.Company;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Tax;
+import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.service.ProductService;
@@ -83,6 +87,51 @@ public final class Converter
                                 .collect(Collectors.toSet()));
         return ret;
     }
+
+    public static Invoice toEntity(final PosInvoiceDto _dto)
+    {
+        final Invoice ret = new Invoice()
+                        .setId(_dto.getId())
+                        .setOid(_dto.getOid())
+                        .setNumber(_dto.getNumber())
+                        .setCurrency(_dto.getCurrency())
+                        .setStatus(_dto.getStatus())
+                        .setDate(_dto.getDate())
+                        .setItems(_dto.getItems().stream()
+                                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
+                                        .collect(Collectors.toSet()))
+                        .setNetTotal(_dto.getNetTotal())
+                        .setCrossTotal(_dto.getCrossTotal())
+                        .setTaxes(_dto.getTaxes() ==  null
+                            ? null
+                            : _dto.getTaxes().stream()
+                                .map(_tax -> Converter.toEntity(_tax))
+                                .collect(Collectors.toSet()));
+        return ret;
+    }
+
+    public static Ticket toEntity(final PosTicketDto _dto)
+    {
+        final Ticket ret = new Ticket()
+                        .setId(_dto.getId())
+                        .setOid(_dto.getOid())
+                        .setNumber(_dto.getNumber())
+                        .setCurrency(_dto.getCurrency())
+                        .setStatus(_dto.getStatus())
+                        .setDate(_dto.getDate())
+                        .setItems(_dto.getItems().stream()
+                                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
+                                        .collect(Collectors.toSet()))
+                        .setNetTotal(_dto.getNetTotal())
+                        .setCrossTotal(_dto.getCrossTotal())
+                        .setTaxes(_dto.getTaxes() ==  null
+                            ? null
+                            : _dto.getTaxes().stream()
+                                .map(_tax -> Converter.toEntity(_tax))
+                                .collect(Collectors.toSet()));
+        return ret;
+    }
+
 
     public static Order toEntity(final PosOrderDto _dto)
     {
@@ -323,6 +372,50 @@ public final class Converter
     public static PosReceiptDto toDto(final Receipt _entity)
     {
         return PosReceiptDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withNumber(_entity.getNumber())
+                        .withDate(_entity.getDate())
+                        .withCurrency(_entity.getCurrency())
+                        .withStatus(_entity.getStatus())
+                        .withItems(_entity.getItems() == null
+                            ? null
+                            : _entity.getItems().stream()
+                                        .map(_item -> toDto(_item))
+                                        .collect(Collectors.toSet()))
+                        .withTaxes(_entity.getTaxes() == null
+                            ? null
+                            : _entity.getTaxes().stream()
+                                .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
+                        .build();
+    }
+
+    public static PosInvoiceDto toDto(final Invoice _entity)
+    {
+        return PosInvoiceDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withNumber(_entity.getNumber())
+                        .withDate(_entity.getDate())
+                        .withCurrency(_entity.getCurrency())
+                        .withStatus(_entity.getStatus())
+                        .withItems(_entity.getItems() == null
+                            ? null
+                            : _entity.getItems().stream()
+                                        .map(_item -> toDto(_item))
+                                        .collect(Collectors.toSet()))
+                        .withTaxes(_entity.getTaxes() == null
+                            ? null
+                            : _entity.getTaxes().stream()
+                                .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
+                        .build();
+    }
+
+    public static PosTicketDto toDto(final Ticket _entity)
+    {
+        return PosTicketDto.builder()
                         .withId(_entity.getId())
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())

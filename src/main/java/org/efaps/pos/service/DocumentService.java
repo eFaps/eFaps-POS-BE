@@ -22,17 +22,25 @@ import java.util.List;
 
 import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosReceiptDto;
+import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
+import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.entity.Ticket;
+import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IPos;
 import org.efaps.pos.interfaces.IReceiptListener;
+import org.efaps.pos.interfaces.ITicketListener;
+import org.efaps.pos.respository.InvoiceRepository;
 import org.efaps.pos.respository.OrderRepository;
 import org.efaps.pos.respository.ReceiptRepository;
+import org.efaps.pos.respository.TicketRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,12 +65,14 @@ public class DocumentService
     private final MongoTemplate mongoTemplate;
     private final OrderRepository orderRepository;
     private final ReceiptRepository receiptRepository;
-
+    private final InvoiceRepository invoiceRepository;
+    private final TicketRepository ticketRepository;
 
     @Autowired
     public DocumentService(final ServiceListFactoryBean _serviceListFactoryBean, final PosService _posService,
                            final ContactService _contactService, final MongoTemplate _mongoTemplate,
-                           final OrderRepository _orderRepository, final ReceiptRepository _receiptRepository)
+                           final OrderRepository _orderRepository, final ReceiptRepository _receiptRepository,
+                           final InvoiceRepository _invoiceRepository, final TicketRepository _ticketRepository)
     {
         this.serviceListFactoryBean = _serviceListFactoryBean;
         this.posService = _posService;
@@ -70,6 +80,8 @@ public class DocumentService
         this.orderRepository = _orderRepository;
         this.receiptRepository = _receiptRepository;
         this.contactService = _contactService;
+        this.invoiceRepository = _invoiceRepository;
+        this.ticketRepository = _ticketRepository;
     }
 
     public List<Order> getOrders() {
@@ -121,6 +133,50 @@ public class DocumentService
         }
         return ret;
     }
+
+    public Invoice createInvoice(final String _workspaceOid, final Invoice _invoice)
+    {
+        _invoice.setNumber(getNextNumber(getNumberKey(Invoice.class.getSimpleName())));
+        Invoice ret = this.invoiceRepository.insert(_invoice);
+        try {
+            @SuppressWarnings("unchecked")
+            final List<IInvoiceListener> listeners = (List<IInvoiceListener>) this.serviceListFactoryBean.getObject();
+            if (listeners != null) {
+                PosInvoiceDto dto = Converter.toDto(ret);
+                for (final IInvoiceListener listener : listeners) {
+                    dto = (PosInvoiceDto) listener.onCreate(getPos(this.posService.getPos4Workspace(_workspaceOid)),
+                                    dto);
+                }
+                ret = this.invoiceRepository.save(Converter.toEntity(dto));
+            }
+        } catch (final Exception e) {
+            LOG.error("Wow that should not happen", e);
+        }
+        return ret;
+    }
+
+    public Ticket createTicket(final String _workspaceOid, final Ticket _ticket)
+    {
+        _ticket.setNumber(getNextNumber(getNumberKey(Ticket.class.getSimpleName())));
+        Ticket ret = this.ticketRepository.insert(_ticket);
+        try {
+            @SuppressWarnings("unchecked")
+            final List<ITicketListener> listeners = (List<ITicketListener>) this.serviceListFactoryBean.getObject();
+            if (listeners != null) {
+                PosTicketDto dto = Converter.toDto(ret);
+                for (final ITicketListener listener : listeners) {
+                    dto = (PosTicketDto) listener.onCreate(getPos(this.posService.getPos4Workspace(_workspaceOid)),
+                                    dto);
+                }
+                ret = this.ticketRepository.save(Converter.toEntity(dto));
+            }
+        } catch (final Exception e) {
+            LOG.error("Wow that should not happen", e);
+        }
+        return ret;
+    }
+
+
 
     private IPos getPos(final Pos _pos) {
         final String name = _pos.getName();
