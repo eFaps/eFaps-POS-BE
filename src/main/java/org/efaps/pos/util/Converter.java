@@ -307,6 +307,13 @@ public final class Converter
         return new Category().setName(_dto.getName()).setOid(_dto.getOid());
     }
 
+    public static Contact toEntity(final ContactDto _dto)
+    {
+        return new Contact().setOid(_dto.getOid())
+                        .setName(_dto.getName())
+                        .setTaxNumber(_dto.getTaxNumber());
+    }
+
     public static TaxDto toDto(final Tax _entity)
     {
         return TaxDto.builder()

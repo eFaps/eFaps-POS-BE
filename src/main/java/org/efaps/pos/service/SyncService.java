@@ -30,12 +30,14 @@ import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.respository.ContactRepository;
 import org.efaps.pos.respository.ProductRepository;
 import org.efaps.pos.respository.ReceiptRepository;
 import org.efaps.pos.respository.SequenceRepository;
@@ -62,6 +64,7 @@ public class SyncService
     private final ReceiptRepository receiptRepository;
     private final ProductRepository productRepository;
     private final SequenceRepository sequenceRepository;
+    private final ContactRepository contactRepository;
 
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
@@ -69,6 +72,7 @@ public class SyncService
                        final ReceiptRepository _receiptRepository,
                        final ProductRepository _productRepository,
                        final SequenceRepository _sequenceRepository,
+                       final ContactRepository _contactRepository,
                        final EFapsClient _eFapsClient)
     {
         this.mongoTemplate = _mongoTemplate;
@@ -76,6 +80,7 @@ public class SyncService
         this.receiptRepository = _receiptRepository;
         this.productRepository = _productRepository;
         this.sequenceRepository = _sequenceRepository;
+        this.contactRepository = _contactRepository;
         this.eFapsClient = _eFapsClient;
     }
 
@@ -225,5 +230,22 @@ public class SyncService
                 this.sequenceRepository.save(sequence);
             }
         }
+    }
+
+    public void syncContacts()
+    {
+        LOG.info("Syncing Contacts");
+        final List<Contact> contacts = this.eFapsClient.getContacts().stream()
+                        .map(dto -> Converter.toEntity(dto))
+                        .collect(Collectors.toList());
+        final List<Contact> existingCategories = this.contactRepository.findAll();
+        existingCategories.forEach(existing -> {
+            if (!contacts.stream()
+                            .filter(contact -> contact.getOid().equals(existing.getOid())).findFirst()
+                            .isPresent()) {
+                this.mongoTemplate.remove(existing);
+            }
+        });
+        contacts.forEach(contact -> this.contactRepository.save(contact));
     }
 }

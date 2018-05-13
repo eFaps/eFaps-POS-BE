@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.CategoryDto;
+import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
@@ -158,6 +159,23 @@ public class EFapsClient
         }
         return ret;
     }
+
+    public List<ContactDto> getContacts()
+    {
+        List<ContactDto> ret = null;
+        try {
+            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getContactPath());
+            final ResponseEntity<List<ContactDto>> response = this.restTemplate.exchange(requestEntity,
+                            new ParameterizedTypeReference<List<ContactDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
 
     public ReceiptDto postReceipt(final ReceiptDto _receipt)
     {

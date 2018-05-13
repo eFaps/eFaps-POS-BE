@@ -30,5 +30,6 @@ public class AdminController
         this.syncService.syncUsers();
         this.syncService.syncImages();
         this.syncService.syncSequences();
+        this.syncService.syncContacts();
     }
 }
