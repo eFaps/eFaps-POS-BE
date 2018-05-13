@@ -26,6 +26,7 @@ import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
+import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.sso.SSOClient;
@@ -133,6 +134,22 @@ public class EFapsClient
             final RequestEntity<?> requestEntity = get(this.config.getEFaps().getUserPath());
             final ResponseEntity<List<UserDto>> response = this.restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<UserDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
+    public List<SequenceDto> getSequences()
+    {
+        List<SequenceDto> ret = null;
+        try {
+            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getSequencePath());
+            final ResponseEntity<List<SequenceDto>> response = this.restTemplate.exchange(requestEntity,
+                            new ParameterizedTypeReference<List<SequenceDto>>()
                             {
                             });
             ret = response.getBody();

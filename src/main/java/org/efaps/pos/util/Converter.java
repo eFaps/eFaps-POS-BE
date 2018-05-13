@@ -32,6 +32,7 @@ import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
+import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.TaxDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.dto.UserDto;
@@ -46,6 +47,7 @@ import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Pos.Company;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.Tax;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
@@ -232,6 +234,13 @@ public final class Converter
                         .setRoles(_dto.getRoles());
     }
 
+    public static Sequence toEntity(final SequenceDto _dto)
+    {
+        return new Sequence().setOid(_dto.getOid())
+                        .setFormat(_dto.getFormat())
+                        .setSeq(_dto.getSeq());
+    }
+
     public static WorkspaceDto toDto(final Workspace _entity)
     {
         return WorkspaceDto.builder()
@@ -257,6 +266,9 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
                         .withCurrency(_entity.getCurrency())
+                        .withReceiptSeqOid(_entity.getReceiptSeqOid())
+                        .withInvoiceSeqOid(_entity.getInvoiceSeqOid())
+                        .withTicketSeqOid(_entity.getTicketSeqOid())
                         .withCompany(_entity.getCompany() == null
                             ? null
                             : CompanyDto.builder()
@@ -273,6 +285,9 @@ public final class Converter
                         .setName(_dto.getName())
                         .setCurrency(_dto.getCurrency())
                         .setDefaultContactOid(_dto.getDefaultContactOid())
+                        .setReceiptSeqOid(_dto.getReceiptSeqOid())
+                        .setInvoiceSeqOid(_dto.getInvoiceSeqOid())
+                        .setTicketSeqOid(_dto.getTicketSeqOid())
                         .setCompany(new Company()
                                     .setName(_dto.getCompany() == null ? null : _dto.getCompany().getName())
                                     .setTaxNumber(_dto.getCompany() == null ? null : _dto.getCompany().getTaxNumber()));

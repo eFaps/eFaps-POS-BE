@@ -103,9 +103,10 @@ public class Pos
         return this.receiptSeqOid;
     }
 
-    public void setReceiptSeqOid(final String _receiptSeqOid)
+    public Pos setReceiptSeqOid(final String _receiptSeqOid)
     {
         this.receiptSeqOid = _receiptSeqOid;
+        return this;
     }
 
     public String getInvoiceSeqOid()
@@ -113,9 +114,10 @@ public class Pos
         return this.invoiceSeqOid;
     }
 
-    public void setInvoiceSeqOid(final String _invoiceSeqOid)
+    public Pos setInvoiceSeqOid(final String _invoiceSeqOid)
     {
         this.invoiceSeqOid = _invoiceSeqOid;
+        return this;
     }
 
     public String getTicketSeqOid()
@@ -123,9 +125,10 @@ public class Pos
         return this.ticketSeqOid;
     }
 
-    public void setTicketSeqOid(final String _ticketSeqOid)
+    public Pos setTicketSeqOid(final String _ticketSeqOid)
     {
         this.ticketSeqOid = _ticketSeqOid;
+        return this;
     }
 
     @Override

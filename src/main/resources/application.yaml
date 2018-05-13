@@ -31,6 +31,7 @@ efaps:
   userPath: /servlet/rest/pos/users
   receiptPath: /servlet/rest/pos/receipts
   checkoutPath: /servlet/checkout
+  sequencePath: /servlet/rest/pos/sequences
 
 auth:
   user: Administrator

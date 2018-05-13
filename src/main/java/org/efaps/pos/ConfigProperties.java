@@ -102,6 +102,7 @@ public class ConfigProperties
         private String userPath;
         private String receiptPath;
         private String checkoutPath;
+        private String sequencePath;
 
         public URI getBaseUrl()
         {
@@ -181,6 +182,18 @@ public class ConfigProperties
         public void setCheckoutPath(final String _checkoutPath)
         {
             this.checkoutPath = _checkoutPath;
+        }
+
+
+        public String getSequencePath()
+        {
+            return this.sequencePath;
+        }
+
+
+        public void setSequencePath(final String _sequencePath)
+        {
+            this.sequencePath = _sequencePath;
         }
     }
 

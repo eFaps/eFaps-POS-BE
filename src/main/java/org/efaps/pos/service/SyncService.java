@@ -33,10 +33,12 @@ import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.respository.ProductRepository;
 import org.efaps.pos.respository.ReceiptRepository;
+import org.efaps.pos.respository.SequenceRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,20 +61,22 @@ public class SyncService
     private final EFapsClient eFapsClient;
     private final ReceiptRepository receiptRepository;
     private final ProductRepository productRepository;
+    private final SequenceRepository sequenceRepository;
 
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
                        final GridFsTemplate _gridFsTemplate,
                        final ReceiptRepository _receiptRepository,
                        final ProductRepository _productRepository,
+                       final SequenceRepository _sequenceRepository,
                        final EFapsClient _eFapsClient)
     {
         this.mongoTemplate = _mongoTemplate;
         this.gridFsTemplate = _gridFsTemplate;
         this.receiptRepository = _receiptRepository;
         this.productRepository = _productRepository;
+        this.sequenceRepository = _sequenceRepository;
         this.eFapsClient = _eFapsClient;
-
     }
 
     public void syncProducts()
@@ -195,6 +199,30 @@ public class SyncService
                     this.gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
                                     metaData);
                 }
+            }
+        }
+    }
+
+    public void syncSequences() {
+        LOG.info("Syncing Sequences");
+        final List<Sequence> sequences = this.eFapsClient.getSequences().stream()
+                        .map(dto -> Converter.toEntity(dto))
+                        .collect(Collectors.toList());
+        for (final Sequence sequence : sequences) {
+            LOG.debug("Syncing Sequence: {}", sequence);
+            final Optional<Sequence> seqOpt = this.sequenceRepository.findByOid(sequence.getOid());
+            if (seqOpt.isPresent()) {
+                final Sequence es = seqOpt.get();
+                if (es.getSeq() < sequence.getSeq()) {
+                    es.setSeq(sequence.getSeq());
+                    this.sequenceRepository.save(sequence);
+                }
+                if (!es.getFormat().equals(sequence.getFormat())) {
+                    es.setFormat(sequence.getFormat());
+                    this.sequenceRepository.save(sequence);
+                }
+            } else {
+                this.sequenceRepository.save(sequence);
             }
         }
     }
