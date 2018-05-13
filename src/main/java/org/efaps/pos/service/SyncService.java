@@ -238,14 +238,15 @@ public class SyncService
         final List<Contact> contacts = this.eFapsClient.getContacts().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
-        final List<Contact> existingCategories = this.contactRepository.findAll();
-        existingCategories.forEach(existing -> {
-            if (!contacts.stream()
-                            .filter(contact -> contact.getOid().equals(existing.getOid())).findFirst()
-                            .isPresent()) {
-                this.mongoTemplate.remove(existing);
-            }
-        });
-        contacts.forEach(contact -> this.contactRepository.save(contact));
+        for (final Contact contact : contacts) {
+           final Optional<Contact> contactOpt = this.contactRepository.findByOid(contact.getOid());
+           if (contactOpt.isPresent()) {
+               final Contact entity = contactOpt.get();
+               contact.setId(entity.getId());
+               this.contactRepository.save(contact);
+           } else {
+               this.contactRepository.save(contact);
+           }
+        }
     }
 }

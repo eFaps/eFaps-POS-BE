@@ -34,6 +34,16 @@ public class Contact
 
     private String taxNumber;
 
+    public String getId()
+    {
+        return this.id;
+    }
+
+    public void setId(final String _id)
+    {
+        this.id = _id;
+    }
+
     public String getOid()
     {
         return this.oid;

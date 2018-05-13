@@ -17,6 +17,8 @@
 
 package org.efaps.pos.service;
 
+import java.util.List;
+
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.respository.ContactRepository;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,11 @@ public class ContactService
     public Contact get(final String _oid)
     {
         return this.contactRepository.findByOid(_oid).orElse(null);
+    }
+
+    public List<Contact> getContacts()
+    {
+        return this.contactRepository.findAll();
     }
 
 }
