@@ -22,6 +22,7 @@ import java.util.List;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.respository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,6 +41,7 @@ public class ProductService
         return this.productRepository.findAll();
     }
 
+    @Cacheable("Product")
     public Product getProduct(final String _oid)
     {
         return _oid == null ? null : this.productRepository.findById(_oid).orElse(null);
