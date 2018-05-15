@@ -25,10 +25,12 @@ import java.util.List;
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
+import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.sso.SSOClient;
@@ -177,12 +179,27 @@ public class EFapsClient
         return ret;
     }
 
-
     public ReceiptDto postReceipt(final ReceiptDto _receipt)
     {
         final RequestEntity<ReceiptDto> requestEntity = post(this.config.getEFaps().getReceiptPath(), _receipt);
 
         final ResponseEntity<ReceiptDto> ret = this.restTemplate.exchange(requestEntity, ReceiptDto.class);
+        return ret.getBody();
+    }
+
+
+    public InvoiceDto postInvoice(final InvoiceDto _invoice)
+    {
+        final RequestEntity<InvoiceDto> requestEntity = post(this.config.getEFaps().getInvoicePath(), _invoice);
+        final ResponseEntity<InvoiceDto> ret = this.restTemplate.exchange(requestEntity, InvoiceDto.class);
+        return ret.getBody();
+    }
+
+    public TicketDto postTicket(final TicketDto _ticket)
+    {
+        final RequestEntity<TicketDto> requestEntity = post(this.config.getEFaps().getTicketPath(), _ticket);
+
+        final ResponseEntity<TicketDto> ret = this.restTemplate.exchange(requestEntity, TicketDto.class);
         return ret.getBody();
     }
 

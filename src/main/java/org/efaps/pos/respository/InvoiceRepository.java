@@ -20,11 +20,10 @@ package org.efaps.pos.respository;
 import java.util.Collection;
 
 import org.efaps.pos.entity.Invoice;
-import org.efaps.pos.entity.Receipt;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface InvoiceRepository
     extends MongoRepository<Invoice, String>
 {
-    Collection<Receipt> findByOidIsNull();
+    Collection<Invoice> findByOidIsNull();
 }

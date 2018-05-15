@@ -15,7 +15,11 @@ org:
       threadCount: 2
     jobs:
       syncReceipts:
-        interval: 30  #Interval in seconds
+        interval: 120  #Interval in seconds
+      syncInvoices:
+        interval: 120  #Interval in seconds
+      syncTickets:
+        interval: 120  #Interval in seconds
 
 server:
   servlet:
@@ -30,6 +34,8 @@ efaps:
   posPath: /servlet/rest/pos/poss
   userPath: /servlet/rest/pos/users
   receiptPath: /servlet/rest/pos/receipts
+  invoicePath: /servlet/rest/pos/invoices
+  ticketPath: /servlet/rest/pos/tickets
   checkoutPath: /servlet/checkout
   sequencePath: /servlet/rest/pos/sequences
   contactPath: /servlet/rest/pos/contacts

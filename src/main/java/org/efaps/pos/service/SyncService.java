@@ -28,19 +28,25 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.ReceiptDto;
+import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.respository.ContactRepository;
+import org.efaps.pos.respository.InvoiceRepository;
 import org.efaps.pos.respository.ProductRepository;
 import org.efaps.pos.respository.ReceiptRepository;
 import org.efaps.pos.respository.SequenceRepository;
+import org.efaps.pos.respository.TicketRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +68,8 @@ public class SyncService
     private final GridFsTemplate gridFsTemplate;
     private final EFapsClient eFapsClient;
     private final ReceiptRepository receiptRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final TicketRepository ticketRepository;
     private final ProductRepository productRepository;
     private final SequenceRepository sequenceRepository;
     private final ContactRepository contactRepository;
@@ -70,6 +78,8 @@ public class SyncService
     public SyncService(final MongoTemplate _mongoTemplate,
                        final GridFsTemplate _gridFsTemplate,
                        final ReceiptRepository _receiptRepository,
+                       final InvoiceRepository _invoiceRepository,
+                       final TicketRepository _ticketRepository,
                        final ProductRepository _productRepository,
                        final SequenceRepository _sequenceRepository,
                        final ContactRepository _contactRepository,
@@ -78,6 +88,8 @@ public class SyncService
         this.mongoTemplate = _mongoTemplate;
         this.gridFsTemplate = _gridFsTemplate;
         this.receiptRepository = _receiptRepository;
+        this.invoiceRepository = _invoiceRepository;
+        this.ticketRepository = _ticketRepository;
         this.productRepository = _productRepository;
         this.sequenceRepository = _sequenceRepository;
         this.contactRepository = _contactRepository;
@@ -184,6 +196,48 @@ public class SyncService
                     final Receipt receipt = receiptOpt.get();
                     receipt.setOid(recDto.getOid());
                     this.receiptRepository.save(receipt);
+                }
+            }
+        }
+    }
+
+    public void syncInvoices()
+    {
+        LOG.info("Syncing Invoices");
+        final Collection<InvoiceDto> tosync = this.invoiceRepository.findByOidIsNull().stream()
+                        .map(receipt -> Converter.toInvoiceDto(receipt))
+                        .collect(Collectors.toList());
+        for (final InvoiceDto dto : tosync) {
+            LOG.debug("Syncing Invoice: {}", dto);
+            final InvoiceDto recDto = this.eFapsClient.postInvoice(dto);
+            LOG.debug("received Invoice: {}", recDto);
+            if (recDto.getOid() != null) {
+                final Optional<Invoice> opt = this.invoiceRepository.findById(recDto.getId());
+                if (opt.isPresent()) {
+                    final Invoice receipt = opt.get();
+                    receipt.setOid(recDto.getOid());
+                    this.invoiceRepository.save(receipt);
+                }
+            }
+        }
+    }
+
+    public void syncTickets()
+    {
+        LOG.info("Syncing Tickets");
+        final Collection<TicketDto> tosync = this.ticketRepository.findByOidIsNull().stream()
+                        .map(receipt -> Converter.toTicketDto(receipt))
+                        .collect(Collectors.toList());
+        for (final TicketDto dto : tosync) {
+            LOG.debug("Syncing Ticket: {}", dto);
+            final TicketDto recDto = this.eFapsClient.postTicket(dto);
+            LOG.debug("received Ticket: {}", recDto);
+            if (recDto.getOid() != null) {
+                final Optional<Ticket> opt = this.ticketRepository.findById(recDto.getId());
+                if (opt.isPresent()) {
+                    final Ticket receipt = opt.get();
+                    receipt.setOid(recDto.getOid());
+                    this.ticketRepository.save(receipt);
                 }
             }
         }

@@ -101,6 +101,8 @@ public class ConfigProperties
         private String posPath;
         private String userPath;
         private String receiptPath;
+        private String invoicePath;
+        private String ticketPath;
         private String checkoutPath;
         private String sequencePath;
         private String contactPath;
@@ -203,6 +205,30 @@ public class ConfigProperties
         public void setContactPath(final String _contactPath)
         {
             this.contactPath = _contactPath;
+        }
+
+
+        public String getInvoicePath()
+        {
+            return this.invoicePath;
+        }
+
+
+        public void setInvoicePath(final String _invoicePath)
+        {
+            this.invoicePath = _invoicePath;
+        }
+
+
+        public String getTicketPath()
+        {
+            return this.ticketPath;
+        }
+
+
+        public void setTicketPath(final String _ticketPath)
+        {
+            this.ticketPath = _ticketPath;
         }
     }
 

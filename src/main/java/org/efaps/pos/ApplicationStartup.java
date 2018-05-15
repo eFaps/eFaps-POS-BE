@@ -56,6 +56,8 @@ public class ApplicationStartup
             this.service.syncWorkspaces();
             this.service.syncUsers();
             this.service.syncReceipts();
+            this.service.syncInvoices();
+            this.service.syncTickets();
             this.service.syncImages();
             this.service.syncSequences();
             this.service.syncContacts();
