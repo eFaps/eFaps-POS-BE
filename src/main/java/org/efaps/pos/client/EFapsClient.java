@@ -18,6 +18,7 @@ package org.efaps.pos.client;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -146,7 +147,7 @@ public class EFapsClient
 
     public List<SequenceDto> getSequences()
     {
-        List<SequenceDto> ret = null;
+        List<SequenceDto> ret = new ArrayList<>();
         try {
             final RequestEntity<?> requestEntity = get(this.config.getEFaps().getSequencePath());
             final ResponseEntity<List<SequenceDto>> response = this.restTemplate.exchange(requestEntity,
@@ -162,7 +163,7 @@ public class EFapsClient
 
     public List<ContactDto> getContacts()
     {
-        List<ContactDto> ret = null;
+        List<ContactDto> ret = new ArrayList<>();
         try {
             final RequestEntity<?> requestEntity = get(this.config.getEFaps().getContactPath());
             final ResponseEntity<List<ContactDto>> response = this.restTemplate.exchange(requestEntity,

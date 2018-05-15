@@ -84,9 +84,9 @@ public class SequenceService
                         Sequence.class);
         if (sequence == null) {
             if (_isOid) {
-                this.mongoTemplate.insert(new Sequence().setId(_key).setSeq(0));
-            } else {
                 this.mongoTemplate.insert(new Sequence().setOid(_key).setSeq(0));
+            } else {
+                this.mongoTemplate.insert(new Sequence().setId(_key).setSeq(0));
             }
             return getNextNumber(_key, _isOid);
         }
