@@ -102,14 +102,16 @@ public class SyncService
         final List<Product> products = this.eFapsClient.getProducts().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
-        final List<Product> existingProducts = this.mongoTemplate.findAll(Product.class);
-        existingProducts.forEach(existing -> {
-            if (!products.stream().filter(product -> product.getOid().equals(existing.getOid())).findFirst()
-                            .isPresent()) {
-                this.mongoTemplate.remove(existing);
-            }
-        });
-        products.forEach(product -> this.mongoTemplate.save(product));
+        if (!products.isEmpty()) {
+            final List<Product> existingProducts = this.mongoTemplate.findAll(Product.class);
+            existingProducts.forEach(existing -> {
+                if (!products.stream().filter(product -> product.getOid().equals(existing.getOid())).findFirst()
+                                .isPresent()) {
+                    this.mongoTemplate.remove(existing);
+                }
+            });
+            products.forEach(product -> this.mongoTemplate.save(product));
+        }
     }
 
     public void syncCategories()
@@ -118,15 +120,17 @@ public class SyncService
         final List<Category> categories = this.eFapsClient.getCategories().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
-        final List<Category> existingCategories = this.mongoTemplate.findAll(Category.class);
-        existingCategories.forEach(existing -> {
-            if (!categories.stream()
-                            .filter(category -> category.getOid().equals(existing.getOid())).findFirst()
-                            .isPresent()) {
-                this.mongoTemplate.remove(existing);
-            }
-        });
-        categories.forEach(category -> this.mongoTemplate.save(category));
+        if (!categories.isEmpty()) {
+            final List<Category> existingCategories = this.mongoTemplate.findAll(Category.class);
+            existingCategories.forEach(existing -> {
+                if (!categories.stream()
+                                .filter(category -> category.getOid().equals(existing.getOid())).findFirst()
+                                .isPresent()) {
+                    this.mongoTemplate.remove(existing);
+                }
+            });
+            categories.forEach(category -> this.mongoTemplate.save(category));
+        }
     }
 
     public void syncWorkspaces()
@@ -135,15 +139,17 @@ public class SyncService
         final List<Workspace> workspaces = this.eFapsClient.getWorkspaces().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
-        final List<Workspace> existingWorkspaces = this.mongoTemplate.findAll(Workspace.class);
-        existingWorkspaces.forEach(existing -> {
-            if (!workspaces.stream()
-                            .filter(workspace -> workspace.getOid().equals(existing.getOid())).findFirst()
-                            .isPresent()) {
-                this.mongoTemplate.remove(existing);
-            }
-        });
-        workspaces.forEach(workspace -> this.mongoTemplate.save(workspace));
+        if (!workspaces.isEmpty()) {
+            final List<Workspace> existingWorkspaces = this.mongoTemplate.findAll(Workspace.class);
+            existingWorkspaces.forEach(existing -> {
+                if (!workspaces.stream()
+                                .filter(workspace -> workspace.getOid().equals(existing.getOid())).findFirst()
+                                .isPresent()) {
+                    this.mongoTemplate.remove(existing);
+                }
+            });
+            workspaces.forEach(workspace -> this.mongoTemplate.save(workspace));
+        }
     }
 
     public void syncPOSs()
@@ -152,15 +158,17 @@ public class SyncService
         final List<Pos> poss = this.eFapsClient.getPOSs().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
-        final List<Pos> existingPoss = this.mongoTemplate.findAll(Pos.class);
-        existingPoss.forEach(existing -> {
-            if (!poss.stream()
-                            .filter(pos -> pos.getOid().equals(existing.getOid())).findFirst()
-                            .isPresent()) {
-                this.mongoTemplate.remove(existing);
-            }
-        });
-        poss.forEach(pos -> this.mongoTemplate.save(pos));
+        if (!poss.isEmpty()) {
+            final List<Pos> existingPoss = this.mongoTemplate.findAll(Pos.class);
+            existingPoss.forEach(existing -> {
+                if (!poss.stream()
+                                .filter(pos -> pos.getOid().equals(existing.getOid())).findFirst()
+                                .isPresent()) {
+                    this.mongoTemplate.remove(existing);
+                }
+            });
+            poss.forEach(pos -> this.mongoTemplate.save(pos));
+        }
     }
 
     public void syncUsers()
@@ -169,15 +177,17 @@ public class SyncService
         final List<User> users = this.eFapsClient.getUsers().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
-        final List<User> existingUsers = this.mongoTemplate.findAll(User.class);
-        existingUsers.forEach(existing -> {
-            if (!users.stream()
-                            .filter(user -> user.getOid().equals(existing.getOid())).findFirst()
-                            .isPresent()) {
-                this.mongoTemplate.remove(existing);
-            }
-        });
-        users.forEach(user -> this.mongoTemplate.save(user));
+        if (!users.isEmpty()) {
+            final List<User> existingUsers = this.mongoTemplate.findAll(User.class);
+            existingUsers.forEach(existing -> {
+                if (!users.stream()
+                                .filter(user -> user.getOid().equals(existing.getOid())).findFirst()
+                                .isPresent()) {
+                    this.mongoTemplate.remove(existing);
+                }
+            });
+            users.forEach(user -> this.mongoTemplate.save(user));
+        }
     }
 
     public void syncReceipts()

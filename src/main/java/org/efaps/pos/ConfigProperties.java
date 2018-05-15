@@ -207,24 +207,20 @@ public class ConfigProperties
             this.contactPath = _contactPath;
         }
 
-
         public String getInvoicePath()
         {
             return this.invoicePath;
         }
-
 
         public void setInvoicePath(final String _invoicePath)
         {
             this.invoicePath = _invoicePath;
         }
 
-
         public String getTicketPath()
         {
             return this.ticketPath;
         }
-
 
         public void setTicketPath(final String _ticketPath)
         {

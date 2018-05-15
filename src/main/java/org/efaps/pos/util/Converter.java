@@ -404,6 +404,8 @@ public final class Converter
                         .withDate(_entity.getDate())
                         .withCurrency(_entity.getCurrency())
                         .withStatus(_entity.getStatus())
+                        .withNetTotal(_entity.getNetTotal())
+                        .withCrossTotal(_entity.getCrossTotal())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
@@ -425,6 +427,8 @@ public final class Converter
                         .withNumber(_entity.getNumber())
                         .withDate(_entity.getDate())
                         .withCurrency(_entity.getCurrency())
+                        .withNetTotal(_entity.getNetTotal())
+                        .withCrossTotal(_entity.getCrossTotal())
                         .withStatus(_entity.getStatus())
                         .withItems(_entity.getItems() == null
                             ? null
@@ -447,6 +451,8 @@ public final class Converter
                         .withNumber(_entity.getNumber())
                         .withDate(_entity.getDate())
                         .withCurrency(_entity.getCurrency())
+                        .withNetTotal(_entity.getNetTotal())
+                        .withCrossTotal(_entity.getCrossTotal())
                         .withStatus(_entity.getStatus())
                         .withItems(_entity.getItems() == null
                             ? null

@@ -68,7 +68,7 @@ public class EFapsClient
 
     public List<ProductDto> getProducts()
     {
-        List<ProductDto> ret = null;
+        List<ProductDto> ret = new ArrayList<>();
         try {
             final RequestEntity<?> requestEntity = get(this.config.getEFaps().getProductPath());
             final ResponseEntity<List<ProductDto>> response = this.restTemplate.exchange(requestEntity,
@@ -85,7 +85,7 @@ public class EFapsClient
 
     public List<CategoryDto> getCategories()
     {
-        List<CategoryDto> ret = null;
+        List<CategoryDto> ret = new ArrayList<>();
         try {
             final RequestEntity<?> requestEntity = get(this.config.getEFaps().getCategoryPath());
             final ResponseEntity<List<CategoryDto>> response = this.restTemplate.exchange(requestEntity,
@@ -101,7 +101,7 @@ public class EFapsClient
 
     public List<WorkspaceDto> getWorkspaces()
     {
-        List<WorkspaceDto> ret = null;
+        List<WorkspaceDto> ret = new ArrayList<>();
         try {
             final RequestEntity<?> requestEntity = get(this.config.getEFaps().getWorkspacePath());
             final ResponseEntity<List<WorkspaceDto>> response = this.restTemplate.exchange(requestEntity,
@@ -117,7 +117,7 @@ public class EFapsClient
 
     public List<PosDto> getPOSs()
     {
-        List<PosDto> ret = null;
+        List<PosDto> ret = new ArrayList<>();
         try {
             final RequestEntity<?> requestEntity = get(this.config.getEFaps().getPosPath());
             final ResponseEntity<List<PosDto>> response = this.restTemplate.exchange(requestEntity,
@@ -133,7 +133,7 @@ public class EFapsClient
 
     public List<UserDto> getUsers()
     {
-        List<UserDto> ret = null;
+        List<UserDto> ret = new ArrayList<>();
         try {
             final RequestEntity<?> requestEntity = get(this.config.getEFaps().getUserPath());
             final ResponseEntity<List<UserDto>> response = this.restTemplate.exchange(requestEntity,
@@ -181,26 +181,41 @@ public class EFapsClient
 
     public ReceiptDto postReceipt(final ReceiptDto _receipt)
     {
-        final RequestEntity<ReceiptDto> requestEntity = post(this.config.getEFaps().getReceiptPath(), _receipt);
-
-        final ResponseEntity<ReceiptDto> ret = this.restTemplate.exchange(requestEntity, ReceiptDto.class);
-        return ret.getBody();
+        ReceiptDto ret = _receipt;
+        try {
+            final RequestEntity<ReceiptDto> requestEntity = post(this.config.getEFaps().getReceiptPath(), _receipt);
+            final ResponseEntity<ReceiptDto> response = this.restTemplate.exchange(requestEntity, ReceiptDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during post for Receipts", e);
+        }
+        return ret;
     }
-
 
     public InvoiceDto postInvoice(final InvoiceDto _invoice)
     {
-        final RequestEntity<InvoiceDto> requestEntity = post(this.config.getEFaps().getInvoicePath(), _invoice);
-        final ResponseEntity<InvoiceDto> ret = this.restTemplate.exchange(requestEntity, InvoiceDto.class);
-        return ret.getBody();
+        InvoiceDto ret = _invoice;
+        try {
+            final RequestEntity<InvoiceDto> requestEntity = post(this.config.getEFaps().getInvoicePath(), _invoice);
+            final ResponseEntity<InvoiceDto> response = this.restTemplate.exchange(requestEntity, InvoiceDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during post for Invoices", e);
+        }
+        return ret;
     }
 
     public TicketDto postTicket(final TicketDto _ticket)
     {
-        final RequestEntity<TicketDto> requestEntity = post(this.config.getEFaps().getTicketPath(), _ticket);
-
-        final ResponseEntity<TicketDto> ret = this.restTemplate.exchange(requestEntity, TicketDto.class);
-        return ret.getBody();
+        TicketDto ret = _ticket;
+        try {
+            final RequestEntity<TicketDto> requestEntity = post(this.config.getEFaps().getTicketPath(), _ticket);
+            final ResponseEntity<TicketDto> response = this.restTemplate.exchange(requestEntity, TicketDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during post for Tickets", e);
+        }
+        return ret;
     }
 
     public Checkout checkout(final String _oid)
