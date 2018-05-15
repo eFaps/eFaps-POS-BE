@@ -10,7 +10,11 @@ org:
       threadCount: 2
     jobs:
       syncReceipts:
-        interval: 30  #Interval in seconds
+        interval: 120  #Interval in seconds
+      syncInvoices:
+        interval: 120  #Interval in seconds
+      syncTickets:
+        interval: 120  #Interval in seconds
 
 name: POS-Backend-Test
 
