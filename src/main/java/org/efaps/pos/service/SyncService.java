@@ -47,6 +47,7 @@ import org.efaps.pos.respository.ProductRepository;
 import org.efaps.pos.respository.ReceiptRepository;
 import org.efaps.pos.respository.SequenceRepository;
 import org.efaps.pos.respository.TicketRepository;
+import org.efaps.pos.respository.UserRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +74,7 @@ public class SyncService
     private final ProductRepository productRepository;
     private final SequenceRepository sequenceRepository;
     private final ContactRepository contactRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
@@ -83,6 +85,7 @@ public class SyncService
                        final ProductRepository _productRepository,
                        final SequenceRepository _sequenceRepository,
                        final ContactRepository _contactRepository,
+                       final UserRepository _userRepository,
                        final EFapsClient _eFapsClient)
     {
         this.mongoTemplate = _mongoTemplate;
@@ -93,6 +96,7 @@ public class SyncService
         this.productRepository = _productRepository;
         this.sequenceRepository = _sequenceRepository;
         this.contactRepository = _contactRepository;
+        this.userRepository = _userRepository;
         this.eFapsClient = _eFapsClient;
     }
 
@@ -178,15 +182,8 @@ public class SyncService
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         if (!users.isEmpty()) {
-            final List<User> existingUsers = this.mongoTemplate.findAll(User.class);
-            existingUsers.forEach(existing -> {
-                if (!users.stream()
-                                .filter(user -> user.getOid().equals(existing.getOid())).findFirst()
-                                .isPresent()) {
-                    this.mongoTemplate.remove(existing);
-                }
-            });
-            users.forEach(user -> this.mongoTemplate.save(user));
+            this.userRepository.deleteAll();
+            users.forEach(user -> this.userRepository.save(user));
         }
     }
 
