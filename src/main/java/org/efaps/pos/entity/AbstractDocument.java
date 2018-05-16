@@ -22,6 +22,7 @@ public abstract class AbstractDocument<T>
     private BigDecimal crossTotal;
     private Set<TaxEntry> taxes;
     private String contactOid;
+    private String posOid;
 
     public String getId()
     {
@@ -152,6 +153,18 @@ public abstract class AbstractDocument<T>
     public T setContactOid(final String _contactOid)
     {
         this.contactOid = _contactOid;
+        return (T) this;
+    }
+
+    public String getPosOid()
+    {
+        return this.posOid;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setPosOid(final String _posOid)
+    {
+        this.posOid = _posOid;
         return (T) this;
     }
 
