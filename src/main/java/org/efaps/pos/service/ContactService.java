@@ -43,4 +43,11 @@ public class ContactService
         return this.contactRepository.findAll();
     }
 
+    public List<Contact> findContacts(final String _term, final boolean _nameSearch)
+    {
+        return _nameSearch
+                        ? this.contactRepository.findByNameStartingWith(_term)
+                        : this.contactRepository.findByTaxNumberStartingWith(_term);
+    }
+
 }

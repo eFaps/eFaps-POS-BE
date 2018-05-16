@@ -25,6 +25,7 @@ import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -41,8 +42,17 @@ public class ContactController
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ContactDto> getProducts() {
+    public List<ContactDto> getContacts() {
         return this.service.getContacts().stream()
+                        .map(contact -> Converter.toDto(contact))
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
+    public List<ContactDto> findContacts(@RequestParam(name = "term") final String _term,
+                                 @RequestParam(name = "nameSearch", defaultValue = "false") final Boolean _nameSearch)
+    {
+        return this.service.findContacts(_term, _nameSearch).stream()
                         .map(contact -> Converter.toDto(contact))
                         .collect(Collectors.toList());
     }
