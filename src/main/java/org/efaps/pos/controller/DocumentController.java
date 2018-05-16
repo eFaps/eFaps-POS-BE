@@ -26,6 +26,7 @@ import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -76,6 +77,12 @@ public class DocumentController
                                    @RequestBody final PosOrderDto _orderDto)
     {
         return Converter.toDto(this.documentService.updateOrder(Converter.toEntity(_orderDto).setId(_orderId)));
+    }
+
+    @DeleteMapping(path = "documents/orders/{orderId}")
+    public void deleteOrder(@PathVariable(name = "orderId") final String _orderId)
+    {
+        this.documentService.deleteOrder(_orderId);
     }
 
     @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -19,9 +19,11 @@ package org.efaps.pos.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 
 import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosReceiptDto;
@@ -114,6 +116,18 @@ public class DocumentService
             taxTotal = taxTotal.add(amount);
         }
         _document.setCrossTotal(netTotal.add(taxTotal).setScale(2, RoundingMode.HALF_UP));
+    }
+
+    public void deleteOrder(final String _orderId)
+    {
+        final Optional<Order> opt = this.orderRepository.findById(_orderId);
+        if (opt.isPresent()) {
+            final Order order = opt.get();
+            if (DocStatus.OPEN.equals(order.getStatus())) {
+                order.setStatus(DocStatus.CANCELED);
+                this.orderRepository.save(order);
+            }
+        }
     }
 
     public Receipt createReceipt(final String _workspaceOid, final Receipt _receipt)
