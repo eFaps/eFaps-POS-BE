@@ -84,6 +84,7 @@ public final class Converter
                                         .collect(Collectors.toSet()))
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
+                        .setContactOid(_dto.getContactOid())
                         .setTaxes(_dto.getTaxes() ==  null
                             ? null
                             : _dto.getTaxes().stream()
@@ -94,7 +95,7 @@ public final class Converter
 
     public static Invoice toEntity(final PosInvoiceDto _dto)
     {
-        final Invoice ret = new Invoice()
+        return new Invoice()
                         .setId(_dto.getId())
                         .setOid(_dto.getOid())
                         .setNumber(_dto.getNumber())
@@ -106,12 +107,12 @@ public final class Converter
                                         .collect(Collectors.toSet()))
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
+                        .setContactOid(_dto.getContactOid())
                         .setTaxes(_dto.getTaxes() ==  null
                             ? null
                             : _dto.getTaxes().stream()
                                 .map(_tax -> Converter.toEntity(_tax))
                                 .collect(Collectors.toSet()));
-        return ret;
     }
 
     public static Ticket toEntity(final PosTicketDto _dto)
@@ -128,6 +129,7 @@ public final class Converter
                                         .collect(Collectors.toSet()))
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
+                        .setContactOid(_dto.getContactOid())
                         .setTaxes(_dto.getTaxes() ==  null
                             ? null
                             : _dto.getTaxes().stream()
@@ -406,6 +408,7 @@ public final class Converter
                         .withStatus(_entity.getStatus())
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
+                        .withContactOid(_entity.getContactOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
@@ -430,6 +433,7 @@ public final class Converter
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withStatus(_entity.getStatus())
+                        .withContactOid(_entity.getContactOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
@@ -454,6 +458,7 @@ public final class Converter
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withStatus(_entity.getStatus())
+                        .withContactOid(_entity.getContactOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
@@ -487,6 +492,7 @@ public final class Converter
                         .withStatus(_entity.getStatus())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
+                        .withContactOid(_entity.getContactOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
@@ -510,6 +516,7 @@ public final class Converter
                         .withStatus(_entity.getStatus())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
+                        .withContactOid(_entity.getContactOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
@@ -533,6 +540,7 @@ public final class Converter
                         .withStatus(_entity.getStatus())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
+                        .withContactOid(_entity.getContactOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
