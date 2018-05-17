@@ -132,6 +132,7 @@ public class DocumentService
 
     public Receipt createReceipt(final String _workspaceOid, final Receipt _receipt)
     {
+        validateContact(_workspaceOid, _receipt);
         _receipt.setNumber(this.sequenceService.getNext(_workspaceOid, DocType.RECEIPT));
         Receipt ret = this.receiptRepository.insert(_receipt);
         try {
@@ -153,6 +154,7 @@ public class DocumentService
 
     public Invoice createInvoice(final String _workspaceOid, final Invoice _invoice)
     {
+        validateContact(_workspaceOid, _invoice);
         _invoice.setNumber(this.sequenceService.getNext(_workspaceOid, DocType.INVOICE));
         Invoice ret = this.invoiceRepository.insert(_invoice);
         try {
@@ -174,6 +176,7 @@ public class DocumentService
 
     public Ticket createTicket(final String _workspaceOid, final Ticket _ticket)
     {
+        validateContact(_workspaceOid, _ticket);
         _ticket.setNumber(this.sequenceService.getNext(_workspaceOid, DocType.TICKET));
         Ticket ret = this.ticketRepository.insert(_ticket);
         try {
@@ -193,9 +196,18 @@ public class DocumentService
         return ret;
     }
 
+    private void validateContact(final String _workspaceOid, final AbstractDocument<?> _document)
+    {
+        if (_document.getContactOid() == null) {
+            final Pos pos = this.posService.getPos4Workspace(_workspaceOid);
+            if (pos != null) {
+                _document.setContactOid(pos.getDefaultContactOid());
+            }
+        }
+    }
 
-
-    private IPos getPos(final Pos _pos) {
+    private IPos getPos(final Pos _pos)
+    {
         final String name = _pos.getName();
         final String currency = _pos.getCurrency();
         final CompanyDto companyDto = CompanyDto.builder()
@@ -204,7 +216,8 @@ public class DocumentService
                         .build();
         final ContactDto contactDto = Converter.toDto(this.contactService.get(_pos.getDefaultContactOid()));
 
-        return new IPos() {
+        return new IPos()
+        {
 
             @Override
             public String getName()
@@ -231,6 +244,4 @@ public class DocumentService
             }
         };
     }
-
-
 }
