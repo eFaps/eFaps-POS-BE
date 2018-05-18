@@ -24,6 +24,7 @@ import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.InvoiceDto;
+import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosInvoiceDto;
@@ -45,6 +46,7 @@ import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
+import org.efaps.pos.entity.Payment;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Pos.Company;
 import org.efaps.pos.entity.Product;
@@ -90,6 +92,11 @@ public final class Converter
                             ? null
                             : _dto.getTaxes().stream()
                                 .map(_tax -> Converter.toEntity(_tax))
+                                .collect(Collectors.toSet()))
+                        .setPayments(_dto.getPayments() == null
+                            ? null
+                            : _dto.getPayments().stream()
+                                .map(_payment -> Converter.toEntity(_payment))
                                 .collect(Collectors.toSet()));
     }
 
@@ -113,6 +120,11 @@ public final class Converter
                             ? null
                             : _dto.getTaxes().stream()
                                 .map(_tax -> Converter.toEntity(_tax))
+                                .collect(Collectors.toSet()))
+                        .setPayments(_dto.getPayments() == null
+                            ? null
+                            : _dto.getPayments().stream()
+                                .map(_payment -> Converter.toEntity(_payment))
                                 .collect(Collectors.toSet()));
     }
 
@@ -136,8 +148,12 @@ public final class Converter
                             ? null
                             : _dto.getTaxes().stream()
                                 .map(_tax -> Converter.toEntity(_tax))
+                                .collect(Collectors.toSet()))
+                        .setPayments(_dto.getPayments() == null
+                            ? null
+                            : _dto.getPayments().stream()
+                                .map(_payment -> Converter.toEntity(_payment))
                                 .collect(Collectors.toSet()));
-
     }
 
 
@@ -331,11 +347,27 @@ public final class Converter
 
     public static Tax toEntity(final TaxDto _dto)
     {
-        final Tax ret = new Tax()
+        return new Tax()
                         .setOid(_dto.getOid())
                         .setName(_dto.getName())
                         .setPercent(_dto.getPercent());
-        return ret;
+    }
+
+    public static Payment toEntity(final PaymentDto _dto)
+    {
+        return new Payment()
+                        .setOid(_dto.getOid())
+                        .setType(_dto.getType())
+                        .setAmount(_dto.getAmount());
+    }
+
+    public static PaymentDto toDto(final Payment _entity)
+    {
+        return PaymentDto.builder()
+                        .withOID(_entity.getOid())
+                        .withType(_entity.getType())
+                        .withAmount(_entity.getAmount())
+                        .build();
     }
 
     public static TaxEntry toEntity(final TaxEntryDto _dto)
@@ -422,6 +454,11 @@ public final class Converter
                             : _entity.getTaxes().stream()
                                 .map(_tax -> Converter.toDto(_tax))
                                 .collect(Collectors.toSet()))
+                        .withPayments(_entity.getPayments() == null
+                            ? null
+                            : _entity.getPayments().stream()
+                                 .map(_item -> toDto(_item))
+                                 .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -448,6 +485,11 @@ public final class Converter
                             : _entity.getTaxes().stream()
                                 .map(_tax -> Converter.toDto(_tax))
                                 .collect(Collectors.toSet()))
+                        .withPayments(_entity.getPayments() == null
+                            ? null
+                            : _entity.getPayments().stream()
+                                .map(_item -> toDto(_item))
+                                .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -473,6 +515,11 @@ public final class Converter
                             ? null
                             : _entity.getTaxes().stream()
                                 .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
+                        .withPayments(_entity.getPayments() == null
+                            ? null
+                            : _entity.getPayments().stream()
+                                .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
                         .build();
     }
@@ -509,6 +556,11 @@ public final class Converter
                             : _entity.getTaxes().stream()
                                 .map(_tax -> Converter.toDto(_tax))
                                 .collect(Collectors.toSet()))
+                        .withPayments(_entity.getPayments() == null
+                            ? null
+                            : _entity.getPayments().stream()
+                                .map(_item -> toDto(_item))
+                                .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -534,6 +586,11 @@ public final class Converter
                             : _entity.getTaxes().stream()
                                 .map(_tax -> Converter.toDto(_tax))
                                 .collect(Collectors.toSet()))
+                        .withPayments(_entity.getPayments() == null
+                            ? null
+                            : _entity.getPayments().stream()
+                                .map(_item -> toDto(_item))
+                                .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -558,6 +615,11 @@ public final class Converter
                             ? null
                             : _entity.getTaxes().stream()
                                 .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
+                        .withPayments(_entity.getPayments() == null
+                            ? null
+                            : _entity.getPayments().stream()
+                                .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
                         .build();
     }

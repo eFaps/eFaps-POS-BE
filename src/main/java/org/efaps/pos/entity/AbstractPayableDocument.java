@@ -17,11 +17,23 @@
 
 package org.efaps.pos.entity;
 
-import org.springframework.data.mongodb.core.mapping.Document;
+import java.util.Set;
 
-@Document(collection = "invoices")
-public class Invoice
-    extends AbstractPayableDocument<Invoice>
+public class AbstractPayableDocument<T>
+    extends AbstractDocument<T>
 {
 
+    private Set<Payment> payments;
+
+    public Set<Payment> getPayments()
+    {
+        return this.payments;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setPayments(final Set<Payment> _payments)
+    {
+        this.payments = _payments;
+        return (T) this;
+    }
 }

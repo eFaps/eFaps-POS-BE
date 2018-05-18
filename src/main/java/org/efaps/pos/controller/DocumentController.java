@@ -60,8 +60,8 @@ public class DocumentController
     }
 
     @PostMapping(path = "workspaces/{oid}/documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosTicketDto createInvoice(@PathVariable("oid") final String _oid,
-                                       @RequestBody final PosTicketDto _ticketDto)
+    public PosTicketDto createTicket(@PathVariable("oid") final String _oid,
+                                     @RequestBody final PosTicketDto _ticketDto)
     {
         return Converter.toDto(this.documentService.createTicket(_oid, Converter.toEntity(_ticketDto)));
     }
