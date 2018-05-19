@@ -25,6 +25,7 @@ import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.PaymentDto;
+import org.efaps.pos.dto.PosContactDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosInvoiceDto;
@@ -336,6 +337,14 @@ public final class Converter
                         .setTaxNumber(_dto.getTaxNumber());
     }
 
+    public static Contact toEntity(final PosContactDto _dto)
+    {
+        return new Contact().setId(_dto.getId())
+                        .setOid(_dto.getOid())
+                        .setName(_dto.getName())
+                        .setTaxNumber(_dto.getTaxNumber());
+    }
+
     public static TaxDto toDto(final Tax _entity)
     {
         return TaxDto.builder()
@@ -524,7 +533,18 @@ public final class Converter
                         .build();
     }
 
-    public static ContactDto toDto(final Contact _entity) {
+    public static PosContactDto toDto(final Contact _entity) {
+        return _entity == null
+                    ? null
+                    : PosContactDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withName(_entity.getName())
+                        .withTaxNumber(_entity.getTaxNumber())
+                        .build();
+    }
+
+    public static ContactDto toContactDto(final Contact _entity) {
         return _entity == null
                     ? null
                     : ContactDto.builder()

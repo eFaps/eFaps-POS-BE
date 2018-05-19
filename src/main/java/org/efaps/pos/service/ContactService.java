@@ -50,4 +50,9 @@ public class ContactService
                         : this.contactRepository.findByTaxNumberStartingWith(_term);
     }
 
+    public Contact createContact(final Contact _entity)
+    {
+        return this.contactRepository.save(_entity);
+    }
+
 }

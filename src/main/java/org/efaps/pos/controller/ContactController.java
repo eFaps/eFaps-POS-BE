@@ -19,11 +19,13 @@ package org.efaps.pos.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.PosContactDto;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,18 +44,24 @@ public class ContactController
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ContactDto> getContacts() {
+    public List<PosContactDto> getContacts() {
         return this.service.getContacts().stream()
                         .map(contact -> Converter.toDto(contact))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public List<ContactDto> findContacts(@RequestParam(name = "term") final String _term,
+    public List<PosContactDto> findContacts(@RequestParam(name = "term") final String _term,
                                  @RequestParam(name = "nameSearch", defaultValue = "false") final Boolean _nameSearch)
     {
         return this.service.findContacts(_term, _nameSearch).stream()
                         .map(contact -> Converter.toDto(contact))
                         .collect(Collectors.toList());
+    }
+
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosContactDto createContact(@RequestBody final PosContactDto _posContactDto)
+    {
+        return Converter.toDto(this.service.createContact(Converter.toEntity(_posContactDto)));
     }
 }

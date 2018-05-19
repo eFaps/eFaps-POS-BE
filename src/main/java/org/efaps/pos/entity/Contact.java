@@ -39,9 +39,10 @@ public class Contact
         return this.id;
     }
 
-    public void setId(final String _id)
+    public Contact setId(final String _id)
     {
         this.id = _id;
+        return this;
     }
 
     public String getOid()
