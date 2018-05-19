@@ -21,6 +21,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,8 @@ import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.entity.StashId;
+import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
@@ -119,6 +122,7 @@ public class SyncService
             });
             products.forEach(product -> this.mongoTemplate.save(product));
         }
+        registerSync(StashId.PRODUCTSYNC);
     }
 
     public void syncCategories()
@@ -138,6 +142,7 @@ public class SyncService
             });
             categories.forEach(category -> this.mongoTemplate.save(category));
         }
+        registerSync(StashId.CATEGORYSYNC);
     }
 
     public void syncWorkspaces()
@@ -157,6 +162,7 @@ public class SyncService
             });
             workspaces.forEach(workspace -> this.mongoTemplate.save(workspace));
         }
+        registerSync(StashId.WORKSPACESYNC);
     }
 
     public void syncPOSs()
@@ -176,6 +182,7 @@ public class SyncService
             });
             poss.forEach(pos -> this.mongoTemplate.save(pos));
         }
+        registerSync(StashId.POSSYNC);
     }
 
     public void syncUsers()
@@ -188,6 +195,7 @@ public class SyncService
             this.userRepository.deleteAll();
             users.forEach(user -> this.userRepository.save(user));
         }
+        registerSync(StashId.USERSYNC);
     }
 
     public void syncReceipts()
@@ -211,6 +219,7 @@ public class SyncService
                 }
             }
         }
+        registerSync(StashId.RECEIPTSYNC);
     }
 
     public void syncInvoices()
@@ -234,6 +243,7 @@ public class SyncService
                 }
             }
         }
+        registerSync(StashId.INVOICESYNC);
     }
 
     public void syncTickets()
@@ -257,6 +267,7 @@ public class SyncService
                 }
             }
         }
+        registerSync(StashId.TICKETSYNC);
     }
 
     private boolean validateContact(final AbstractPayableDocumentDto _dto)
@@ -281,6 +292,7 @@ public class SyncService
                 }
             }
         }
+        registerSync(StashId.IMAGESYNC);
     }
 
     public void syncSequences() {
@@ -305,6 +317,7 @@ public class SyncService
                 this.sequenceRepository.save(sequence);
             }
         }
+        registerSync(StashId.SEQUENCESYNC);
     }
 
     public void syncContacts()
@@ -312,6 +325,7 @@ public class SyncService
         LOG.info("Syncing Contacts");
         syncContactsUp();
         syncContactsDown();
+        registerSync(StashId.CONTACTSYNC);
     }
 
     private void syncContactsUp()
@@ -363,5 +377,21 @@ public class SyncService
                 this.contactRepository.delete(contact);
             }
         }
+    }
+
+    private void registerSync(final StashId _stashId)
+    {
+        registerSync(_stashId.getKey());
+    }
+
+    private void registerSync(final String _id)
+    {
+        SyncInfo syncInfo = this.mongoTemplate.findById(_id, SyncInfo.class);
+        if (syncInfo == null) {
+            syncInfo = new SyncInfo();
+            syncInfo.setId(_id);
+        }
+        syncInfo.setLastSync(LocalDateTime.now());
+        this.mongoTemplate.save(syncInfo);
     }
 }
