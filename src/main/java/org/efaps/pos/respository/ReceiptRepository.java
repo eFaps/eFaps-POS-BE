@@ -26,4 +26,6 @@ public interface ReceiptRepository
     extends MongoRepository<Receipt, String>
 {
     Collection<Receipt> findByOidIsNull();
+
+    Collection<Receipt> findByContactOid(String _contactOid);
 }

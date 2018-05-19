@@ -26,4 +26,6 @@ public interface InvoiceRepository
     extends MongoRepository<Invoice, String>
 {
     Collection<Invoice> findByOidIsNull();
+
+    Collection<Invoice> findByContactOid(String _contactOid);
 }

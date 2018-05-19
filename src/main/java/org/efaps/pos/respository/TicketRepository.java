@@ -26,4 +26,6 @@ public interface TicketRepository
     extends MongoRepository<Ticket, String>
 {
     Collection<Ticket> findByOidIsNull();
+
+    Collection<Ticket> findByContactOid(String _contactOid);
 }

@@ -218,6 +218,19 @@ public class EFapsClient
         return ret;
     }
 
+    public ContactDto postContact(final ContactDto _contact)
+    {
+        ContactDto ret = _contact;
+        try {
+            final RequestEntity<ContactDto> requestEntity = post(this.config.getEFaps().getContactPath(), _contact);
+            final ResponseEntity<ContactDto> response = this.restTemplate.exchange(requestEntity, ContactDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during post for Invoices", e);
+        }
+        return ret;
+    }
+
     public Checkout checkout(final String _oid)
     {
         Checkout ret = null;

@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.respository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,9 +26,13 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface ContactRepository
     extends MongoRepository<Contact, String>
 {
-    public Optional<Contact> findByOid(String _oid);
+    Optional<Contact> findOneByOid(String _oid);
 
-    public List<Contact> findByTaxNumberStartingWith(String _term);
+    List<Contact> findByOid(String _oid);
 
-    public List<Contact> findByNameStartingWith(String _term);
+    List<Contact> findByTaxNumberStartingWith(String _term);
+
+    List<Contact> findByNameStartingWith(String _term);
+
+    Collection<Contact> findByOidIsNull();
 }

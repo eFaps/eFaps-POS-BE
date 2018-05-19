@@ -26,8 +26,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.dto.AbstractPayableDocumentDto;
+import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.TicketDto;
@@ -194,15 +197,17 @@ public class SyncService
                         .map(receipt -> Converter.toReceiptDto(receipt))
                         .collect(Collectors.toList());
         for (final ReceiptDto dto : tosync) {
-            LOG.debug("Syncing Receipt: {}", dto);
-            final ReceiptDto recDto = this.eFapsClient.postReceipt(dto);
-            LOG.debug("received Receipt: {}", recDto);
-            if (recDto.getOid() != null) {
-                final Optional<Receipt> receiptOpt = this.receiptRepository.findById(recDto.getId());
-                if (receiptOpt.isPresent()) {
-                    final Receipt receipt = receiptOpt.get();
-                    receipt.setOid(recDto.getOid());
-                    this.receiptRepository.save(receipt);
+            if (validateContact(dto)) {
+                LOG.debug("Syncing Receipt: {}", dto);
+                final ReceiptDto recDto = this.eFapsClient.postReceipt(dto);
+                LOG.debug("received Receipt: {}", recDto);
+                if (recDto.getOid() != null) {
+                    final Optional<Receipt> receiptOpt = this.receiptRepository.findById(recDto.getId());
+                    if (receiptOpt.isPresent()) {
+                        final Receipt receipt = receiptOpt.get();
+                        receipt.setOid(recDto.getOid());
+                        this.receiptRepository.save(receipt);
+                    }
                 }
             }
         }
@@ -216,14 +221,16 @@ public class SyncService
                         .collect(Collectors.toList());
         for (final InvoiceDto dto : tosync) {
             LOG.debug("Syncing Invoice: {}", dto);
-            final InvoiceDto recDto = this.eFapsClient.postInvoice(dto);
-            LOG.debug("received Invoice: {}", recDto);
-            if (recDto.getOid() != null) {
-                final Optional<Invoice> opt = this.invoiceRepository.findById(recDto.getId());
-                if (opt.isPresent()) {
-                    final Invoice receipt = opt.get();
-                    receipt.setOid(recDto.getOid());
-                    this.invoiceRepository.save(receipt);
+            if (validateContact(dto)) {
+                final InvoiceDto recDto = this.eFapsClient.postInvoice(dto);
+                LOG.debug("received Invoice: {}", recDto);
+                if (recDto.getOid() != null) {
+                    final Optional<Invoice> opt = this.invoiceRepository.findById(recDto.getId());
+                    if (opt.isPresent()) {
+                        final Invoice receipt = opt.get();
+                        receipt.setOid(recDto.getOid());
+                        this.invoiceRepository.save(receipt);
+                    }
                 }
             }
         }
@@ -237,17 +244,24 @@ public class SyncService
                         .collect(Collectors.toList());
         for (final TicketDto dto : tosync) {
             LOG.debug("Syncing Ticket: {}", dto);
-            final TicketDto recDto = this.eFapsClient.postTicket(dto);
-            LOG.debug("received Ticket: {}", recDto);
-            if (recDto.getOid() != null) {
-                final Optional<Ticket> opt = this.ticketRepository.findById(recDto.getId());
-                if (opt.isPresent()) {
-                    final Ticket receipt = opt.get();
-                    receipt.setOid(recDto.getOid());
-                    this.ticketRepository.save(receipt);
+            if (validateContact(dto)) {
+                final TicketDto recDto = this.eFapsClient.postTicket(dto);
+                LOG.debug("received Ticket: {}", recDto);
+                if (recDto.getOid() != null) {
+                    final Optional<Ticket> opt = this.ticketRepository.findById(recDto.getId());
+                    if (opt.isPresent()) {
+                        final Ticket receipt = opt.get();
+                        receipt.setOid(recDto.getOid());
+                        this.ticketRepository.save(receipt);
+                    }
                 }
             }
         }
+    }
+
+    private boolean validateContact(final AbstractPayableDocumentDto _dto)
+    {
+        return this.contactRepository.findOneByOid(_dto.getContactOid()).isPresent();
     }
 
     public void syncImages()
@@ -296,18 +310,58 @@ public class SyncService
     public void syncContacts()
     {
         LOG.info("Syncing Contacts");
-        final List<Contact> contacts = this.eFapsClient.getContacts().stream()
+        syncContactsUp();
+        syncContactsDown();
+    }
+
+    private void syncContactsUp()
+    {
+        final Collection<Contact> tosync = this.contactRepository.findByOidIsNull();
+        for (final Contact contact : tosync) {
+            LOG.debug("Syncing Contact: {}", contact);
+            final ContactDto recDto = this.eFapsClient.postContact(Converter.toContactDto(contact));
+            LOG.debug("received Contact: {}", recDto);
+            if (recDto.getOid() != null) {
+                contact.setOid(recDto.getOid());
+                this.contactRepository.save(contact);
+                this.receiptRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
+                    doc.setContactOid(contact.getOid());
+                    this.receiptRepository.save(doc);
+                });
+                this.invoiceRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
+                    doc.setContactOid(contact.getOid());
+                    this.invoiceRepository.save(doc);
+                });
+                this.ticketRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
+                    doc.setContactOid(contact.getOid());
+                    this.ticketRepository.save(doc);
+                });
+            }
+        }
+    }
+
+    private void syncContactsDown() {
+        final List<Contact> recievedContacts = this.eFapsClient.getContacts().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
-        for (final Contact contact : contacts) {
-           final Optional<Contact> contactOpt = this.contactRepository.findByOid(contact.getOid());
-           if (contactOpt.isPresent()) {
-               final Contact entity = contactOpt.get();
-               contact.setId(entity.getId());
+        for (final Contact contact : recievedContacts) {
+           final List<Contact> contacts = this.contactRepository.findByOid(contact.getOid());
+           if (CollectionUtils.isEmpty(contacts)) {
+               this.contactRepository.save(contact);
+           } else if (contacts.size() > 1) {
+               contacts.forEach(entity -> this.contactRepository.delete(entity));
                this.contactRepository.save(contact);
            } else {
+               contact.setId(contacts.get(0).getId());
                this.contactRepository.save(contact);
            }
+        }
+
+        for (final Contact contact : this.contactRepository.findAll()) {
+            if (contact.getOid() != null && !recievedContacts.stream().filter(recieved -> recieved.getOid().equals(
+                            contact.getOid())).findFirst().isPresent()) {
+                this.contactRepository.delete(contact);
+            }
         }
     }
 }
