@@ -26,17 +26,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableWebSecurity
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig
     extends WebSecurityConfigurerAdapter
 {
@@ -95,12 +93,14 @@ public class WebSecurityConfig
     public void configure(final WebSecurity web)
         throws Exception
     {
-        web.ignoring().antMatchers(HttpMethod.POST, "authenticate")
+        web.ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate")
             .and()
-            .ignoring().antMatchers(HttpMethod.GET, "/users/**")
+            .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "users/**")
+            .and()
+            .ignoring().antMatchers(HttpMethod.GET, "/pos", "/login", "/products", "/workspaces")
             .and()
             .ignoring().antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html",
-                                        "/**/*.css", "/**/*.js")
+                                        "/**/*.css", "/**/*.js", "/**/*.json", "/**/*.svg")
             .and()
             .ignoring().antMatchers(HttpMethod.OPTIONS);
     }

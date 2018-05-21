@@ -19,6 +19,7 @@ package org.efaps.pos.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.service.PosService;
 import org.efaps.pos.util.Converter;
@@ -32,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
  * The Class ProductController.
  */
 @RestController
-@RequestMapping("poss")
+@RequestMapping(IApi.BASEPATH + "poss")
 public class PosController
 {
     private final PosService service;

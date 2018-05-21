@@ -19,6 +19,7 @@ package org.efaps.pos.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.service.UserService;
 import org.efaps.pos.util.Converter;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping(IApi.BASEPATH + "users")
 public class UserController
 {
     private final UserService service;

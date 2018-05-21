@@ -19,6 +19,7 @@ package org.efaps.pos.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PosContactDto;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.util.Converter;
@@ -34,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
  * The Class ProductController.
  */
 @RestController
-@RequestMapping("contacts")
+@RequestMapping(IApi.BASEPATH + "contacts")
 public class ContactController
 {
     private final ContactService service;

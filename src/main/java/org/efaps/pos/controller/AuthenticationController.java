@@ -17,6 +17,7 @@
 
 package org.efaps.pos.controller;
 
+import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.AuthenticationRequestDto;
 import org.efaps.pos.dto.AuthenticationResponseDto;
 import org.efaps.pos.service.UserService;
@@ -28,9 +29,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping(IApi.BASEPATH)
 public class AuthenticationController
 {
 

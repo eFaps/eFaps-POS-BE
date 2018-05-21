@@ -21,11 +21,6 @@ org:
       syncTickets:
         interval: 120  #Interval in seconds
 
-server:
-  servlet:
-    contextPath: /pos/api
-
-
 efaps:
   baseUrl: http://localhost:8888/eFaps
   productPath: /servlet/rest/pos/products

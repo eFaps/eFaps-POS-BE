@@ -19,6 +19,7 @@ package org.efaps.pos.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
@@ -32,9 +33,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping(IApi.BASEPATH)
 public class DocumentController
 {
 

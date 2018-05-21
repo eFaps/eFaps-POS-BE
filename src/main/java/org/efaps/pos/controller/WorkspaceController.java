@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.service.WorkspaceService;
 import org.efaps.pos.util.Converter;
@@ -34,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
  * The Class ProductController.
  */
 @RestController
-@RequestMapping("workspaces")
+@RequestMapping(IApi.BASEPATH + "workspaces")
 public class WorkspaceController
 {
     private final WorkspaceService service;

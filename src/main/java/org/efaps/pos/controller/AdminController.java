@@ -1,5 +1,6 @@
 package org.efaps.pos.controller;
 
+import org.efaps.pos.config.IApi;
 import org.efaps.pos.service.SyncService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("admin")
+@RequestMapping(IApi.BASEPATH + "admin")
 public class AdminController
 {
 

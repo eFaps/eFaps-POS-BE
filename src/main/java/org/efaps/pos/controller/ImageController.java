@@ -19,6 +19,7 @@ package org.efaps.pos.controller;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import org.efaps.pos.config.IApi;
 import org.efaps.pos.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
@@ -30,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("images")
+@RequestMapping(IApi.BASEPATH + "images")
 public class ImageController
 {
 
