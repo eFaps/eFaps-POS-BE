@@ -19,17 +19,20 @@ package org.efaps.pos.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@Profile(value = { "static" })
 public class WebConfiguration
     implements WebMvcConfigurer
 {
     @Value("${spring.resources.static-locations}")
-    String resourcePath;
+    private String resourcePath;
+
     @Override
     public void addCorsMappings(final CorsRegistry _registry)
     {
