@@ -17,16 +17,21 @@
 
 package org.efaps.pos.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@Profile(value = { "!static" })
-public class WebConfiguration
+@Profile(value = { "static" })
+public class StaticWebConfiguration
     implements WebMvcConfigurer
 {
+    @Value("${spring.resources.static-locations}")
+    private String resourcePath;
 
     @Override
     public void addCorsMappings(final CorsRegistry _registry)
@@ -34,5 +39,19 @@ public class WebConfiguration
         _registry.addMapping("/**")
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowedOrigins("*").allowedHeaders("*");
+    }
+
+    @Override
+    public void addResourceHandlers(final ResourceHandlerRegistry _registry) {
+        _registry.addResourceHandler("/assets/**").addResourceLocations(this.resourcePath + "/assets/");
+    }
+
+    @Override
+    public void addViewControllers(final ViewControllerRegistry _registry) {
+        _registry.addViewController("/pos").setViewName("redirect:/index.html");
+        _registry.addViewController("/login").setViewName("redirect:/index.html");
+        _registry.addViewController("/products").setViewName("redirect:/index.html");
+        _registry.addViewController("/workspaces").setViewName("redirect:/index.html");
+
     }
 }
