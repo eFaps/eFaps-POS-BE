@@ -22,17 +22,23 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public class SpotDto
 {
 
-    private final String name;
+    private final String id;
+    private final String label;
 
     private SpotDto(final Builder _builder)
     {
-        this.name = _builder.name;
-
+        this.id = _builder.id;
+        this.label = _builder.label;
     }
 
-    public String getName()
+    public String getId()
     {
-        return this.name;
+        return this.id;
+    }
+
+    public String getLabel()
+    {
+        return this.label;
     }
 
     public static Builder builder()
@@ -43,11 +49,18 @@ public class SpotDto
     public static class Builder
     {
 
-        private String name;
+        private String id;
+        private String label;
 
-        public Builder withName(final String _name)
+        public Builder withId(final String _id)
         {
-            this.name = _name;
+            this.id = _id;
+            return this;
+        }
+
+        public Builder withLabel(final String _label)
+        {
+            this.label = _label;
             return this;
         }
 

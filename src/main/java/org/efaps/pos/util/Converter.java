@@ -184,7 +184,8 @@ public final class Converter
 
     public static Spot toEntity(final SpotDto _dto)
     {
-        return new Spot().setName(_dto.getName());
+        return new Spot().setId(_dto.getId())
+                        .setLabel(_dto.getLabel());
     }
 
     public static AbstractDocument.Item toEntity(final PosDocItemDto _dto) {
@@ -422,10 +423,16 @@ public final class Converter
                             : _entity.getTaxes().stream()
                                 .map(_tax -> Converter.toDto(_tax))
                                 .collect(Collectors.toSet()))
-                        .withSpot(_entity.getSpot() == null
-                            ? null
-                            : SpotDto.builder().withName(_entity.getSpot().getName()).build())
+                        .withSpot(toDto(_entity.getSpot()))
                         .build();
+    }
+
+    public static SpotDto toDto(final Spot _spot) {
+        return _spot == null
+                        ? null
+                        : SpotDto.builder()
+                            .withId(_spot.getId())
+                            .withLabel(_spot.getLabel()).build();
     }
 
     public static PosDocItemDto toDto(final AbstractDocument.Item _entity) {

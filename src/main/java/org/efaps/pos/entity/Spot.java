@@ -19,16 +19,29 @@ package org.efaps.pos.entity;
 public class Spot
 {
 
-    private String name;
+    private String id;
 
-    public String getName()
+    private String label;
+
+    public String getId()
     {
-        return this.name;
+        return this.id;
     }
 
-    public Spot setName(final String _name)
+    public Spot setId(final String _id)
     {
-        this.name = _name;
+        this.id = _id;
+        return this;
+    }
+
+    public String getLabel()
+    {
+        return this.label;
+    }
+
+    public Spot setLabel(final String _label)
+    {
+        this.label = _label;
         return this;
     }
 }
