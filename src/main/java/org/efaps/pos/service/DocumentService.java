@@ -130,6 +130,7 @@ public class DocumentService
             final Order order = opt.get();
             if (DocStatus.OPEN.equals(order.getStatus())) {
                 order.setStatus(DocStatus.CANCELED);
+                order.setSpot(null);
                 this.orderRepository.save(order);
             }
         }
