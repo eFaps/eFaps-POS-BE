@@ -14,29 +14,25 @@
  * limitations under the License.
  *
  */
-
 package org.efaps.pos.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import java.util.Set;
-
-@JsonDeserialize(builder = PosOrderDto.Builder.class)
-public class PosOrderDto
-    extends AbstractDocumentDto
+@JsonDeserialize(builder = SpotDto.Builder.class)
+public class SpotDto
 {
 
-    private final SpotDto spot;
+    private final String name;
 
-    public PosOrderDto(final Builder _builder)
+    private SpotDto(final Builder _builder)
     {
-        super(_builder);
-        this.spot = _builder.spot;
+        this.name = _builder.name;
+
     }
 
-    public SpotDto getSpot()
+    public String getName()
     {
-        return this.spot;
+        return this.name;
     }
 
     public static Builder builder()
@@ -45,27 +41,19 @@ public class PosOrderDto
     }
 
     public static class Builder
-        extends AbstractDocumentDto.Builder<Builder, PosOrderDto>
     {
 
-        private SpotDto spot;
+        private String name;
 
-        public Builder withSpot(final SpotDto _spot)
+        public Builder withName(final String _name)
         {
-            this.spot = _spot;
+            this.name = _name;
             return this;
         }
 
-        public Builder withItems(final Set<PosDocItemDto> _items)
+        public SpotDto build()
         {
-            setItems(_items);
-            return this;
-        }
-
-        @Override
-        public PosOrderDto build()
-        {
-            return new PosOrderDto(this);
+            return new SpotDto(this);
         }
     }
 }

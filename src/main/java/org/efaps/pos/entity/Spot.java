@@ -16,23 +16,19 @@
  */
 package org.efaps.pos.entity;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection = "orders")
-public class Order
-    extends AbstractDocument<Order>
+public class Spot
 {
 
-    private Spot spot;
+    private String name;
 
-    public Spot getSpot()
+    public String getName()
     {
-        return this.spot;
+        return this.name;
     }
 
-    public Order setSpot(final Spot _spot)
+    public Spot setName(final String _name)
     {
-        this.spot = _spot;
+        this.name = _name;
         return this;
     }
 }

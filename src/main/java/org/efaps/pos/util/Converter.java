@@ -36,6 +36,7 @@ import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
+import org.efaps.pos.dto.SpotDto;
 import org.efaps.pos.dto.TaxDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.dto.TicketDto;
@@ -53,6 +54,7 @@ import org.efaps.pos.entity.Pos.Company;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.entity.Spot;
 import org.efaps.pos.entity.Tax;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
@@ -157,10 +159,9 @@ public final class Converter
                                 .collect(Collectors.toSet()));
     }
 
-
     public static Order toEntity(final PosOrderDto _dto)
     {
-        final Order ret = new Order()
+        return new Order()
                         .setId(_dto.getId())
                         .setOid(_dto.getOid())
                         .setNumber(_dto.getNumber())
@@ -177,8 +178,13 @@ public final class Converter
                             ? null
                             : _dto.getTaxes().stream()
                                 .map(_tax -> Converter.toEntity(_tax))
-                                .collect(Collectors.toSet()));
-        return ret;
+                                .collect(Collectors.toSet()))
+                        .setSpot(_dto.getSpot() == null ? null : toEntity(_dto.getSpot()));
+    }
+
+    public static Spot toEntity(final SpotDto _dto)
+    {
+        return new Spot().setName(_dto.getName());
     }
 
     public static AbstractDocument.Item toEntity(final PosDocItemDto _dto) {
@@ -416,6 +422,9 @@ public final class Converter
                             : _entity.getTaxes().stream()
                                 .map(_tax -> Converter.toDto(_tax))
                                 .collect(Collectors.toSet()))
+                        .withSpot(_entity.getSpot() == null
+                            ? null
+                            : SpotDto.builder().withName(_entity.getSpot().getName()).build())
                         .build();
     }
 
