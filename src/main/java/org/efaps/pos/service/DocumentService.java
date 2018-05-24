@@ -18,6 +18,7 @@ package org.efaps.pos.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,6 +92,10 @@ public class DocumentService
 
     public List<Order> getOrders() {
         return this.orderRepository.findAll();
+    }
+
+    public Collection<Order> getOrders4Spots() {
+        return this.orderRepository.findBySpotIsNotNull();
     }
 
     public Order createOrder(final Order _order)

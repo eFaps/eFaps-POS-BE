@@ -17,11 +17,13 @@
 
 package org.efaps.pos.respository;
 
+import java.util.Collection;
+
 import org.efaps.pos.entity.Order;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface OrderRepository
     extends MongoRepository<Order, String>
 {
-
+    Collection<Order> findBySpotIsNotNull();
 }

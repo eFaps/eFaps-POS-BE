@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.controller;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
+import org.efaps.pos.entity.Order;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -89,8 +92,12 @@ public class DocumentController
     }
 
     @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PosOrderDto> getOrder() {
-        return this.documentService.getOrders().stream()
+    public List<PosOrderDto> getOrders(@RequestParam(name = "spot", required = false) final boolean _spots)
+    {
+        final Collection<Order> orders = _spots
+                        ? this.documentService.getOrders4Spots()
+                        : this.documentService.getOrders();
+        return orders.stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
     }
