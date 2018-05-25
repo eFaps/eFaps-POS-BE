@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.SpotConfig;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -38,6 +39,8 @@ public class Workspace
     private String posOid;
 
     private Set<DocType> docTypes;
+
+    private SpotConfig spotConfig;
 
     public String getOid()
     {
@@ -81,6 +84,17 @@ public class Workspace
     public Workspace setDocTypes(final Set<DocType> _docTypes)
     {
         this.docTypes = _docTypes;
+        return this;
+    }
+
+    public SpotConfig getSpotConfig()
+    {
+        return this.spotConfig;
+    }
+
+    public Workspace setSpotConfig(final SpotConfig _spotConfig)
+    {
+        this.spotConfig = _spotConfig;
         return this;
     }
 

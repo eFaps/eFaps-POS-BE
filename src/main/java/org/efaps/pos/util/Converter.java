@@ -278,6 +278,7 @@ public final class Converter
                         .withName(_entity.getName())
                         .withPosOid(_entity.getPosOid())
                         .withDocTypes(_entity.getDocTypes())
+                        .withSpotConfig(_entity.getSpotConfig())
                         .build();
     }
 
@@ -287,7 +288,8 @@ public final class Converter
                         .setOid(_dto.getOid())
                         .setName(_dto.getName())
                         .setPosOid(_dto.getPosOid())
-                        .setDocTypes(_dto.getDocTypes());
+                        .setDocTypes(_dto.getDocTypes())
+                        .setSpotConfig(_dto.getSpotConfig());
     }
 
     public static PosDto toDto(final Pos _entity)
