@@ -22,10 +22,12 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.WorkspaceDto;
+import org.efaps.pos.entity.User;
 import org.efaps.pos.service.WorkspaceService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,15 +47,16 @@ public class WorkspaceController
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<WorkspaceDto> getWorkspaces() {
-        return this.service.getWorkspaces().stream()
+    public List<WorkspaceDto> getWorkspaces(final Authentication _authentication) {
+        return this.service.getWorkspaces((User) _authentication.getPrincipal()).stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(path = "/{oid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkspaceDto> getWorkspace(@PathVariable("oid") final String _oid) {
-        return Optional.ofNullable( this.service.getWorkspace(_oid) )
+    public ResponseEntity<WorkspaceDto> getWorkspace(final Authentication _authentication,
+                                                     @PathVariable("oid") final String _oid) {
+        return Optional.ofNullable( this.service.getWorkspace((User) _authentication.getPrincipal(), _oid) )
                         .map(ws -> ResponseEntity.ok().body(Converter.toDto(ws)))
                         .orElseGet(() -> ResponseEntity.notFound().build());
     }

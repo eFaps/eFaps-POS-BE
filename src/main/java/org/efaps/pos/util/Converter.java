@@ -261,7 +261,8 @@ public final class Converter
                         .setPassword(_dto.getPassword())
                         .setFirstName(_dto.getFirstName())
                         .setSurName(_dto.getSurName())
-                        .setRoles(_dto.getRoles());
+                        .setRoles(_dto.getRoles())
+                        .setWorkspaceOids(_dto.getWorkspaceOids());
     }
 
     public static Sequence toEntity(final SequenceDto _dto)

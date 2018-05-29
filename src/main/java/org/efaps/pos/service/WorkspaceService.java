@@ -18,7 +18,9 @@
 package org.efaps.pos.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.respository.WorkspaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +38,21 @@ public class WorkspaceService
         this.workspaceRepository = _workspaceRepository;
     }
 
-    public List<Workspace> getWorkspaces()
+    public List<Workspace> getWorkspaces(final User _user)
     {
-        final List<Workspace> ret = this.workspaceRepository.findAll();
-        return ret;
+        return this.workspaceRepository.findAll().stream()
+                        .filter(ws -> _user.getWorkspaceOids().contains(ws.getOid()))
+                        .collect(Collectors.toList());
     }
 
-    public Workspace getWorkspace(final String _oid)
+    public Workspace getWorkspace(final User _user, final String _oid)
+    {
+        return this.workspaceRepository.findById(_oid)
+                        .filter(ws -> _user.getWorkspaceOids().contains(ws.getOid()))
+                        .orElse(null);
+    }
+
+    protected Workspace getWorkspace(final String _oid)
     {
         return this.workspaceRepository.findById(_oid).orElse(null);
     }

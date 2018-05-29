@@ -54,6 +54,8 @@ public class User
 
     private Set<Roles> roles;
 
+    private Set<String> workspaceOids;
+
     public String getOid()
     {
         return this.oid;
@@ -155,6 +157,17 @@ public class User
     public User setRoles(final Set<Roles> _roles)
     {
         this.roles = _roles;
+        return this;
+    }
+
+    public Set<String> getWorkspaceOids()
+    {
+        return this.workspaceOids;
+    }
+
+    public User setWorkspaceOids(final Set<String> _workspaceOids)
+    {
+        this.workspaceOids = _workspaceOids;
         return this;
     }
 
