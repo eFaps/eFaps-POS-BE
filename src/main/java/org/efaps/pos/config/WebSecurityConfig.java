@@ -102,6 +102,8 @@ public class WebSecurityConfig
             .ignoring().antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html",
                                         "/**/*.css", "/**/*.js", "/**/*.json", "/**/*.svg")
             .and()
-            .ignoring().antMatchers(HttpMethod.OPTIONS);
+            .ignoring().antMatchers(HttpMethod.OPTIONS)
+            .and()
+            .ignoring().antMatchers("/socket/**");
     }
 }
