@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ContactService
 {
+
     private final ContactRepository contactRepository;
 
     public ContactService(final ContactRepository _contactRepository)
@@ -33,7 +34,7 @@ public class ContactService
         this.contactRepository = _contactRepository;
     }
 
-    public Contact get(final String _oid)
+    public Contact getContact(final String _oid)
     {
         return this.contactRepository.findOneByOid(_oid).orElse(null);
     }
@@ -45,8 +46,7 @@ public class ContactService
 
     public List<Contact> findContacts(final String _term, final boolean _nameSearch)
     {
-        return _nameSearch
-                        ? this.contactRepository.findByNameStartingWith(_term)
+        return _nameSearch ? this.contactRepository.findByNameStartingWith(_term)
                         : this.contactRepository.findByTaxNumberStartingWith(_term);
     }
 
@@ -54,5 +54,4 @@ public class ContactService
     {
         return this.contactRepository.save(_entity);
     }
-
 }
