@@ -80,6 +80,6 @@ public class WorkspaceServiceTest
         this.mongoTemplate.save(new Workspace().setOid("1.2"));
         this.mongoTemplate.save(new Workspace().setOid("1.3"));
         final Workspace workspaces = this.workspaceService.getWorkspace("1.2");
-        assertEquals("1.1", workspaces.getOid());
+        assertEquals("1.2", workspaces.getOid());
     }
 }
