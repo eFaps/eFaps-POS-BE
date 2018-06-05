@@ -23,22 +23,35 @@ import java.util.Collections;
 
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.DocStatus;
+import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
+import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
+import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.Roles;
+import org.efaps.pos.dto.SequenceDto;
+import org.efaps.pos.dto.SpotConfig;
+import org.efaps.pos.dto.SpotDto;
 import org.efaps.pos.dto.TaxDto;
 import org.efaps.pos.dto.TaxEntryDto;
+import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.entity.Spot;
 import org.efaps.pos.entity.Tax;
+import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 import org.junit.jupiter.api.BeforeEach;
@@ -168,9 +181,46 @@ public class ConverterTest
                         .withOID("16515.5165")
                         .withNumber("B001-1651651")
                         .withStatus(DocStatus.CLOSED)
+                        .withItems(Collections.singleton(PosDocItemDto.builder().build()))
+                        .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
+                        .withPayments(Collections.singleton(PaymentDto.builder().build()))
                         .build();
 
         final Receipt entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getNumber(), entity.getNumber());
+        assertEquals(dto.getStatus(), entity.getStatus());
+    }
+
+    @Test
+    public void testInvoiceToEntity() {
+        final PosInvoiceDto dto = PosInvoiceDto.builder()
+                        .withOID("16515.5165")
+                        .withNumber("B001-1651651")
+                        .withStatus(DocStatus.CLOSED)
+                        .withItems(Collections.singleton(PosDocItemDto.builder().build()))
+                        .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
+                        .withPayments(Collections.singleton(PaymentDto.builder().build()))
+                        .build();
+
+        final Invoice entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getNumber(), entity.getNumber());
+        assertEquals(dto.getStatus(), entity.getStatus());
+    }
+
+    @Test
+    public void testTicketToEntity() {
+        final PosTicketDto dto = PosTicketDto.builder()
+                        .withOID("16515.5165")
+                        .withNumber("B001-1651651")
+                        .withStatus(DocStatus.CLOSED)
+                        .withItems(Collections.singleton(PosDocItemDto.builder().build()))
+                        .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
+                        .withPayments(Collections.singleton(PaymentDto.builder().build()))
+                        .build();
+
+        final Ticket entity = Converter.toEntity(dto);
         assertEquals(dto.getOid(), entity.getOid());
         assertEquals(dto.getNumber(), entity.getNumber());
         assertEquals(dto.getStatus(), entity.getStatus());
@@ -209,6 +259,7 @@ public class ConverterTest
                         .withNetUnitPrice(new BigDecimal("1.14"))
                         .withQuantity(new BigDecimal("1.15"))
                         .withProductOid("ProductOid")
+                        .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
                         .build();
 
         final Item entity = Converter.toEntity(dto);
@@ -220,6 +271,7 @@ public class ConverterTest
         assertEquals(dto.getNetUnitPrice(), entity.getNetUnitPrice());
         assertEquals(dto.getQuantity(), entity.getQuantity());
         assertEquals(dto.getProductOid(), entity.getProductOid());
+        assertEquals(1, entity.getTaxes().size());
     }
 
     @Test
@@ -320,5 +372,65 @@ public class ConverterTest
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getNumber(), dto.getNumber());
         assertEquals(entity.getStatus(), dto.getStatus());
+    }
+
+    @Test
+    public void testSpotToEntity() {
+        final SpotDto dto = SpotDto.builder()
+                        .withId("id 1")
+                        .withLabel("Label")
+                        .build();
+        final Spot entity = Converter.toEntity(dto);
+        assertEquals(dto.getId(), entity.getId());
+        assertEquals(dto.getLabel(), entity.getLabel());
+    }
+
+    @Test
+    public void testUserToEntity() {
+        final UserDto dto = UserDto.builder()
+                        .withOID("id 1")
+                        .withFirstName("First Name")
+                        .withSurName("Last Name")
+                        .withPassword("thats secret")
+                        .withRoles(Collections.singleton(Roles.ADMIN))
+                        .withWorkspaceOids(Collections.singleton("123.4"))
+                        .build();
+        final User entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getFirstName(), entity.getFirstName());
+        assertEquals(dto.getSurName(), entity.getSurName());
+        assertEquals(dto.getPassword(), entity.getPassword());
+        assertEquals(dto.getRoles(), entity.getRoles());
+        assertEquals(dto.getWorkspaceOids(), entity.getWorkspaceOids());
+    }
+
+    @Test
+    public void testSequenceToEntity() {
+        final SequenceDto dto = SequenceDto.builder()
+                        .withOID("id 1")
+                        .withFormat("Format")
+                        .withSeq(22)
+                        .build();
+        final Sequence entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getFormat(), entity.getFormat());
+        assertEquals(dto.getSeq(), entity.getSeq());
+    }
+
+    @Test
+    public void testWorkspaceToEntity() {
+        final WorkspaceDto dto = WorkspaceDto.builder()
+                        .withOID("id 1")
+                        .withName("Name")
+                        .withDocTypes(Collections.singleton(DocType.INVOICE))
+                        .withPosOid("123.4")
+                        .withSpotConfig(SpotConfig.BASIC)
+                        .build();
+        final Workspace entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getName(), entity.getName());
+        assertEquals(dto.getDocTypes(), entity.getDocTypes());
+        assertEquals(dto.getPosOid(), entity.getPosOid());
+        assertEquals(dto.getSpotConfig(), entity.getSpotConfig());
     }
 }
