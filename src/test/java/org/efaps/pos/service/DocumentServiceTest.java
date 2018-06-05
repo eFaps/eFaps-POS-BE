@@ -20,17 +20,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
+import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
+import org.efaps.pos.entity.Pos;
+import org.efaps.pos.entity.Pos.Company;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Spot;
 import org.efaps.pos.entity.Ticket;
+import org.efaps.pos.entity.Workspace;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,6 +68,9 @@ public class DocumentServiceTest
         this.mongoTemplate.remove(new Query(), Receipt.class);
         this.mongoTemplate.remove(new Query(), Ticket.class);
         this.mongoTemplate.remove(new Query(), Invoice.class);
+        this.mongoTemplate.remove(new Query(), Workspace.class);
+        this.mongoTemplate.remove(new Query(), Pos.class);
+        this.mongoTemplate.remove(new Query(), Contact.class);
     }
 
     @Test
@@ -148,4 +156,150 @@ public class DocumentServiceTest
         assertEquals(1, this.mongoTemplate.findAll(Order.class).size());
     }
 
+    @Test
+    public void testCreateReceipt()
+    {
+        final String wsOid = "123.4";
+        final String posOid = "223.4";
+        final String contactOid = "323.4";
+        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        this.mongoTemplate.save(new Pos().setOid(posOid)
+                        .setDefaultContactOid(contactOid)
+                        .setCompany(new Company()
+                                        .setName("company")
+                                        .setTaxNumber("12345678911")));
+        this.mongoTemplate.save(new Contact().setOid(contactOid));
+
+        final Receipt newReceipt = new Receipt()
+                        .setContactOid("1123.1")
+                        .setNetTotal(new BigDecimal("123.45869"))
+                        .setTaxes(Collections.emptySet())
+                        .setDate(LocalDate.now());
+
+        final Receipt receipt = this.documentService.createReceipt(wsOid, newReceipt);
+        assertNotNull(receipt.getNumber());
+        assertNotNull(receipt.getId());
+    }
+
+    @Test
+    public void testCreateReceiptCatchesError()
+    {
+        final String wsOid = "123.4";
+        final String posOid = "223.4";
+        final String contactOid = "323.4";
+        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        this.mongoTemplate.save(new Pos().setOid(posOid)
+                        .setDefaultContactOid(contactOid)
+                        .setCompany(new Company()
+                                        .setName("company")
+                                        .setTaxNumber("12345678911")));
+        this.mongoTemplate.save(new Contact().setOid(contactOid));
+
+        final Receipt newReceipt = new Receipt()
+                        .setContactOid("1123.1")
+                        .setNetTotal(new BigDecimal("123.45869"))
+                        .setTaxes(Collections.emptySet());
+
+        final Receipt receipt = this.documentService.createReceipt(wsOid, newReceipt);
+        assertNotNull(receipt.getNumber());
+        assertNotNull(receipt.getId());
+    }
+
+    @Test
+    public void testCreateInvoice()
+    {
+        final String wsOid = "123.4";
+        final String posOid = "223.4";
+        final String contactOid = "323.4";
+        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        this.mongoTemplate.save(new Pos().setOid(posOid)
+                        .setDefaultContactOid(contactOid)
+                        .setCompany(new Company()
+                                        .setName("company")
+                                        .setTaxNumber("12345678911")));
+        this.mongoTemplate.save(new Contact().setOid(contactOid));
+
+        final Invoice invoice = new Invoice()
+                        .setContactOid("1123.1")
+                        .setNetTotal(new BigDecimal("123.45869"))
+                        .setTaxes(Collections.emptySet())
+                        .setDate(LocalDate.now());
+
+        final Invoice createdInvoice = this.documentService.createInvoice(wsOid, invoice);
+        assertNotNull(createdInvoice.getNumber());
+        assertNotNull(createdInvoice.getId());
+    }
+
+    @Test
+    public void testCreateInvoiceCatchesError()
+    {
+        final String wsOid = "123.4";
+        final String posOid = "223.4";
+        final String contactOid = "323.4";
+        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        this.mongoTemplate.save(new Pos().setOid(posOid)
+                        .setDefaultContactOid(contactOid)
+                        .setCompany(new Company()
+                                        .setName("company")
+                                        .setTaxNumber("12345678911")));
+        this.mongoTemplate.save(new Contact().setOid(contactOid));
+
+        final Invoice invoice = new Invoice()
+                        .setContactOid("1123.1")
+                        .setNetTotal(new BigDecimal("123.45869"))
+                        .setTaxes(Collections.emptySet());
+
+        final Invoice createdInvoice = this.documentService.createInvoice(wsOid, invoice);
+        assertNotNull(createdInvoice.getNumber());
+        assertNotNull(createdInvoice.getId());
+    }
+
+    @Test
+    public void testCreateTicket()
+    {
+        final String wsOid = "123.4";
+        final String posOid = "223.4";
+        final String contactOid = "323.4";
+        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        this.mongoTemplate.save(new Pos().setOid(posOid)
+                        .setDefaultContactOid(contactOid)
+                        .setCompany(new Company()
+                                        .setName("company")
+                                        .setTaxNumber("12345678911")));
+        this.mongoTemplate.save(new Contact().setOid(contactOid));
+
+        final Ticket ticket = new Ticket()
+                        .setContactOid("1123.1")
+                        .setNetTotal(new BigDecimal("123.45869"))
+                        .setTaxes(Collections.emptySet())
+                        .setDate(LocalDate.now());
+
+        final Ticket createdTicket = this.documentService.createTicket(wsOid, ticket);
+        assertNotNull(createdTicket.getNumber());
+        assertNotNull(createdTicket.getId());
+    }
+
+    @Test
+    public void testCreateTicketCatchesError()
+    {
+        final String wsOid = "123.4";
+        final String posOid = "223.4";
+        final String contactOid = "323.4";
+        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        this.mongoTemplate.save(new Pos().setOid(posOid)
+                        .setDefaultContactOid(contactOid)
+                        .setCompany(new Company()
+                                        .setName("company")
+                                        .setTaxNumber("12345678911")));
+        this.mongoTemplate.save(new Contact().setOid(contactOid));
+
+        final Ticket ticket = new Ticket()
+                        .setContactOid("1123.1")
+                        .setNetTotal(new BigDecimal("123.45869"))
+                        .setTaxes(Collections.emptySet());
+
+        final Ticket createdTicket = this.documentService.createTicket(wsOid, ticket);
+        assertNotNull(createdTicket.getNumber());
+        assertNotNull(createdTicket.getId());
+    }
 }
