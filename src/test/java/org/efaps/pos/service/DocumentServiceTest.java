@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
@@ -116,4 +117,35 @@ public class DocumentServiceTest
         assertEquals(new BigDecimal("223.46"), order.getCrossTotal());
         assertEquals(1, this.mongoTemplate.findAll(Order.class).size());
     }
+
+    @Test
+    public void testDeleteOrderSetCanceled()
+    {
+        this.mongoTemplate.save(new Order().setStatus(DocStatus.OPEN));
+        final Order order = this.mongoTemplate.findAll(Order.class).get(0);
+
+        this.documentService.deleteOrder(order.getId());
+        assertEquals(1, this.mongoTemplate.findAll(Order.class).size());
+        final Order deleted = this.mongoTemplate.findById(order.getId(), Order.class);
+        assertEquals(DocStatus.CANCELED, deleted.getStatus());
+    }
+
+    @Test
+    public void testDeleteOrderWrongStatus()
+    {
+        this.mongoTemplate.save(new Order().setStatus(DocStatus.CLOSED));
+        final Order order = this.mongoTemplate.findAll(Order.class).get(0);
+
+        this.documentService.deleteOrder(order.getId());
+        assertEquals(1, this.mongoTemplate.findAll(Order.class).size());
+    }
+
+    @Test
+    public void testDeleteOrderNotFound()
+    {
+        this.mongoTemplate.save(new Order().setStatus(DocStatus.CLOSED));
+        this.documentService.deleteOrder("a different id");
+        assertEquals(1, this.mongoTemplate.findAll(Order.class).size());
+    }
+
 }
