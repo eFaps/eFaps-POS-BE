@@ -24,6 +24,7 @@ import java.util.Collections;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
@@ -44,6 +45,7 @@ import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
@@ -459,5 +461,20 @@ public class ConverterTest
         final WarehouseDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getName(), dto.getName());
+    }
+
+    @Test
+    public void testInventoryToEntity() {
+        final InventoryEntryDto dto = InventoryEntryDto.builder()
+                        .withOID("id 1")
+                        .withProductOid("Some oid")
+                        .withWarehouseOid("some warehouse")
+                        .withQuantity(BigDecimal.TEN)
+                        .build();
+        final InventoryEntry entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getProductOid(), entity.getProductOid());
+        assertEquals(dto.getWarehouseOid(), entity.getWarehouseOid());
+        assertEquals(dto.getQuantity(), entity.getQuantity());
     }
 }

@@ -23,6 +23,7 @@ import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocItemDto;
+import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosContactDto;
@@ -705,6 +706,15 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
                         .build();
+    }
+
+    public static InventoryEntry toEntity(final InventoryEntryDto _dto)
+    {
+        return new InventoryEntry()
+                        .setOid(_dto.getOid())
+                        .setQuantity(_dto.getQuantity())
+                        .setProductOid(_dto.getProductOid())
+                        .setWarehouseOid(_dto.getWarehouseOid());
     }
 
     public static PosInventoryEntryDto toDto(final InventoryEntry _entity)

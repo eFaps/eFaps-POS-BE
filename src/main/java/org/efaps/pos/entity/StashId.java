@@ -29,6 +29,7 @@ public enum StashId
     RECEIPTSYNC("org.efaps.pos.sync.Receipt"),
     USERSYNC("org.efaps.pos.sync.User"),
     POSSYNC("org.efaps.pos.sync.POS"),
+    WAREHOUSESYNC("org.efaps.pos.sync.Warehouse"),
     WORKSPACESYNC("org.efaps.pos.sync.Workspace");
 
     private final String key;

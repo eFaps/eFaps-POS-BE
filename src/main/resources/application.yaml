@@ -34,6 +34,8 @@ efaps:
   checkoutPath: /servlet/checkout
   sequencePath: /servlet/rest/pos/sequences
   contactPath: /servlet/rest/pos/contacts
+  warehousePath: /servlet/rest/pos/warehouses
+  inventoryPath: /servlet/rest/pos/inventory
 
 auth:
   user: Administrator

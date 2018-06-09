@@ -37,6 +37,7 @@ import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
@@ -46,14 +47,17 @@ import org.efaps.pos.entity.StashId;
 import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.respository.ContactRepository;
+import org.efaps.pos.respository.InventoryRepository;
 import org.efaps.pos.respository.InvoiceRepository;
 import org.efaps.pos.respository.ProductRepository;
 import org.efaps.pos.respository.ReceiptRepository;
 import org.efaps.pos.respository.SequenceRepository;
 import org.efaps.pos.respository.TicketRepository;
 import org.efaps.pos.respository.UserRepository;
+import org.efaps.pos.respository.WarehouseRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +85,8 @@ public class SyncService
     private final SequenceRepository sequenceRepository;
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
+    private final WarehouseRepository warehouseRepository;
+    private final InventoryRepository inventoryRepository;
 
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
@@ -92,6 +98,8 @@ public class SyncService
                        final SequenceRepository _sequenceRepository,
                        final ContactRepository _contactRepository,
                        final UserRepository _userRepository,
+                       final WarehouseRepository _warehouseRepository,
+                       final InventoryRepository _inventoryRepository,
                        final EFapsClient _eFapsClient)
     {
         this.mongoTemplate = _mongoTemplate;
@@ -103,6 +111,8 @@ public class SyncService
         this.sequenceRepository = _sequenceRepository;
         this.contactRepository = _contactRepository;
         this.userRepository = _userRepository;
+        this.warehouseRepository = _warehouseRepository;
+        this.inventoryRepository = _inventoryRepository;
         this.eFapsClient = _eFapsClient;
     }
 
@@ -163,6 +173,32 @@ public class SyncService
             workspaces.forEach(workspace -> this.mongoTemplate.save(workspace));
         }
         registerSync(StashId.WORKSPACESYNC);
+    }
+
+    public void syncWarehouses()
+    {
+        LOG.info("Syncing Warehouses");
+        final List<Warehouse> warehouses = this.eFapsClient.getWarehouses().stream()
+                        .map(dto -> Converter.toEntity(dto))
+                        .collect(Collectors.toList());
+        if (!warehouses.isEmpty()) {
+            this.warehouseRepository.deleteAll();
+            warehouses.forEach(workspace -> this.warehouseRepository.save(workspace));
+        }
+        registerSync(StashId.WAREHOUSESYNC);
+    }
+
+    public void syncInventory()
+    {
+        LOG.info("Syncing Inventory");
+        final List<InventoryEntry> entries = this.eFapsClient.getInventory().stream()
+                        .map(dto -> Converter.toEntity(dto))
+                        .collect(Collectors.toList());
+        if (!entries.isEmpty()) {
+            this.inventoryRepository.deleteAll();
+            entries.forEach(workspace -> this.inventoryRepository.save(workspace));
+        }
+        registerSync(StashId.WAREHOUSESYNC);
     }
 
     public void syncPOSs()

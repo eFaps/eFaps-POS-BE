@@ -106,6 +106,8 @@ public class ConfigProperties
         private String checkoutPath;
         private String sequencePath;
         private String contactPath;
+        private String warehousePath;
+        private String inventoryPath;
 
         public URI getBaseUrl()
         {
@@ -225,6 +227,30 @@ public class ConfigProperties
         public void setTicketPath(final String _ticketPath)
         {
             this.ticketPath = _ticketPath;
+        }
+
+
+        public String getWarehousePath()
+        {
+            return this.warehousePath;
+        }
+
+
+        public void setWarehousePath(final String _warehousePath)
+        {
+            this.warehousePath = _warehousePath;
+        }
+
+
+        public String getInventoryPath()
+        {
+            return this.inventoryPath;
+        }
+
+
+        public void setInventoryPath(final String _inventoryPath)
+        {
+            this.inventoryPath = _inventoryPath;
         }
     }
 

@@ -61,6 +61,8 @@ public class ApplicationStartup
             this.service.syncImages();
             this.service.syncSequences();
             this.service.syncContacts();
+            this.service.syncWarehouses();
+            this.service.syncInventory();
         }
     }
 }

@@ -25,6 +25,7 @@ import java.util.List;
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.ProductDto;
@@ -32,6 +33,7 @@ import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.dto.UserDto;
+import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.sso.SSOClient;
 import org.slf4j.Logger;
@@ -106,6 +108,38 @@ public class EFapsClient
             final RequestEntity<?> requestEntity = get(this.config.getEFaps().getWorkspacePath());
             final ResponseEntity<List<WorkspaceDto>> response = this.restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<WorkspaceDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of workspaces", e);
+        }
+        return ret;
+    }
+
+    public List<WarehouseDto> getWarehouses()
+    {
+        List<WarehouseDto> ret = new ArrayList<>();
+        try {
+            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getWarehousePath());
+            final ResponseEntity<List<WarehouseDto>> response = this.restTemplate.exchange(requestEntity,
+                            new ParameterizedTypeReference<List<WarehouseDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of workspaces", e);
+        }
+        return ret;
+    }
+
+    public List<InventoryEntryDto> getInventory()
+    {
+        List<InventoryEntryDto> ret = new ArrayList<>();
+        try {
+            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getInventoryPath());
+            final ResponseEntity<List<InventoryEntryDto>> response = this.restTemplate.exchange(requestEntity,
+                            new ParameterizedTypeReference<List<InventoryEntryDto>>()
                             {
                             });
             ret = response.getBody();

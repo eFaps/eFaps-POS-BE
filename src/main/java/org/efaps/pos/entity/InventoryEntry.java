@@ -47,9 +47,10 @@ public class InventoryEntry
         return this.quantity;
     }
 
-    public void setQuantity(final BigDecimal _quantity)
+    public InventoryEntry setQuantity(final BigDecimal _quantity)
     {
         this.quantity = _quantity;
+        return this;
     }
 
     public String getWarehouseOid()
