@@ -28,6 +28,7 @@ import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosContactDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
+import org.efaps.pos.dto.PosInventoryEntryDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
@@ -47,6 +48,7 @@ import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Payment;
@@ -61,6 +63,7 @@ import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.service.ProductService;
 import org.springframework.stereotype.Component;
 
@@ -70,11 +73,15 @@ public final class Converter
     private static Converter INSTANCE;
 
     private final ProductService productService;
+    private final InventoryService inventoryService;
 
-    public Converter(final ProductService _productService)
+
+    public Converter(final ProductService _productService,
+                     final InventoryService _inventoryService)
     {
         INSTANCE = this;
         this.productService = _productService;
+        this.inventoryService = _inventoryService;
     }
 
     public static Receipt toEntity(final PosReceiptDto _dto)
@@ -695,6 +702,21 @@ public final class Converter
         return WarehouseDto.builder()
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
+                        .build();
+    }
+
+    public static PosInventoryEntryDto toDto(final InventoryEntry _entity)
+    {
+        return PosInventoryEntryDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withQuantity(_entity.getQuantity())
+                        .withProduct(_entity.getProductOid() == null
+                            ? null
+                            : Converter.toDto(INSTANCE.productService.getProduct(_entity.getProductOid())))
+                        .withWarehouse(_entity.getWarehouseOid() == null
+                            ? null
+                            : Converter.toDto(INSTANCE.inventoryService.getWarehouse(_entity.getWarehouseOid())))
                         .build();
     }
 }

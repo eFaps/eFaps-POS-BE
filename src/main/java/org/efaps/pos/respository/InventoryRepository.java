@@ -16,13 +16,13 @@
  */
 package org.efaps.pos.respository;
 
-import java.util.Optional;
+import java.util.Collection;
 
-import org.efaps.pos.entity.Warehouse;
+import org.efaps.pos.entity.InventoryEntry;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface WarehouseRepository
-    extends MongoRepository<Warehouse, String>
+public interface InventoryRepository
+    extends MongoRepository<InventoryEntry, String>
 {
-    Optional<Warehouse> findOneByOid(String _oid);
+    Collection<InventoryEntry> findByWarehouseOid(String _warehouseOid);
 }

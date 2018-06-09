@@ -20,11 +20,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.PosInventoryEntryDto;
 import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,6 +44,13 @@ public class InventoryController
     public List<WarehouseDto> getWarehouses() {
         return this.service.getWarehouses().stream()
                         .map(warehouse -> Converter.toDto(warehouse))
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "/{warehouseOid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PosInventoryEntryDto> getInventory(@PathVariable(name = "warehouseOid") final String _warehouseOid) {
+        return this.service.getInventory(_warehouseOid).stream()
+                        .map(entry -> Converter.toDto(entry))
                         .collect(Collectors.toList());
     }
 }
