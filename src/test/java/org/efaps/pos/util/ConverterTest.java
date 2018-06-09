@@ -147,12 +147,14 @@ public class ConverterTest
         final Workspace entity = new Workspace()
                         .setOid("165165.14651")
                         .setName("Caja 1")
-                        .setPosOid("9999.514651");
+                        .setPosOid("9999.514651")
+                        .setWarehouseOid("6542.36");
 
         final WorkspaceDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getName(), dto.getName());
         assertEquals(entity.getPosOid(), dto.getPosOid());
+        assertEquals(entity.getWarehouseOid(), dto.getWarehouseOid());
     }
 
     @Test
@@ -427,6 +429,7 @@ public class ConverterTest
                         .withDocTypes(Collections.singleton(DocType.INVOICE))
                         .withPosOid("123.4")
                         .withSpotConfig(SpotConfig.BASIC)
+                        .withWarehouseOid("1235.6")
                         .build();
         final Workspace entity = Converter.toEntity(dto);
         assertEquals(dto.getOid(), entity.getOid());
@@ -434,6 +437,7 @@ public class ConverterTest
         assertEquals(dto.getDocTypes(), entity.getDocTypes());
         assertEquals(dto.getPosOid(), entity.getPosOid());
         assertEquals(dto.getSpotConfig(), entity.getSpotConfig());
+        assertEquals(dto.getWarehouseOid(), entity.getWarehouseOid());
     }
 
     @Test

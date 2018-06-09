@@ -28,7 +28,7 @@ import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosContactDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
-import org.efaps.pos.dto.InventoryEntryDto;
+import org.efaps.pos.dto.PosInventoryEntryDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
@@ -289,6 +289,7 @@ public final class Converter
                         .withPosOid(_entity.getPosOid())
                         .withDocTypes(_entity.getDocTypes())
                         .withSpotConfig(_entity.getSpotConfig())
+                        .withWarehouseOid(_entity.getWarehouseOid())
                         .build();
     }
 
@@ -299,7 +300,8 @@ public final class Converter
                         .setName(_dto.getName())
                         .setPosOid(_dto.getPosOid())
                         .setDocTypes(_dto.getDocTypes())
-                        .setSpotConfig(_dto.getSpotConfig());
+                        .setSpotConfig(_dto.getSpotConfig())
+                        .setWarehouseOid(_dto.getWarehouseOid());
     }
 
     public static PosDto toDto(final Pos _entity)
@@ -705,9 +707,9 @@ public final class Converter
                         .build();
     }
 
-    public static InventoryEntryDto toDto(final InventoryEntry _entity)
+    public static PosInventoryEntryDto toDto(final InventoryEntry _entity)
     {
-        return InventoryEntryDto.builder()
+        return PosInventoryEntryDto.builder()
                         .withId(_entity.getId())
                         .withOID(_entity.getOid())
                         .withQuantity(_entity.getQuantity())

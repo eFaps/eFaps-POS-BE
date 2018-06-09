@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.math.BigDecimal;
 
-@JsonDeserialize(builder = InventoryEntryDto.Builder.class)
+@JsonDeserialize(builder = PosInventoryEntryDto.Builder.class)
 public class PosInventoryEntryDto
 {
 
@@ -92,9 +92,9 @@ public class PosInventoryEntryDto
             return this;
         }
 
-        public InventoryEntryDto build()
+        public PosInventoryEntryDto build()
         {
-            return new InventoryEntryDto(this);
+            return new PosInventoryEntryDto(this);
         }
     }
 

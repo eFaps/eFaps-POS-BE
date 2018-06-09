@@ -42,6 +42,8 @@ public class Workspace
 
     private SpotConfig spotConfig;
 
+    private String warehouseOid;
+
     public String getOid()
     {
         return this.oid;
@@ -95,6 +97,17 @@ public class Workspace
     public Workspace setSpotConfig(final SpotConfig _spotConfig)
     {
         this.spotConfig = _spotConfig;
+        return this;
+    }
+
+    public String getWarehouseOid()
+    {
+        return this.warehouseOid;
+    }
+
+    public Workspace setWarehouseOid(final String _warehouseOid)
+    {
+        this.warehouseOid = _warehouseOid;
         return this;
     }
 
