@@ -41,6 +41,7 @@ import org.efaps.pos.dto.TaxDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.dto.UserDto;
+import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
@@ -58,6 +59,7 @@ import org.efaps.pos.entity.Spot;
 import org.efaps.pos.entity.Tax;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.service.ProductService;
 import org.springframework.stereotype.Component;
@@ -678,6 +680,21 @@ public final class Converter
                             : _entity.getTaxes().stream()
                                 .map(_tax -> Converter.toDto(_tax))
                                 .collect(Collectors.toSet()))
+                        .build();
+    }
+
+    public static Warehouse toEntity(final WarehouseDto _dto)
+    {
+        return new Warehouse()
+                        .setName(_dto.getName())
+                        .setOid(_dto.getOid());
+    }
+
+    public static WarehouseDto toDto(final Warehouse _entity)
+    {
+        return WarehouseDto.builder()
+                        .withOID(_entity.getOid())
+                        .withName(_entity.getName())
                         .build();
     }
 }

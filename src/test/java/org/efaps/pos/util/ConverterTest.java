@@ -40,6 +40,7 @@ import org.efaps.pos.dto.SpotDto;
 import org.efaps.pos.dto.TaxDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.dto.UserDto;
+import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
@@ -53,6 +54,7 @@ import org.efaps.pos.entity.Spot;
 import org.efaps.pos.entity.Tax;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -432,5 +434,26 @@ public class ConverterTest
         assertEquals(dto.getDocTypes(), entity.getDocTypes());
         assertEquals(dto.getPosOid(), entity.getPosOid());
         assertEquals(dto.getSpotConfig(), entity.getSpotConfig());
+    }
+
+    @Test
+    public void testWarehouseToEntity() {
+        final WarehouseDto dto = WarehouseDto.builder()
+                        .withOID("id 1")
+                        .withName("Name")
+                        .build();
+        final Warehouse entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getName(), entity.getName());
+    }
+
+    @Test
+    public void testWarehouseToDto() {
+        final Warehouse entity = new Warehouse()
+                        .setOid("id 1")
+                        .setName("Name");
+        final WarehouseDto dto = Converter.toDto(entity);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getName(), dto.getName());
     }
 }
