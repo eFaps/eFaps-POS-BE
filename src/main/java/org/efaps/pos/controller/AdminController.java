@@ -33,4 +33,10 @@ public class AdminController
         this.syncService.syncSequences();
         this.syncService.syncContacts();
     }
+
+    @GetMapping(path = "/version")
+    public String version() {
+        return org.efaps.pos.util.Version.VERSION;
+    }
+
 }
