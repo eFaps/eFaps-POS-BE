@@ -29,9 +29,14 @@ public class InventoryService
         return this.warehouseRepository.findAll();
     }
 
-    public Collection<InventoryEntry> getInventory(final String _warehouseOid)
+    public Collection<InventoryEntry> getInventory4Warehouse(final String _warehouseOid)
     {
         return this.inventoryRepository.findByWarehouseOid(_warehouseOid);
+    }
+
+    public Collection<InventoryEntry> getInventory4Product(final String _warehouseOid)
+    {
+        return this.inventoryRepository.findByProductOid(_warehouseOid);
     }
 
     public Warehouse getWarehouse(final String _oid)

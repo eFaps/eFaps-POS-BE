@@ -25,4 +25,6 @@ public interface InventoryRepository
     extends MongoRepository<InventoryEntry, String>
 {
     Collection<InventoryEntry> findByWarehouseOid(String _warehouseOid);
+
+    Collection<InventoryEntry> findByProductOid(String _productOid);
 }

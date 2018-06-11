@@ -79,13 +79,24 @@ public class InventoryServiceTest
     }
 
     @Test
-    public void testInventory()
+    public void testGetInventory4Warehouse()
     {
         this.mongoTemplate.save(new InventoryEntry().setOid("1.1").setWarehouseOid("55.44"));
         this.mongoTemplate.save(new InventoryEntry().setOid("1.2").setWarehouseOid("55.45"));
         this.mongoTemplate.save(new InventoryEntry().setOid("1.3").setWarehouseOid("55.44"));
 
-        final Collection<InventoryEntry> entries = this.inventoryService.getInventory("55.44");
+        final Collection<InventoryEntry> entries = this.inventoryService.getInventory4Warehouse("55.44");
+        assertEquals(2, entries.size());
+    }
+
+    @Test
+    public void testGetInventory4Product()
+    {
+        this.mongoTemplate.save(new InventoryEntry().setOid("1.1").setProductOid("25.44"));
+        this.mongoTemplate.save(new InventoryEntry().setOid("1.2").setProductOid("25.45"));
+        this.mongoTemplate.save(new InventoryEntry().setOid("1.3").setProductOid("25.44"));
+
+        final Collection<InventoryEntry> entries = this.inventoryService.getInventory4Product("25.44");
         assertEquals(2, entries.size());
     }
 }

@@ -26,30 +26,44 @@ import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(IApi.BASEPATH + "inventory")
 public class InventoryController
 {
+
     private final InventoryService service;
 
-    public InventoryController(final InventoryService _service) {
+    public InventoryController(final InventoryService _service)
+    {
         this.service = _service;
     }
 
     @GetMapping(path = "/warehouses", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<WarehouseDto> getWarehouses() {
+    public List<WarehouseDto> getWarehouses()
+    {
         return this.service.getWarehouses().stream()
                         .map(warehouse -> Converter.toDto(warehouse))
                         .collect(Collectors.toList());
     }
 
-    @GetMapping(path = "/{warehouseOid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PosInventoryEntryDto> getInventory(@PathVariable(name = "warehouseOid") final String _warehouseOid) {
-        return this.service.getInventory(_warehouseOid).stream()
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "warehouseOid" })
+    public List<PosInventoryEntryDto> getInventory4Warehouse(
+                     @RequestParam(name = "warehouseOid") final String _warehouseOid)
+    {
+        return this.service.getInventory4Warehouse(_warehouseOid).stream()
+                        .map(entry -> Converter.toDto(entry))
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "productOid" })
+    public List<PosInventoryEntryDto> getInventory4Product(
+                   @RequestParam(name = "productOid") final String _productOid)
+    {
+        return this.service.getInventory4Product(_productOid).stream()
                         .map(entry -> Converter.toDto(entry))
                         .collect(Collectors.toList());
     }
