@@ -27,8 +27,11 @@ import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.service.DocumentService;
+import org.efaps.pos.service.PrintService;
 import org.efaps.pos.util.Converter;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,10 +48,13 @@ public class DocumentController
 {
 
     private final DocumentService documentService;
+    private final PrintService printService;
 
-    public DocumentController(final DocumentService _service)
+    public DocumentController(final DocumentService _service,
+                              final PrintService _printService)
     {
         this.documentService = _service;
+        this.printService = _printService;
     }
 
     @PostMapping(path = "workspaces/{oid}/documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -100,5 +106,14 @@ public class DocumentController
         return orders.stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "documents/orders/{orderId}/printpreview", produces = MediaType.IMAGE_PNG_VALUE )
+    public ResponseEntity<byte[]> printPreview(@PathVariable(name = "orderId") final String _orderId) {
+        final byte[] image = this.printService.printPreview();
+        return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_PNG)
+                        .cacheControl(CacheControl.noCache())
+                        .body(image);
     }
 }
