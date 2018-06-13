@@ -110,7 +110,9 @@ public class DocumentController
 
     @GetMapping(path = "documents/orders/{orderId}/printpreview", produces = MediaType.IMAGE_PNG_VALUE )
     public ResponseEntity<byte[]> printPreview(@PathVariable(name = "orderId") final String _orderId) {
-        final byte[] image = this.printService.printPreview();
+        final Order order = this.documentService.getOrder(_orderId);
+        final PosOrderDto dto = Converter.toDto(order);
+        final byte[] image = this.printService.print(dto);
         return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_PNG)
                         .cacheControl(CacheControl.noCache())

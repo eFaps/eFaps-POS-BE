@@ -90,6 +90,10 @@ public class DocumentService
         this.ticketRepository = _ticketRepository;
     }
 
+    public Order getOrder(final String _orderid) {
+        return this.orderRepository.findById(_orderid).orElse(null);
+    }
+
     public List<Order> getOrders() {
         return this.orderRepository.findAll();
     }
