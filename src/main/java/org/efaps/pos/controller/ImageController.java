@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.efaps.pos.config.IApi;
-import org.efaps.pos.service.ImageService;
+import org.efaps.pos.service.GridFsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -35,12 +35,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ImageController
 {
 
-    private final ImageService imageService;
+    private final GridFsService gridFsService;
 
     @Autowired
-    public ImageController(final ImageService _imageService)
+    public ImageController(final GridFsService _gridFsService)
     {
-        this.imageService = _imageService;
+        this.gridFsService = _gridFsService;
     }
 
     @GetMapping(path = "/{oid}",
@@ -48,7 +48,7 @@ public class ImageController
     public ResponseEntity<byte[]> getImage(@PathVariable("oid") final String _oid)
         throws IllegalStateException, IOException
     {
-        final Object[] image = this.imageService.getImage(_oid);
+        final Object[] image = this.gridFsService.getContent(_oid);
         return ResponseEntity.ok()
                         .contentType(MediaType.parseMediaType((String) image[0]))
                         .cacheControl(CacheControl.maxAge(24, TimeUnit.HOURS))

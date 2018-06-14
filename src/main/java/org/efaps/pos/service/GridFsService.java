@@ -34,22 +34,21 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ImageService
+public class GridFsService
 {
 
     private final MongoDbFactory dbFactory;
     private final GridFsTemplate gridFsTemplate;
 
     @Autowired
-    public ImageService(final GridFsTemplate _gridFsTemplate,
+    public GridFsService(final GridFsTemplate _gridFsTemplate,
                         final MongoDbFactory _dbFactory)
     {
         this.gridFsTemplate = _gridFsTemplate;
         this.dbFactory = _dbFactory;
-
     }
 
-    public Object[] getImage(final String _oid)
+    public Object[] getContent(final String _oid)
         throws IllegalStateException, IOException
     {
         final GridFSFile imageFile = this.gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(_oid)));
