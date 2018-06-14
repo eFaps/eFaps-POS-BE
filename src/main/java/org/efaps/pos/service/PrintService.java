@@ -50,7 +50,7 @@ public class PrintService
     {
         byte[] ret = null;
         try {
-            final ClassPathResource jasper = new ClassPathResource("Ticket.jasper");
+            final ClassPathResource jasper = new ClassPathResource("document.jasper");
 
             final Map<String, Object> parameters = new HashMap<>();
             final JsonDataSource datasource = new JsonDataSource(_json);
