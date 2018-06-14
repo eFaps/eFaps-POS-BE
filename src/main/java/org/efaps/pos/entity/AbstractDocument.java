@@ -38,7 +38,7 @@ public abstract class AbstractDocument<T>
     private BigDecimal crossTotal;
     private Set<TaxEntry> taxes;
     private String contactOid;
-    private String posOid;
+    private String workspaceOid;
 
     public String getId()
     {
@@ -172,15 +172,15 @@ public abstract class AbstractDocument<T>
         return (T) this;
     }
 
-    public String getPosOid()
+    public String getWorkspaceOid()
     {
-        return this.posOid;
+        return this.workspaceOid;
     }
 
     @SuppressWarnings("unchecked")
-    public T setPosOid(final String _posOid)
+    public T setWorkspaceOid(final String _workspaceOid)
     {
-        this.posOid = _posOid;
+        this.workspaceOid = _workspaceOid;
         return (T) this;
     }
 

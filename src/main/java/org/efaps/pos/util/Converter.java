@@ -100,7 +100,7 @@ public final class Converter
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
                         .setContactOid(_dto.getContactOid())
-                        .setPosOid(_dto.getPosOid())
+                        .setWorkspaceOid(_dto.getWorkspaceOid())
                         .setTaxes(_dto.getTaxes() ==  null
                             ? null
                             : _dto.getTaxes().stream()
@@ -128,7 +128,7 @@ public final class Converter
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
                         .setContactOid(_dto.getContactOid())
-                        .setPosOid(_dto.getPosOid())
+                        .setWorkspaceOid(_dto.getWorkspaceOid())
                         .setTaxes(_dto.getTaxes() ==  null
                             ? null
                             : _dto.getTaxes().stream()
@@ -156,7 +156,7 @@ public final class Converter
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
                         .setContactOid(_dto.getContactOid())
-                        .setPosOid(_dto.getPosOid())
+                        .setWorkspaceOid(_dto.getWorkspaceOid())
                         .setTaxes(_dto.getTaxes() ==  null
                             ? null
                             : _dto.getTaxes().stream()
@@ -483,7 +483,7 @@ public final class Converter
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withContactOid(_entity.getContactOid())
-                        .withPosOid(_entity.getPosOid())
+                        .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
@@ -514,7 +514,7 @@ public final class Converter
                         .withCrossTotal(_entity.getCrossTotal())
                         .withStatus(_entity.getStatus())
                         .withContactOid(_entity.getContactOid())
-                        .withPosOid(_entity.getPosOid())
+                        .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
@@ -545,7 +545,7 @@ public final class Converter
                         .withCrossTotal(_entity.getCrossTotal())
                         .withStatus(_entity.getStatus())
                         .withContactOid(_entity.getContactOid())
-                        .withPosOid(_entity.getPosOid())
+                        .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
@@ -596,7 +596,7 @@ public final class Converter
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
                         .withContactOid(_entity.getContactOid())
-                        .withPosOid(_entity.getPosOid())
+                        .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
@@ -626,7 +626,7 @@ public final class Converter
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
                         .withContactOid(_entity.getContactOid())
-                        .withPosOid(_entity.getPosOid())
+                        .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
@@ -656,7 +656,7 @@ public final class Converter
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
                         .withContactOid(_entity.getContactOid())
-                        .withPosOid(_entity.getPosOid())
+                        .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
                             ? null
                             : _entity.getItems().stream()
