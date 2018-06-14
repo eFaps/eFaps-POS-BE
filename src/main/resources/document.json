@@ -1,0 +1,115 @@
+{
+    "oid": null,
+    "id": "5b07b509a56bf73958c22d3a",
+    "number": "00005",
+    "items": [
+        {
+            "oid": null,
+            "index": 2,
+            "productOid": "7947.6",
+            "quantity": 1,
+            "netUnitPrice": 2.3,
+            "crossUnitPrice": 2.714,
+            "netPrice": 2.3,
+            "crossPrice": 2.714,
+            "taxes": [
+                {
+                    "tax": {
+                        "oid": "13412.2",
+                        "name": "I.G.V.",
+                        "percent": 18
+                    },
+                    "amount": 0.414
+                }
+            ],
+            "product": {
+                "oid": "7947.6",
+                "sku": "2513",
+                "description": "Lapicero Tinta Roja",
+                "imageOid": "7892.6",
+                "netPrice": 2.3000,
+                "crossPrice": 2.71400000000000000000,
+                "categoryOids": [
+                    "58079.3",
+                    "58079.2"
+                ],
+                "taxes": [
+                    {
+                        "oid": "13412.2",
+                        "name": "IGV",
+                        "percent": 18.0000000000000000
+                    }
+                ],
+                "uoM": null
+            },
+            "description": "Lapicero Tinta Roja",
+            "sku": "2513",
+            "uoM": null
+        },
+        {
+            "oid": null,
+            "index": 1,
+            "productOid": "7947.6",
+            "quantity": 1,
+            "netUnitPrice": 2.3,
+            "crossUnitPrice": 2.714,
+            "netPrice": 2.3,
+            "crossPrice": 2.714,
+            "taxes": [
+                {
+                    "tax": {
+                        "oid": "13412.2",
+                        "name": "I.G.V.",
+                        "percent": 18
+                    },
+                    "amount": 0.414
+                }
+            ],
+            "product": {
+                "oid": "7947.6",
+                "sku": "2513",
+                "description": "Lapicero Tinta Roja",
+                "imageOid": "7892.6",
+                "netPrice": 2.3000,
+                "crossPrice": 2.71400000000000000000,
+                "categoryOids": [
+                    "58079.3",
+                    "58079.2"
+                ],
+                "taxes": [
+                    {
+                        "oid": "13412.2",
+                        "name": "IGV",
+                        "percent": 18.0000000000000000
+                    }
+                ],
+                "uoM": null
+            },
+            "description": "Lapicero Tinta Roja",
+            "sku": "2513",
+            "uoM": null
+        }
+    ],
+    "status": "OPEN",
+    "date": "2018-05-25",
+    "currency": "PEN",
+    "netTotal": 4.60,
+    "crossTotal": 5.43,
+    "taxes": [
+        {
+            "tax": {
+                "oid": "13412.2",
+                "name": "I.G.V.",
+                "percent": 18
+            },
+            "amount": 0.83
+        }
+    ],
+    "contactOid": null,
+    "posOid": null,
+    "spot": {
+        "id": "1",
+        "label": "M 2"
+    }
+}
+
