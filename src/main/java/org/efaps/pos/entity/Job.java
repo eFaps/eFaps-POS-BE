@@ -14,50 +14,68 @@
  * limitations under the License.
  *
  */
-
 package org.efaps.pos.entity;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import java.util.Set;
+
+import org.efaps.pos.entity.AbstractDocument.Item;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "warehouses")
-public class Warehouse
+@Document(collection = "jobs")
+public class Job
 {
 
     @Id
     private String id;
 
-    private String oid;
+    private String documentId;
 
-    private String name;
+    private String printerOid;
 
-    public String getOid()
+    private Set<Item> items;
+
+    public String getId()
     {
-        return this.oid;
+        return this.id;
     }
 
-    public Warehouse setOid(final String _oid)
+    public Job setId(final String _id)
     {
-        this.oid = _oid;
-        this.id = _oid;
+        this.id = _id;
         return this;
     }
 
-    public String getName()
+    public String getPrinterOid()
     {
-        return this.name;
+        return this.printerOid;
     }
 
-    public Warehouse setName(final String _name)
+    public Job setPrinterOid(final String _printerOid)
     {
-        this.name = _name;
+        this.printerOid = _printerOid;
         return this;
     }
 
-    @Override
-    public String toString()
+    public Set<Item> getItems()
     {
-        return ReflectionToStringBuilder.toString(this);
+        return this.items;
+    }
+
+    public Job setItems(final Set<Item> _items)
+    {
+        this.items = _items;
+        return this;
+    }
+
+    public String getDocumentId()
+    {
+        return this.documentId;
+    }
+
+    public Job setDocumentId(final String _documentId)
+    {
+        this.documentId = _documentId;
+        return this;
     }
 }

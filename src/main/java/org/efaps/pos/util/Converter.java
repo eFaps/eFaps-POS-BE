@@ -25,6 +25,7 @@ import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
+import org.efaps.pos.dto.JobDto;
 import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosContactDto;
 import org.efaps.pos.dto.PosDocItemDto;
@@ -51,6 +52,7 @@ import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
+import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Payment;
 import org.efaps.pos.entity.Pos;
@@ -349,7 +351,10 @@ public final class Converter
 
     public static Category toEntity(final CategoryDto _dto)
     {
-        return new Category().setName(_dto.getName()).setOid(_dto.getOid());
+        return new Category()
+                        .setName(_dto.getName())
+                        .setOid(_dto.getOid())
+                        .setJobPrinterOid("Replace Me");
     }
 
     public static Contact toEntity(final ContactDto _dto)
@@ -729,6 +734,18 @@ public final class Converter
                         .withWarehouse(_entity.getWarehouseOid() == null
                             ? null
                             : Converter.toDto(INSTANCE.inventoryService.getWarehouse(_entity.getWarehouseOid())))
+                        .build();
+    }
+
+    public static JobDto toDto(final Job _entity) {
+        return JobDto.builder()
+                        .withDocumentId(_entity.getDocumentId())
+                        .withId(_entity.getId())
+                        .withItems(_entity.getItems() == null
+                            ?  Collections.emptySet()
+                            : _entity.getItems().stream()
+                                .map(item -> Converter.toDto(item))
+                                .collect(Collectors.toSet()))
                         .build();
     }
 }

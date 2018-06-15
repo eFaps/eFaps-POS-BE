@@ -14,15 +14,13 @@
  * limitations under the License.
  *
  */
-
 package org.efaps.pos.entity;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "warehouses")
-public class Warehouse
+@Document(collection = "printers")
+public class Printer
 {
 
     @Id
@@ -37,7 +35,7 @@ public class Warehouse
         return this.oid;
     }
 
-    public Warehouse setOid(final String _oid)
+    public Printer setOid(final String _oid)
     {
         this.oid = _oid;
         this.id = _oid;
@@ -49,15 +47,9 @@ public class Warehouse
         return this.name;
     }
 
-    public Warehouse setName(final String _name)
+    public Printer setName(final String _name)
     {
         this.name = _name;
         return this;
-    }
-
-    @Override
-    public String toString()
-    {
-        return ReflectionToStringBuilder.toString(this);
     }
 }

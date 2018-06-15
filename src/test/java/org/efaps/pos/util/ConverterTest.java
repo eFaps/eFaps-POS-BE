@@ -25,6 +25,7 @@ import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.InventoryEntryDto;
+import org.efaps.pos.dto.JobDto;
 import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
@@ -47,6 +48,7 @@ import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
+import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Product;
@@ -476,5 +478,15 @@ public class ConverterTest
         assertEquals(dto.getProductOid(), entity.getProductOid());
         assertEquals(dto.getWarehouseOid(), entity.getWarehouseOid());
         assertEquals(dto.getQuantity(), entity.getQuantity());
+    }
+
+    @Test
+    public void testJobToDto() {
+        final Job entity = new Job()
+                        .setId("someId")
+                        .setDocumentId("documentId");
+        final JobDto dto = Converter.toDto(entity);
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getDocumentId(), dto.getDocumentId());
     }
 }

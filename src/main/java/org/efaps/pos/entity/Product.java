@@ -17,6 +17,7 @@
 package org.efaps.pos.entity;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -108,7 +109,7 @@ public class Product
 
     public Set<String> getCategoryOids()
     {
-        return this.categoryOids;
+        return this.categoryOids == null ? Collections.emptySet() : this.categoryOids;
     }
 
     public Product setCategoryOids(final Set<String> _categoryOids)

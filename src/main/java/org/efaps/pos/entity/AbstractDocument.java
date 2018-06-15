@@ -18,6 +18,7 @@ package org.efaps.pos.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Set;
 
 import org.efaps.pos.dto.DocStatus;
@@ -90,7 +91,7 @@ public abstract class AbstractDocument<T>
 
     public Set<Item> getItems()
     {
-        return this.items;
+        return this.items == null ? Collections.emptySet() : this.items;
     }
 
     @SuppressWarnings("unchecked")
