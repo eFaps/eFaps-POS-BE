@@ -40,6 +40,7 @@ import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Pos;
+import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
@@ -52,6 +53,7 @@ import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.respository.ContactRepository;
 import org.efaps.pos.respository.InventoryRepository;
 import org.efaps.pos.respository.InvoiceRepository;
+import org.efaps.pos.respository.PrinterRepository;
 import org.efaps.pos.respository.ProductRepository;
 import org.efaps.pos.respository.ReceiptRepository;
 import org.efaps.pos.respository.SequenceRepository;
@@ -87,6 +89,7 @@ public class SyncService
     private final UserRepository userRepository;
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
+    private final PrinterRepository printerRepository;
 
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
@@ -100,6 +103,7 @@ public class SyncService
                        final UserRepository _userRepository,
                        final WarehouseRepository _warehouseRepository,
                        final InventoryRepository _inventoryRepository,
+                       final PrinterRepository _printerRepository,
                        final EFapsClient _eFapsClient)
     {
         this.mongoTemplate = _mongoTemplate;
@@ -113,6 +117,7 @@ public class SyncService
         this.userRepository = _userRepository;
         this.warehouseRepository = _warehouseRepository;
         this.inventoryRepository = _inventoryRepository;
+        this.printerRepository = _printerRepository;
         this.eFapsClient = _eFapsClient;
     }
 
@@ -197,6 +202,19 @@ public class SyncService
         if (!entries.isEmpty()) {
             this.inventoryRepository.deleteAll();
             entries.forEach(workspace -> this.inventoryRepository.save(workspace));
+        }
+        registerSync(StashId.WAREHOUSESYNC);
+    }
+
+    public void syncPrinters()
+    {
+        LOG.info("Syncing Printers");
+        final List<Printer> printers = this.eFapsClient.getPrinters().stream()
+                        .map(dto -> Converter.toEntity(dto))
+                        .collect(Collectors.toList());
+        if (!printers.isEmpty()) {
+            this.printerRepository.deleteAll();
+            printers.forEach(printer -> this.printerRepository.save(printer));
         }
         registerSync(StashId.WAREHOUSESYNC);
     }

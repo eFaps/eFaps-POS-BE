@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.entity;
 
+import org.efaps.pos.dto.PrinterType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -29,6 +30,8 @@ public class Printer
     private String oid;
 
     private String name;
+
+    private PrinterType type;
 
     public String getOid()
     {
@@ -50,6 +53,17 @@ public class Printer
     public Printer setName(final String _name)
     {
         this.name = _name;
+        return this;
+    }
+
+    public PrinterType getType()
+    {
+        return this.type;
+    }
+
+    public Printer setType(final PrinterType _type)
+    {
+        this.type = _type;
         return this;
     }
 }

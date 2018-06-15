@@ -63,6 +63,7 @@ public class ApplicationStartup
             this.service.syncContacts();
             this.service.syncWarehouses();
             this.service.syncInventory();
+            this.service.syncPrinters();;
         }
     }
 }

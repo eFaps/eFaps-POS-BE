@@ -36,6 +36,7 @@ import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
+import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
@@ -57,6 +58,7 @@ import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Payment;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Pos.Company;
+import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
@@ -354,7 +356,7 @@ public final class Converter
         return new Category()
                         .setName(_dto.getName())
                         .setOid(_dto.getOid())
-                        .setJobPrinterOid("Replace Me");
+                        .setJobPrinterOid("PreviewPrinter");
     }
 
     public static Contact toEntity(final ContactDto _dto)
@@ -747,5 +749,13 @@ public final class Converter
                                 .map(item -> Converter.toDto(item))
                                 .collect(Collectors.toSet()))
                         .build();
+    }
+
+    public static Printer toEntity(final PrinterDto _dto)
+    {
+        return new Printer()
+                        .setOid(_dto.getOid())
+                        .setName(_dto.getName())
+                        .setType(_dto.getType());
     }
 }

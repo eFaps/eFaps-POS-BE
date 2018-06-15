@@ -34,6 +34,7 @@ public class AdminController
         this.syncService.syncContacts();
         this.syncService.syncWarehouses();
         this.syncService.syncInventory();
+        this.syncService.syncPrinters();
     }
 
     @GetMapping(path = "/version")

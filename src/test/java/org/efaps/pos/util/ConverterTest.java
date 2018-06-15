@@ -34,6 +34,8 @@ import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
+import org.efaps.pos.dto.PrinterDto;
+import org.efaps.pos.dto.PrinterType;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.Roles;
 import org.efaps.pos.dto.SequenceDto;
@@ -51,6 +53,7 @@ import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
+import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
@@ -488,5 +491,18 @@ public class ConverterTest
         final JobDto dto = Converter.toDto(entity);
         assertEquals(entity.getId(), dto.getId());
         assertEquals(entity.getDocumentId(), dto.getDocumentId());
+    }
+
+    @Test
+    public void testPrinterToEntity() {
+        final PrinterDto dto = PrinterDto.builder()
+                        .withOID("id 1")
+                        .withName("Name")
+                        .withType(PrinterType.PHYSICAL)
+                        .build();
+        final Printer entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getName(), entity.getName());
+        assertEquals(dto.getType(), entity.getType());
     }
 }
