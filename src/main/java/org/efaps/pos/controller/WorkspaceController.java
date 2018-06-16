@@ -56,7 +56,7 @@ public class WorkspaceController
     @GetMapping(path = "/{oid}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkspaceDto> getWorkspace(final Authentication _authentication,
                                                      @PathVariable("oid") final String _oid) {
-        return Optional.ofNullable( this.service.getWorkspace((User) _authentication.getPrincipal(), _oid) )
+        return Optional.ofNullable(this.service.getWorkspace((User) _authentication.getPrincipal(), _oid))
                         .map(ws -> ResponseEntity.ok().body(Converter.toDto(ws)))
                         .orElseGet(() -> ResponseEntity.notFound().build());
     }

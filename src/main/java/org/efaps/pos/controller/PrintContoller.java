@@ -26,12 +26,16 @@ import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PrintResponseDto;
 import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
+import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.service.JobService;
 import org.efaps.pos.service.PrintService;
+import org.efaps.pos.service.WorkspaceService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,14 +47,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(IApi.BASEPATH + "print")
 public class PrintContoller
 {
+    private final WorkspaceService workspaceService;
     private final DocumentService documentService;
     private final JobService jobService;
     private final PrintService printService;
 
-    public PrintContoller(final DocumentService _service,
-                              final JobService _jobService,
-                              final PrintService _printService)
+    public PrintContoller(final WorkspaceService _workspaceService,
+                          final DocumentService _service,
+                          final JobService _jobService,
+                          final PrintService _printService)
     {
+        this.workspaceService = _workspaceService;
         this.documentService = _service;
         this.jobService = _jobService;
         this.printService = _printService;
@@ -68,10 +75,13 @@ public class PrintContoller
     }
 
     @PostMapping(path = "jobs", produces = MediaType.APPLICATION_JSON_VALUE )
-    public List<PrintResponseDto> printJob(@RequestParam(name = "documentId") final String _documentId) {
+    public List<PrintResponseDto> printJob(final Authentication _authentication,
+                                           @RequestParam(name = "workspaceOid") final String _workspaceOid,
+                                           @RequestParam(name = "documentId") final String _documentId) {
         final List<PrintResponseDto> ret = new ArrayList<>();
+        final Workspace workspace = this.workspaceService.getWorkspace((User) _authentication.getPrincipal(), _workspaceOid);
         final Order order = this.documentService.getOrder(_documentId);
-        final Collection<Job> jobs = this.jobService.createJobs(order);
+        final Collection<Job> jobs = this.jobService.createJobs(workspace, order);
 
         for (final Job job : jobs) {
              final Optional<PrintResponseDto> responseOpt = this.printService.queue(job);

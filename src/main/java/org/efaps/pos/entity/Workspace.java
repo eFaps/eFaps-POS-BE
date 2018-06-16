@@ -17,10 +17,12 @@
 
 package org.efaps.pos.entity;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.dto.SpotConfig;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -43,6 +45,8 @@ public class Workspace
     private SpotConfig spotConfig;
 
     private String warehouseOid;
+
+    private Set<PrintCmd> printCmds;
 
     public String getOid()
     {
@@ -111,9 +115,60 @@ public class Workspace
         return this;
     }
 
+    public Set<PrintCmd> getPrintCmds()
+    {
+        return this.printCmds == null ? Collections.emptySet() : this.printCmds;
+    }
+
+    public void setPrintCmds(final Set<PrintCmd> _printCmds)
+    {
+        this.printCmds = _printCmds;
+    }
+
     @Override
     public String toString()
     {
         return ReflectionToStringBuilder.toString(this);
+    }
+
+    public static class PrintCmd
+    {
+
+        private String printerOid;
+        private PrintTarget target;
+        private String targetOid;
+
+        public String getPrinterOid()
+        {
+            return this.printerOid;
+        }
+
+        public PrintCmd setPrinterOid(final String _printerOid)
+        {
+            this.printerOid = _printerOid;
+            return this;
+        }
+
+        public PrintTarget getTarget()
+        {
+            return this.target;
+        }
+
+        public PrintCmd setTarget(final PrintTarget _target)
+        {
+            this.target = _target;
+            return this;
+        }
+
+        public String getTargetOid()
+        {
+            return this.targetOid;
+        }
+
+        public PrintCmd setTargetOid(final String _targetOid)
+        {
+            this.targetOid = _targetOid;
+            return this;
+        }
     }
 }

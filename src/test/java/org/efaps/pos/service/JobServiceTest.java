@@ -9,12 +9,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,7 +56,8 @@ public class JobServiceTest
     @Test
     public void testCreateJobsNoItems()
     {
-        final Collection<Job> jobs = this.jobService.createJobs(new Order().setItems(Collections.emptySet()));
+        final Collection<Job> jobs = this.jobService.createJobs(null, new Order().setItems(Collections
+                        .emptySet()));
         assertTrue(jobs.isEmpty());
     }
 
@@ -64,7 +68,7 @@ public class JobServiceTest
         items.add(new Item().setProductOid("123.456"));
         final Order order = new Order().setItems(items);
 
-        final Collection<Job> jobs = this.jobService.createJobs(order);
+        final Collection<Job> jobs = this.jobService.createJobs(null, order);
         assertTrue(jobs.isEmpty());
     }
 
@@ -77,7 +81,7 @@ public class JobServiceTest
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
-        final Collection<Job> jobs = this.jobService.createJobs(order);
+        final Collection<Job> jobs = this.jobService.createJobs(null, order);
         assertTrue(jobs.isEmpty());
     }
 
@@ -91,7 +95,7 @@ public class JobServiceTest
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
-        final Collection<Job> jobs = this.jobService.createJobs(order);
+        final Collection<Job> jobs = this.jobService.createJobs(null, order);
         assertTrue(jobs.isEmpty());
     }
 
@@ -102,26 +106,28 @@ public class JobServiceTest
         this.mongoTemplate.save(new Product().setOid("productOid").setCategoryOids(Collections.singleton(
                         "categoryOid")));
 
+        final Workspace workspace = new Workspace();
         final Set<Item> items = new HashSet<>();
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
-        final Collection<Job> jobs = this.jobService.createJobs(order);
+        final Collection<Job> jobs = this.jobService.createJobs(workspace, order);
         assertTrue(jobs.isEmpty());
     }
 
     @Test
-    public void testCreateJobsPrinterDoesNotExist()
+    public void testCreateJobsNpPrintCmds()
     {
-        this.mongoTemplate.save(new Category().setOid("categoryOid").setJobPrinterOid("printerOid"));
+        this.mongoTemplate.save(new Category().setOid("categoryOid"));
         this.mongoTemplate.save(new Product().setOid("productOid").setCategoryOids(Collections.singleton(
                         "categoryOid")));
 
+        final Workspace workspace = new Workspace();
         final Set<Item> items = new HashSet<>();
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
-        final Collection<Job> jobs = this.jobService.createJobs(order);
+        final Collection<Job> jobs = this.jobService.createJobs(workspace, order);
         assertTrue(jobs.isEmpty());
     }
 
@@ -129,15 +135,22 @@ public class JobServiceTest
     public void testCreateJob()
     {
         this.mongoTemplate.save(new Printer().setOid("printerOid"));
-        this.mongoTemplate.save(new Category().setOid("categoryOid").setJobPrinterOid("printerOid"));
+        this.mongoTemplate.save(new Category().setOid("categoryOid"));
         this.mongoTemplate.save(new Product().setOid("productOid").setCategoryOids(Collections.singleton(
                         "categoryOid")));
 
+        final Workspace workspace = new Workspace();
+        final Set<PrintCmd> printCmds = new HashSet<>();
+        printCmds.add(new PrintCmd()
+                        .setPrinterOid("printerOid")
+                        .setTarget(PrintTarget.JOB)
+                        .setTargetOid("categoryOid"));
+        workspace.setPrintCmds(printCmds);
         final Set<Item> items = new HashSet<>();
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
-        final Collection<Job> jobs = this.jobService.createJobs(order);
+        final Collection<Job> jobs = this.jobService.createJobs(workspace, order);
         assertEquals(1, jobs.size());
         assertNotNull(jobs.iterator().next().getId());
         assertEquals(1, this.mongoTemplate.findAll(Job.class).size());
@@ -148,9 +161,9 @@ public class JobServiceTest
     {
         this.mongoTemplate.save(new Printer().setOid("printerOid1"));
         this.mongoTemplate.save(new Printer().setOid("printerOid2"));
-        this.mongoTemplate.save(new Category().setOid("categoryOid1").setJobPrinterOid("printerOid1"));
-        this.mongoTemplate.save(new Category().setOid("categoryOid2").setJobPrinterOid("printerOid1"));
-        this.mongoTemplate.save(new Category().setOid("categoryOid3").setJobPrinterOid("printerOid2"));
+        this.mongoTemplate.save(new Category().setOid("categoryOid1"));
+        this.mongoTemplate.save(new Category().setOid("categoryOid2"));
+        this.mongoTemplate.save(new Category().setOid("categoryOid3"));
 
         this.mongoTemplate.save(new Product().setOid("productOid1").setCategoryOids(Collections.singleton(
                         "categoryOid1")));
@@ -163,6 +176,17 @@ public class JobServiceTest
         this.mongoTemplate.save(new Product().setOid("productOid5").setCategoryOids(Collections.singleton(
                         "categoryOid2")));
 
+        final Workspace workspace = new Workspace();
+        final Set<PrintCmd> printCmds = new HashSet<>();
+        printCmds.add(new PrintCmd()
+                        .setPrinterOid("printerOid1")
+                        .setTarget(PrintTarget.JOB)
+                        .setTargetOid("categoryOid1"));
+        printCmds.add(new PrintCmd()
+                        .setPrinterOid("printerOid2")
+                        .setTarget(PrintTarget.JOB)
+                        .setTargetOid("categoryOid2"));
+        workspace.setPrintCmds(printCmds);
         final Set<Item> items = new HashSet<>();
         items.add(new Item().setProductOid("productOid1"));
         items.add(new Item().setProductOid("productOid2"));
@@ -171,12 +195,12 @@ public class JobServiceTest
         items.add(new Item().setProductOid("productOid5"));
         final Order order = new Order().setItems(items);
 
-        final Collection<Job> jobs = this.jobService.createJobs(order);
+        final Collection<Job> jobs = this.jobService.createJobs(workspace, order);
         assertEquals(2, jobs.size());
         final Job job1 = jobs.stream().filter(job -> job.getPrinterOid().equals("printerOid1")).findFirst().get();
         final Job job2 = jobs.stream().filter(job -> job.getPrinterOid().equals("printerOid2")).findFirst().get();
-        assertEquals(4, job1.getItems().size());
-        assertEquals(1, job2.getItems().size());
+        assertEquals(2, job1.getItems().size());
+        assertEquals(2, job2.getItems().size());
         assertEquals(2, this.mongoTemplate.findAll(Job.class).size());
     }
 

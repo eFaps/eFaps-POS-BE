@@ -32,8 +32,6 @@ public class Category
 
     private String name;
 
-    private String jobPrinterOid;
-
     public String getOid()
     {
         return this.oid;
@@ -54,17 +52,6 @@ public class Category
     public Category setName(final String _name)
     {
         this.name = _name;
-        return this;
-    }
-
-    public String getJobPrinterOid()
-    {
-        return this.jobPrinterOid;
-    }
-
-    public Category setJobPrinterOid(final String _jobPrinterOid)
-    {
-        this.jobPrinterOid = _jobPrinterOid;
         return this;
     }
 

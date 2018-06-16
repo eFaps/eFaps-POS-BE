@@ -355,8 +355,7 @@ public final class Converter
     {
         return new Category()
                         .setName(_dto.getName())
-                        .setOid(_dto.getOid())
-                        .setJobPrinterOid("PreviewPrinter");
+                        .setOid(_dto.getOid());
     }
 
     public static Contact toEntity(final ContactDto _dto)

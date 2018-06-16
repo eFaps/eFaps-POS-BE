@@ -28,13 +28,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.respository.CategoryRepository;
 import org.efaps.pos.respository.JobRepository;
 import org.efaps.pos.respository.PrinterRepository;
@@ -62,11 +64,11 @@ public class JobService
 
     /**
      * Creates a set of jobs by grouping them by their related printers.
-     *
+     * @param _workspace
      * @param _order the order
      * @return the collection of jobs
      */
-    public Collection<Job> createJobs(final Order _order)
+    public Collection<Job> createJobs(final Workspace _workspace, final Order _order)
     {
         final List<Job> ret = new ArrayList<>();
         final Map<String, Set<Item>> map = new HashMap<>();
@@ -76,9 +78,11 @@ public class JobService
                 for (final String catOid : product.getCategoryOids()) {
                     final Optional<Category> catOpt = this.categoryRepository.findById(catOid);
                     if (catOpt.isPresent()) {
-                        final String printerOid = catOpt.get().getJobPrinterOid();
-                        if (StringUtils.isNotEmpty(printerOid)) {
-                            final Optional<Printer> printerOpt = this.printerRepository.findById(printerOid);
+                        final Set<PrintCmd> cmds = _workspace.getPrintCmds().stream()
+                            .filter(printCmd -> PrintTarget.JOB.equals(printCmd.getTarget())
+                                            && catOid.equals(printCmd.getTargetOid())).collect(Collectors.toSet());
+                        for (final PrintCmd cmd : cmds) {
+                            final Optional<Printer> printerOpt = this.printerRepository.findById(cmd.getPrinterOid());
                             if (printerOpt.isPresent()) {
                                 final Printer printer = printerOpt.get();
                                 Set<Item> items;
