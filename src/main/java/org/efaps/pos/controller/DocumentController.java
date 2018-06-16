@@ -18,23 +18,17 @@ package org.efaps.pos.controller;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
-import org.efaps.pos.dto.JobDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.service.DocumentService;
-import org.efaps.pos.service.JobService;
-import org.efaps.pos.service.PrintService;
 import org.efaps.pos.util.Converter;
-import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,16 +45,10 @@ public class DocumentController
 {
 
     private final DocumentService documentService;
-    private final JobService jobService;
-    private final PrintService printService;
 
-    public DocumentController(final DocumentService _service,
-                              final JobService _jobService,
-                              final PrintService _printService)
+    public DocumentController(final DocumentService _service)
     {
         this.documentService = _service;
-        this.jobService = _jobService;
-        this.printService = _printService;
     }
 
     @PostMapping(path = "workspaces/{oid}/documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -112,32 +100,5 @@ public class DocumentController
         return orders.stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/orders/{orderId}/printpreview", produces = MediaType.IMAGE_PNG_VALUE )
-    public ResponseEntity<byte[]> printPreview(@PathVariable(name = "orderId") final String _orderId) {
-        final Order order = this.documentService.getOrder(_orderId);
-        final PosOrderDto dto = Converter.toDto(order);
-        final byte[] image = this.printService.print(dto);
-        return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_PNG)
-                        .cacheControl(CacheControl.noCache())
-                        .body(image);
-    }
-
-    @GetMapping(path = "documents/orders/{orderId}/jobs", produces = MediaType.IMAGE_PNG_VALUE )
-    public ResponseEntity<byte[]> printJobPreview(@PathVariable(name = "orderId") final String _orderId) {
-        final Order order = this.documentService.getOrder(_orderId);
-        final Set<JobDto> jobs = this.jobService.createJobs(order).stream()
-                        .map(job -> Converter.toDto(job))
-                        .collect(Collectors.toSet());
-        byte[] image = null;
-        for (final JobDto jobDto : jobs) {
-            image = this.printService.print(jobDto);
-        }
-        return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_PNG)
-                        .cacheControl(CacheControl.noCache())
-                        .body(image);
     }
 }

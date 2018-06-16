@@ -505,4 +505,16 @@ public class ConverterTest
         assertEquals(dto.getName(), entity.getName());
         assertEquals(dto.getType(), entity.getType());
     }
+
+    @Test
+    public void testPrinterToDto() {
+        final Printer entity = new Printer()
+                        .setOid("someId")
+                        .setName("name")
+                        .setType(PrinterType.PHYSICAL);
+        final PrinterDto dto = Converter.toDto(entity);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getName(), dto.getName());
+        assertEquals(entity.getType(), dto.getType());
+    }
 }

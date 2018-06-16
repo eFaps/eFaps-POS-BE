@@ -758,4 +758,12 @@ public final class Converter
                         .setName(_dto.getName())
                         .setType(_dto.getType());
     }
+
+    public static PrinterDto toDto(final Printer _entity) {
+        return PrinterDto.builder()
+                        .withOID(_entity.getOid())
+                        .withName(_entity.getName())
+                        .withType(_entity.getType())
+                        .build();
+    }
 }
