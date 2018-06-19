@@ -108,6 +108,7 @@ public class ConfigProperties
         private String contactPath;
         private String warehousePath;
         private String inventoryPath;
+        private String printerPath;
 
         public URI getBaseUrl()
         {
@@ -229,28 +230,34 @@ public class ConfigProperties
             this.ticketPath = _ticketPath;
         }
 
-
         public String getWarehousePath()
         {
             return this.warehousePath;
         }
-
 
         public void setWarehousePath(final String _warehousePath)
         {
             this.warehousePath = _warehousePath;
         }
 
-
         public String getInventoryPath()
         {
             return this.inventoryPath;
         }
 
-
         public void setInventoryPath(final String _inventoryPath)
         {
             this.inventoryPath = _inventoryPath;
+        }
+
+        public String getPrinterPath()
+        {
+            return this.printerPath;
+        }
+
+        public void setPrinterPath(final String _printerPath)
+        {
+            this.printerPath = _printerPath;
         }
     }
 

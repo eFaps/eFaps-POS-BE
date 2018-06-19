@@ -74,20 +74,22 @@ public class PrintContoller
                         .body(data);
     }
 
-    @PostMapping(path = "jobs", produces = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping(path = "jobs", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PrintResponseDto> printJob(final Authentication _authentication,
                                            @RequestParam(name = "workspaceOid") final String _workspaceOid,
-                                           @RequestParam(name = "documentId") final String _documentId) {
+                                           @RequestParam(name = "documentId") final String _documentId)
+    {
         final List<PrintResponseDto> ret = new ArrayList<>();
-        final Workspace workspace = this.workspaceService.getWorkspace((User) _authentication.getPrincipal(), _workspaceOid);
+        final Workspace workspace = this.workspaceService.getWorkspace((User) _authentication.getPrincipal(),
+                        _workspaceOid);
         final Order order = this.documentService.getOrder(_documentId);
         final Collection<Job> jobs = this.jobService.createJobs(workspace, order);
 
         for (final Job job : jobs) {
-             final Optional<PrintResponseDto> responseOpt = this.printService.queue(job);
-             if (responseOpt.isPresent()) {
-                 ret.add(responseOpt.get());
-             }
+            final Optional<PrintResponseDto> responseOpt = this.printService.queue(job);
+            if (responseOpt.isPresent()) {
+                ret.add(responseOpt.get());
+            }
         }
         return ret;
     }

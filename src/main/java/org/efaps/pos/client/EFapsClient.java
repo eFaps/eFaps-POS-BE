@@ -29,7 +29,6 @@ import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PrinterDto;
-import org.efaps.pos.dto.PrinterType;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
@@ -137,17 +136,17 @@ public class EFapsClient
 
     public List<PrinterDto> getPrinters()
     {
-        final List<PrinterDto> ret = new ArrayList<>();
-        ret.add(PrinterDto.builder()
-                        .withType(PrinterType.PREVIEW)
-                        .withName("PreviewPrinter")
-                        .withOID("PreviewPrinter")
-                        .build());
-        ret.add(PrinterDto.builder()
-                        .withType(PrinterType.PHYSICAL)
-                        .withName("PhysicalPrinter")
-                        .withOID("PhysicalPrinter")
-                        .build());
+        List<PrinterDto> ret = new ArrayList<>();
+        try {
+            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getPrinterPath());
+            final ResponseEntity<List<PrinterDto>> response = this.restTemplate.exchange(requestEntity,
+                            new ParameterizedTypeReference<List<PrinterDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of workspaces", e);
+        }
         return ret;
     }
 

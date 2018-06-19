@@ -216,7 +216,7 @@ public class SyncService
             this.printerRepository.deleteAll();
             printers.forEach(printer -> this.printerRepository.save(printer));
         }
-        registerSync(StashId.WAREHOUSESYNC);
+        registerSync(StashId.PRINTERSYNC);
     }
 
     public void syncPOSs()
