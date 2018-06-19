@@ -120,9 +120,10 @@ public class Workspace
         return this.printCmds == null ? Collections.emptySet() : this.printCmds;
     }
 
-    public void setPrintCmds(final Set<PrintCmd> _printCmds)
+    public Workspace setPrintCmds(final Set<PrintCmd> _printCmds)
     {
         this.printCmds = _printCmds;
+        return this;
     }
 
     @Override

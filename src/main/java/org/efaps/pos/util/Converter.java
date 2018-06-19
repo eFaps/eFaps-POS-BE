@@ -36,6 +36,7 @@ import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
+import org.efaps.pos.dto.PrintCmdDto;
 import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
@@ -68,6 +69,7 @@ import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.service.ProductService;
 import org.springframework.stereotype.Component;
@@ -295,6 +297,11 @@ public final class Converter
                         .withDocTypes(_entity.getDocTypes())
                         .withSpotConfig(_entity.getSpotConfig())
                         .withWarehouseOid(_entity.getWarehouseOid())
+                        .withPrintCmds(_entity.getPrintCmds() == null
+                            ? Collections.emptySet()
+                            : _entity.getPrintCmds().stream()
+                                .map(cmd -> Converter.toDto(cmd))
+                                .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -306,7 +313,12 @@ public final class Converter
                         .setPosOid(_dto.getPosOid())
                         .setDocTypes(_dto.getDocTypes())
                         .setSpotConfig(_dto.getSpotConfig())
-                        .setWarehouseOid(_dto.getWarehouseOid());
+                        .setWarehouseOid(_dto.getWarehouseOid())
+                        .setPrintCmds(_dto.getPrintCmds() == null
+                            ? null
+                            : _dto.getPrintCmds().stream()
+                                    .map(cmd -> Converter.toEntity(cmd))
+                                    .collect(Collectors.toSet()));
     }
 
     public static PosDto toDto(final Pos _entity)
@@ -764,5 +776,22 @@ public final class Converter
                         .withName(_entity.getName())
                         .withType(_entity.getType())
                         .build();
+    }
+
+    public static PrintCmdDto toDto(final PrintCmd _entity) {
+        return PrintCmdDto.builder()
+                        .withPrinterOid(_entity.getPrinterOid())
+                        .withTarget(_entity.getTarget())
+                        .withTargetOid(_entity.getTargetOid())
+                        .build();
+    }
+
+    public static PrintCmd toEntity(final PrintCmdDto _dto)
+    {
+        return new PrintCmd()
+                        .setPrinterOid(_dto.getPrinterOid())
+                        .setTarget(_dto.getTarget())
+                        .setTargetOid(_dto.getTargetOid());
+
     }
 }
