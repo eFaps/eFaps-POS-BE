@@ -48,7 +48,7 @@ public class ImageController
     public ResponseEntity<byte[]> getImage(@PathVariable("oid") final String _oid)
         throws IllegalStateException, IOException
     {
-        final Object[] image = this.gridFsService.getContent(_oid);
+        final Object[] image = this.gridFsService.getBlob(_oid);
         return ResponseEntity.ok()
                         .contentType(MediaType.parseMediaType((String) image[0]))
                         .cacheControl(CacheControl.maxAge(24, TimeUnit.HOURS))

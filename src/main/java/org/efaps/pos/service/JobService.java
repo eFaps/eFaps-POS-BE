@@ -72,6 +72,7 @@ public class JobService
     {
         final List<Job> ret = new ArrayList<>();
         final Map<String, Set<Item>> map = new HashMap<>();
+        final Map<String, String> reportmap = new HashMap<>();
         for (final Item item : getNewItems(_order)) {
             final Product product = this.productService.getProduct(item.getProductOid());
             if (product != null) {
@@ -93,6 +94,7 @@ public class JobService
                                 }
                                 items.add(item);
                                 map.put(printer.getOid(), items);
+                                reportmap.put(printer.getOid(), cmd.getReportOid());
                             }
                         }
                     }
@@ -103,6 +105,7 @@ public class JobService
             ret.add(this.jobRepository.save(new Job()
                             .setDocumentId(_order.getId())
                             .setPrinterOid(entry.getKey())
+                            .setReportOid(reportmap.get(entry.getKey()))
                             .setItems(entry.getValue())));
         }
         return ret;

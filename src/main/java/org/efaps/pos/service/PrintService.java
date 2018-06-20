@@ -1,6 +1,5 @@
 package org.efaps.pos.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -27,7 +26,6 @@ import org.efaps.pos.respository.PrinterRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import net.sf.jasperreports.engine.JRException;
@@ -49,31 +47,34 @@ public class PrintService
 
     private final PrinterRepository printerRepository;
 
+    private final GridFsService gridFsService;
+
     public PrintService(final ObjectMapper _jacksonObjectMapper,
+                        final GridFsService _gridFsService,
                         final PrinterRepository _printerRepository) {
         this.jacksonObjectMapper = _jacksonObjectMapper;
+        this.gridFsService = _gridFsService;
         this.printerRepository = _printerRepository;
     }
 
-    public byte[] print(final Object _object) {
+    public byte[] print(final Object _object, final String _reportOid) {
         byte[] ret = null;
         try {
-            ret = print(new ByteArrayInputStream(this.jacksonObjectMapper.writeValueAsBytes(_object)));
-        } catch (final JsonProcessingException e) {
+            ret = print(new ByteArrayInputStream(this.jacksonObjectMapper.writeValueAsBytes(_object)),
+                        this.gridFsService.getContent(_reportOid));
+        } catch (final IllegalStateException | IOException e) {
             LOG.error("Catched", e);
         }
         return ret;
     }
 
-    public byte[] print(final InputStream _json)
+    public byte[] print(final InputStream _json, final InputStream _report)
     {
         byte[] ret = null;
         try {
-            final ClassPathResource jasper = new ClassPathResource("document.jasper");
-
             final Map<String, Object> parameters = new HashMap<>();
             final JsonDataSource datasource = new JsonDataSource(_json);
-            final JasperPrint jasperPrint = JasperFillManager.fillReport(jasper.getInputStream(), parameters,
+            final JasperPrint jasperPrint = JasperFillManager.fillReport(_report, parameters,
                             datasource);
             final Image image = JasperPrintManager.printPageToImage(jasperPrint, 0, 1);
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -91,7 +92,7 @@ public class PrintService
         final Optional<Printer> printerOpt = this.printerRepository.findById(_job.getPrinterOid());
         if (printerOpt.isPresent()) {
             if (printerOpt.get().getType().equals(PrinterType.PREVIEW)) {
-                 final byte[] data = print(_job);
+                 final byte[] data = print(_job, _job.getReportOid());
                  final String key = RandomStringUtils.randomAlphabetic(12);
                  CACHE.put(key, data);
                  ret = Optional.of(PrintResponseDto.builder()

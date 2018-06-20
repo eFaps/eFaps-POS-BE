@@ -48,7 +48,15 @@ public class GridFsService
         this.dbFactory = _dbFactory;
     }
 
-    public Object[] getContent(final String _oid)
+    public InputStream getContent(final String _oid)
+                    throws IllegalStateException, IOException
+    {
+        final GridFSFile imageFile = this.gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(_oid)));
+        return new GridFsResource(imageFile, getGridFs().openDownloadStream(imageFile.getId()))
+                                .getInputStream();
+    }
+
+    public Object[] getBlob(final String _oid)
         throws IllegalStateException, IOException
     {
         final GridFSFile imageFile = this.gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(_oid)));

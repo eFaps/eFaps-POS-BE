@@ -33,6 +33,8 @@ public class Job
 
     private String printerOid;
 
+    private String reportOid;
+
     private Set<Item> items;
 
     public String getId()
@@ -76,6 +78,17 @@ public class Job
     public Job setDocumentId(final String _documentId)
     {
         this.documentId = _documentId;
+        return this;
+    }
+
+    public String getReportOid()
+    {
+        return this.reportOid;
+    }
+
+    public Job setReportOid(final String _reportOid)
+    {
+        this.reportOid = _reportOid;
         return this;
     }
 }
