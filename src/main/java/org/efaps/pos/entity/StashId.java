@@ -30,6 +30,7 @@ public enum StashId
     USERSYNC("org.efaps.pos.sync.User"),
     POSSYNC("org.efaps.pos.sync.POS"),
     PRINTERSYNC("org.efaps.pos.sync.Printer"),
+    REPORTSYNC("org.efaps.pos.sync.Report"),
     WAREHOUSESYNC("org.efaps.pos.sync.Warehouse"),
     WORKSPACESYNC("org.efaps.pos.sync.Workspace");
 

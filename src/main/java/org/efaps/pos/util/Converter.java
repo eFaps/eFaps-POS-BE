@@ -783,6 +783,7 @@ public final class Converter
                         .withPrinterOid(_entity.getPrinterOid())
                         .withTarget(_entity.getTarget())
                         .withTargetOid(_entity.getTargetOid())
+                        .withReportOid(_entity.getReportOid())
                         .build();
     }
 
@@ -791,7 +792,8 @@ public final class Converter
         return new PrintCmd()
                         .setPrinterOid(_dto.getPrinterOid())
                         .setTarget(_dto.getTarget())
-                        .setTargetOid(_dto.getTargetOid());
+                        .setTargetOid(_dto.getTargetOid())
+                        .setReportOid(_dto.getReportOid());
 
     }
 }

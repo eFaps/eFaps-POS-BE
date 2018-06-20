@@ -29,12 +29,13 @@ public class AdminController
         this.syncService.syncPOSs();
         this.syncService.syncWorkspaces();
         this.syncService.syncUsers();
-        this.syncService.syncImages();
         this.syncService.syncSequences();
         this.syncService.syncContacts();
         this.syncService.syncWarehouses();
         this.syncService.syncInventory();
         this.syncService.syncPrinters();
+        this.syncService.syncImages();
+        this.syncService.syncReports();
     }
 
     @GetMapping(path = "/version")

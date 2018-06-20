@@ -58,12 +58,13 @@ public class ApplicationStartup
             this.service.syncReceipts();
             this.service.syncInvoices();
             this.service.syncTickets();
-            this.service.syncImages();
             this.service.syncSequences();
             this.service.syncContacts();
             this.service.syncWarehouses();
             this.service.syncInventory();
-            this.service.syncPrinters();;
+            this.service.syncPrinters();
+            this.service.syncImages();
+            this.service.syncReports();
         }
     }
 }

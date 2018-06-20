@@ -138,6 +138,7 @@ public class Workspace
         private String printerOid;
         private PrintTarget target;
         private String targetOid;
+        private String reportOid;
 
         public String getPrinterOid()
         {
@@ -169,6 +170,17 @@ public class Workspace
         public PrintCmd setTargetOid(final String _targetOid)
         {
             this.targetOid = _targetOid;
+            return this;
+        }
+
+        public String getReportOid()
+        {
+            return this.reportOid;
+        }
+
+        public PrintCmd setReportOid(final String _reportOid)
+        {
+            this.reportOid = _reportOid;
             return this;
         }
     }

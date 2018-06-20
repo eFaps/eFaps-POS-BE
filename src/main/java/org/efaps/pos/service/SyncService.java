@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -50,6 +51,7 @@ import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.respository.ContactRepository;
 import org.efaps.pos.respository.InventoryRepository;
 import org.efaps.pos.respository.InvoiceRepository;
@@ -60,6 +62,7 @@ import org.efaps.pos.respository.SequenceRepository;
 import org.efaps.pos.respository.TicketRepository;
 import org.efaps.pos.respository.UserRepository;
 import org.efaps.pos.respository.WarehouseRepository;
+import org.efaps.pos.respository.WorkspaceRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +93,7 @@ public class SyncService
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
     private final PrinterRepository printerRepository;
+    private final WorkspaceRepository workspaceRepository;
 
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
@@ -104,6 +108,7 @@ public class SyncService
                        final WarehouseRepository _warehouseRepository,
                        final InventoryRepository _inventoryRepository,
                        final PrinterRepository _printerRepository,
+                       final WorkspaceRepository _workspaceRepository,
                        final EFapsClient _eFapsClient)
     {
         this.mongoTemplate = _mongoTemplate;
@@ -118,6 +123,7 @@ public class SyncService
         this.warehouseRepository = _warehouseRepository;
         this.inventoryRepository = _inventoryRepository;
         this.printerRepository = _printerRepository;
+        this.workspaceRepository = _workspaceRepository;
         this.eFapsClient = _eFapsClient;
     }
 
@@ -167,15 +173,15 @@ public class SyncService
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         if (!workspaces.isEmpty()) {
-            final List<Workspace> existingWorkspaces = this.mongoTemplate.findAll(Workspace.class);
+            final List<Workspace> existingWorkspaces = this.workspaceRepository.findAll();
             existingWorkspaces.forEach(existing -> {
                 if (!workspaces.stream()
                                 .filter(workspace -> workspace.getOid().equals(existing.getOid())).findFirst()
                                 .isPresent()) {
-                    this.mongoTemplate.remove(existing);
+                    this.workspaceRepository.delete(existing);
                 }
             });
-            workspaces.forEach(workspace -> this.mongoTemplate.save(workspace));
+            workspaces.forEach(workspace -> this.workspaceRepository.save(workspace));
         }
         registerSync(StashId.WORKSPACESYNC);
     }
@@ -347,6 +353,30 @@ public class SyncService
             }
         }
         registerSync(StashId.IMAGESYNC);
+    }
+
+    public void syncReports()
+    {
+        LOG.info("Syncing Reports");
+        final List<Workspace> workspaces = this.workspaceRepository.findAll();
+        final Set<String> reportOids = workspaces.stream()
+            .map(Workspace::getPrintCmds)
+            .flatMap(Set::stream)
+            .map(PrintCmd::getReportOid)
+            .collect(Collectors.toSet());
+
+        for (final String reportOid : reportOids) {
+            final Checkout checkout = this.eFapsClient.checkout(reportOid);
+            if (checkout != null) {
+                this.gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(reportOid)));
+                final DBObject metaData = new BasicDBObject();
+                metaData.put("oid", reportOid);
+                metaData.put("contentType", checkout.getContentType().toString());
+                this.gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
+                                    metaData);
+            }
+        }
+        registerSync(StashId.REPORTSYNC);
     }
 
     public void syncSequences() {
