@@ -48,6 +48,8 @@ public class Workspace
 
     private Set<PrintCmd> printCmds;
 
+    private Integer spotCount;
+
     public String getOid()
     {
         return this.oid;
@@ -101,6 +103,17 @@ public class Workspace
     public Workspace setSpotConfig(final SpotConfig _spotConfig)
     {
         this.spotConfig = _spotConfig;
+        return this;
+    }
+
+    public Integer getSpotCount()
+    {
+        return this.spotCount;
+    }
+
+    public Workspace setSpotCount(final Integer _spotCount)
+    {
+        this.spotCount = _spotCount;
         return this;
     }
 

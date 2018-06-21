@@ -299,6 +299,7 @@ public final class Converter
                         .withPosOid(_entity.getPosOid())
                         .withDocTypes(_entity.getDocTypes())
                         .withSpotConfig(_entity.getSpotConfig())
+                        .withSpotCount(_entity.getSpotCount() == null ? 0 : _entity.getSpotCount())
                         .withWarehouseOid(_entity.getWarehouseOid())
                         .withPrintCmds(_entity.getPrintCmds() == null
                             ? Collections.emptySet()
@@ -316,6 +317,7 @@ public final class Converter
                         .setPosOid(_dto.getPosOid())
                         .setDocTypes(_dto.getDocTypes())
                         .setSpotConfig(_dto.getSpotConfig())
+                        .setSpotCount(_dto.getSpotCount())
                         .setWarehouseOid(_dto.getWarehouseOid())
                         .setPrintCmds(_dto.getPrintCmds() == null
                             ? null
