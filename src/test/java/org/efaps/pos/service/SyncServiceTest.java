@@ -27,8 +27,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
 
+import org.efaps.pos.dto.CategoryDto;
+import org.efaps.pos.dto.PosDto;
+import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.UserDto;
+import org.efaps.pos.dto.WarehouseDto;
+import org.efaps.pos.dto.WorkspaceDto;
+import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.Pos;
+import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Warehouse;
+import org.efaps.pos.entity.Workspace;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,6 +77,12 @@ public class SyncServiceTest
     @BeforeEach
     public void setup() {
         this.mongoTemplate.remove(new Query(), Product.class);
+        this.mongoTemplate.remove(new Query(), Category.class);
+        this.mongoTemplate.remove(new Query(), Workspace.class);
+        this.mongoTemplate.remove(new Query(), Warehouse.class);
+        this.mongoTemplate.remove(new Query(), Printer.class);
+        this.mongoTemplate.remove(new Query(), Pos.class);
+        this.mongoTemplate.remove(new Query(), User.class);
     }
 
     @Test
@@ -140,4 +158,287 @@ public class SyncServiceTest
         assertEquals("5586.1651", products.get(0).getOid());
         assertEquals("An updated product description", products.get(0).getDescription());
     }
+
+    @Test
+    public void testSyncCategoriesFirstTime() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Category.class).isEmpty());
+
+        final CategoryDto product1 = CategoryDto.builder()
+                        .withOID("5586.1651")
+                        .withName("Cat Name")
+                        .build();
+
+        final List<CategoryDto> categoryDtos = Arrays.asList(product1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/categories"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(categoryDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncCategories();
+
+        final List<Category> categories = this.mongoTemplate.findAll(Category.class);
+        assertEquals(1, categories.size());
+    }
+
+    @Test
+    public void testSyncCategoriesRemoveObsolete() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Category.class).isEmpty());
+
+        final Category category = new Category()
+                        .setOid("5586.1650")
+                        .setName("This category should be removed");
+        this.mongoTemplate.save(category);
+
+        final CategoryDto category1 = CategoryDto.builder()
+                        .withName("An updated category description")
+                        .withOID("5586.1651")
+                        .build();
+
+        final List<CategoryDto> categoryDtos = Arrays.asList(category1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/categories"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(categoryDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncCategories();
+
+        final List<Category> categories = this.mongoTemplate.findAll(Category.class);
+        assertEquals(1, categories.size());
+        assertEquals("5586.1651", categories.get(0).getOid());
+        assertEquals("An updated category description", categories.get(0).getName());
+    }
+
+    @Test
+    public void testSyncWorkspacesFirstTime() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Workspace.class).isEmpty());
+
+        final WorkspaceDto product1 = WorkspaceDto.builder()
+                        .withOID("5586.1651")
+                        .withName("Cat Name")
+                        .build();
+
+        final List<WorkspaceDto> workspaceDtos = Arrays.asList(product1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/workspaces"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(workspaceDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncWorkspaces();
+
+        final List<Workspace> categories = this.mongoTemplate.findAll(Workspace.class);
+        assertEquals(1, categories.size());
+    }
+
+    @Test
+    public void testSyncWorkspacesRemoveObsolete() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Workspace.class).isEmpty());
+
+        final Workspace workspace = new Workspace()
+                        .setOid("5586.1650")
+                        .setName("This workspace should be removed");
+        this.mongoTemplate.save(workspace);
+
+        final WorkspaceDto workspace1 = WorkspaceDto.builder()
+                        .withName("A workspace description")
+                        .withOID("5586.1651")
+                        .build();
+
+        final List<WorkspaceDto> workspaceDtos = Arrays.asList(workspace1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/workspaces"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(workspaceDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncWorkspaces();
+
+        final List<Workspace> workspaces = this.mongoTemplate.findAll(Workspace.class);
+        assertEquals(1, workspaces.size());
+        assertEquals("5586.1651", workspaces.get(0).getOid());
+        assertEquals("A workspace description", workspaces.get(0).getName());
+    }
+
+    @Test
+    public void testSyncWarehousesFirstTime() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Warehouse.class).isEmpty());
+
+        final WarehouseDto product1 = WarehouseDto.builder()
+                        .withOID("5586.1651")
+                        .withName("Cat Name")
+                        .build();
+
+        final List<WarehouseDto> warehouseDtos = Arrays.asList(product1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/warehouses"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(warehouseDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncWarehouses();
+
+        final List<Warehouse> warehouses = this.mongoTemplate.findAll(Warehouse.class);
+        assertEquals(1, warehouses.size());
+    }
+
+    @Test
+    public void testSyncWarehousesRemoveObsolete() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Warehouse.class).isEmpty());
+
+        final Warehouse warehouse = new Warehouse()
+                        .setOid("5586.1650")
+                        .setName("This warehouse should be removed");
+        this.mongoTemplate.save(warehouse);
+
+        final WarehouseDto warehouse1 = WarehouseDto.builder()
+                        .withName("A warehouse description")
+                        .withOID("5586.1651")
+                        .build();
+
+        final List<WarehouseDto> warehouseDtos = Arrays.asList(warehouse1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/warehouses"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(warehouseDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncWarehouses();
+
+        final List<Warehouse> warehouses = this.mongoTemplate.findAll(Warehouse.class);
+        assertEquals(1, warehouses.size());
+        assertEquals("5586.1651", warehouses.get(0).getOid());
+        assertEquals("A warehouse description", warehouses.get(0).getName());
+    }
+
+    @Test
+    public void testSyncPrintersFirstTime() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Printer.class).isEmpty());
+
+        final PrinterDto product1 = PrinterDto.builder()
+                        .withOID("5586.1651")
+                        .withName("Cat Name")
+                        .build();
+
+        final List<PrinterDto> printerDtos = Arrays.asList(product1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/printers"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(printerDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncPrinters();
+
+        final List<Printer> printers = this.mongoTemplate.findAll(Printer.class);
+        assertEquals(1, printers.size());
+    }
+
+    @Test
+    public void testSyncPrintersRemoveObsolete() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Printer.class).isEmpty());
+
+        final Printer printer = new Printer()
+                        .setOid("5586.1650")
+                        .setName("This printer should be removed");
+        this.mongoTemplate.save(printer);
+
+        final PrinterDto printer1 = PrinterDto.builder()
+                        .withName("A printer description")
+                        .withOID("5586.1651")
+                        .build();
+
+        final List<PrinterDto> printerDtos = Arrays.asList(printer1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/printers"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(printerDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncPrinters();
+
+        final List<Printer> printers = this.mongoTemplate.findAll(Printer.class);
+        assertEquals(1, printers.size());
+        assertEquals("5586.1651", printers.get(0).getOid());
+        assertEquals("A printer description", printers.get(0).getName());
+    }
+
+    @Test
+    public void testSyncPossFirstTime() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Pos.class).isEmpty());
+
+        final PosDto product1 = PosDto.builder()
+                        .withOID("5586.1651")
+                        .withName("Cat Name")
+                        .build();
+
+        final List<PosDto> posDtos = Arrays.asList(product1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/poss"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(posDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncPOSs();
+
+        final List<Pos> poss = this.mongoTemplate.findAll(Pos.class);
+        assertEquals(1, poss.size());
+    }
+
+    @Test
+    public void testSyncPossRemoveObsolete() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(Pos.class).isEmpty());
+
+        final Pos pos = new Pos()
+                        .setOid("5586.1650")
+                        .setName("This pos should be removed");
+        this.mongoTemplate.save(pos);
+
+        final PosDto pos1 = PosDto.builder()
+                        .withName("A pos description")
+                        .withOID("5586.1651")
+                        .build();
+
+        final List<PosDto> posDtos = Arrays.asList(pos1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/poss"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(posDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncPOSs();
+
+        final List<Pos> poss = this.mongoTemplate.findAll(Pos.class);
+        assertEquals(1, poss.size());
+        assertEquals("5586.1651", poss.get(0).getOid());
+        assertEquals("A pos description", poss.get(0).getName());
+    }
+
+    @Test
+    public void testSyncUsersFirstTime() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(User.class).isEmpty());
+
+        final UserDto user1 = UserDto.builder()
+                        .withOID("5586.1651")
+                        .withFirstName("Cat Name")
+                        .build();
+
+        final List<UserDto> userDtos = Arrays.asList(user1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/users"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(userDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncUsers();
+
+        final List<User> users = this.mongoTemplate.findAll(User.class);
+        assertEquals(1, users.size());
+    }
+
+    @Test
+    public void testSyncUsersRemoveObsolete() throws JsonProcessingException {
+        assertTrue(this.mongoTemplate.findAll(User.class).isEmpty());
+
+        final User user = new User()
+                        .setOid("5586.1650")
+                        .setFirstName("This user should be removed");
+        this.mongoTemplate.save(user);
+
+        final UserDto user1 = UserDto.builder()
+                        .withOID("5586.1651")
+                        .withFirstName("A user description")
+                        .build();
+
+        final List<UserDto> userDtos = Arrays.asList(user1);
+
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/users"))
+            .andRespond(withSuccess(this.mapper.writeValueAsString(userDtos), MediaType.APPLICATION_JSON));
+
+        this.syncService.syncUsers();
+
+        final List<User> users = this.mongoTemplate.findAll(User.class);
+        assertEquals(1, users.size());
+        assertEquals("5586.1651", users.get(0).getOid());
+        assertEquals("A user description", users.get(0).getFirstName());
+    }
+
 }
