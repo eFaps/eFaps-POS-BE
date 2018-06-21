@@ -88,6 +88,7 @@ public class ConverterTest
     @BeforeEach
     public void setup() {
         this.mongoTemplate.remove(new Query(), Product.class);
+        this.mongoTemplate.remove(new Query(), Order.class);
     }
 
     @Test
@@ -485,9 +486,11 @@ public class ConverterTest
 
     @Test
     public void testJobToDto() {
+        final Order order = new Order();
+        this.mongoTemplate.save(order);
         final Job entity = new Job()
                         .setId("someId")
-                        .setDocumentId("documentId");
+                        .setDocumentId(order.getId());
         final JobDto dto = Converter.toDto(entity);
         assertEquals(entity.getId(), dto.getId());
         assertEquals(entity.getDocumentId(), dto.getDocumentId());
