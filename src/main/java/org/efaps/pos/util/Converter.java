@@ -390,6 +390,17 @@ public final class Converter
                         .setTaxNumber(_dto.getTaxNumber());
     }
 
+    public static PosContactDto toDto(final Contact _entity) {
+        return _entity == null
+                    ? null
+                    : PosContactDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withName(_entity.getName())
+                        .withTaxNumber(_entity.getTaxNumber())
+                        .build();
+    }
+
     public static TaxDto toDto(final Tax _entity)
     {
         return TaxDto.builder()
@@ -584,17 +595,6 @@ public final class Converter
                             : _entity.getPayments().stream()
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
-                        .build();
-    }
-
-    public static PosContactDto toDto(final Contact _entity) {
-        return _entity == null
-                    ? null
-                    : PosContactDto.builder()
-                        .withId(_entity.getId())
-                        .withOID(_entity.getOid())
-                        .withName(_entity.getName())
-                        .withTaxNumber(_entity.getTaxNumber())
                         .build();
     }
 

@@ -17,37 +17,50 @@
 package org.efaps.pos.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collections;
 
 import org.efaps.pos.dto.CategoryDto;
+import org.efaps.pos.dto.CompanyDto;
+import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.InventoryEntryDto;
+import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.JobDto;
 import org.efaps.pos.dto.PaymentDto;
+import org.efaps.pos.dto.PosContactDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
+import org.efaps.pos.dto.PosInventoryEntryDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
+import org.efaps.pos.dto.PrintCmdDto;
+import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.PrinterType;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.Roles;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.SpotConfig;
 import org.efaps.pos.dto.SpotDto;
 import org.efaps.pos.dto.TaxDto;
 import org.efaps.pos.dto.TaxEntryDto;
+import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Job;
@@ -63,6 +76,7 @@ import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -185,6 +199,61 @@ public class ConverterTest
         final CategoryDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getName(), dto.getName());
+    }
+
+    @Test
+    public void testCategoryToEntity() {
+        final CategoryDto dto = CategoryDto.builder()
+                        .withOID("165165.14651")
+                        .withName("Caja 1")
+                        .build();
+
+        final Category entity = Converter.toEntity(dto);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getName(), dto.getName());
+    }
+
+    @Test
+    public void testContactToPosDto() {
+        final Contact entity = new Contact()
+                        .setName("Contact 1")
+                        .setOid("165165.14651")
+                        .setTaxNumber("12345678911");
+
+        final PosContactDto dto = Converter.toDto(entity);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getName(), dto.getName());
+        assertEquals(entity.getTaxNumber(), dto.getTaxNumber());
+    }
+
+    @Test
+    public void testContactToEntity() {
+        final ContactDto dto = ContactDto.builder()
+                        .withOID("165165.14651")
+                        .withName("Caja 1")
+                        .withTaxNumber("12345678911")
+                        .build();
+
+        final Contact entity = Converter.toEntity(dto);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getName(), dto.getName());
+        assertEquals(entity.getTaxNumber(), dto.getTaxNumber());
+    }
+
+    @Test
+    public void testPosContactToEntity() {
+        final PosContactDto dto = PosContactDto.builder()
+                        .withId("this is the id")
+                        .withOID("165165.14651")
+                        .withName("Caja 1")
+                        .withTaxNumber("12345678911")
+                        .build();
+
+        final Contact entity = Converter.toEntity(dto);
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getName(), dto.getName());
+        assertEquals(entity.getTaxNumber(), dto.getTaxNumber());
     }
 
     @Test
@@ -374,16 +443,26 @@ public class ConverterTest
     }
 
     @Test
-    public void testReceiptToDto() {
-        final Receipt entity = new Receipt()
-                        .setOid("165165.14651")
-                        .setNumber("B001-165165")
-                        .setStatus(DocStatus.CLOSED);
+    public void testItemToItemDto() {
+       final Item entity = new Item()
+                        .setIndex(1)
+                        .setOid("5555.622")
+                        .setCrossPrice(new BigDecimal("1.11"))
+                        .setCrossUnitPrice(new BigDecimal("1.12"))
+                        .setNetPrice(new BigDecimal("1.13"))
+                        .setNetUnitPrice(new BigDecimal("1.14"))
+                        .setQuantity(new BigDecimal("1.15"))
+                        .setProductOid("1234.652");
 
-        final PosReceiptDto dto = Converter.toDto(entity);
+        final DocItemDto dto = Converter.toItemDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
-        assertEquals(entity.getNumber(), dto.getNumber());
-        assertEquals(entity.getStatus(), dto.getStatus());
+        assertEquals(entity.getIndex(), dto.getIndex());
+        assertEquals(entity.getCrossPrice(), dto.getCrossPrice());
+        assertEquals(entity.getCrossUnitPrice(), dto.getCrossUnitPrice());
+        assertEquals(entity.getNetPrice(), dto.getNetPrice());
+        assertEquals(entity.getNetUnitPrice(), dto.getNetUnitPrice());
+        assertEquals(entity.getQuantity(), dto.getQuantity());
+        assertEquals(entity.getProductOid(), dto.getProductOid());
     }
 
     @Test
@@ -485,6 +564,25 @@ public class ConverterTest
     }
 
     @Test
+    public void testInventoryToDto() {
+        final Product product = new Product().setOid("productOid");
+        this.mongoTemplate.save(product);
+        final Warehouse warehouse = new Warehouse().setOid("warehouseOid");
+        this.mongoTemplate.save(warehouse);
+
+        final InventoryEntry entity = new InventoryEntry()
+                        .setOid("id 1")
+                        .setProductOid(product.getOid())
+                        .setWarehouseOid(warehouse.getOid())
+                        .setQuantity(BigDecimal.TEN);
+        final PosInventoryEntryDto dto = Converter.toDto(entity);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getProductOid(), dto.getProduct().getOid());
+        assertEquals(entity.getWarehouseOid(), dto.getWarehouse().getOid());
+        assertEquals(entity.getQuantity(), entity.getQuantity());
+    }
+
+    @Test
     public void testJobToDto() {
         final Order order = new Order();
         this.mongoTemplate.save(order);
@@ -519,5 +617,212 @@ public class ConverterTest
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getName(), dto.getName());
         assertEquals(entity.getType(), dto.getType());
+    }
+
+    @Test
+    public void testPrintCmdToEntity() {
+        final PrintCmdDto dto = PrintCmdDto.builder()
+                        .withPrinterOid("printerOid")
+                        .withReportOid("reportOid")
+                        .withTargetOid("targetOid")
+                        .withTarget(PrintTarget.JOB)
+                        .build();
+        final PrintCmd entity = Converter.toEntity(dto);
+        assertEquals(dto.getPrinterOid(), entity.getPrinterOid());
+        assertEquals(dto.getReportOid(), entity.getReportOid());
+        assertEquals(dto.getTargetOid(), entity.getTargetOid());
+        assertEquals(dto.getTarget(), entity.getTarget());
+    }
+
+    @Test
+    public void testPrintCmdToDto() {
+        final PrintCmd entity = new PrintCmd()
+                        .setPrinterOid("printerOid")
+                        .setReportOid("reportOid")
+                        .setTargetOid("targetOid");
+        final PrintCmdDto dto = Converter.toDto(entity);
+        assertEquals(entity.getPrinterOid(), dto.getPrinterOid());
+        assertEquals(entity.getReportOid(), dto.getReportOid());
+        assertEquals(entity.getTargetOid(), dto.getTargetOid());
+        assertEquals(entity.getTarget(), dto.getTarget());
+    }
+
+    @Test
+    public void testInvoiceToInvoiceDto() {
+        final Invoice entity = new Invoice()
+                        .setId("an id")
+                        .setOid("OID")
+                        .setNumber("Number")
+                        .setDate(LocalDate.now())
+                        .setCurrency("PEN")
+                        .setStatus(DocStatus.OPEN)
+                        .setCrossTotal(BigDecimal.TEN)
+                        .setNetTotal(BigDecimal.ONE)
+                        .setContactOid("ContactOid")
+                        .setWorkspaceOid("workspaceOid");
+
+        final InvoiceDto dto = Converter.toInvoiceDto(entity);
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getNumber(), dto.getNumber());
+        assertEquals(entity.getDate(), dto.getDate());
+        assertEquals(entity.getCurrency(), dto.getCurrency());
+        assertEquals(entity.getCrossTotal(), dto.getCrossTotal());
+        assertEquals(entity.getNetTotal(), dto.getNetTotal());
+        assertEquals(entity.getContactOid(), dto.getContactOid());
+        assertEquals(entity.getWorkspaceOid(), dto.getWorkspaceOid());
+    }
+
+    @Test
+    public void testInvoiceToDto() {
+        final Invoice entity = new Invoice()
+                        .setId("an id")
+                        .setOid("OID")
+                        .setNumber("Number")
+                        .setDate(LocalDate.now())
+                        .setCurrency("PEN")
+                        .setStatus(DocStatus.OPEN)
+                        .setCrossTotal(BigDecimal.TEN)
+                        .setNetTotal(BigDecimal.ONE)
+                        .setContactOid("ContactOid")
+                        .setWorkspaceOid("workspaceOid");
+
+        final PosInvoiceDto dto = Converter.toDto(entity);
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getNumber(), dto.getNumber());
+        assertEquals(entity.getDate(), dto.getDate());
+        assertEquals(entity.getCurrency(), dto.getCurrency());
+        assertEquals(entity.getCrossTotal(), dto.getCrossTotal());
+        assertEquals(entity.getNetTotal(), dto.getNetTotal());
+        assertEquals(entity.getContactOid(), dto.getContactOid());
+        assertEquals(entity.getWorkspaceOid(), dto.getWorkspaceOid());
+    }
+
+    @Test
+    public void testReceiptToReceiptDto() {
+        final Receipt entity = new Receipt()
+                        .setId("an id")
+                        .setOid("OID")
+                        .setNumber("Number")
+                        .setDate(LocalDate.now())
+                        .setCurrency("PEN")
+                        .setStatus(DocStatus.OPEN)
+                        .setCrossTotal(BigDecimal.TEN)
+                        .setNetTotal(BigDecimal.ONE)
+                        .setContactOid("ContactOid")
+                        .setWorkspaceOid("workspaceOid");
+
+        final ReceiptDto dto = Converter.toReceiptDto(entity);
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getNumber(), dto.getNumber());
+        assertEquals(entity.getDate(), dto.getDate());
+        assertEquals(entity.getCurrency(), dto.getCurrency());
+        assertEquals(entity.getCrossTotal(), dto.getCrossTotal());
+        assertEquals(entity.getNetTotal(), dto.getNetTotal());
+        assertEquals(entity.getContactOid(), dto.getContactOid());
+        assertEquals(entity.getWorkspaceOid(), dto.getWorkspaceOid());
+    }
+
+    @Test
+    public void testReceiptToDto() {
+        final Receipt entity = new Receipt()
+                        .setId("an id")
+                        .setOid("OID")
+                        .setNumber("Number")
+                        .setDate(LocalDate.now())
+                        .setCurrency("PEN")
+                        .setStatus(DocStatus.OPEN)
+                        .setCrossTotal(BigDecimal.TEN)
+                        .setNetTotal(BigDecimal.ONE)
+                        .setContactOid("ContactOid")
+                        .setWorkspaceOid("workspaceOid");
+
+        final PosReceiptDto dto = Converter.toDto(entity);
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getNumber(), dto.getNumber());
+        assertEquals(entity.getDate(), dto.getDate());
+        assertEquals(entity.getCurrency(), dto.getCurrency());
+        assertEquals(entity.getCrossTotal(), dto.getCrossTotal());
+        assertEquals(entity.getNetTotal(), dto.getNetTotal());
+        assertEquals(entity.getContactOid(), dto.getContactOid());
+        assertEquals(entity.getWorkspaceOid(), dto.getWorkspaceOid());
+    }
+
+    @Test
+    public void testTicketToTicketDto() {
+        final Ticket entity = new Ticket()
+                        .setId("an id")
+                        .setOid("OID")
+                        .setNumber("Number")
+                        .setDate(LocalDate.now())
+                        .setCurrency("PEN")
+                        .setStatus(DocStatus.OPEN)
+                        .setCrossTotal(BigDecimal.TEN)
+                        .setNetTotal(BigDecimal.ONE)
+                        .setContactOid("ContactOid")
+                        .setWorkspaceOid("workspaceOid");
+
+        final TicketDto dto = Converter.toTicketDto(entity);
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getNumber(), dto.getNumber());
+        assertEquals(entity.getDate(), dto.getDate());
+        assertEquals(entity.getCurrency(), dto.getCurrency());
+        assertEquals(entity.getCrossTotal(), dto.getCrossTotal());
+        assertEquals(entity.getNetTotal(), dto.getNetTotal());
+        assertEquals(entity.getContactOid(), dto.getContactOid());
+        assertEquals(entity.getWorkspaceOid(), dto.getWorkspaceOid());
+    }
+
+    @Test
+    public void testTicketToDto() {
+        final Ticket entity = new Ticket()
+                        .setId("an id")
+                        .setOid("OID")
+                        .setNumber("Number")
+                        .setDate(LocalDate.now())
+                        .setCurrency("PEN")
+                        .setStatus(DocStatus.OPEN)
+                        .setCrossTotal(BigDecimal.TEN)
+                        .setNetTotal(BigDecimal.ONE)
+                        .setContactOid("ContactOid")
+                        .setWorkspaceOid("workspaceOid");
+
+        final PosTicketDto dto = Converter.toDto(entity);
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getNumber(), dto.getNumber());
+        assertEquals(entity.getDate(), dto.getDate());
+        assertEquals(entity.getCurrency(), dto.getCurrency());
+        assertEquals(entity.getCrossTotal(), dto.getCrossTotal());
+        assertEquals(entity.getNetTotal(), dto.getNetTotal());
+        assertEquals(entity.getContactOid(), dto.getContactOid());
+        assertEquals(entity.getWorkspaceOid(), dto.getWorkspaceOid());
+    }
+
+    @Test
+    public void testPosToEntity() {
+        final PosDto dto = PosDto.builder()
+                        .withOID("1651.1651")
+                        .withName("A name")
+                        .withCurrency("PEN")
+                        .withDefaultContactOid("998.15")
+                        .withReceiptSeqOid("3998.15")
+                        .withInvoiceSeqOid("29d98.15")
+                        .withTicketSeqOid("1998.15")
+                        .withCompany(CompanyDto.builder().build())
+                        .build();
+        final Pos entity = Converter.toEntity(dto);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getName(), dto.getName());
+        assertEquals(entity.getCurrency(), dto.getCurrency());
+        assertEquals(entity.getDefaultContactOid(), dto.getDefaultContactOid());
+        assertEquals(entity.getReceiptSeqOid(), dto.getReceiptSeqOid());
+        assertEquals(entity.getInvoiceSeqOid(), dto.getInvoiceSeqOid());
+        assertEquals(entity.getTicketSeqOid(), dto.getTicketSeqOid());
+        assertNotNull(dto.getCompany());
     }
 }
