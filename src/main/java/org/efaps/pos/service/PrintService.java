@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.efaps.pos.dto.PrintResponseDto;
 import org.efaps.pos.dto.PrinterType;
@@ -57,22 +58,29 @@ public class PrintService
         this.printerRepository = _printerRepository;
     }
 
-    public byte[] print(final Object _object, final String _reportOid) {
+    public byte[] print(final Object _object, final String _reportOid, final Map<String, Object> _parameters)
+    {
         byte[] ret = null;
         try {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Creating report for {}", this.jacksonObjectMapper.writeValueAsString(_object));
+            }
             ret = print(new ByteArrayInputStream(this.jacksonObjectMapper.writeValueAsBytes(_object)),
-                        this.gridFsService.getContent(_reportOid));
+                            this.gridFsService.getContent(_reportOid), _parameters);
         } catch (final IllegalStateException | IOException e) {
             LOG.error("Catched", e);
         }
         return ret;
     }
 
-    public byte[] print(final InputStream _json, final InputStream _report)
+    public byte[] print(final InputStream _json, final InputStream _report, final Map<String, Object> _parameters)
     {
         byte[] ret = null;
         try {
             final Map<String, Object> parameters = new HashMap<>();
+            if (MapUtils.isNotEmpty(_parameters)) {
+                parameters.putAll(_parameters);
+            }
             final JsonDataSource datasource = new JsonDataSource(_json);
             final JasperPrint jasperPrint = JasperFillManager.fillReport(_report, parameters,
                             datasource);
@@ -91,8 +99,10 @@ public class PrintService
         Optional<PrintResponseDto> ret;
         final Optional<Printer> printerOpt = this.printerRepository.findById(_job.getPrinterOid());
         if (printerOpt.isPresent()) {
+            final Map<String, Object> parameters = new HashMap<>();
+            parameters.put("PRINTER", printerOpt.get().getName());
             if (printerOpt.get().getType().equals(PrinterType.PREVIEW)) {
-                 final byte[] data = print(_job, _job.getReportOid());
+                 final byte[] data = print(Converter.toDto(_job), _job.getReportOid(), parameters);
                  final String key = RandomStringUtils.randomAlphabetic(12);
                  CACHE.put(key, data);
                  ret = Optional.of(PrintResponseDto.builder()

@@ -1,37 +1,37 @@
 {
-    "oid": null,
-    "id": "5b07b509a56bf73958c22d3a",
-    "number": "00005",
+    "id": "5b2aee76dd375512f37ca0c3",
+    "documentId": "5b24a6e156e59b42dddc193f",
+    "documentNumber": "00024",
+    "spotNumber": "2",
     "items": [
         {
             "oid": null,
-            "index": 2,
-            "productOid": "7947.6",
+            "index": 5,
+            "productOid": "7947.69",
             "quantity": 1,
-            "netUnitPrice": 2.3,
-            "crossUnitPrice": 2.714,
-            "netPrice": 2.3,
-            "crossPrice": 2.714,
+            "netUnitPrice": 14,
+            "crossUnitPrice": 16.52,
+            "netPrice": 14,
+            "crossPrice": 16.52,
             "taxes": [
                 {
                     "tax": {
                         "oid": "13412.2",
-                        "name": "I.G.V.",
+                        "name": "IGV",
                         "percent": 18
                     },
-                    "amount": 0.414
+                    "amount": 2.52
                 }
             ],
             "product": {
-                "oid": "7947.6",
-                "sku": "2513",
-                "description": "Lapicero Tinta Roja",
-                "imageOid": "7892.6",
-                "netPrice": 2.3000,
-                "crossPrice": 2.71400000000000000000,
+                "oid": "7947.69",
+                "sku": "7770103.005",
+                "description": "Tequila",
+                "imageOid": "7892.124",
+                "netPrice": 14.0000,
+                "crossPrice": 16.52000000000000000000,
                 "categoryOids": [
-                    "58079.3",
-                    "58079.2"
+                    "58079.9"
                 ],
                 "taxes": [
                     {
@@ -42,74 +42,9 @@
                 ],
                 "uoM": null
             },
-            "description": "Lapicero Tinta Roja",
-            "sku": "2513",
-            "uoM": null
-        },
-        {
-            "oid": null,
-            "index": 1,
-            "productOid": "7947.6",
-            "quantity": 1,
-            "netUnitPrice": 2.3,
-            "crossUnitPrice": 2.714,
-            "netPrice": 2.3,
-            "crossPrice": 2.714,
-            "taxes": [
-                {
-                    "tax": {
-                        "oid": "13412.2",
-                        "name": "I.G.V.",
-                        "percent": 18
-                    },
-                    "amount": 0.414
-                }
-            ],
-            "product": {
-                "oid": "7947.6",
-                "sku": "2513",
-                "description": "Lapicero Tinta Roja",
-                "imageOid": "7892.6",
-                "netPrice": 2.3000,
-                "crossPrice": 2.71400000000000000000,
-                "categoryOids": [
-                    "58079.3",
-                    "58079.2"
-                ],
-                "taxes": [
-                    {
-                        "oid": "13412.2",
-                        "name": "IGV",
-                        "percent": 18.0000000000000000
-                    }
-                ],
-                "uoM": null
-            },
-            "description": "Lapicero Tinta Roja",
-            "sku": "2513",
+            "description": "Tequila",
+            "sku": "7770103.005",
             "uoM": null
         }
-    ],
-    "status": "OPEN",
-    "date": "2018-05-25",
-    "currency": "PEN",
-    "netTotal": 4.60,
-    "crossTotal": 5.43,
-    "taxes": [
-        {
-            "tax": {
-                "oid": "13412.2",
-                "name": "I.G.V.",
-                "percent": 18
-            },
-            "amount": 0.83
-        }
-    ],
-    "contactOid": null,
-    "posOid": null,
-    "spot": {
-        "id": "1",
-        "label": "M 2"
-    }
+    ]
 }
-

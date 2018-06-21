@@ -26,6 +26,9 @@ public class JobDto
 
     private final String id;
     private final String documentId;
+    private final String documentNumber;
+    private final String spotNumber;
+
     private final Set<PosDocItemDto> items;
 
     private JobDto(final Builder _builder)
@@ -33,6 +36,8 @@ public class JobDto
         this.id = _builder.id;
         this.documentId = _builder.documentId;
         this.items = _builder.items;
+        this.documentNumber = _builder.documentNumber;
+        this.spotNumber = _builder.spotNumber;
     }
 
     public String getId()
@@ -50,6 +55,16 @@ public class JobDto
         return this.items;
     }
 
+    public String getDocumentNumber()
+    {
+        return this.documentNumber;
+    }
+
+    public String getSpotNumber()
+    {
+        return this.spotNumber;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -60,6 +75,8 @@ public class JobDto
 
         private String id;
         private String documentId;
+        private String documentNumber;
+        private String spotNumber;
         private Set<PosDocItemDto> items;
 
         public Builder withId(final String _id)
@@ -74,7 +91,19 @@ public class JobDto
             return this;
         }
 
-        public Builder withItems(final  Set<PosDocItemDto> _items)
+        public Builder withDocumentNumber(final String _documentNumber)
+        {
+            this.documentNumber = _documentNumber;
+            return this;
+        }
+
+        public Builder withSpotNumber(final String _spotNumber)
+        {
+            this.spotNumber = _spotNumber;
+            return this;
+        }
+
+        public Builder withItems(final Set<PosDocItemDto> _items)
         {
             this.items = _items;
             return this;

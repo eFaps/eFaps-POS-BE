@@ -70,6 +70,7 @@ import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.PrintCmd;
+import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.service.ProductService;
 import org.springframework.stereotype.Component;
@@ -81,14 +82,16 @@ public final class Converter
 
     private final ProductService productService;
     private final InventoryService inventoryService;
-
+    private final DocumentService documentService;
 
     public Converter(final ProductService _productService,
-                     final InventoryService _inventoryService)
+                     final InventoryService _inventoryService,
+                     final DocumentService _documentService)
     {
         INSTANCE = this;
         this.productService = _productService;
         this.inventoryService = _inventoryService;
+        this.documentService = _documentService;
     }
 
     public static Receipt toEntity(final PosReceiptDto _dto)
@@ -751,8 +754,11 @@ public final class Converter
     }
 
     public static JobDto toDto(final Job _entity) {
+        final Order order = INSTANCE.documentService.getOrder(_entity.getDocumentId());
         return JobDto.builder()
                         .withDocumentId(_entity.getDocumentId())
+                        .withDocumentNumber(order.getNumber())
+                        .withSpotNumber(order.getSpot() == null ? null : order.getSpot().getId())
                         .withId(_entity.getId())
                         .withItems(_entity.getItems() == null
                             ?  Collections.emptySet()
