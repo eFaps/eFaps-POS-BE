@@ -74,6 +74,18 @@ public class DocumentServiceTest
     }
 
     @Test
+    public void testGetOrder()
+    {
+        final Order order = new Order().setOid("1.2");
+        this.mongoTemplate.save(new Order().setOid("1.1"));
+        this.mongoTemplate.save(order);
+        this.mongoTemplate.save(new Order().setOid("1.3"));
+
+        final Order recievedOrder = this.documentService.getOrder(order.getId());
+        assertEquals("1.2", recievedOrder.getOid());
+    }
+
+    @Test
     public void testGetOrders()
     {
         this.mongoTemplate.save(new Order().setOid("1.1"));
