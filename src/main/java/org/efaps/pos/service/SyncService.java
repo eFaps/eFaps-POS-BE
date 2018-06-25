@@ -341,6 +341,7 @@ public class SyncService
         final List<Product> products = this.productRepository.findAll();
         for (final Product product : products) {
             if (product.getImageOid() != null) {
+                LOG.debug("Syncing Image {}", product.getImageOid());
                 final Checkout checkout = this.eFapsClient.checkout(product.getImageOid());
                 if (checkout != null) {
                     this.gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(product.getImageOid())));
@@ -366,6 +367,7 @@ public class SyncService
             .collect(Collectors.toSet());
 
         for (final String reportOid : reportOids) {
+            LOG.debug("Syncing Report {}", reportOid);
             final Checkout checkout = this.eFapsClient.checkout(reportOid);
             if (checkout != null) {
                 this.gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(reportOid)));
