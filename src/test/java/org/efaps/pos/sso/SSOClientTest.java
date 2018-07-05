@@ -54,12 +54,16 @@ public class SSOClientTest
     @Test
     public void testClient() {
         final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        this.config.getSso().getPostValues().forEach((key, value) -> {
-            map.add(key, value);
-        });
+        map.set("client_id", this.config.getSso().getClientId());
+        map.set("client_secret", this.config.getSso().getClientSecret());
+        map.set("grant_type", "password");
+        map.set("username", this.config.getSso().getUsername());
+        map.set("password", this.config.getSso().getPassword());
+
         this.server.expect(requestTo("http://my.sso.com/pe"))
             .andExpect(content().formData(map))
-            .andRespond(withSuccess("{ \"access_token\": \"sometokenstuff\", \"expires_in\": 100 }",
+            .andRespond(withSuccess("{ \"access_token\": \"sometokenstuff\", \"expires_in\": 100 , "
+                            + "\"refresh_expires_in\": 1800 }",
                             MediaType.APPLICATION_JSON));
         this.client.login();
         this.server.verify();

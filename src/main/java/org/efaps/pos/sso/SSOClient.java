@@ -19,6 +19,7 @@ package org.efaps.pos.sso;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.ConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,10 @@ public class SSOClient
     private static final Logger LOG = LoggerFactory.getLogger(SSOClient.class);
     private final ConfigProperties config;
     private final RestTemplate restTemplate;
-    private String token;
-    private LocalDateTime expires;
+    private String accessToken;
+    private String refreshToken;
+    private LocalDateTime accessTokenExpires;
+    private LocalDateTime refreshTokenExpires;
 
     @Autowired
     public SSOClient(final ConfigProperties _config,
@@ -58,24 +61,40 @@ public class SSOClient
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        this.config.getSso().getPostValues().forEach((key, value) -> {
-            map.add(key, value);
-        });
+        map.set("client_id", this.config.getSso().getClientId());
+        if (StringUtils.isNotEmpty(this.config.getSso().getClientSecret())) {
+            map.set("client_secret", this.config.getSso().getClientSecret());
+        }
+        if (this.refreshToken == null || !LocalDateTime.now().isBefore(this.refreshTokenExpires)) {
+            LOG.debug("  Using Username/Password");
+            map.set("grant_type", "password");
+            map.set("username", this.config.getSso().getUsername());
+            map.set("password", this.config.getSso().getPassword());
+        } else {
+            LOG.debug("  Using RefreshToken");
+            map.set("grant_type", "refresh_token");
+            map.set("refresh_token", this.refreshToken);
+        }
 
         final HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
         final ResponseEntity<Map> response = this.restTemplate.postForEntity(this.config.getSso().getUrl(), request,
                         Map.class);
-        this.token = (String) response.getBody().get("access_token");
+        this.accessToken = (String) response.getBody().get("access_token");
+        this.refreshToken = (String) response.getBody().get("refresh_token");
+
         final Integer expiresIn = (Integer) response.getBody().get("expires_in");
-        this.expires = LocalDateTime.now().plusSeconds(expiresIn - 10);
+        final Integer refreshExpiresIn = (Integer) response.getBody().get("refresh_expires_in");
+
+        this.accessTokenExpires = LocalDateTime.now().plusSeconds(expiresIn - 10);
+        this.refreshTokenExpires = LocalDateTime.now().plusSeconds(refreshExpiresIn - 10);
     }
 
     public String getToken()
     {
-        if (this.expires == null || !LocalDateTime.now().isBefore(this.expires)) {
+        if (this.accessTokenExpires == null || !LocalDateTime.now().isBefore(this.accessTokenExpires)) {
             login();
         }
-        return this.token;
+        return this.accessToken;
     }
 }

@@ -18,8 +18,6 @@
 package org.efaps.pos;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -265,7 +263,10 @@ public class ConfigProperties
     {
 
         private String url;
-        private final Map<String, String> postValues = new HashMap<>();
+        private String clientId;
+        private String clientSecret;
+        private String username;
+        private String password;
 
         public String getUrl()
         {
@@ -277,9 +278,45 @@ public class ConfigProperties
             this.url = _url;
         }
 
-        public Map<String, String> getPostValues()
+        public String getClientId()
         {
-            return this.postValues;
+            return this.clientId;
         }
+
+        public void setClientId(final String _clientId)
+        {
+            this.clientId = _clientId;
+        }
+
+        public String getClientSecret()
+        {
+            return this.clientSecret;
+        }
+
+        public void setClientSecret(final String _clientSecret)
+        {
+            this.clientSecret = _clientSecret;
+        }
+
+        public String getUsername()
+        {
+            return this.username;
+        }
+
+        public void setUsername(final String _username)
+        {
+            this.username = _username;
+        }
+
+        public String getPassword()
+        {
+            return this.password;
+        }
+
+        public void setPassword(final String _password)
+        {
+            this.password = _password;
+        }
+
     }
 }
