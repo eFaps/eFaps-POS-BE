@@ -16,11 +16,13 @@
  */
 package org.efaps.pos.respository;
 
+import java.util.List;
+
 import org.efaps.pos.entity.Product;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ProductRepository
     extends MongoRepository<Product, String>
 {
-
+    List<Product> findByDescriptionLikeIgnoreCase(String _term);
 }

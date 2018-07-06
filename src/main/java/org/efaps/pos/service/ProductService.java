@@ -46,4 +46,9 @@ public class ProductService
     {
         return _oid == null ? null : this.productRepository.findById(_oid).orElse(null);
     }
+
+    public List<Product> findProducts(final String _term)
+    {
+        return this.productRepository.findByDescriptionLikeIgnoreCase(_term);
+    }
 }

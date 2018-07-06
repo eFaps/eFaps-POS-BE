@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -52,5 +53,12 @@ public class ProductController
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "{productOid}")
     public ProductDto getProduct(@PathVariable(name = "productOid") final String _productOid) {
         return Converter.toDto(this.service.getProduct(_productOid));
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
+    public List<ProductDto> findProducts(@RequestParam(name = "term") final String _term) {
+        return this.service.findProducts(_term).stream()
+                        .map(product -> Converter.toDto(product))
+                        .collect(Collectors.toList());
     }
 }
