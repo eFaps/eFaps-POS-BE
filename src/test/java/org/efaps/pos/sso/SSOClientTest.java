@@ -35,8 +35,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = { "sso.url=http://my.sso.com/pe", "sso.postValues.client_id: ${random.value}",
-                "sso.postValues.username: ${random.value}" })
+@SpringBootTest(properties = { "sso.url=http://my.sso.com/pe",
+                "sso.client_id: ${random.value}",
+                "sso.client_secret: ${random.value}",
+                "sso.username: ${random.value}",
+                "sso.password: ${random.value}"})
 @AutoConfigureMockMvc
 @AutoConfigureMockRestServiceServer
 @ActiveProfiles(profiles = "test")
