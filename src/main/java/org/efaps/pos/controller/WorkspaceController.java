@@ -49,7 +49,7 @@ public class WorkspaceController
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<WorkspaceDto> getWorkspaces(final Authentication _authentication) {
         return this.service.getWorkspaces((User) _authentication.getPrincipal()).stream()
-                        .map(product -> Converter.toDto(product))
+                        .map(ws -> Converter.toDto(ws))
                         .collect(Collectors.toList());
     }
 

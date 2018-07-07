@@ -38,6 +38,7 @@ import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosInventoryEntryDto;
 import org.efaps.pos.dto.PosInvoiceDto;
+import org.efaps.pos.dto.PosLayout;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
@@ -167,13 +168,15 @@ public class ConverterTest
                         .setOid("165165.14651")
                         .setName("Caja 1")
                         .setPosOid("9999.514651")
-                        .setWarehouseOid("6542.36");
+                        .setWarehouseOid("6542.36")
+                        .setPosLayout(PosLayout.GRID);
 
         final WorkspaceDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getName(), dto.getName());
         assertEquals(entity.getPosOid(), dto.getPosOid());
         assertEquals(entity.getWarehouseOid(), dto.getWarehouseOid());
+        assertEquals(entity.getPosLayout(), dto.getPosLayout());
     }
 
     @Test
@@ -514,6 +517,7 @@ public class ConverterTest
                         .withPosOid("123.4")
                         .withSpotConfig(SpotConfig.BASIC)
                         .withWarehouseOid("1235.6")
+                        .withPosLayout(PosLayout.BOTH)
                         .build();
         final Workspace entity = Converter.toEntity(dto);
         assertEquals(dto.getOid(), entity.getOid());
@@ -522,6 +526,7 @@ public class ConverterTest
         assertEquals(dto.getPosOid(), entity.getPosOid());
         assertEquals(dto.getSpotConfig(), entity.getSpotConfig());
         assertEquals(dto.getWarehouseOid(), entity.getWarehouseOid());
+        assertEquals(dto.getPosLayout(), entity.getPosLayout());
     }
 
     @Test

@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.PosLayout;
 import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.dto.SpotConfig;
 import org.springframework.data.annotation.Id;
@@ -49,6 +50,8 @@ public class Workspace
     private Set<PrintCmd> printCmds;
 
     private Integer spotCount;
+
+    private PosLayout posLayout;
 
     public String getOid()
     {
@@ -139,6 +142,17 @@ public class Workspace
         return this;
     }
 
+    public PosLayout getPosLayout()
+    {
+        return this.posLayout;
+    }
+
+    public Workspace setPosLayout(final PosLayout _posLayout)
+    {
+        this.posLayout = _posLayout;
+        return this;
+    }
+
     @Override
     public String toString()
     {
@@ -197,4 +211,5 @@ public class Workspace
             return this;
         }
     }
+
 }

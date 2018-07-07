@@ -306,6 +306,7 @@ public final class Converter
                             : _entity.getPrintCmds().stream()
                                 .map(cmd -> Converter.toDto(cmd))
                                 .collect(Collectors.toSet()))
+                        .withPosLayout(_entity.getPosLayout())
                         .build();
     }
 
@@ -323,7 +324,8 @@ public final class Converter
                             ? null
                             : _dto.getPrintCmds().stream()
                                     .map(cmd -> Converter.toEntity(cmd))
-                                    .collect(Collectors.toSet()));
+                                    .collect(Collectors.toSet()))
+                        .setPosLayout(_dto.getPosLayout());
     }
 
     public static PosDto toDto(final Pos _entity)
