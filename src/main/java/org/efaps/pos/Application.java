@@ -66,7 +66,7 @@ public class Application
         };
     }
 
-    @Bean(name = "receiptListeners")
+    //@Bean(name = "receiptListeners")
     public ServiceListFactoryBean receiptListeners()
     {
         final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();

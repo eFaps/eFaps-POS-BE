@@ -19,6 +19,7 @@ package org.efaps.pos.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,8 +49,6 @@ import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
 import org.springframework.stereotype.Service;
 
 
@@ -58,9 +57,6 @@ public class DocumentService
 {
     private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
 
-    private final ServiceListFactoryBean receiptListeners;
-    private final ServiceListFactoryBean invoiceListeners;
-    private final ServiceListFactoryBean ticketListeners;
     private final PosService posService;
     private final SequenceService sequenceService;
     private final ContactService contactService;
@@ -68,19 +64,19 @@ public class DocumentService
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
     private final TicketRepository ticketRepository;
+    private final List<IReceiptListener> receiptListeners;
+    private final List<IInvoiceListener> invoiceListeners;
+    private final List<ITicketListener> ticketListeners;
 
     @Autowired
-    public DocumentService(@Qualifier("receiptListeners") final ServiceListFactoryBean _receiptListeners,
-                           @Qualifier("invoiceListeners") final ServiceListFactoryBean _invoiceListeners,
-                           @Qualifier("ticketListeners") final ServiceListFactoryBean _ticketListeners,
-                           final PosService _posService, final SequenceService _sequenceService,
+    public DocumentService(final PosService _posService, final SequenceService _sequenceService,
                            final ContactService _contactService, final OrderRepository _orderRepository,
                            final ReceiptRepository _receiptRepository, final InvoiceRepository _invoiceRepository,
-                           final TicketRepository _ticketRepository)
+                           final TicketRepository _ticketRepository,
+                           final Optional<List<IReceiptListener>> _receiptListeners,
+                           final Optional<List<IInvoiceListener>> _invoiceListeners,
+                           final Optional<List<ITicketListener>> _ticketListeners)
     {
-        this.receiptListeners = _receiptListeners;
-        this.invoiceListeners = _invoiceListeners;
-        this.ticketListeners = _ticketListeners;
         this.posService = _posService;
         this.sequenceService = _sequenceService;
         this.orderRepository = _orderRepository;
@@ -88,6 +84,9 @@ public class DocumentService
         this.contactService = _contactService;
         this.invoiceRepository = _invoiceRepository;
         this.ticketRepository = _ticketRepository;
+        this.receiptListeners = _receiptListeners.isPresent() ? _receiptListeners.get() : Collections.emptyList();
+        this.invoiceListeners = _invoiceListeners.isPresent() ? _invoiceListeners.get() : Collections.emptyList();
+        this.ticketListeners = _ticketListeners.isPresent() ? _ticketListeners.get() : Collections.emptyList();
     }
 
     public Order getOrder(final String _orderid) {
@@ -146,11 +145,9 @@ public class DocumentService
         _receipt.setNumber(this.sequenceService.getNext(_workspaceOid, DocType.RECEIPT));
         Receipt ret = this.receiptRepository.insert(_receipt);
         try {
-            @SuppressWarnings("unchecked")
-            final List<IReceiptListener> listeners =  (List<IReceiptListener>) this.receiptListeners.getObject();
-            if (listeners != null) {
+            if (!this.receiptListeners.isEmpty()) {
                PosReceiptDto dto = Converter.toDto(ret);
-                for (final IReceiptListener listener  :listeners) {
+                for (final IReceiptListener listener : this.receiptListeners) {
                     dto = (PosReceiptDto) listener.onCreate(
                                     getPos(this.posService.getPos4Workspace(_workspaceOid)), dto);
                 }
@@ -168,11 +165,9 @@ public class DocumentService
         _invoice.setNumber(this.sequenceService.getNext(_workspaceOid, DocType.INVOICE));
         Invoice ret = this.invoiceRepository.insert(_invoice);
         try {
-            @SuppressWarnings("unchecked")
-            final List<IInvoiceListener> listeners = (List<IInvoiceListener>) this.invoiceListeners.getObject();
-            if (listeners != null) {
+            if (!this.invoiceListeners.isEmpty()) {
                 PosInvoiceDto dto = Converter.toDto(ret);
-                for (final IInvoiceListener listener : listeners) {
+                for (final IInvoiceListener listener : this.invoiceListeners) {
                     dto = (PosInvoiceDto) listener.onCreate(getPos(this.posService.getPos4Workspace(_workspaceOid)),
                                     dto);
                 }
@@ -190,11 +185,9 @@ public class DocumentService
         _ticket.setNumber(this.sequenceService.getNext(_workspaceOid, DocType.TICKET));
         Ticket ret = this.ticketRepository.insert(_ticket);
         try {
-            @SuppressWarnings("unchecked")
-            final List<ITicketListener> listeners = (List<ITicketListener>) this.ticketListeners.getObject();
-            if (listeners != null) {
+            if (!this.ticketListeners.isEmpty()) {
                 PosTicketDto dto = Converter.toDto(ret);
-                for (final ITicketListener listener : listeners) {
+                for (final ITicketListener listener : this.ticketListeners) {
                     dto = (PosTicketDto) listener.onCreate(getPos(this.posService.getPos4Workspace(_workspaceOid)),
                                     dto);
                 }
