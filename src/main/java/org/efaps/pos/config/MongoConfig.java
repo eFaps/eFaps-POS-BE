@@ -25,6 +25,6 @@ public class MongoConfig
 {
     @Autowired
     void setMapKeyDotReplacement(final MappingMongoConverter _mappingMongoConverter) {
-        _mappingMongoConverter.setMapKeyDotReplacement("\\.");
+        _mappingMongoConverter.setMapKeyDotReplacement("_xYz4P_");
     }
 }

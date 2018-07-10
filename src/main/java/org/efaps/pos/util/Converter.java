@@ -239,7 +239,8 @@ public final class Converter
                         .setTaxes(_dto.getTaxes().stream()
                                         .map(_tax -> _tax == null ? null : toEntity(_tax))
                                         .collect(Collectors.toSet()))
-                        .setUoM(_dto.getUoM());
+                        .setUoM(_dto.getUoM())
+                        .setUoMCode(_dto.getUoMCode());
         return ret;
     }
 
@@ -261,6 +262,7 @@ public final class Converter
                                         .map(_tax -> toDto(_tax))
                                         .collect(Collectors.toSet()))
                         .withUoM(_entity.getUoM())
+                        .withUoMCode(_entity.getUoMCode())
                         .build();
     }
 

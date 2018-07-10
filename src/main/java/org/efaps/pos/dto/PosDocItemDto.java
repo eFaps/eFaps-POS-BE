@@ -55,9 +55,9 @@ public class PosDocItemDto
     }
 
     @Override
-    public String getUoM()
+    public String getUoMCode()
     {
-        return  getProduct() == null ? "Missing Product" : getProduct().getUoM();
+        return  getProduct() == null ? "Missing Product" : getProduct().getUoMCode();
     }
 
     public static Builder builder()

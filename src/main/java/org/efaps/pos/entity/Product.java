@@ -39,6 +39,7 @@ public class Product
     private Set<String> categoryOids;
     private Set<Tax> taxes;
     private String uoM;
+    private String uoMCode;
 
     public String getOid()
     {
@@ -137,6 +138,17 @@ public class Product
     public Product setUoM(final String _uoM)
     {
         this.uoM = _uoM;
+        return this;
+    }
+
+    public String getUoMCode()
+    {
+        return this.uoMCode;
+    }
+
+    public Product setUoMCode(final String _uoMCode)
+    {
+        this.uoMCode = _uoMCode;
         return this;
     }
 
