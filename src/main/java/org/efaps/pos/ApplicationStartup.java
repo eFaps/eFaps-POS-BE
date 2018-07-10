@@ -63,6 +63,7 @@ public class ApplicationStartup
             this.service.syncWarehouses();
             this.service.syncInventory();
             this.service.syncPrinters();
+            this.service.syncProperties();
             this.service.syncImages();
             this.service.syncReports();
         }

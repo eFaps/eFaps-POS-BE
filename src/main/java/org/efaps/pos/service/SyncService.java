@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.Config;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
@@ -125,6 +127,14 @@ public class SyncService
         this.printerRepository = _printerRepository;
         this.workspaceRepository = _workspaceRepository;
         this.eFapsClient = _eFapsClient;
+    }
+
+    public void syncProperties()
+    {
+        LOG.info("Syncing Properties");
+        final Map<String, String> properties = this.eFapsClient.getProperties();
+        final Config config = new Config().setId(Config.KEY).setProperties(properties);
+        this.mongoTemplate.save(config);
     }
 
     public void syncProducts()

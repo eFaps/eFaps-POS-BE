@@ -32,6 +32,7 @@ import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
+import org.efaps.pos.entity.Config;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
@@ -49,6 +50,7 @@ import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 
@@ -68,15 +70,22 @@ public class DocumentService
     private final List<IInvoiceListener> invoiceListeners;
     private final List<ITicketListener> ticketListeners;
 
+    private final MongoTemplate mongoTemplate;
+
     @Autowired
-    public DocumentService(final PosService _posService, final SequenceService _sequenceService,
-                           final ContactService _contactService, final OrderRepository _orderRepository,
-                           final ReceiptRepository _receiptRepository, final InvoiceRepository _invoiceRepository,
+    public DocumentService(final MongoTemplate _mongoTemplate,
+                           final PosService _posService,
+                           final SequenceService _sequenceService,
+                           final ContactService _contactService,
+                           final OrderRepository _orderRepository,
+                           final ReceiptRepository _receiptRepository,
+                           final InvoiceRepository _invoiceRepository,
                            final TicketRepository _ticketRepository,
                            final Optional<List<IReceiptListener>> _receiptListeners,
                            final Optional<List<IInvoiceListener>> _invoiceListeners,
                            final Optional<List<ITicketListener>> _ticketListeners)
     {
+        this.mongoTemplate = _mongoTemplate;
         this.posService = _posService;
         this.sequenceService = _sequenceService;
         this.orderRepository = _orderRepository;
@@ -146,10 +155,11 @@ public class DocumentService
         Receipt ret = this.receiptRepository.insert(_receipt);
         try {
             if (!this.receiptListeners.isEmpty()) {
-               PosReceiptDto dto = Converter.toDto(ret);
+                final Config config = this.mongoTemplate.findById(Config.KEY, Config.class);
+                PosReceiptDto dto = Converter.toDto(ret);
                 for (final IReceiptListener listener : this.receiptListeners) {
-                    dto = (PosReceiptDto) listener.onCreate(
-                                    getPos(this.posService.getPos4Workspace(_workspaceOid)), dto);
+                    dto = (PosReceiptDto) listener.onCreate(getPos(this.posService.getPos4Workspace(_workspaceOid)),
+                                    dto, config.getProperties());
                 }
                 ret = this.receiptRepository.save(Converter.toEntity(dto));
             }

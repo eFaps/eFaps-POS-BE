@@ -26,6 +26,8 @@ public class Tax
 
     private String oid;
 
+    private String key;
+
     private String name;
 
     private BigDecimal percent;
@@ -38,6 +40,17 @@ public class Tax
     public Tax setOid(final String _oid)
     {
         this.oid = _oid;
+        return this;
+    }
+
+    public String getKey()
+    {
+        return this.key;
+    }
+
+    public Tax setKey(final String _key)
+    {
+        this.key = _key;
         return this;
     }
 

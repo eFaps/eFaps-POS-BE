@@ -42,6 +42,7 @@ efaps:
   warehousePath: /servlet/rest/pos/warehouses
   inventoryPath: /servlet/rest/pos/inventory
   printerPath: /servlet/rest/pos/printers
+  configPath: /servlet/rest/config
 
 auth:
   user: Administrator

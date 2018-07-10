@@ -107,6 +107,7 @@ public class ConfigProperties
         private String warehousePath;
         private String inventoryPath;
         private String printerPath;
+        private String configPath;
 
         public URI getBaseUrl()
         {
@@ -256,6 +257,18 @@ public class ConfigProperties
         public void setPrinterPath(final String _printerPath)
         {
             this.printerPath = _printerPath;
+        }
+
+
+        public String getConfigPath()
+        {
+            return this.configPath;
+        }
+
+
+        public void setConfigPath(final String _configPath)
+        {
+            this.configPath = _configPath;
         }
     }
 

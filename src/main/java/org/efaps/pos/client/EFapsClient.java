@@ -20,7 +20,9 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.CategoryDto;
@@ -67,6 +69,21 @@ public class EFapsClient
         this.config = _config;
         this.restTemplate = _restTemplate;
         this.ssoClient = _ssoClient;
+    }
+
+    public Map<String, String> getProperties() {
+        Map<String, String> ret = new HashMap<>();
+        try {
+            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getConfigPath());
+            final ResponseEntity<Map<String, String>> response = this.restTemplate.exchange(requestEntity,
+                            new ParameterizedTypeReference<Map<String, String>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of properties", e);
+        }
+        return ret;
     }
 
     public List<ProductDto> getProducts()
