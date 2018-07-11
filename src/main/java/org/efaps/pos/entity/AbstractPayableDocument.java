@@ -23,6 +23,8 @@ public class AbstractPayableDocument<T>
     extends AbstractDocument<T>
 {
 
+    private String balanceOid;
+
     private Set<Payment> payments;
 
     public Set<Payment> getPayments()
@@ -34,6 +36,18 @@ public class AbstractPayableDocument<T>
     public T setPayments(final Set<Payment> _payments)
     {
         this.payments = _payments;
+        return (T) this;
+    }
+
+    public String getBalanceOid()
+    {
+        return this.balanceOid;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setBalanceOid(final String _balanceOid)
+    {
+        this.balanceOid = _balanceOid;
         return (T) this;
     }
 }

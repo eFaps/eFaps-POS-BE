@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.InventoryEntryDto;
@@ -243,6 +244,19 @@ public class EFapsClient
             ret = response.getBody();
         } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
+    public BalanceDto postBalance(final BalanceDto _balance)
+    {
+        BalanceDto ret = _balance;
+        try {
+            final RequestEntity<BalanceDto> requestEntity = post(this.config.getEFaps().getBalancePath(), _balance);
+            final ResponseEntity<BalanceDto> response = this.restTemplate.exchange(requestEntity, BalanceDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during post for Receipts", e);
         }
         return ret;
     }

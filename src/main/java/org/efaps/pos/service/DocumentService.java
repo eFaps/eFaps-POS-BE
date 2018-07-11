@@ -169,6 +169,11 @@ public class DocumentService
         return ret;
     }
 
+    public Collection<Receipt> getReceipts4Balance(final String _balanceOid)
+    {
+        return this.receiptRepository.findByBalanceOid(_balanceOid);
+    }
+
     public Invoice createInvoice(final String _workspaceOid, final Invoice _invoice)
     {
         validateContact(_workspaceOid, _invoice);

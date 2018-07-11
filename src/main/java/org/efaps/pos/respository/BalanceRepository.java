@@ -17,6 +17,7 @@
 
 package org.efaps.pos.respository;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import org.efaps.pos.dto.BalanceStatus;
@@ -27,4 +28,6 @@ public interface BalanceRepository
     extends MongoRepository<Balance, String>
 {
     Optional<Balance> findOneByUserOidAndStatus(String _userOid, BalanceStatus _status);
+
+    Collection<Balance> findByOidIsNull();
 }

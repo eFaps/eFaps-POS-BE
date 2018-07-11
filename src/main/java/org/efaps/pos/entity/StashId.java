@@ -32,7 +32,8 @@ public enum StashId
     PRINTERSYNC("org.efaps.pos.sync.Printer"),
     REPORTSYNC("org.efaps.pos.sync.Report"),
     WAREHOUSESYNC("org.efaps.pos.sync.Warehouse"),
-    WORKSPACESYNC("org.efaps.pos.sync.Workspace");
+    WORKSPACESYNC("org.efaps.pos.sync.Workspace"),
+    BALANCESYNC("org.efaps.pos.sync.Balance");;
 
     private final String key;
 

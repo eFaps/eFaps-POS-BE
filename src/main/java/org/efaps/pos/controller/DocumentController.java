@@ -17,6 +17,7 @@
 package org.efaps.pos.controller;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.Order;
+import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
@@ -100,5 +102,20 @@ public class DocumentController
         return orders.stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PosReceiptDto> getReceipts(@RequestParam(name = "balanceOid") final String _balanceOid)
+    {
+        final Collection<Receipt> receipts = this.documentService.getReceipts4Balance(_balanceOid);
+        return receipts.stream()
+                        .map(_order -> Converter.toDto(_order))
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PosInvoiceDto> getInvoices(@RequestParam(name = "balanceOid") final String _balanceOid)
+    {
+        return Collections.emptyList();
     }
 }

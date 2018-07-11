@@ -28,4 +28,6 @@ public interface ReceiptRepository
     Collection<Receipt> findByOidIsNull();
 
     Collection<Receipt> findByContactOid(String _contactOid);
+
+    Collection<Receipt> findByBalanceOid(String _balanceOid);
 }

@@ -108,6 +108,7 @@ public class ConfigProperties
         private String inventoryPath;
         private String printerPath;
         private String configPath;
+        private String balancePath;
 
         public URI getBaseUrl()
         {
@@ -259,16 +260,24 @@ public class ConfigProperties
             this.printerPath = _printerPath;
         }
 
-
         public String getConfigPath()
         {
             return this.configPath;
         }
 
-
         public void setConfigPath(final String _configPath)
         {
             this.configPath = _configPath;
+        }
+
+        public String getBalancePath()
+        {
+            return this.balancePath;
+        }
+
+        public void setBalancePath(final String _balancePath)
+        {
+            this.balancePath = _balancePath;
         }
     }
 

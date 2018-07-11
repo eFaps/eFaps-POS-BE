@@ -121,7 +121,8 @@ public final class Converter
                             ? null
                             : _dto.getPayments().stream()
                                 .map(_payment -> Converter.toEntity(_payment))
-                                .collect(Collectors.toSet()));
+                                .collect(Collectors.toSet()))
+                        .setBalanceOid(_dto.getBalanceOid());
     }
 
     public static Invoice toEntity(final PosInvoiceDto _dto)
@@ -149,7 +150,8 @@ public final class Converter
                             ? null
                             : _dto.getPayments().stream()
                                 .map(_payment -> Converter.toEntity(_payment))
-                                .collect(Collectors.toSet()));
+                                .collect(Collectors.toSet()))
+                        .setBalanceOid(_dto.getBalanceOid());
     }
 
     public static Ticket toEntity(final PosTicketDto _dto)
@@ -177,7 +179,8 @@ public final class Converter
                             ? null
                             : _dto.getPayments().stream()
                                 .map(_payment -> Converter.toEntity(_payment))
-                                .collect(Collectors.toSet()));
+                                .collect(Collectors.toSet()))
+                        .setBalanceOid(_dto.getBalanceOid());
     }
 
     public static Order toEntity(final PosOrderDto _dto)
@@ -541,6 +544,7 @@ public final class Converter
                             : _entity.getPayments().stream()
                                  .map(_item -> toDto(_item))
                                  .collect(Collectors.toSet()))
+                        .withBalanceOid(_entity.getBalanceOid())
                         .build();
     }
 
@@ -572,6 +576,7 @@ public final class Converter
                             : _entity.getPayments().stream()
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
+                        .withBalanceOid(_entity.getBalanceOid())
                         .build();
     }
 
@@ -603,6 +608,7 @@ public final class Converter
                             : _entity.getPayments().stream()
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
+                        .withBalanceOid(_entity.getBalanceOid())
                         .build();
     }
 
@@ -643,6 +649,7 @@ public final class Converter
                             : _entity.getPayments().stream()
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
+                        .withBalanceOid(_entity.getBalanceOid())
                         .build();
     }
 
@@ -673,6 +680,7 @@ public final class Converter
                             : _entity.getPayments().stream()
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
+                        .withBalanceOid(_entity.getBalanceOid())
                         .build();
     }
 
@@ -703,6 +711,7 @@ public final class Converter
                             : _entity.getPayments().stream()
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
+                        .withBalanceOid(_entity.getBalanceOid())
                         .build();
     }
 

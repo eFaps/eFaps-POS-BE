@@ -43,6 +43,7 @@ efaps:
   inventoryPath: /servlet/rest/pos/inventory
   printerPath: /servlet/rest/pos/printers
   configPath: /servlet/rest/config
+  balancePath: /servlet/rest/balance
 
 auth:
   user: Administrator
