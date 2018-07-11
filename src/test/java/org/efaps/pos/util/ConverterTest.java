@@ -23,6 +23,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 
+import org.efaps.pos.dto.BalanceDto;
+import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
@@ -60,6 +62,7 @@ import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument.Item;
+import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.InventoryEntry;
@@ -826,5 +829,46 @@ public class ConverterTest
         assertEquals(entity.getInvoiceSeqOid(), dto.getInvoiceSeqOid());
         assertEquals(entity.getTicketSeqOid(), dto.getTicketSeqOid());
         assertNotNull(dto.getCompany());
+    }
+
+    @Test
+    public void testBalanceToEntity() {
+        final BalanceDto dto = BalanceDto.builder()
+                        .withOID("5556.26")
+                        .withId("asimsddfsdfs")
+                        .withNumber("a number")
+                        .withUserOid("12369.99")
+                        .withEndAt(LocalDate.now())
+                        .withStartAt(LocalDate.now())
+                        .withStatus(BalanceStatus.OPEN)
+                        .build();
+        final Balance entity = Converter.toEntity(dto);
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getId(), entity.getId());
+        assertEquals(dto.getUserOid(), entity.getUserOid());
+        assertEquals(dto.getId(), entity.getId());
+        assertEquals(dto.getEndAt(), entity.getEndAt());
+        assertEquals(dto.getStartAt(), entity.getStartAt());
+        assertEquals(dto.getStatus(), entity.getStatus());
+    }
+
+    @Test
+    public void testBalanceToDto() {
+        final Balance entity = new Balance()
+                        .setOid("5556.26")
+                        .setId("asimsddfsdfs")
+                        .setNumber("a number")
+                        .setUserOid("1984.5161")
+                        .setEndAt(LocalDate.now())
+                        .setStartAt(LocalDate.now())
+                        .setStatus(BalanceStatus.CLOSED);
+        final BalanceDto dto = Converter.toDto(entity);
+        assertEquals(entity.getOid(), dto.getOid());
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getNumber(), dto.getNumber());
+        assertEquals(entity.getUserOid(), dto.getUserOid());
+        assertEquals(entity.getEndAt(), dto.getEndAt());
+        assertEquals(entity.getStartAt(), dto.getStartAt());
+        assertEquals(entity.getStatus(), dto.getStatus());
     }
 }

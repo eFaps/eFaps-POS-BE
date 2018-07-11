@@ -19,6 +19,7 @@ package org.efaps.pos.util;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
@@ -50,6 +51,7 @@ import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
+import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.InventoryEntry;
@@ -810,4 +812,28 @@ public final class Converter
                         .setReportOid(_dto.getReportOid());
 
     }
+
+    public static Balance toEntity(final BalanceDto _dto) {
+        return new Balance()
+                        .setOid(_dto.getOid())
+                        .setId(_dto.getId())
+                        .setNumber(_dto.getNumber())
+                        .setUserOid(_dto.getUserOid())
+                        .setStartAt(_dto.getStartAt())
+                        .setEndAt(_dto.getEndAt())
+                        .setStatus(_dto.getStatus());
+    }
+
+    public static BalanceDto toDto(final Balance _entity) {
+        return BalanceDto.builder()
+                        .withOID(_entity.getOid())
+                        .withId(_entity.getId())
+                        .withNumber(_entity.getNumber())
+                        .withUserOid(_entity.getUserOid())
+                        .withStartAt(_entity.getStartAt())
+                        .withEndAt(_entity.getEndAt())
+                        .withStatus(_entity.getStatus())
+                        .build();
+    }
+
 }
