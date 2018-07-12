@@ -55,4 +55,16 @@ public class BalanceService
         }
         return ret;
     }
+
+    public Balance update(final Balance _retrievedBalance) {
+        Balance ret = _retrievedBalance;
+        final Optional<Balance> balanceOpt = this.repository.findById(_retrievedBalance.getId());
+        if (balanceOpt.isPresent()) {
+            final Balance balance = balanceOpt.get();
+            balance.setStatus(BalanceStatus.CLOSED)
+                .setEndAt(LocalDateTime.now());
+            ret = this.repository.save(balance);
+        }
+        return ret;
+    }
 }

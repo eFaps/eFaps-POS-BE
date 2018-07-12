@@ -551,7 +551,6 @@ public class SyncService
     }
 
     private boolean isOid(final String _value) {
-
-        return _value.matches("^\\d+\\.\\d+$");
+        return _value != null && _value.matches("^\\d+\\.\\d+$");
     }
 }
