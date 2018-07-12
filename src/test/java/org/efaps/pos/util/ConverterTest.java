@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 import org.efaps.pos.dto.BalanceDto;
@@ -838,8 +839,8 @@ public class ConverterTest
                         .withId("asimsddfsdfs")
                         .withNumber("a number")
                         .withUserOid("12369.99")
-                        .withEndAt(LocalDate.now())
-                        .withStartAt(LocalDate.now())
+                        .withEndAt(LocalDateTime.now())
+                        .withStartAt(LocalDateTime.now())
                         .withStatus(BalanceStatus.OPEN)
                         .build();
         final Balance entity = Converter.toEntity(dto);
@@ -859,8 +860,8 @@ public class ConverterTest
                         .setId("asimsddfsdfs")
                         .setNumber("a number")
                         .setUserOid("1984.5161")
-                        .setEndAt(LocalDate.now())
-                        .setStartAt(LocalDate.now())
+                        .setEndAt(LocalDateTime.now())
+                        .setStartAt(LocalDateTime.now())
                         .setStatus(BalanceStatus.CLOSED);
         final BalanceDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());

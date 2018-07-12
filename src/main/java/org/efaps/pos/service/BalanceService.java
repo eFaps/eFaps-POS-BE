@@ -17,7 +17,7 @@
 
 package org.efaps.pos.service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.efaps.pos.dto.BalanceStatus;
@@ -45,7 +45,7 @@ public class BalanceService
         if (!balanceOpt.isPresent() && _createNew) {
             final String number = this.sequenceService.getNextNumber("Balance", false);
             final Balance balance = new Balance()
-                            .setStartAt(LocalDate.now())
+                            .setStartAt(LocalDateTime.now())
                             .setUserOid(_principal.getOid())
                             .setStatus(BalanceStatus.OPEN)
                             .setNumber(number);

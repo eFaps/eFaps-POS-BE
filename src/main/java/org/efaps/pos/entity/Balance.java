@@ -17,7 +17,7 @@
 
 package org.efaps.pos.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.BalanceStatus;
@@ -33,8 +33,8 @@ public class Balance
     private String oid;
     private String number;
     private String userOid;
-    private LocalDate startAt;
-    private LocalDate endAt;
+    private LocalDateTime startAt;
+    private LocalDateTime endAt;
     private BalanceStatus status;
 
     public String getId()
@@ -70,23 +70,23 @@ public class Balance
         return this;
     }
 
-    public LocalDate getStartAt()
+    public LocalDateTime getStartAt()
     {
         return this.startAt;
     }
 
-    public Balance setStartAt(final LocalDate _startAt)
+    public Balance setStartAt(final LocalDateTime _startAt)
     {
         this.startAt = _startAt;
         return this;
     }
 
-    public LocalDate getEndAt()
+    public LocalDateTime getEndAt()
     {
         return this.endAt;
     }
 
-    public Balance setEndAt(final LocalDate _endAt)
+    public Balance setEndAt(final LocalDateTime _endAt)
     {
         this.endAt = _endAt;
         return this;

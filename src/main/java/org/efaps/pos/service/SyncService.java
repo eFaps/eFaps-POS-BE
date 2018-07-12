@@ -38,6 +38,7 @@ import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.TicketDto;
+import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Config;
@@ -298,31 +299,33 @@ public class SyncService
     public void syncReceipts()
     {
         LOG.info("Syncing Receipts");
-        final Collection<ReceiptDto> tosync = this.receiptRepository.findByOidIsNull().stream()
-                        .map(receipt -> Converter.toReceiptDto(receipt))
-                        .collect(Collectors.toList());
-        boolean triggerBalanceSync = false;
-        for (final ReceiptDto dto : tosync) {
-            if (validateContact(dto)) {
-                if (isOid(dto.getBalanceOid())) {
-                    LOG.debug("Syncing Receipt: {}", dto);
-                    final ReceiptDto recDto = this.eFapsClient.postReceipt(dto);
-                    LOG.debug("received Receipt: {}", recDto);
-                    if (recDto.getOid() != null) {
-                        final Optional<Receipt> receiptOpt = this.receiptRepository.findById(recDto.getId());
-                        if (receiptOpt.isPresent()) {
-                            final Receipt receipt = receiptOpt.get();
-                            receipt.setOid(recDto.getOid());
+        final Collection<Receipt> tosync = this.receiptRepository.findByOidIsNull();
+        for (final Receipt receipt : tosync) {
+            if (validateContact(receipt)) {
+                if (!isOid(receipt.getBalanceOid())) {
+                    final Optional<Balance> balanceOpt = this.balanceRepository.findById(receipt.getBalanceOid());
+                    if (balanceOpt.isPresent()) {
+                        final Balance balance = balanceOpt.get();
+                        if (isOid(balance.getOid())) {
+                            receipt.setBalanceOid(balance.getOid());
                             this.receiptRepository.save(receipt);
+                        } else {
+                            syncBalance();
                         }
                     }
-                } else {
-                    triggerBalanceSync = true;
+                }
+                LOG.debug("Syncing Receipt: {}", receipt);
+                final ReceiptDto recDto = this.eFapsClient.postReceipt(Converter.toReceiptDto(receipt));
+                LOG.debug("received Receipt: {}", recDto);
+                if (recDto.getOid() != null) {
+                    final Optional<Receipt> receiptOpt = this.receiptRepository.findById(recDto.getId());
+                    if (receiptOpt.isPresent()) {
+                        final Receipt retReceipt = receiptOpt.get();
+                        retReceipt.setOid(recDto.getOid());
+                        this.receiptRepository.save(retReceipt);
+                    }
                 }
             }
-        }
-        if (triggerBalanceSync) {
-            syncBalance();
         }
         registerSync(StashId.RECEIPTSYNC);
     }
@@ -394,6 +397,11 @@ public class SyncService
     private boolean validateContact(final AbstractPayableDocumentDto _dto)
     {
         return this.contactRepository.findOneByOid(_dto.getContactOid()).isPresent();
+    }
+
+    private boolean validateContact(final AbstractPayableDocument<?> _entity)
+    {
+        return this.contactRepository.findOneByOid(_entity.getContactOid()).isPresent();
     }
 
     public void syncImages()
@@ -543,6 +551,7 @@ public class SyncService
     }
 
     private boolean isOid(final String _value) {
-        return false;
+
+        return _value.matches("^\\d+\\.\\d+$");
     }
 }
