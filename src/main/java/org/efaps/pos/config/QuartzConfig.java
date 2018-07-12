@@ -23,15 +23,15 @@ public class QuartzConfig
     @Value("${org.quartz.threadPool.threadCount}")
     private Integer threatCount;
 
-    /** The threat count. */
+    /** The sync interval for receipts. */
     @Value("${org.quartz.jobs.syncReceipts.interval}")
     private Integer syncReceiptsInterval;
 
-    /** The threat count. */
+    /** The sync interval for receipts. */
     @Value("${org.quartz.jobs.syncInvoices.interval}")
     private Integer syncInvoicesInterval;
 
-    /** The threat count. */
+    /** The sync interval for receipts. */
     @Value("${org.quartz.jobs.syncTickets.interval}")
     private Integer syncTicketsInterval;
 
