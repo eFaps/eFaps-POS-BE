@@ -500,7 +500,7 @@ public class SyncServiceTest
         assertNull(checkReceipt2.getOid());
     }
 
-    //@Test
+    @Test
     public void testSyncReceipts()
         throws JsonProcessingException
     {
@@ -510,7 +510,9 @@ public class SyncServiceTest
         final Receipt receipt1 = new Receipt()
                         .setOid("5586.1650");
         this.mongoTemplate.save(receipt1);
-        final Receipt receipt2 = new Receipt().setContactOid(contact.getOid());
+        final Receipt receipt2 = new Receipt()
+                        .setContactOid(contact.getOid())
+                        .setBalanceOid("123.456");;
         this.mongoTemplate.save(receipt2);
 
         final ReceiptDto responseDto = ReceiptDto.builder()
@@ -543,7 +545,7 @@ public class SyncServiceTest
         assertNull(checkInvoice2.getOid());
     }
 
-    //@Test
+    @Test
     public void testSyncInvoices()
         throws JsonProcessingException
     {
@@ -553,7 +555,9 @@ public class SyncServiceTest
         final Invoice invoice1 = new Invoice()
                         .setOid("5586.1650");
         this.mongoTemplate.save(invoice1);
-        final Invoice invoice2 = new Invoice().setContactOid(contact.getOid());
+        final Invoice invoice2 = new Invoice()
+                        .setContactOid(contact.getOid())
+                        .setBalanceOid("123.456");;
         this.mongoTemplate.save(invoice2);
 
         final InvoiceDto responseDto = InvoiceDto.builder()
@@ -594,14 +598,18 @@ public class SyncServiceTest
         final Contact contact = new Contact().setOid("123.456");
         this.mongoTemplate.save(contact);
         final Ticket ticket1 = new Ticket()
-                        .setOid("5586.1650");
+                        .setOid("5586.1650")
+                        .setBalanceOid("123.456");
         this.mongoTemplate.save(ticket1);
-        final Ticket ticket2 = new Ticket().setContactOid(contact.getOid());
+        final Ticket ticket2 = new Ticket()
+                        .setContactOid(contact.getOid())
+                        .setBalanceOid("123.456");
         this.mongoTemplate.save(ticket2);
 
         final TicketDto responseDto = TicketDto.builder()
                         .withId(ticket2.getId())
                         .withOID("5555.6666")
+                        .withBalanceOid("123.456")
                         .build();
 
         this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/tickets"))
