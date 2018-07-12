@@ -169,11 +169,6 @@ public class DocumentService
         return ret;
     }
 
-    public Collection<Receipt> getReceipts4Balance(final String _balanceOid)
-    {
-        return this.receiptRepository.findByBalanceOid(_balanceOid);
-    }
-
     public Invoice createInvoice(final String _workspaceOid, final Invoice _invoice)
     {
         validateContact(_workspaceOid, _invoice);
@@ -212,6 +207,21 @@ public class DocumentService
             LOG.error("Wow that should not happen", e);
         }
         return ret;
+    }
+
+    public Collection<Receipt> getReceipts4Balance(final String _balanceOid)
+    {
+        return this.receiptRepository.findByBalanceOid(_balanceOid);
+    }
+
+    public Collection<Invoice> getInvoices4Balance(final String _balanceOid)
+    {
+        return this.invoiceRepository.findByBalanceOid(_balanceOid);
+    }
+
+    public Collection<Ticket> getTickets4Balance(final String _balanceOid)
+    {
+        return this.ticketRepository.findByBalanceOid(_balanceOid);
     }
 
     private void validateContact(final String _workspaceOid, final AbstractDocument<?> _document)

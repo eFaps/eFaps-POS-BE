@@ -28,4 +28,6 @@ public interface TicketRepository
     Collection<Ticket> findByOidIsNull();
 
     Collection<Ticket> findByContactOid(String _contactOid);
+
+    Collection<Ticket> findByBalanceOid(String _balanceOid);
 }

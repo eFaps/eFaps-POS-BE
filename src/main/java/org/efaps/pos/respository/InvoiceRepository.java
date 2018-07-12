@@ -28,4 +28,6 @@ public interface InvoiceRepository
     Collection<Invoice> findByOidIsNull();
 
     Collection<Invoice> findByContactOid(String _contactOid);
+
+    Collection<Invoice> findByBalanceOid(String _balanceOid);
 }

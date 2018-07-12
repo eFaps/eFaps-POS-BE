@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.pos.dto.DocStatus;
 import org.springframework.data.annotation.Id;
 
@@ -183,6 +184,11 @@ public abstract class AbstractDocument<T>
     {
         this.workspaceOid = _workspaceOid;
         return (T) this;
+    }
+
+    @Override
+    public String toString() {
+       return ToStringBuilder.reflectionToString(this);
     }
 
     public static class Item
