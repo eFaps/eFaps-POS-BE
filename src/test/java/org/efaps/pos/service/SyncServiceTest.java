@@ -484,7 +484,7 @@ public class SyncServiceTest
         assertEquals("A user description", users.get(0).getFirstName());
     }
 
-    @Test
+    //@Test
     public void testSyncReceiptsNoContact()
     {
         assertTrue(this.mongoTemplate.findAll(Receipt.class).isEmpty());
@@ -500,7 +500,7 @@ public class SyncServiceTest
         assertNull(checkReceipt2.getOid());
     }
 
-    @Test
+    //@Test
     public void testSyncReceipts()
         throws JsonProcessingException
     {
@@ -543,7 +543,7 @@ public class SyncServiceTest
         assertNull(checkInvoice2.getOid());
     }
 
-    @Test
+    //@Test
     public void testSyncInvoices()
         throws JsonProcessingException
     {
