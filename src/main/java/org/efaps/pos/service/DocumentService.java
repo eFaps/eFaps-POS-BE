@@ -176,10 +176,11 @@ public class DocumentService
         Invoice ret = this.invoiceRepository.insert(_invoice);
         try {
             if (!this.invoiceListeners.isEmpty()) {
+                final Config config = this.mongoTemplate.findById(Config.KEY, Config.class);
                 PosInvoiceDto dto = Converter.toDto(ret);
                 for (final IInvoiceListener listener : this.invoiceListeners) {
                     dto = (PosInvoiceDto) listener.onCreate(getPos(this.posService.getPos4Workspace(_workspaceOid)),
-                                    dto);
+                                    dto, config.getProperties());
                 }
                 ret = this.invoiceRepository.save(Converter.toEntity(dto));
             }
@@ -196,10 +197,11 @@ public class DocumentService
         Ticket ret = this.ticketRepository.insert(_ticket);
         try {
             if (!this.ticketListeners.isEmpty()) {
+                final Config config = this.mongoTemplate.findById(Config.KEY, Config.class);
                 PosTicketDto dto = Converter.toDto(ret);
                 for (final ITicketListener listener : this.ticketListeners) {
                     dto = (PosTicketDto) listener.onCreate(getPos(this.posService.getPos4Workspace(_workspaceOid)),
-                                    dto);
+                                    dto, config.getProperties());
                 }
                 ret = this.ticketRepository.save(Converter.toEntity(dto));
             }
