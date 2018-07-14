@@ -19,11 +19,7 @@ org:
     threadPool:
       threadCount: 2
     jobs:
-      syncReceipts:
-        interval: 120  #Interval in seconds
-      syncInvoices:
-        interval: 120  #Interval in seconds
-      syncTickets:
+      syncPayables: # syncs Receipts, Invoices and Tickets with related Balances
         interval: 120  #Interval in seconds
 
 efaps:

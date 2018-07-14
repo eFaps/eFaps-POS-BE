@@ -24,16 +24,8 @@ public class QuartzConfig
     private Integer threatCount;
 
     /** The sync interval for receipts. */
-    @Value("${org.quartz.jobs.syncReceipts.interval}")
-    private Integer syncReceiptsInterval;
-
-    /** The sync interval for receipts. */
-    @Value("${org.quartz.jobs.syncInvoices.interval}")
-    private Integer syncInvoicesInterval;
-
-    /** The sync interval for receipts. */
-    @Value("${org.quartz.jobs.syncTickets.interval}")
-    private Integer syncTicketsInterval;
+    @Value("${org.quartz.jobs.syncPayables.interval}")
+    private Integer syncPayablesInterval;
 
     @Autowired
     public QuartzConfig(final SyncService _syncService)
@@ -42,59 +34,21 @@ public class QuartzConfig
     }
 
     @Bean
-    public MethodInvokingJobDetailFactoryBean syncReceiptsJobDetailFactoryBean()
+    public MethodInvokingJobDetailFactoryBean syncPayablesJobDetailFactoryBean()
     {
         final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
         obj.setTargetObject(this.syncService);
-        obj.setTargetMethod("syncReceipts");
+        obj.setTargetMethod("syncPayables");
         return obj;
     }
 
     @Bean
-    public SimpleTriggerFactoryBean syncReceiptsTriggerFactoryBean()
+    public SimpleTriggerFactoryBean syncPayablesTriggerFactoryBean()
     {
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncReceiptsJobDetailFactoryBean().getObject());
+        stFactory.setJobDetail(syncPayablesJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(180 * 1000);
-        stFactory.setRepeatInterval(this.syncReceiptsInterval * 1000);
-        return stFactory;
-    }
-
-    @Bean
-    public MethodInvokingJobDetailFactoryBean syncInvoicesJobDetailFactoryBean()
-    {
-        final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
-        obj.setTargetObject(this.syncService);
-        obj.setTargetMethod("syncInvoices");
-        return obj;
-    }
-
-    @Bean
-    public SimpleTriggerFactoryBean syncInvoicesTriggerFactoryBean()
-    {
-        final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncInvoicesJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(180 * 1000);
-        stFactory.setRepeatInterval(this.syncInvoicesInterval * 1000);
-        return stFactory;
-    }
-
-    @Bean
-    public MethodInvokingJobDetailFactoryBean syncTicketsJobDetailFactoryBean()
-    {
-        final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
-        obj.setTargetObject(this.syncService);
-        obj.setTargetMethod("syncTickets");
-        return obj;
-    }
-
-    @Bean
-    public SimpleTriggerFactoryBean syncTicketsTriggerFactoryBean()
-    {
-        final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncTicketsJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(180 * 1000);
-        stFactory.setRepeatInterval(this.syncTicketsInterval * 1000);
+        stFactory.setRepeatInterval(this.syncPayablesInterval * 1000);
         return stFactory;
     }
 
@@ -102,8 +56,7 @@ public class QuartzConfig
     public SchedulerFactoryBean schedulerFactoryBean()
     {
         final SchedulerFactoryBean scheduler = new SchedulerFactoryBean();
-        scheduler.setTriggers(syncReceiptsTriggerFactoryBean().getObject(), syncInvoicesTriggerFactoryBean()
-                        .getObject(), syncTicketsTriggerFactoryBean().getObject());
+        scheduler.setTriggers(syncPayablesTriggerFactoryBean().getObject());
         final Properties quartzProperties = new Properties();
         quartzProperties.put("org.quartz.threadPool.threadCount", this.threatCount.toString());
         scheduler.setQuartzProperties(quartzProperties);

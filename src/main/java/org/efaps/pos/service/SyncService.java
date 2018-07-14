@@ -274,7 +274,16 @@ public class SyncService
         registerSync(StashId.USERSYNC);
     }
 
-    public void syncBalance() {
+    public void syncPayables()
+    {
+        syncBalance();
+        syncReceipts();
+        syncInvoices();
+        syncTickets();
+    }
+
+    public void syncBalance()
+    {
         LOG.info("Syncing Balance");
         final Collection<BalanceDto> tosync = this.balanceRepository.findByOidIsNull().stream()
                         .map(receipt -> Converter.toDto(receipt))
@@ -289,6 +298,21 @@ public class SyncService
                     final Balance balance = balanceOpt.get();
                     balance.setOid(recDto.getOid());
                     this.balanceRepository.save(balance);
+                    final Collection<Receipt> reciepts = this.receiptRepository.findByBalanceOid(balance.getId());
+                    reciepts.forEach(_doc -> {
+                        _doc.setBalanceOid(balance.getOid());
+                        this.receiptRepository.save(_doc);
+                    });
+                    final Collection<Invoice> invoices = this.invoiceRepository.findByBalanceOid(balance.getId());
+                    invoices.forEach(_doc -> {
+                        _doc.setBalanceOid(balance.getOid());
+                        this.invoiceRepository.save(_doc);
+                    });
+                    final Collection<Ticket> tickets = this.ticketRepository.findByBalanceOid(balance.getId());
+                    tickets.forEach(_doc -> {
+                        _doc.setBalanceOid(balance.getOid());
+                        this.ticketRepository.save(_doc);
+                    });
                 }
             }
         }
@@ -300,39 +324,49 @@ public class SyncService
         LOG.info("Syncing Receipts");
         final Collection<Receipt> tosync = this.receiptRepository.findByOidIsNull();
         for (final Receipt receipt : tosync) {
-            if (validateContact(receipt)) {
-                boolean post = true;
-                if (!isOid(receipt.getBalanceOid())) {
-                    final Optional<Balance> balanceOpt = this.balanceRepository.findById(receipt.getBalanceOid());
-                    if (balanceOpt.isPresent()) {
-                        final Balance balance = balanceOpt.get();
-                        if (isOid(balance.getOid())) {
-                            receipt.setBalanceOid(balance.getOid());
-                            this.receiptRepository.save(receipt);
-                        } else {
-                            post = false;
-                            syncBalance();
-                        }
+            if (validateContact(receipt) && verifyBalance(receipt)) {
+                LOG.debug("Syncing Receipt: {}", receipt);
+                final ReceiptDto recDto = this.eFapsClient.postReceipt(Converter.toReceiptDto(receipt));
+                LOG.debug("received Receipt: {}", recDto);
+                if (recDto.getOid() != null) {
+                    final Optional<Receipt> receiptOpt = this.receiptRepository.findById(recDto.getId());
+                    if (receiptOpt.isPresent()) {
+                        final Receipt retReceipt = receiptOpt.get();
+                        retReceipt.setOid(recDto.getOid());
+                        this.receiptRepository.save(retReceipt);
                     }
                 }
-                if (post) {
-                    LOG.debug("Syncing Receipt: {}", receipt);
-                    final ReceiptDto recDto = this.eFapsClient.postReceipt(Converter.toReceiptDto(receipt));
-                    LOG.debug("received Receipt: {}", recDto);
-                    if (recDto.getOid() != null) {
-                        final Optional<Receipt> receiptOpt = this.receiptRepository.findById(recDto.getId());
-                        if (receiptOpt.isPresent()) {
-                            final Receipt retReceipt = receiptOpt.get();
-                            retReceipt.setOid(recDto.getOid());
-                            this.receiptRepository.save(retReceipt);
-                        }
-                    }
-                }  else {
-                    LOG.debug("skipped Receipt: {}", receipt);
-                }
+            }  else {
+                LOG.debug("skipped Receipt: {}", receipt);
             }
         }
         registerSync(StashId.RECEIPTSYNC);
+    }
+
+    private boolean verifyBalance(final AbstractPayableDocument<?> _document)
+    {
+        boolean ret = true;
+        if (!isOid(_document.getBalanceOid())) {
+            ret = false;
+            final Optional<Balance> balanceOpt = this.balanceRepository.findById(_document.getBalanceOid());
+            if (balanceOpt.isPresent()) {
+                final Balance balance = balanceOpt.get();
+                if (isOid(balance.getOid())) {
+                    _document.setBalanceOid(balance.getOid());
+                    ret = true;
+                    if (_document instanceof Receipt) {
+                        this.receiptRepository.save((Receipt) _document);
+                    } else if (_document instanceof Invoice) {
+                        this.invoiceRepository.save((Invoice) _document);
+                    } else if (_document instanceof Ticket) {
+                        this.ticketRepository.save((Ticket) _document);
+                    }
+                } else {
+                    LOG.error("The found Balance does no thave an OID {}", balance);
+                }
+            }
+        }
+        return ret;
     }
 
     public void syncInvoices()
@@ -341,35 +375,19 @@ public class SyncService
         final Collection<Invoice> tosync = this.invoiceRepository.findByOidIsNull();
         for (final Invoice dto : tosync) {
             LOG.debug("Syncing Invoice: {}", dto);
-            if (validateContact(dto)) {
-                boolean post = true;
-                if (!isOid(dto.getBalanceOid())) {
-                    final Optional<Balance> balanceOpt = this.balanceRepository.findById(dto.getBalanceOid());
-                    if (balanceOpt.isPresent()) {
-                        final Balance balance = balanceOpt.get();
-                        if (isOid(balance.getOid())) {
-                            dto.setBalanceOid(balance.getOid());
-                            this.invoiceRepository.save(dto);
-                        } else {
-                            post = false;
-                            syncBalance();
-                        }
+            if (validateContact(dto) && verifyBalance(dto)) {
+                final InvoiceDto recDto = this.eFapsClient.postInvoice(Converter.toInvoiceDto(dto));
+                LOG.debug("received Invoice: {}", recDto);
+                if (recDto.getOid() != null) {
+                    final Optional<Invoice> opt = this.invoiceRepository.findById(recDto.getId());
+                    if (opt.isPresent()) {
+                        final Invoice receipt = opt.get();
+                        receipt.setOid(recDto.getOid());
+                        this.invoiceRepository.save(receipt);
                     }
                 }
-                if (post) {
-                    final InvoiceDto recDto = this.eFapsClient.postInvoice(Converter.toInvoiceDto(dto));
-                    LOG.debug("received Invoice: {}", recDto);
-                    if (recDto.getOid() != null) {
-                        final Optional<Invoice> opt = this.invoiceRepository.findById(recDto.getId());
-                        if (opt.isPresent()) {
-                            final Invoice receipt = opt.get();
-                            receipt.setOid(recDto.getOid());
-                            this.invoiceRepository.save(receipt);
-                        }
-                    }
-                } else {
-                    LOG.debug("skipped Invoice: {}", dto);
-                }
+            } else {
+                LOG.debug("skipped Invoice: {}", dto);
             }
         }
         registerSync(StashId.INVOICESYNC);
@@ -381,35 +399,19 @@ public class SyncService
         final Collection<Ticket> tosync = this.ticketRepository.findByOidIsNull();
         for (final Ticket dto : tosync) {
             LOG.debug("Syncing Ticket: {}", dto);
-            if (validateContact(dto)) {
-                boolean post = true;
-                if (!isOid(dto.getBalanceOid())) {
-                    final Optional<Balance> balanceOpt = this.balanceRepository.findById(dto.getBalanceOid());
-                    if (balanceOpt.isPresent()) {
-                        final Balance balance = balanceOpt.get();
-                        if (isOid(balance.getOid())) {
-                            dto.setBalanceOid(balance.getOid());
-                            this.ticketRepository.save(dto);
-                        } else {
-                            post = false;
-                            syncBalance();
-                        }
+            if (validateContact(dto) && verifyBalance(dto)) {
+                final TicketDto recDto = this.eFapsClient.postTicket(Converter.toTicketDto(dto));
+                LOG.debug("received Ticket: {}", recDto);
+                if (recDto.getOid() != null) {
+                    final Optional<Ticket> opt = this.ticketRepository.findById(recDto.getId());
+                    if (opt.isPresent()) {
+                        final Ticket receipt = opt.get();
+                        receipt.setOid(recDto.getOid());
+                        this.ticketRepository.save(receipt);
                     }
                 }
-                if (post) {
-                    final TicketDto recDto = this.eFapsClient.postTicket(Converter.toTicketDto(dto));
-                    LOG.debug("received Ticket: {}", recDto);
-                    if (recDto.getOid() != null) {
-                        final Optional<Ticket> opt = this.ticketRepository.findById(recDto.getId());
-                        if (opt.isPresent()) {
-                            final Ticket receipt = opt.get();
-                            receipt.setOid(recDto.getOid());
-                            this.ticketRepository.save(receipt);
-                        }
-                    }
-                } else {
-                    LOG.debug("skipped Ticket: {}", dto);
-                }
+            } else {
+                LOG.debug("skipped Ticket: {}", dto);
             }
         }
         registerSync(StashId.TICKETSYNC);
