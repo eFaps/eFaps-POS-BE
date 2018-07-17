@@ -261,6 +261,20 @@ public class EFapsClient
         return ret;
     }
 
+    public boolean putBalance(final BalanceDto _balance)
+    {
+        boolean ret = false;
+        try {
+            final RequestEntity<BalanceDto> requestEntity = put(this.config.getEFaps().getBalancePath()
+                            + "/" + _balance.getOid(), _balance);
+            final ResponseEntity<Void> response = this.restTemplate.exchange(requestEntity, Void.class);
+            ret = response.getStatusCode().is2xxSuccessful();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during post for Balance update", e);
+        }
+        return ret;
+    }
+
     public ReceiptDto postReceipt(final ReceiptDto _receipt)
     {
         ReceiptDto ret = _receipt;
@@ -360,7 +374,15 @@ public class EFapsClient
 
     private <T> RequestEntity<T> post(final String _path, final T _body)
     {
-        return RequestEntity.post(getUriComponent(_path).toUri()).header("Authorization", getAuth()).accept(
-                        MediaType.APPLICATION_JSON).body(_body);
+        return RequestEntity.post(getUriComponent(_path).toUri())
+                        .header("Authorization", getAuth())
+                        .accept(MediaType.APPLICATION_JSON).body(_body);
+    }
+
+    private <T> RequestEntity<T> put(final String _path, final T _body)
+    {
+        return RequestEntity.put(getUriComponent(_path).toUri())
+                        .header("Authorization", getAuth())
+                        .body(_body);
     }
 }

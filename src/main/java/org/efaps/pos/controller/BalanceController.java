@@ -64,7 +64,7 @@ public class BalanceController
     }
 
     @PutMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public BalanceDto createTicket(@PathVariable("id") final String _id,
+    public BalanceDto updateBalance(@PathVariable("id") final String _id,
                                    @RequestBody final BalanceDto _balanceDto)
     {
         return Converter.toDto(this.balanceService.update(Converter.toEntity(_balanceDto)));

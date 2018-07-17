@@ -36,6 +36,7 @@ public class Balance
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private BalanceStatus status;
+    private boolean synced;
 
     public String getId()
     {
@@ -111,6 +112,17 @@ public class Balance
     public Balance setStatus(final BalanceStatus _status)
     {
         this.status = _status;
+        return this;
+    }
+
+    public boolean isSynced()
+    {
+        return this.synced;
+    }
+
+    public Balance setSynced(final boolean _synced)
+    {
+        this.synced = _synced;
         return this;
     }
 

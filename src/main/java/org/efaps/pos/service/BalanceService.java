@@ -62,7 +62,8 @@ public class BalanceService
         if (balanceOpt.isPresent()) {
             final Balance balance = balanceOpt.get();
             balance.setStatus(BalanceStatus.CLOSED)
-                .setEndAt(LocalDateTime.now());
+                .setEndAt(LocalDateTime.now())
+                .setSynced(false);
             ret = this.repository.save(balance);
         }
         return ret;

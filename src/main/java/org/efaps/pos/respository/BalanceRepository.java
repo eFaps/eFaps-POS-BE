@@ -30,4 +30,6 @@ public interface BalanceRepository
     Optional<Balance> findOneByUserOidAndStatus(String _userOid, BalanceStatus _status);
 
     Collection<Balance> findByOidIsNull();
+
+    Collection<Balance> findBySyncedIsFalse();
 }

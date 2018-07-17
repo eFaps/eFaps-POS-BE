@@ -316,6 +316,19 @@ public class SyncService
                 }
             }
         }
+        final Collection<BalanceDto> tosync2 = this.balanceRepository.findBySyncedIsFalse().stream()
+                        .map(balance -> Converter.toDto(balance))
+                        .collect(Collectors.toList());
+        for (final BalanceDto dto : tosync2) {
+            if (this.eFapsClient.putBalance(dto)) {
+                final Optional<Balance> balanceOpt = this.balanceRepository.findById(dto.getId());
+                if (balanceOpt.isPresent()) {
+                    final Balance balance = balanceOpt.get();
+                    balance.setSynced(true);
+                    this.balanceRepository.save(balance);
+                }
+            }
+        }
         registerSync(StashId.BALANCESYNC);
     }
 
