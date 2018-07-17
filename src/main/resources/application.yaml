@@ -25,10 +25,10 @@ org:
 efaps:
   baseUrl: http://localhost:8888/eFaps
   backendPath: /servlet/rest/pos/backend
-  productPath: /servlet/rest/pos/products
-  categoryPath: /servlet/rest/pos/categories
-  workspacePath: /servlet/rest/pos/workspaces
-  posPath: /servlet/rest/pos/poss
+  productPath: /servlet/rest/pos/{identifier}/products
+  categoryPath: /servlet/rest/pos/{identfier}/categories
+  workspacePath: /servlet/rest/pos/{identfier}/workspaces
+  posPath: /servlet/rest/pos/{identfier}/poss
   userPath: /servlet/rest/pos/users
   receiptPath: /servlet/rest/pos/receipts
   invoicePath: /servlet/rest/pos/invoices

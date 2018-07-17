@@ -261,7 +261,7 @@ public class EFapsClient
             final RequestEntity<BalanceDto> requestEntity = post(this.config.getEFaps().getBalancePath(), _balance);
             final ResponseEntity<BalanceDto> response = this.restTemplate.exchange(requestEntity, BalanceDto.class);
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Receipts", e);
         }
         return ret;
@@ -275,7 +275,7 @@ public class EFapsClient
                             + "/" + _balance.getOid(), _balance);
             final ResponseEntity<Void> response = this.restTemplate.exchange(requestEntity, Void.class);
             ret = response.getStatusCode().is2xxSuccessful();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Balance update", e);
         }
         return ret;
@@ -288,7 +288,7 @@ public class EFapsClient
             final RequestEntity<ReceiptDto> requestEntity = post(this.config.getEFaps().getReceiptPath(), _receipt);
             final ResponseEntity<ReceiptDto> response = this.restTemplate.exchange(requestEntity, ReceiptDto.class);
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Receipts", e);
         }
         return ret;
@@ -301,7 +301,7 @@ public class EFapsClient
             final RequestEntity<InvoiceDto> requestEntity = post(this.config.getEFaps().getInvoicePath(), _invoice);
             final ResponseEntity<InvoiceDto> response = this.restTemplate.exchange(requestEntity, InvoiceDto.class);
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Invoices", e);
         }
         return ret;
@@ -314,7 +314,7 @@ public class EFapsClient
             final RequestEntity<TicketDto> requestEntity = post(this.config.getEFaps().getTicketPath(), _ticket);
             final ResponseEntity<TicketDto> response = this.restTemplate.exchange(requestEntity, TicketDto.class);
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Tickets", e);
         }
         return ret;
@@ -327,7 +327,7 @@ public class EFapsClient
             final RequestEntity<ContactDto> requestEntity = post(this.config.getEFaps().getContactPath(), _contact);
             final ResponseEntity<ContactDto> response = this.restTemplate.exchange(requestEntity, ContactDto.class);
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Invoices", e);
         }
         return ret;
@@ -364,8 +364,16 @@ public class EFapsClient
     }
 
     private UriComponents getUriComponent(final String _path)
+        throws IdentException
     {
-        return UriComponentsBuilder.fromUri(this.config.getEFaps().getBaseUrl()).path(_path).build();
+        final String ident = getIdentifier();
+        if (ident == null) {
+            throw new IdentException();
+        }
+        final Map<String, String> map = new HashMap<>();
+        map.put("identifier", ident);
+        return UriComponentsBuilder.fromUri(this.config.getEFaps().getBaseUrl()).path(_path)
+                        .buildAndExpand(map);
     }
 
     private RequestEntity<?> get(final URI _uri)
@@ -376,14 +384,11 @@ public class EFapsClient
     private RequestEntity<?> get(final String _path)
         throws IdentException
     {
-        final String ident = getIdentifier();
-        if (ident == null) {
-            throw new IdentException();
-        }
         return get(getUriComponent(_path).toUri());
     }
 
     private <T> RequestEntity<T> post(final String _path, final T _body)
+        throws IdentException
     {
         return RequestEntity.post(getUriComponent(_path).toUri())
                         .header("Authorization", getAuth())
@@ -391,6 +396,7 @@ public class EFapsClient
     }
 
     private <T> RequestEntity<T> put(final String _path, final T _body)
+        throws IdentException
     {
         return RequestEntity.put(getUriComponent(_path).toUri())
                         .header("Authorization", getAuth())
@@ -402,7 +408,10 @@ public class EFapsClient
         final Identifier identifier = this.mongoTemplate.findById(Identifier.KEY, Identifier.class);
         if (identifier == null) {
             try {
-                final UriComponents uriComp = getUriComponent(this.config.getEFaps().getBackendPath() + "/identifier");
+                final UriComponents uriComp = UriComponentsBuilder.fromUri(this.config.getEFaps().getBaseUrl())
+                                    .path(this.config.getEFaps().getBackendPath())
+                                    .path("identifier")
+                                    .build();
                 final RequestEntity<?> requestEntity = get(uriComp.toUri());
                 final ResponseEntity<String> response = this.restTemplate.exchange(requestEntity,
                                 new ParameterizedTypeReference<String>()
