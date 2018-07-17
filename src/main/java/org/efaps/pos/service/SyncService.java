@@ -33,6 +33,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.BalanceDto;
+import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.ReceiptDto;
@@ -316,7 +317,8 @@ public class SyncService
                 }
             }
         }
-        final Collection<BalanceDto> tosync2 = this.balanceRepository.findBySyncedIsFalse().stream()
+        final Collection<BalanceDto> tosync2 = this.balanceRepository.findBySyncedIsFalseAndStatus(BalanceStatus.CLOSED)
+                        .stream()
                         .map(balance -> Converter.toDto(balance))
                         .collect(Collectors.toList());
         for (final BalanceDto dto : tosync2) {

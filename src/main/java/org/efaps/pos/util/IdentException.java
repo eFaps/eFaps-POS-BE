@@ -15,21 +15,14 @@
  *
  */
 
-package org.efaps.pos.respository;
+package org.efaps.pos.util;
 
-import java.util.Collection;
-import java.util.Optional;
-
-import org.efaps.pos.dto.BalanceStatus;
-import org.efaps.pos.entity.Balance;
-import org.springframework.data.mongodb.repository.MongoRepository;
-
-public interface BalanceRepository
-    extends MongoRepository<Balance, String>
+public class IdentException extends Exception
 {
-    Optional<Balance> findOneByUserOidAndStatus(String _userOid, BalanceStatus _status);
+    private static final long serialVersionUID = 1L;
 
-    Collection<Balance> findByOidIsNull();
-
-    Collection<Balance> findBySyncedIsFalseAndStatus(BalanceStatus _status);
+    public IdentException()
+    {
+        super("No Ident accessible.");
+    }
 }

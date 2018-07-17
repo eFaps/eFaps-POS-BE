@@ -24,6 +24,7 @@ org:
 
 efaps:
   baseUrl: http://localhost:8888/eFaps
+  backendPath: /servlet/rest/pos/backend
   productPath: /servlet/rest/pos/products
   categoryPath: /servlet/rest/pos/categories
   workspacePath: /servlet/rest/pos/workspaces

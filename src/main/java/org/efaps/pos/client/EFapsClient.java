@@ -18,6 +18,7 @@ package org.efaps.pos.client;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -39,11 +40,14 @@ import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
+import org.efaps.pos.entity.Identifier;
 import org.efaps.pos.sso.SSOClient;
+import org.efaps.pos.util.IdentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -58,15 +62,18 @@ public class EFapsClient
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(EFapsClient.class);
+    private final MongoTemplate mongoTemplate;
     private final ConfigProperties config;
     private final RestTemplate restTemplate;
     private final SSOClient ssoClient;
 
     @Autowired
-    public EFapsClient(final ConfigProperties _config,
+    public EFapsClient(final MongoTemplate _mongoTemplate,
+                       final ConfigProperties _config,
                        final RestTemplate _restTemplate,
                        final SSOClient _ssoClient)
     {
+        this.mongoTemplate = _mongoTemplate;
         this.config = _config;
         this.restTemplate = _restTemplate;
         this.ssoClient = _ssoClient;
@@ -81,7 +88,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of properties", e);
         }
         return ret;
@@ -97,8 +104,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
-
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of products", e);
         }
         return ret;
@@ -114,7 +120,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of categories", e);
         }
         return ret;
@@ -130,7 +136,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of workspaces", e);
         }
         return ret;
@@ -146,7 +152,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of workspaces", e);
         }
         return ret;
@@ -162,7 +168,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of workspaces", e);
         }
         return ret;
@@ -178,7 +184,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of workspaces", e);
         }
         return ret;
@@ -194,7 +200,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of poss", e);
         }
         return ret;
@@ -210,7 +216,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -226,7 +232,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -242,7 +248,7 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
-        } catch (final RestClientException e) {
+        } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -368,7 +374,12 @@ public class EFapsClient
     }
 
     private RequestEntity<?> get(final String _path)
+        throws IdentException
     {
+        final String ident = getIdentifier();
+        if (ident == null) {
+            throw new IdentException();
+        }
         return get(getUriComponent(_path).toUri());
     }
 
@@ -384,5 +395,34 @@ public class EFapsClient
         return RequestEntity.put(getUriComponent(_path).toUri())
                         .header("Authorization", getAuth())
                         .body(_body);
+    }
+
+    private String getIdentifier() {
+        String ret = null;
+        final Identifier identifier = this.mongoTemplate.findById(Identifier.KEY, Identifier.class);
+        if (identifier == null) {
+            try {
+                final UriComponents uriComp = getUriComponent(this.config.getEFaps().getBackendPath() + "/identifier");
+                final RequestEntity<?> requestEntity = get(uriComp.toUri());
+                final ResponseEntity<String> response = this.restTemplate.exchange(requestEntity,
+                                new ParameterizedTypeReference<String>()
+                                {
+                                });
+                final String ident = response.getBody();
+                if (!ident.contains("deactivated")) {
+                    ret = ident;
+                    final Identifier newIdentifier = new Identifier()
+                                        .setId(Identifier.KEY)
+                                        .setCreated(LocalDateTime.now())
+                                        .setIdentifier(ident);
+                    this.mongoTemplate.save(newIdentifier);
+                }
+            } catch (final RestClientException e) {
+                LOG.error("Catched error during retrieval of identifier", e);
+            }
+        } else {
+            ret = identifier.getIdentifier();
+        }
+        return ret;
     }
 }

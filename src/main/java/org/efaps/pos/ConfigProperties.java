@@ -93,6 +93,7 @@ public class ConfigProperties
     {
 
         private URI baseUrl;
+        private String backendPath;
         private String productPath;
         private String categoryPath;
         private String workspacePath;
@@ -278,6 +279,16 @@ public class ConfigProperties
         public void setBalancePath(final String _balancePath)
         {
             this.balancePath = _balancePath;
+        }
+
+        public String getBackendPath()
+        {
+            return this.backendPath;
+        }
+
+        public void setBackendPath(final String _backendPath)
+        {
+            this.backendPath = _backendPath;
         }
     }
 
