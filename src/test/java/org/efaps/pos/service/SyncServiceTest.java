@@ -25,6 +25,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,6 +41,7 @@ import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.Identifier;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
@@ -96,6 +98,10 @@ public class SyncServiceTest
         this.mongoTemplate.remove(new Query(), Contact.class);
         this.mongoTemplate.remove(new Query(), Invoice.class);
         this.mongoTemplate.remove(new Query(), Ticket.class);
+        this.mongoTemplate.save(new Identifier()
+                        .setId(Identifier.KEY)
+                        .setCreated(LocalDateTime.now())
+                        .setIdentifier("TESTIDENT"));
     }
 
     @Test
@@ -111,7 +117,7 @@ public class SyncServiceTest
 
         final List<ProductDto> productDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/products"))
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
         this.syncService.syncProducts();
@@ -138,7 +144,7 @@ public class SyncServiceTest
 
         final List<ProductDto> productDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/products"))
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
         this.syncService.syncProducts();
@@ -167,7 +173,7 @@ public class SyncServiceTest
 
         final List<ProductDto> productDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/products"))
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
         this.syncService.syncProducts();
@@ -191,7 +197,7 @@ public class SyncServiceTest
 
         final List<CategoryDto> categoryDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/categories"))
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/categories"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(categoryDtos), MediaType.APPLICATION_JSON));
 
         this.syncService.syncCategories();
@@ -218,7 +224,7 @@ public class SyncServiceTest
 
         final List<CategoryDto> categoryDtos = Arrays.asList(category1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/categories"))
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/categories"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(categoryDtos), MediaType.APPLICATION_JSON));
 
         this.syncService.syncCategories();
@@ -242,7 +248,7 @@ public class SyncServiceTest
 
         final List<WorkspaceDto> workspaceDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/workspaces"))
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/workspaces"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(workspaceDtos), MediaType.APPLICATION_JSON));
 
         this.syncService.syncWorkspaces();
@@ -269,7 +275,7 @@ public class SyncServiceTest
 
         final List<WorkspaceDto> workspaceDtos = Arrays.asList(workspace1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/workspaces"))
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/workspaces"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(workspaceDtos), MediaType.APPLICATION_JSON));
 
         this.syncService.syncWorkspaces();
@@ -395,7 +401,7 @@ public class SyncServiceTest
 
         final List<PosDto> posDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/poss"))
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/poss"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(posDtos), MediaType.APPLICATION_JSON));
 
         this.syncService.syncPOSs();
@@ -422,7 +428,7 @@ public class SyncServiceTest
 
         final List<PosDto> posDtos = Arrays.asList(pos1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/poss"))
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/poss"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(posDtos), MediaType.APPLICATION_JSON));
 
         this.syncService.syncPOSs();

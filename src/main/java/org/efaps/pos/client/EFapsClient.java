@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
@@ -354,7 +355,7 @@ public class EFapsClient
     private String getAuth()
     {
         String auth = "";
-        if (this.config.getSso() != null && this.config.getSso().getUrl() != null) {
+        if (this.config.getSso() != null && StringUtils.isNotEmpty(this.config.getSso().getUrl())) {
             auth = "Bearer " + this.ssoClient.getToken();
         } else if (this.config.getAuth() != null) {
             auth = "Basic " + Base64.getEncoder().encodeToString((this.config.getAuth().getUser() + ":" + this.config

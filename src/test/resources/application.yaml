@@ -9,21 +9,18 @@ org:
     threadPool:
       threadCount: 2
     jobs:
-      syncReceipts:
-        interval: 120  #Interval in seconds
-      syncInvoices:
-        interval: 120  #Interval in seconds
-      syncTickets:
+      syncPayables:
         interval: 120  #Interval in seconds
 
 name: POS-Backend-Test
 
 efaps:
   baseUrl: http://localhost:8888/eFaps
-  productPath: /servlet/rest/pos/products
-  categoryPath: /servlet/rest/pos/categories
-  workspacePath: /servlet/rest/pos/workspaces
-  posPath: /servlet/rest/pos/poss
+  backendPath: /servlet/rest/pos/backend
+  productPath: /servlet/rest/pos/{identifier}/products
+  categoryPath: /servlet/rest/pos/{identifier}/categories
+  workspacePath: /servlet/rest/pos/{identifier}/workspaces
+  posPath: /servlet/rest/pos/{identifier}/poss
   userPath: /servlet/rest/pos/users
   receiptPath: /servlet/rest/pos/receipts
   invoicePath: /servlet/rest/pos/invoices
@@ -35,6 +32,13 @@ efaps:
   inventoryPath: /servlet/rest/pos/inventory
   printerPath: /servlet/rest/pos/printers
 
+sso:
+  url:
+  client_id:
+  client_secret:
+  username:
+  password:
+  
 jwt:
   secret: ThisIsNotVerySecret
   expiration: 1000

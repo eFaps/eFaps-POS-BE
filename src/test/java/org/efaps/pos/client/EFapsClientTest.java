@@ -23,16 +23,20 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.entity.Identifier;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -54,11 +58,27 @@ public class EFapsClientTest
     @Autowired
     private ObjectMapper mapper;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @BeforeEach
+    public void setup() {
+        this.mongoTemplate.save(new Identifier()
+                        .setId(Identifier.KEY)
+                        .setCreated(LocalDateTime.now())
+                        .setIdentifier("TESTIDENT"));
+    }
+
     @Test
     public void testGetProducts() throws JsonProcessingException {
+        this.mongoTemplate.save(new Identifier()
+                                        .setId(Identifier.KEY)
+                                        .setCreated(LocalDateTime.now())
+                                        .setIdentifier("TESTIDENT"));
+
         final List<ProductDto> products = Collections.singletonList(ProductDto.builder().build());
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/products"))
+        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
             .andRespond(withSuccess(this.mapper.writeValueAsString(products), MediaType.APPLICATION_JSON));
 
         final List<ProductDto> response = this.client.getProducts();

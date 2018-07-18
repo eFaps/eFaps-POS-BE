@@ -39,6 +39,6 @@ public class ConfigPropertiesTest
     public void testProperties() {
        assertEquals("POS-Backend-Test", this.config.getName());
        assertEquals("http://localhost:8888/eFaps", this.config.getEFaps().getBaseUrl().toString());
-       assertEquals("/servlet/rest/pos/products", this.config.getEFaps().getProductPath());
+       assertEquals("/servlet/rest/pos/{identifier}/products", this.config.getEFaps().getProductPath());
     }
 }
