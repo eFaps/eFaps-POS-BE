@@ -29,18 +29,18 @@ efaps:
   categoryPath: /servlet/rest/pos/{identifier}/categories
   workspacePath: /servlet/rest/pos/{identifier}/workspaces
   posPath: /servlet/rest/pos/{identifier}/poss
-  userPath: /servlet/rest/pos/users
-  receiptPath: /servlet/rest/pos/receipts
-  invoicePath: /servlet/rest/pos/invoices
-  ticketPath: /servlet/rest/pos/tickets
+  userPath: /servlet/rest/pos/{identifier}/users
+  receiptPath: /servlet/rest/pos/{identifier}/receipts
+  invoicePath: /servlet/rest/pos/{identifier}/invoices
+  ticketPath: /servlet/rest/pos/{identifier}/tickets
   checkoutPath: /servlet/checkout
-  sequencePath: /servlet/rest/pos/sequences
-  contactPath: /servlet/rest/pos/contacts
-  warehousePath: /servlet/rest/pos/warehouses
-  inventoryPath: /servlet/rest/pos/inventory
-  printerPath: /servlet/rest/pos/printers
-  configPath: /servlet/rest/pos/config
-  balancePath: /servlet/rest/pos/balance
+  sequencePath: /servlet/rest/pos/{identifier}/sequences
+  contactPath: /servlet/rest/pos/{identifier}/contacts
+  warehousePath: /servlet/rest/pos/{identifier}/warehouses
+  inventoryPath: /servlet/rest/pos/{identifier}/inventory
+  printerPath: /servlet/rest/pos/{identifier}/printers
+  configPath: /servlet/rest/pos/{identifier}/config
+  balancePath: /servlet/rest/pos/{identifier}/balance
 
 auth:
   user: Administrator
