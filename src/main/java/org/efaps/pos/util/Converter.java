@@ -40,6 +40,7 @@ import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.PrintCmdDto;
 import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.ProductRelationDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.SpotDto;
@@ -63,6 +64,7 @@ import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Pos.Company;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.ProductRelation;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.Spot;
@@ -245,7 +247,10 @@ public final class Converter
                                         .map(_tax -> _tax == null ? null : toEntity(_tax))
                                         .collect(Collectors.toSet()))
                         .setUoM(_dto.getUoM())
-                        .setUoMCode(_dto.getUoMCode());
+                        .setUoMCode(_dto.getUoMCode())
+                        .setRelations(_dto.getRelations().stream()
+                                        .map(rel -> toEntity(rel))
+                                        .collect(Collectors.toSet()));
         return ret;
     }
 
@@ -268,6 +273,11 @@ public final class Converter
                                         .collect(Collectors.toSet()))
                         .withUoM(_entity.getUoM())
                         .withUoMCode(_entity.getUoMCode())
+                        .withRelations(_entity.getRelations() == null
+                                ? null
+                                : _entity.getRelations().stream()
+                                        .map(rel -> toDto(rel))
+                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -845,4 +855,16 @@ public final class Converter
                         .build();
     }
 
+    public static ProductRelationDto toDto(final ProductRelation _entity) {
+        return ProductRelationDto.builder()
+                        .withLabel(_entity.getLabel())
+                        .withProductOid(_entity.getProductOid())
+                        .build();
+    }
+
+    public static ProductRelation toEntity(final ProductRelationDto _dto) {
+        return new ProductRelation()
+                        .setLabel(_dto.getLabel())
+                        .setProductOid(_dto.getProductOid());
+    }
 }

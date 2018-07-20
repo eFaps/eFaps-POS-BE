@@ -40,6 +40,7 @@ public class Product
     private Set<Tax> taxes;
     private String uoM;
     private String uoMCode;
+    private Set<ProductRelation> relations;
 
     public String getOid()
     {
@@ -152,9 +153,21 @@ public class Product
         return this;
     }
 
+    public Set<ProductRelation> getRelations()
+    {
+        return this.relations;
+    }
+
+    public Product setRelations(final Set<ProductRelation> _relations)
+    {
+        this.relations = _relations;
+        return this;
+    }
+
     @Override
     public String toString()
     {
         return ReflectionToStringBuilder.toString(this);
     }
+
 }

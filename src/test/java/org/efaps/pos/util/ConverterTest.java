@@ -51,6 +51,7 @@ import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.PrinterType;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.ProductRelationDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.Roles;
 import org.efaps.pos.dto.SequenceDto;
@@ -73,6 +74,7 @@ import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.ProductRelation;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.Spot;
@@ -871,5 +873,26 @@ public class ConverterTest
         assertEquals(entity.getEndAt(), dto.getEndAt());
         assertEquals(entity.getStartAt(), dto.getStartAt());
         assertEquals(entity.getStatus(), dto.getStatus());
+    }
+
+    @Test
+    public void testProductRelationToEntity() {
+        final ProductRelationDto dto = ProductRelationDto.builder()
+                        .withLabel("a label")
+                        .withProductOid("986.253")
+                        .build();
+        final ProductRelation entity = Converter.toEntity(dto);
+        assertEquals(dto.getLabel(), entity.getLabel());
+        assertEquals(dto.getProductOid(), entity.getProductOid());
+    }
+
+    @Test
+    public void testProductRelationToDto() {
+        final ProductRelation entity = new ProductRelation()
+                        .setLabel("asimsddfsdfs")
+                        .setProductOid("1984.5161");
+        final ProductRelationDto dto = Converter.toDto(entity);
+        assertEquals(entity.getLabel(), dto.getLabel());
+        assertEquals(entity.getProductOid(), dto.getProductOid());
     }
 }
