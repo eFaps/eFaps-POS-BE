@@ -342,10 +342,12 @@ public class EFapsClient
                             .getEFaps().getCheckoutPath()).queryParam("oid", _oid).build().toUri();
             final RequestEntity<?> requestEntity = get(uri);
             final ResponseEntity<byte[]> response = this.restTemplate.exchange(requestEntity, byte[].class);
-            ret = new Checkout();
-            ret.setContent(response.getBody());
-            ret.setContentType(response.getHeaders().getContentType());
-            ret.setFilename(response.getHeaders().getContentDisposition().getFilename());
+            if (response.getBody() != null) {
+                ret = new Checkout();
+                ret.setContent(response.getBody());
+                ret.setContentType(response.getHeaders().getContentType());
+                ret.setFilename(response.getHeaders().getContentDisposition().getFilename());
+            }
         } catch (final RestClientException e) {
             LOG.error("Catched error during checkout for oid: '{}'", _oid);
         }
