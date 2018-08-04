@@ -413,7 +413,7 @@ public class EFapsClient
             try {
                 final UriComponents uriComp = UriComponentsBuilder.fromUri(this.config.getEFaps().getBaseUrl())
                                     .path(this.config.getEFaps().getBackendPath())
-                                    .path("identifier")
+                                    .path("/identifier")
                                     .build();
                 final RequestEntity<?> requestEntity = get(uriComp.toUri());
                 final ResponseEntity<String> response = this.restTemplate.exchange(requestEntity,
