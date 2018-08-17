@@ -521,7 +521,7 @@ public class SyncService
         final Collection<Contact> tosync = this.contactRepository.findByOidIsNull();
         for (final Contact contact : tosync) {
             LOG.debug("Syncing Contact: {}", contact);
-            final ContactDto recDto = this.eFapsClient.postContact(Converter.toContactDto(contact));
+            final ContactDto recDto = this.eFapsClient.postContact(Converter.toDto(contact));
             LOG.debug("received Contact: {}", recDto);
             if (recDto.getOid() != null) {
                 contact.setOid(recDto.getOid());

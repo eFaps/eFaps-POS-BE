@@ -47,7 +47,7 @@ public class ContactService
     public List<Contact> findContacts(final String _term, final boolean _nameSearch)
     {
         return _nameSearch ? this.contactRepository.findByNameStartingWith(_term)
-                        : this.contactRepository.findByTaxNumberStartingWith(_term);
+                        : this.contactRepository.findByIdNumberStartingWith(_term);
     }
 
     public Contact createContact(final Contact _entity)

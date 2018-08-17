@@ -28,7 +28,6 @@ import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.JobDto;
 import org.efaps.pos.dto.PaymentDto;
-import org.efaps.pos.dto.PosContactDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosInventoryEntryDto;
@@ -398,26 +397,8 @@ public final class Converter
     {
         return new Contact().setOid(_dto.getOid())
                         .setName(_dto.getName())
-                        .setTaxNumber(_dto.getTaxNumber());
-    }
-
-    public static Contact toEntity(final PosContactDto _dto)
-    {
-        return new Contact().setId(_dto.getId())
-                        .setOid(_dto.getOid())
-                        .setName(_dto.getName())
-                        .setTaxNumber(_dto.getTaxNumber());
-    }
-
-    public static PosContactDto toDto(final Contact _entity) {
-        return _entity == null
-                    ? null
-                    : PosContactDto.builder()
-                        .withId(_entity.getId())
-                        .withOID(_entity.getOid())
-                        .withName(_entity.getName())
-                        .withTaxNumber(_entity.getTaxNumber())
-                        .build();
+                        .setIdType(_dto.getIdType())
+                        .setIdNumber(_dto.getIdNumber());
     }
 
     public static TaxDto toDto(final Tax _entity)
@@ -622,13 +603,15 @@ public final class Converter
                         .build();
     }
 
-    public static ContactDto toContactDto(final Contact _entity) {
+    public static ContactDto toDto(final Contact _entity) {
         return _entity == null
                     ? null
                     : ContactDto.builder()
+                        .withId(_entity.getId())
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
-                        .withTaxNumber(_entity.getTaxNumber())
+                        .withIdType(_entity.getIdType())
+                        .withIdNumber(_entity.getIdNumber())
                         .build();
     }
 

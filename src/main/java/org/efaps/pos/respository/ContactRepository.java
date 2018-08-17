@@ -30,7 +30,7 @@ public interface ContactRepository
 
     List<Contact> findByOid(String _oid);
 
-    List<Contact> findByTaxNumberStartingWith(String _term);
+    List<Contact> findByIdNumberStartingWith(String _term);
 
     List<Contact> findByNameStartingWith(String _term);
 

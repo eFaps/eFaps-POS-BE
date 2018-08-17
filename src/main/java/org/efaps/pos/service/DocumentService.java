@@ -244,7 +244,7 @@ public class DocumentService
                         .withName(_pos.getCompany().getName())
                         .withTaxNumber(_pos.getCompany().getTaxNumber())
                         .build();
-        final ContactDto contactDto = Converter.toContactDto(
+        final ContactDto contactDto = Converter.toDto(
                         this.contactService.getContact(_pos.getDefaultContactOid()));
 
         return new IPos()

@@ -18,6 +18,7 @@
 package org.efaps.pos.entity;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.efaps.pos.dto.IdentificationType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -32,7 +33,9 @@ public class Contact
 
     private String name;
 
-    private String taxNumber;
+    private IdentificationType idType;
+
+    private String idNumber;
 
     public String getId()
     {
@@ -67,14 +70,25 @@ public class Contact
         return this;
     }
 
-    public String getTaxNumber()
+    public IdentificationType getIdType()
     {
-        return this.taxNumber;
+        return this.idType;
     }
 
-    public Contact setTaxNumber(final String _taxNumber)
+    public Contact setIdType(final IdentificationType _idType)
     {
-        this.taxNumber = _taxNumber;
+        this.idType = _idType;
+        return this;
+    }
+
+    public String getIdNumber()
+    {
+        return this.idNumber;
+    }
+
+    public Contact setIdNumber(final String _idNumber)
+    {
+        this.idNumber = _idNumber;
         return this;
     }
 
@@ -83,4 +97,5 @@ public class Contact
     {
         return ReflectionToStringBuilder.toString(this);
     }
+
 }

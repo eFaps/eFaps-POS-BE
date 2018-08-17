@@ -32,11 +32,11 @@ import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.IdentificationType;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.JobDto;
 import org.efaps.pos.dto.PaymentDto;
-import org.efaps.pos.dto.PosContactDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosInventoryEntryDto;
@@ -220,46 +220,38 @@ public class ConverterTest
     }
 
     @Test
-    public void testContactToPosDto() {
+    public void testContactToDto() {
         final Contact entity = new Contact()
+                        .setId("the mongo id")
                         .setName("Contact 1")
                         .setOid("165165.14651")
-                        .setTaxNumber("12345678911");
+                        .setIdType(IdentificationType.PASSPORT)
+                        .setIdNumber("ABCTHDD");
 
-        final PosContactDto dto = Converter.toDto(entity);
+        final ContactDto dto = Converter.toDto(entity);
+        assertEquals(entity.getId(), dto.getId());
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getName(), dto.getName());
-        assertEquals(entity.getTaxNumber(), dto.getTaxNumber());
+        assertEquals(entity.getIdType(), dto.getIdType());
+        assertEquals(entity.getIdNumber(), dto.getIdNumber());
     }
 
     @Test
     public void testContactToEntity() {
         final ContactDto dto = ContactDto.builder()
-                        .withOID("165165.14651")
-                        .withName("Caja 1")
-                        .withTaxNumber("12345678911")
-                        .build();
-
-        final Contact entity = Converter.toEntity(dto);
-        assertEquals(entity.getOid(), dto.getOid());
-        assertEquals(entity.getName(), dto.getName());
-        assertEquals(entity.getTaxNumber(), dto.getTaxNumber());
-    }
-
-    @Test
-    public void testPosContactToEntity() {
-        final PosContactDto dto = PosContactDto.builder()
                         .withId("this is the id")
                         .withOID("165165.14651")
                         .withName("Caja 1")
-                        .withTaxNumber("12345678911")
+                        .withIdType(IdentificationType.PASSPORT)
+                        .withIdNumber("ABCTHDD")
                         .build();
 
         final Contact entity = Converter.toEntity(dto);
-        assertEquals(entity.getId(), dto.getId());
-        assertEquals(entity.getOid(), dto.getOid());
-        assertEquals(entity.getName(), dto.getName());
-        assertEquals(entity.getTaxNumber(), dto.getTaxNumber());
+        assertEquals(dto.getId(), entity.getId());
+        assertEquals(dto.getOid(), entity.getOid());
+        assertEquals(dto.getName(), entity.getName());
+        assertEquals(dto.getIdType(), entity.getIdType());
+        assertEquals(dto.getIdNumber(), entity.getIdNumber());
     }
 
     @Test
