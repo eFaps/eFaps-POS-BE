@@ -100,10 +100,10 @@ public class ContactServiceTest
     @Test
     public void testFindContactByTaxnumber()
     {
-        this.mongoTemplate.save(new Contact().setOid("1.1").setTaxNumber("1234"));
-        this.mongoTemplate.save(new Contact().setOid("1.2").setTaxNumber("123456"));
-        this.mongoTemplate.save(new Contact().setOid("1.3").setTaxNumber("345"));
-        this.mongoTemplate.save(new Contact().setOid("1.4").setTaxNumber("124"));
+        this.mongoTemplate.save(new Contact().setOid("1.1").setIdNumber("1234"));
+        this.mongoTemplate.save(new Contact().setOid("1.2").setIdNumber("123456"));
+        this.mongoTemplate.save(new Contact().setOid("1.3").setIdNumber("345"));
+        this.mongoTemplate.save(new Contact().setOid("1.4").setIdNumber("124"));
 
         final List<Contact> contacts = this.contactService.findContacts("1234", false);
         assertEquals(2, contacts.size());
