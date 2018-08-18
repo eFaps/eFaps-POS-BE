@@ -399,7 +399,9 @@ public final class Converter
 
     public static Contact toEntity(final ContactDto _dto)
     {
-        return new Contact().setOid(_dto.getOid())
+        return new Contact()
+                        .setId(_dto.getId())
+                        .setOid(_dto.getOid())
                         .setName(_dto.getName())
                         .setIdType(_dto.getIdType())
                         .setIdNumber(_dto.getIdNumber());
