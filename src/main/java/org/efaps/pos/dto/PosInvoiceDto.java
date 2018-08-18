@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.interfaces.IInvoice;
 import org.efaps.pos.interfaces.IInvoiceItem;
+import org.efaps.pos.util.Converter;
 
 @JsonDeserialize(builder = PosInvoiceDto.Builder.class)
 public class PosInvoiceDto
@@ -39,6 +40,12 @@ public class PosInvoiceDto
     public Set<IInvoiceItem> getInvoiceItems()
     {
         return getItems().stream().map(item -> (IInvoiceItem) item).collect(Collectors.toSet());
+    }
+
+    @Override
+    public ContactDto getContact()
+    {
+        return Converter.getContactDto(getContactOid());
     }
 
     public static Builder builder()

@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.interfaces.ITicket;
 import org.efaps.pos.interfaces.ITicketItem;
+import org.efaps.pos.util.Converter;
 
 @JsonDeserialize(builder = PosTicketDto.Builder.class)
 public class PosTicketDto
@@ -39,6 +40,12 @@ public class PosTicketDto
     public Set<ITicketItem> getTicketItems()
     {
         return getItems().stream().map(item -> (ITicketItem) item).collect(Collectors.toSet());
+    }
+
+    @Override
+    public ContactDto getContact()
+    {
+        return Converter.getContactDto(getContactOid());
     }
 
     public static Builder builder()

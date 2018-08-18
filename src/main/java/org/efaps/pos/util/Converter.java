@@ -73,6 +73,7 @@ import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.PrintCmd;
+import org.efaps.pos.service.ContactService;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.service.ProductService;
@@ -86,15 +87,18 @@ public final class Converter
     private final ProductService productService;
     private final InventoryService inventoryService;
     private final DocumentService documentService;
+    private final ContactService contactService;
 
     public Converter(final ProductService _productService,
                      final InventoryService _inventoryService,
-                     final DocumentService _documentService)
+                     final DocumentService _documentService,
+                     final ContactService _contactService)
     {
         INSTANCE = this;
         this.productService = _productService;
         this.inventoryService = _inventoryService;
         this.documentService = _documentService;
+        this.contactService = _contactService;
     }
 
     public static Receipt toEntity(final PosReceiptDto _dto)
@@ -849,5 +853,10 @@ public final class Converter
         return new ProductRelation()
                         .setLabel(_dto.getLabel())
                         .setProductOid(_dto.getProductOid());
+    }
+
+    public static ContactDto getContactDto(final String _contactOid)
+    {
+        return Converter.toDto(INSTANCE.contactService.getContact(_contactOid));
     }
 }
