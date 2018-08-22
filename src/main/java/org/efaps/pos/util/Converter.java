@@ -447,6 +447,7 @@ public final class Converter
     {
         final TaxEntry ret = new TaxEntry()
                         .setTax(_dto.getTax() == null ? null : Converter.toEntity(_dto.getTax()))
+                        .setBase(_dto.getBase())
                         .setAmount(_dto.getAmount());
         return ret;
     }
@@ -455,6 +456,7 @@ public final class Converter
     {
         return TaxEntryDto.builder()
                         .withTax(Converter.toDto(_entity.getTax()))
+                        .withBase(_entity.getBase())
                         .withAmount(_entity.getAmount())
                         .build();
     }

@@ -308,18 +308,8 @@ public abstract class AbstractDocument<T>
     {
 
         private Tax tax;
+        private BigDecimal base;
         private BigDecimal amount;
-
-        public BigDecimal getAmount()
-        {
-            return this.amount;
-        }
-
-        public TaxEntry setAmount(final BigDecimal _amount)
-        {
-            this.amount = _amount;
-            return this;
-        }
 
         public Tax getTax()
         {
@@ -329,6 +319,28 @@ public abstract class AbstractDocument<T>
         public TaxEntry setTax(final Tax _tax)
         {
             this.tax = _tax;
+            return this;
+        }
+
+        public BigDecimal getBase()
+        {
+            return this.base;
+        }
+
+        public TaxEntry setBase(final BigDecimal _base)
+        {
+            this.base = _base;
+            return this;
+        }
+
+        public BigDecimal getAmount()
+        {
+            return this.amount;
+        }
+
+        public TaxEntry setAmount(final BigDecimal _amount)
+        {
+            this.amount = _amount;
             return this;
         }
     }
