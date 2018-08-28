@@ -300,6 +300,7 @@ public final class Converter
                         .setPassword(_dto.getPassword())
                         .setFirstName(_dto.getFirstName())
                         .setSurName(_dto.getSurName())
+                        .setVisible(_dto.isVisible())
                         .setRoles(_dto.getRoles())
                         .setWorkspaceOids(_dto.getWorkspaceOids());
     }

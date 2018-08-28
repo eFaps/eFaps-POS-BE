@@ -52,6 +52,8 @@ public class User
 
     private String surName;
 
+    private boolean visible;
+
     private Set<Roles> roles;
 
     private Set<String> workspaceOids;
@@ -71,11 +73,9 @@ public class User
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities()
     {
-        return getRoles() == null
-                        ? Collections.emptyList()
-                        : getRoles().stream()
-                            .map(_role -> new SimpleGrantedAuthority(_role.name()))
-                            .collect(Collectors.toSet());
+        return getRoles() == null ? Collections.emptyList()
+                        : getRoles().stream().map(_role -> new SimpleGrantedAuthority(_role.name())).collect(Collectors
+                                        .toSet());
     }
 
     @Override
@@ -146,6 +146,17 @@ public class User
     public User setSurName(final String _surName)
     {
         this.surName = _surName;
+        return this;
+    }
+
+    public boolean isVisible()
+    {
+        return this.visible;
+    }
+
+    public User setVisible(final boolean _visible)
+    {
+        this.visible = _visible;
         return this;
     }
 
