@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PrintResponseDto;
+import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.User;
@@ -83,7 +84,7 @@ public class PrintContoller
         final Workspace workspace = this.workspaceService.getWorkspace((User) _authentication.getPrincipal(),
                         _workspaceOid);
         final Order order = this.documentService.getOrder(_documentId);
-        final Collection<Job> jobs = this.jobService.createJobs(workspace, order);
+        final Collection<Job> jobs = this.jobService.createJobs4Job(workspace, order);
 
         for (final Job job : jobs) {
             final Optional<PrintResponseDto> responseOpt = this.printService.queue(job);
@@ -93,4 +94,26 @@ public class PrintContoller
         }
         return ret;
     }
+
+    @PostMapping(path = "preliminary", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PrintResponseDto> printPreliminary(final Authentication _authentication,
+                                           @RequestParam(name = "workspaceOid") final String _workspaceOid,
+                                           @RequestParam(name = "documentId") final String _documentId)
+    {
+        final List<PrintResponseDto> ret = new ArrayList<>();
+        final Workspace workspace = this.workspaceService.getWorkspace((User) _authentication.getPrincipal(),
+                        _workspaceOid);
+
+        final AbstractDocument<?> document = this.documentService.getDocument(_documentId);
+        final Collection<Job> jobs = this.jobService.createJobs4Preliminary(workspace, document);
+
+        for (final Job job : jobs) {
+            final Optional<PrintResponseDto> responseOpt = this.printService.queue(job);
+            if (responseOpt.isPresent()) {
+                ret.add(responseOpt.get());
+            }
+        }
+        return ret;
+    }
+
 }

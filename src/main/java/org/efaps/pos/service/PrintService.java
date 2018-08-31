@@ -52,7 +52,8 @@ public class PrintService
 
     public PrintService(final ObjectMapper _jacksonObjectMapper,
                         final GridFsService _gridFsService,
-                        final PrinterRepository _printerRepository) {
+                        final PrinterRepository _printerRepository,
+                        final DocumentService _documentService) {
         this.jacksonObjectMapper = _jacksonObjectMapper;
         this.gridFsService = _gridFsService;
         this.printerRepository = _printerRepository;
@@ -102,13 +103,13 @@ public class PrintService
             final Map<String, Object> parameters = new HashMap<>();
             parameters.put("PRINTER", printerOpt.get().getName());
             if (printerOpt.get().getType().equals(PrinterType.PREVIEW)) {
-                 final byte[] data = print(Converter.toDto(_job), _job.getReportOid(), parameters);
-                 final String key = RandomStringUtils.randomAlphabetic(12);
-                 CACHE.put(key, data);
-                 ret = Optional.of(PrintResponseDto.builder()
-                     .withKey(key)
-                     .withPrinter(Converter.toDto(printerOpt.get()))
-                     .build());
+                final byte[] data = print(Converter.toDto(_job), _job.getReportOid(), parameters);
+                final String key = RandomStringUtils.randomAlphabetic(12);
+                CACHE.put(key, data);
+                ret = Optional.of(PrintResponseDto.builder()
+                                .withKey(key)
+                                .withPrinter(Converter.toDto(printerOpt.get()))
+                                .build());
             } else {
                 // print to real printer
                 ret = Optional.of(PrintResponseDto.builder().build());

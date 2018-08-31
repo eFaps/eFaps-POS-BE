@@ -211,9 +211,17 @@ public class DocumentService
         return ret;
     }
 
+    public Receipt getReceipt(final String _documentId) {
+        return this.receiptRepository.findById(_documentId).orElse(null);
+    }
+
     public Collection<Receipt> getReceipts4Balance(final String _balanceOid)
     {
         return this.receiptRepository.findByBalanceOid(_balanceOid);
+    }
+
+    public Invoice getInvoice(final String _documentId) {
+        return this.invoiceRepository.findById(_documentId).orElse(null);
     }
 
     public Collection<Invoice> getInvoices4Balance(final String _balanceOid)
@@ -221,9 +229,28 @@ public class DocumentService
         return this.invoiceRepository.findByBalanceOid(_balanceOid);
     }
 
+    public Ticket getTicket(final String _documentId) {
+        return this.ticketRepository.findById(_documentId).orElse(null);
+    }
+
     public Collection<Ticket> getTickets4Balance(final String _balanceOid)
     {
         return this.ticketRepository.findByBalanceOid(_balanceOid);
+    }
+
+    public AbstractDocument<?> getDocument(final String _documentId)
+    {
+        AbstractDocument<?> ret = getOrder(_documentId);
+        if (ret == null) {
+            ret = getReceipt(_documentId);
+        }
+        if (ret == null) {
+            ret = getInvoice(_documentId);
+        }
+        if (ret == null) {
+            ret = getTicket(_documentId);
+        }
+        return ret;
     }
 
     private void validateContact(final String _workspaceOid, final AbstractDocument<?> _document)

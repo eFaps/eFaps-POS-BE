@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.dto.PrintTarget;
+import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Job;
@@ -62,13 +63,30 @@ public class JobService
         this.productService = _productService;
     }
 
+    public Collection<Job> createJobs4Preliminary(final Workspace _workspace,
+                                                  final AbstractDocument<?> _document)
+    {
+        final List<Job> ret = new ArrayList<>();
+        _workspace.getPrintCmds().stream()
+                        .filter(printCmd -> PrintTarget.PRELIMINARY.equals(printCmd.getTarget()))
+                        .forEach(printCmd -> {
+                            ret.add(this.jobRepository.save(new Job()
+                                            .setDocumentId(_document.getId())
+                                            .setPrinterOid(printCmd.getPrinterOid())
+                                            .setReportOid(printCmd.getReportOid()))
+                                            .setItems(_document.getItems())
+                                            );
+                        });
+        return ret;
+    }
+
     /**
      * Creates a set of jobs by grouping them by their related printers.
      * @param _workspace
      * @param _order the order
      * @return the collection of jobs
      */
-    public Collection<Job> createJobs(final Workspace _workspace, final Order _order)
+    public Collection<Job> createJobs4Job(final Workspace _workspace, final Order _order)
     {
         final List<Job> ret = new ArrayList<>();
         final Map<String, Set<Item>> map = new HashMap<>();
@@ -81,7 +99,8 @@ public class JobService
                     if (catOpt.isPresent()) {
                         final Set<PrintCmd> cmds = _workspace.getPrintCmds().stream()
                             .filter(printCmd -> PrintTarget.JOB.equals(printCmd.getTarget())
-                                            && catOid.equals(printCmd.getTargetOid())).collect(Collectors.toSet());
+                                            && catOid.equals(printCmd.getTargetOid()))
+                            .collect(Collectors.toSet());
                         for (final PrintCmd cmd : cmds) {
                             final Optional<Printer> printerOpt = this.printerRepository.findById(cmd.getPrinterOid());
                             if (printerOpt.isPresent()) {
