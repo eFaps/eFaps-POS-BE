@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PrintResponseDto;
+import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
@@ -84,7 +85,7 @@ public class PrintContoller
         final Workspace workspace = this.workspaceService.getWorkspace((User) _authentication.getPrincipal(),
                         _workspaceOid);
         final Order order = this.documentService.getOrder(_documentId);
-        final Collection<Job> jobs = this.jobService.createJobs4Job(workspace, order);
+        final Collection<Job> jobs = this.jobService.createJobs(workspace, order);
 
         for (final Job job : jobs) {
             final Optional<PrintResponseDto> responseOpt = this.printService.queue(job);
@@ -105,15 +106,15 @@ public class PrintContoller
                         _workspaceOid);
 
         final AbstractDocument<?> document = this.documentService.getDocument(_documentId);
-        final Collection<Job> jobs = this.jobService.createJobs4Preliminary(workspace, document);
 
-        for (final Job job : jobs) {
-            final Optional<PrintResponseDto> responseOpt = this.printService.queue(job);
-            if (responseOpt.isPresent()) {
-                ret.add(responseOpt.get());
-            }
-        }
+        workspace.getPrintCmds().stream()
+            .filter(printCmd -> PrintTarget.PRELIMINARY.equals(printCmd.getTarget()))
+            .forEach(printCmd -> {
+                final Optional<PrintResponseDto> responseOpt = this.printService.queue(printCmd, document);
+                if (responseOpt.isPresent()) {
+                    ret.add(responseOpt.get());
+                }
+            });
         return ret;
     }
-
 }

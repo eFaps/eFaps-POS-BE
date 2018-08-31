@@ -21,8 +21,11 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.efaps.pos.dto.PrintResponseDto;
 import org.efaps.pos.dto.PrinterType;
+import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Job;
+import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Printer;
+import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.respository.PrinterRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
@@ -97,13 +100,29 @@ public class PrintService
 
     public Optional<PrintResponseDto> queue(final Job _job)
     {
+        return queue(_job.getPrinterOid(), _job.getReportOid(), Converter.toDto(_job));
+    }
+
+    public Optional<PrintResponseDto> queue(final PrintCmd _printCmd, final AbstractDocument<?> _document)
+    {
+        Object content;
+        if (_document instanceof Order) {
+            content = Converter.toDto((Order) _document);
+        } else {
+            content = _document;
+        }
+        return queue(_printCmd.getPrinterOid(), _printCmd.getReportOid(), content);
+    }
+
+    private Optional<PrintResponseDto> queue(final String _printerOid, final String _reportOid, final Object _content)
+    {
         Optional<PrintResponseDto> ret;
-        final Optional<Printer> printerOpt = this.printerRepository.findById(_job.getPrinterOid());
+        final Optional<Printer> printerOpt = this.printerRepository.findById(_printerOid);
         if (printerOpt.isPresent()) {
             final Map<String, Object> parameters = new HashMap<>();
             parameters.put("PRINTER", printerOpt.get().getName());
             if (printerOpt.get().getType().equals(PrinterType.PREVIEW)) {
-                final byte[] data = print(Converter.toDto(_job), _job.getReportOid(), parameters);
+                final byte[] data = print(_content, _reportOid, parameters);
                 final String key = RandomStringUtils.randomAlphabetic(12);
                 CACHE.put(key, data);
                 ret = Optional.of(PrintResponseDto.builder()
