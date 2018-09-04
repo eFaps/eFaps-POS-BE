@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
+import javax.print.PrintServiceLookup;
+import javax.print.attribute.HashPrintServiceAttributeSet;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -37,6 +39,9 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.data.JsonDataSource;
+import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 
 @Service
 public class PrintService
@@ -62,14 +67,14 @@ public class PrintService
         this.printerRepository = _printerRepository;
     }
 
-    public byte[] print(final Object _object, final String _reportOid, final Map<String, Object> _parameters)
+    public byte[] print2Image(final Object _object, final String _reportOid, final Map<String, Object> _parameters)
     {
         byte[] ret = null;
         try {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Creating report for {}", this.jacksonObjectMapper.writeValueAsString(_object));
             }
-            ret = print(new ByteArrayInputStream(this.jacksonObjectMapper.writeValueAsBytes(_object)),
+            ret = print2Image(new ByteArrayInputStream(this.jacksonObjectMapper.writeValueAsBytes(_object)),
                             this.gridFsService.getContent(_reportOid), _parameters);
         } catch (final IllegalStateException | IOException e) {
             LOG.error("Catched", e);
@@ -77,7 +82,7 @@ public class PrintService
         return ret;
     }
 
-    public byte[] print(final InputStream _json, final InputStream _report, final Map<String, Object> _parameters)
+    public byte[] print2Image(final InputStream _json, final InputStream _report, final Map<String, Object> _parameters)
     {
         byte[] ret = null;
         try {
@@ -122,7 +127,7 @@ public class PrintService
             final Map<String, Object> parameters = new HashMap<>();
             parameters.put("PRINTER", printerOpt.get().getName());
             if (printerOpt.get().getType().equals(PrinterType.PREVIEW)) {
-                final byte[] data = print(_content, _reportOid, parameters);
+                final byte[] data = print2Image(_content, _reportOid, parameters);
                 final String key = RandomStringUtils.randomAlphabetic(12);
                 CACHE.put(key, data);
                 ret = Optional.of(PrintResponseDto.builder()
@@ -130,8 +135,10 @@ public class PrintService
                                 .withPrinter(Converter.toDto(printerOpt.get()))
                                 .build());
             } else {
-                // print to real printer
-                ret = Optional.of(PrintResponseDto.builder().build());
+                print(printerOpt.get().getName(), _content, _reportOid, parameters);
+                ret = Optional.of(PrintResponseDto.builder()
+                                .withPrinter(Converter.toDto(printerOpt.get()))
+                                .build());
             }
         } else {
             ret = Optional.empty();
@@ -142,5 +149,46 @@ public class PrintService
     public byte[] getPreview(final String _key)
     {
         return CACHE.getIfPresent(_key);
+    }
+
+    public void print(final String _printer, final Object _object, final String _reportOid,
+                      final Map<String, Object> _parameters)
+    {
+        try {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Creating report for {}", this.jacksonObjectMapper.writeValueAsString(_object));
+            }
+            final Map<String, Object> parameters = new HashMap<>();
+            if (MapUtils.isNotEmpty(_parameters)) {
+                parameters.putAll(_parameters);
+            }
+            final JsonDataSource datasource = new JsonDataSource(new ByteArrayInputStream(this.jacksonObjectMapper
+                            .writeValueAsBytes(_object)));
+            final JasperPrint jasperPrint = JasperFillManager.fillReport(this.gridFsService.getContent(_reportOid),
+                            parameters, datasource);
+
+            final JRPrintServiceExporter exporter = new JRPrintServiceExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            final SimplePrintServiceExporterConfiguration configuration = new SimplePrintServiceExporterConfiguration();
+            final javax.print.PrintService[] services = PrintServiceLookup.lookupPrintServices(null,
+                            new HashPrintServiceAttributeSet());
+            boolean set = false;
+            for (final javax.print.PrintService service : services) {
+                LOG.debug("Checking for selection {} ", service);
+                if (service.getName().equals(_printer)) {
+                    configuration.setPrintService(service);
+                    set = true;
+                    LOG.debug("Selected {} ", service);
+                    break;
+                }
+            }
+            if (!set && services.length > 0) {
+                configuration.setPrintService(services[0]);
+            }
+            exporter.setConfiguration(configuration);
+            exporter.exportReport();
+        } catch (IllegalStateException | JRException | IOException e) {
+            LOG.error("Catched", e);
+        }
     }
 }
