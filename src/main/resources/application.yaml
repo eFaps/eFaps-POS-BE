@@ -21,6 +21,8 @@ org:
     jobs:
       syncPayables: # syncs Receipts, Invoices and Tickets with related Balances
         interval: 120  #Interval in seconds
+      syncContacts:
+        interval: 300
 
 efaps:
   baseUrl: http://localhost:8888/eFaps

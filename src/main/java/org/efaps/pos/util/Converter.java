@@ -862,6 +862,6 @@ public final class Converter
 
     public static ContactDto getContactDto(final String _contactOid)
     {
-        return Converter.toDto(INSTANCE.contactService.getContact(_contactOid));
+        return Converter.toDto(INSTANCE.contactService.findContact(_contactOid));
     }
 }

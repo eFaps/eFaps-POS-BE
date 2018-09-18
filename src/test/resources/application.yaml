@@ -11,6 +11,8 @@ org:
     jobs:
       syncPayables:
         interval: 120  #Interval in seconds
+      syncContacts:
+        interval: 300
 
 name: POS-Backend-Test
 
@@ -38,7 +40,7 @@ sso:
   client_secret:
   username:
   password:
-  
+
 jwt:
   secret: ThisIsNotVerySecret
   expiration: 1000

@@ -17,6 +17,7 @@
 package org.efaps.pos.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 
@@ -73,6 +74,39 @@ public class ContactServiceTest
 
         final Contact contact = this.contactService.getContact("1.3");
         assertEquals("1.3", contact.getOid());
+    }
+
+    @Test
+    public void testFindContactByOid()
+    {
+        this.mongoTemplate.save(new Contact().setOid("1.1"));
+        this.mongoTemplate.save(new Contact().setOid("1.2"));
+        this.mongoTemplate.save(new Contact().setOid("1.3"));
+
+        final Contact contact = this.contactService.findContact("1.3");
+        assertEquals("1.3", contact.getOid());
+    }
+
+    @Test
+    public void testFindContactById()
+    {
+        this.mongoTemplate.save(new Contact().setOid("1.1").setId("FirstId"));
+        this.mongoTemplate.save(new Contact().setOid("1.2").setId("SecondId"));
+        this.mongoTemplate.save(new Contact().setOid("1.3").setId("ThirdId"));
+
+        final Contact contact = this.contactService.findContact("ThirdId");
+        assertEquals("1.3", contact.getOid());
+    }
+
+    @Test
+    public void testFindContactReturnNull()
+    {
+        this.mongoTemplate.save(new Contact().setOid("1.1").setId("FirstId"));
+        this.mongoTemplate.save(new Contact().setOid("1.2").setId("SecondId"));
+        this.mongoTemplate.save(new Contact().setOid("1.3").setId("ThirdId"));
+
+        final Contact contact = this.contactService.findContact("Cannot be found");
+        assertNull(contact);
     }
 
     @Test

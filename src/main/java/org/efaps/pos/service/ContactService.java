@@ -36,7 +36,13 @@ public class ContactService
 
     public Contact getContact(final String _oid)
     {
+
         return this.contactRepository.findOneByOid(_oid).orElse(null);
+    }
+
+    public Contact findContact(final String _key)
+    {
+        return this.contactRepository.findOneByOid(_key).orElse(this.contactRepository.findById(_key).orElse(null));
     }
 
     public List<Contact> getContacts()

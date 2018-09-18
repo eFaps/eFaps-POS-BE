@@ -27,6 +27,10 @@ public class QuartzConfig
     @Value("${org.quartz.jobs.syncPayables.interval}")
     private Integer syncPayablesInterval;
 
+    /** The sync interval for receipts. */
+    @Value("${org.quartz.jobs.syncContacts.interval}")
+    private Integer syncContactsInterval;
+
     @Autowired
     public QuartzConfig(final SyncService _syncService)
     {
@@ -49,6 +53,25 @@ public class QuartzConfig
         stFactory.setJobDetail(syncPayablesJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(180 * 1000);
         stFactory.setRepeatInterval(this.syncPayablesInterval * 1000);
+        return stFactory;
+    }
+
+    @Bean
+    public MethodInvokingJobDetailFactoryBean syncContactsJobDetailFactoryBean()
+    {
+        final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
+        obj.setTargetObject(this.syncService);
+        obj.setTargetMethod("syncContacts");
+        return obj;
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean syncContactsTriggerFactoryBean()
+    {
+        final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
+        stFactory.setJobDetail(syncContactsJobDetailFactoryBean().getObject());
+        stFactory.setStartDelay(180 * 1000);
+        stFactory.setRepeatInterval(this.syncContactsInterval * 1000);
         return stFactory;
     }
 

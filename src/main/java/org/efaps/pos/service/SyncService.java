@@ -277,6 +277,7 @@ public class SyncService
 
     public void syncPayables()
     {
+        syncContactsUp();
         syncBalance();
         syncReceipts();
         syncInvoices();
