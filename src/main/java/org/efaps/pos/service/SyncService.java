@@ -496,11 +496,11 @@ public class SyncService
                 final Sequence es = seqOpt.get();
                 if (es.getSeq() < sequence.getSeq()) {
                     es.setSeq(sequence.getSeq());
-                    this.sequenceRepository.save(sequence);
+                    this.sequenceRepository.save(es);
                 }
                 if (!es.getFormat().equals(sequence.getFormat())) {
                     es.setFormat(sequence.getFormat());
-                    this.sequenceRepository.save(sequence);
+                    this.sequenceRepository.save(es);
                 }
             } else {
                 this.sequenceRepository.save(sequence);
