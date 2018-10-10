@@ -17,7 +17,6 @@
 package org.efaps.pos.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,7 +26,6 @@ import java.util.Collections;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.dto.CategoryDto;
-import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.DocStatus;
@@ -813,7 +811,6 @@ public class ConverterTest
                         .withReceiptSeqOid("3998.15")
                         .withInvoiceSeqOid("29d98.15")
                         .withTicketSeqOid("1998.15")
-                        .withCompany(CompanyDto.builder().build())
                         .build();
         final Pos entity = Converter.toEntity(dto);
         assertEquals(entity.getOid(), dto.getOid());
@@ -823,7 +820,6 @@ public class ConverterTest
         assertEquals(entity.getReceiptSeqOid(), dto.getReceiptSeqOid());
         assertEquals(entity.getInvoiceSeqOid(), dto.getInvoiceSeqOid());
         assertEquals(entity.getTicketSeqOid(), dto.getTicketSeqOid());
-        assertNotNull(dto.getCompany());
     }
 
     @Test

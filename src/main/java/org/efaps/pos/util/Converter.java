@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
-import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.InventoryEntryDto;
@@ -60,7 +59,6 @@ import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Payment;
 import org.efaps.pos.entity.Pos;
-import org.efaps.pos.entity.Pos.Company;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.ProductRelation;
@@ -358,12 +356,6 @@ public final class Converter
                         .withReceiptSeqOid(_entity.getReceiptSeqOid())
                         .withInvoiceSeqOid(_entity.getInvoiceSeqOid())
                         .withTicketSeqOid(_entity.getTicketSeqOid())
-                        .withCompany(_entity.getCompany() == null
-                            ? null
-                            : CompanyDto.builder()
-                                        .withName(_entity.getCompany().getName())
-                                        .withTaxNumber(_entity.getCompany().getTaxNumber())
-                                        .build())
                         .build();
     }
 
@@ -376,10 +368,7 @@ public final class Converter
                         .setDefaultContactOid(_dto.getDefaultContactOid())
                         .setReceiptSeqOid(_dto.getReceiptSeqOid())
                         .setInvoiceSeqOid(_dto.getInvoiceSeqOid())
-                        .setTicketSeqOid(_dto.getTicketSeqOid())
-                        .setCompany(new Company()
-                                    .setName(_dto.getCompany() == null ? null : _dto.getCompany().getName())
-                                    .setTaxNumber(_dto.getCompany() == null ? null : _dto.getCompany().getTaxNumber()));
+                        .setTicketSeqOid(_dto.getTicketSeqOid());
         return ret;
     }
 

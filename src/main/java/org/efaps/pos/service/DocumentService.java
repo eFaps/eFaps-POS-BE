@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.efaps.pos.dto.CompanyDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
@@ -52,7 +51,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class DocumentService
@@ -267,10 +265,6 @@ public class DocumentService
     {
         final String name = _pos.getName();
         final String currency = _pos.getCurrency();
-        final CompanyDto companyDto = CompanyDto.builder()
-                        .withName(_pos.getCompany().getName())
-                        .withTaxNumber(_pos.getCompany().getTaxNumber())
-                        .build();
         final ContactDto contactDto = Converter.toDto(
                         this.contactService.getContact(_pos.getDefaultContactOid()));
 
@@ -287,12 +281,6 @@ public class DocumentService
             public String getCurrency()
             {
                 return currency;
-            }
-
-            @Override
-            public CompanyDto getCompany()
-            {
-                return companyDto;
             }
 
             @Override
