@@ -96,16 +96,29 @@ public class DocumentService
         this.ticketListeners = _ticketListeners.isPresent() ? _ticketListeners.get() : Collections.emptyList();
     }
 
-    public Order getOrder(final String _orderid) {
+    public Order getOrder(final String _orderid)
+    {
         return this.orderRepository.findById(_orderid).orElse(null);
     }
 
-    public List<Order> getOrders() {
+    public List<Order> getOrders()
+    {
         return this.orderRepository.findAll();
     }
 
-    public Collection<Order> getOrders4Spots() {
+    public Collection<Order> getOrders(final DocStatus _status)
+    {
+        return this.orderRepository.findByStatus(_status);
+    }
+
+    public Collection<Order> getOrders4Spots()
+    {
         return this.orderRepository.findBySpotIsNotNull();
+    }
+
+    public Collection<Order> findOrders(final String _term)
+    {
+        return this.orderRepository.findByNumberLikeIgnoreCase(_term);
     }
 
     public Order createOrder(final Order _order)
@@ -121,7 +134,8 @@ public class DocumentService
         return this.orderRepository.save(_order);
     }
 
-    private void verifyDocument(final AbstractDocument<?> _document) {
+    private void verifyDocument(final AbstractDocument<?> _document)
+    {
         final BigDecimal netTotal = _document.getNetTotal().setScale(2, RoundingMode.HALF_UP);
         _document.setNetTotal(netTotal);
         BigDecimal taxTotal = BigDecimal.ZERO;

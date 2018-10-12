@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
@@ -101,6 +102,21 @@ public class DocumentController
                         ? this.documentService.getOrders4Spots()
                         : this.documentService.getOrders();
         return orders.stream()
+                        .map(_order -> Converter.toDto(_order))
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE, params = { "status" })
+    public List<PosOrderDto> getOrders(@RequestParam(name = "status") final DocStatus _status)
+    {
+        return this.documentService.getOrders(_status).stream()
+                        .map(_order -> Converter.toDto(_order))
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
+    public List<PosOrderDto> findOrders(@RequestParam(name = "term") final String _term) {
+        return this.documentService.findOrders(_term).stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
     }

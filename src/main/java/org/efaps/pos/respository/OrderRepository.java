@@ -19,6 +19,7 @@ package org.efaps.pos.respository;
 
 import java.util.Collection;
 
+import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.entity.Order;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -26,4 +27,8 @@ public interface OrderRepository
     extends MongoRepository<Order, String>
 {
     Collection<Order> findBySpotIsNotNull();
+
+    Collection<Order> findByStatus(DocStatus _status);
+
+    Collection<Order> findByNumberLikeIgnoreCase(String _term);
 }
