@@ -26,11 +26,11 @@
         <version>11.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>efaps-pos-be</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
-        <spring.boot.version>2.1.5.RELEASE</spring.boot.version>
+        <spring.boot.version>2.2.0.M2</spring.boot.version>
         <junit.jupiter.version>5.4.2</junit.jupiter.version>
         <junit.platform.version>1.4.2</junit.platform.version>
     </properties>

@@ -20,11 +20,7 @@ package org.efaps.pos;
 import java.net.URI;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@EnableConfigurationProperties
 @ConfigurationProperties
 public class ConfigProperties
 {
@@ -39,27 +35,27 @@ public class ConfigProperties
 
     public String getName()
     {
-        return this.name;
+        return name;
     }
 
     public void setName(final String _name)
     {
-        this.name = _name;
+        name = _name;
     }
 
     public SSO getSso()
     {
-        return this.sso;
+        return sso;
     }
 
     public EFaps getEFaps()
     {
-        return this.efaps;
+        return efaps;
     }
 
     public BasicAuth getAuth()
     {
-        return this.auth;
+        return auth;
     }
 
     public static class BasicAuth
@@ -70,22 +66,22 @@ public class ConfigProperties
 
         public String getPassword()
         {
-            return this.password;
+            return password;
         }
 
         public void setPassword(final String _password)
         {
-            this.password = _password;
+            password = _password;
         }
 
         public String getUser()
         {
-            return this.user;
+            return user;
         }
 
         public void setUser(final String _user)
         {
-            this.user = _user;
+            user = _user;
         }
     }
 
@@ -113,182 +109,182 @@ public class ConfigProperties
 
         public URI getBaseUrl()
         {
-            return this.baseUrl;
+            return baseUrl;
         }
 
         public void setBaseUrl(final URI _baseUrl)
         {
-            this.baseUrl = _baseUrl;
+            baseUrl = _baseUrl;
         }
 
         public String getProductPath()
         {
-            return this.productPath;
+            return productPath;
         }
 
         public void setProductPath(final String _productPath)
         {
-            this.productPath = _productPath;
+            productPath = _productPath;
         }
 
         public String getCategoryPath()
         {
-            return this.categoryPath;
+            return categoryPath;
         }
 
         public void setCategoryPath(final String _categoryPath)
         {
-            this.categoryPath = _categoryPath;
+            categoryPath = _categoryPath;
         }
 
         public String getWorkspacePath()
         {
-            return this.workspacePath;
+            return workspacePath;
         }
 
         public void setWorkspacePath(final String _workspacePath)
         {
-            this.workspacePath = _workspacePath;
+            workspacePath = _workspacePath;
         }
 
         public String getPosPath()
         {
-            return this.posPath;
+            return posPath;
         }
 
         public void setPosPath(final String _posPath)
         {
-            this.posPath = _posPath;
+            posPath = _posPath;
         }
 
         public String getUserPath()
         {
-            return this.userPath;
+            return userPath;
         }
 
         public void setUserPath(final String _userPath)
         {
-            this.userPath = _userPath;
+            userPath = _userPath;
         }
 
         public String getReceiptPath()
         {
-            return this.receiptPath;
+            return receiptPath;
         }
 
         public void setReceiptPath(final String _receiptPath)
         {
-            this.receiptPath = _receiptPath;
+            receiptPath = _receiptPath;
         }
 
         public String getCheckoutPath()
         {
-            return this.checkoutPath;
+            return checkoutPath;
         }
 
         public void setCheckoutPath(final String _checkoutPath)
         {
-            this.checkoutPath = _checkoutPath;
+            checkoutPath = _checkoutPath;
         }
 
         public String getSequencePath()
         {
-            return this.sequencePath;
+            return sequencePath;
         }
 
         public void setSequencePath(final String _sequencePath)
         {
-            this.sequencePath = _sequencePath;
+            sequencePath = _sequencePath;
         }
 
         public String getContactPath()
         {
-            return this.contactPath;
+            return contactPath;
         }
 
         public void setContactPath(final String _contactPath)
         {
-            this.contactPath = _contactPath;
+            contactPath = _contactPath;
         }
 
         public String getInvoicePath()
         {
-            return this.invoicePath;
+            return invoicePath;
         }
 
         public void setInvoicePath(final String _invoicePath)
         {
-            this.invoicePath = _invoicePath;
+            invoicePath = _invoicePath;
         }
 
         public String getTicketPath()
         {
-            return this.ticketPath;
+            return ticketPath;
         }
 
         public void setTicketPath(final String _ticketPath)
         {
-            this.ticketPath = _ticketPath;
+            ticketPath = _ticketPath;
         }
 
         public String getWarehousePath()
         {
-            return this.warehousePath;
+            return warehousePath;
         }
 
         public void setWarehousePath(final String _warehousePath)
         {
-            this.warehousePath = _warehousePath;
+            warehousePath = _warehousePath;
         }
 
         public String getInventoryPath()
         {
-            return this.inventoryPath;
+            return inventoryPath;
         }
 
         public void setInventoryPath(final String _inventoryPath)
         {
-            this.inventoryPath = _inventoryPath;
+            inventoryPath = _inventoryPath;
         }
 
         public String getPrinterPath()
         {
-            return this.printerPath;
+            return printerPath;
         }
 
         public void setPrinterPath(final String _printerPath)
         {
-            this.printerPath = _printerPath;
+            printerPath = _printerPath;
         }
 
         public String getConfigPath()
         {
-            return this.configPath;
+            return configPath;
         }
 
         public void setConfigPath(final String _configPath)
         {
-            this.configPath = _configPath;
+            configPath = _configPath;
         }
 
         public String getBalancePath()
         {
-            return this.balancePath;
+            return balancePath;
         }
 
         public void setBalancePath(final String _balancePath)
         {
-            this.balancePath = _balancePath;
+            balancePath = _balancePath;
         }
 
         public String getBackendPath()
         {
-            return this.backendPath;
+            return backendPath;
         }
 
         public void setBackendPath(final String _backendPath)
         {
-            this.backendPath = _backendPath;
+            backendPath = _backendPath;
         }
     }
 
@@ -303,52 +299,52 @@ public class ConfigProperties
 
         public String getUrl()
         {
-            return this.url;
+            return url;
         }
 
         public void setUrl(final String _url)
         {
-            this.url = _url;
+            url = _url;
         }
 
         public String getClientId()
         {
-            return this.clientId;
+            return clientId;
         }
 
         public void setClientId(final String _clientId)
         {
-            this.clientId = _clientId;
+            clientId = _clientId;
         }
 
         public String getClientSecret()
         {
-            return this.clientSecret;
+            return clientSecret;
         }
 
         public void setClientSecret(final String _clientSecret)
         {
-            this.clientSecret = _clientSecret;
+            clientSecret = _clientSecret;
         }
 
         public String getUsername()
         {
-            return this.username;
+            return username;
         }
 
         public void setUsername(final String _username)
         {
-            this.username = _username;
+            username = _username;
         }
 
         public String getPassword()
         {
-            return this.password;
+            return password;
         }
 
         public void setPassword(final String _password)
         {
-            this.password = _password;
+            password = _password;
         }
 
     }
