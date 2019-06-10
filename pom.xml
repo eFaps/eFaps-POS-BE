@@ -30,7 +30,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <spring.boot.version>2.2.0.M2</spring.boot.version>
+        <spring.boot.version>2.2.0.M3</spring.boot.version>
         <junit.jupiter.version>5.4.2</junit.jupiter.version>
         <junit.platform.version>1.4.2</junit.platform.version>
     </properties>
@@ -140,12 +140,12 @@
         <dependency>
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
-            <version>1.9.2</version>
+            <version>1.9.3</version>
         </dependency>
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.8.0</version>
+            <version>6.8.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
