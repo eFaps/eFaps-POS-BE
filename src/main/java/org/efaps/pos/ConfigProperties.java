@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ConfigProperties {
 
   private String name;
+
+  private String mongoClientURI;
 
   private final SSO sso = new SSO();
 
@@ -62,6 +64,14 @@ public class ConfigProperties {
 
   public void setCompanies(final List<Company> _companies) {
     companies = _companies;
+  }
+
+  public String getMongoClientURI() {
+    return mongoClientURI;
+  }
+
+  public void setMongoClientURI(final String mongoClientURI) {
+    this.mongoClientURI = mongoClientURI;
   }
 
   public static class BasicAuth {
@@ -304,7 +314,7 @@ public class ConfigProperties {
   public static class Company {
     private String label;
     private String key;
-    private String prefix;
+    private String tenant;
 
     public String getLabel() {
       return label;
@@ -322,12 +332,12 @@ public class ConfigProperties {
       key = _key;
     }
 
-    public String getPrefix() {
-      return prefix;
+    public String getTenant() {
+      return tenant;
     }
 
-    public void setPrefix(final String _prefix) {
-      prefix = _prefix;
+    public void setTenant(final String _tenant) {
+      tenant = _tenant;
     }
   }
 }

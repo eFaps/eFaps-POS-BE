@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
@@ -43,7 +44,6 @@ import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.Identifier;
 import org.efaps.pos.sso.SSOClient;
-import org.efaps.pos.util.Context;
 import org.efaps.pos.util.IdentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -15,21 +15,26 @@
  *
  */
 
-package org.efaps.pos.repository;
+package org.efaps.pos.context;
 
-import java.util.Collection;
-import java.util.Optional;
+import org.efaps.pos.ConfigProperties.Company;
 
-import org.efaps.pos.dto.BalanceStatus;
-import org.efaps.pos.entity.Balance;
-import org.springframework.data.mongodb.repository.MongoRepository;
+public class Context {
 
-public interface BalanceRepository
-    extends MongoRepository<Balance, String>
-{
-    Optional<Balance> findOneByUserOidAndStatus(String _userOid, BalanceStatus _status);
+  private static final ThreadLocal<Context> CONTEXT = ThreadLocal.withInitial(() -> new Context());
 
-    Collection<Balance> findByOidIsNull();
+  private  Company company;
 
-    Collection<Balance> findBySyncedIsFalseAndStatus(BalanceStatus _status);
+  public Company getCompany() {
+    return company;
+  }
+
+  public void setCompany(final Company _company) {
+    company = _company;
+  }
+
+  public static Context get() {
+    return CONTEXT.get();
+  }
+
 }

@@ -15,26 +15,25 @@
  *
  */
 
-package org.efaps.pos.util;
+package org.efaps.pos.context;
 
-import org.efaps.pos.ConfigProperties.Company;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoDatabase;
 
-public class Context {
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
-  private static final ThreadLocal<Context> CONTEXT = ThreadLocal.withInitial(() -> new Context());
+public class MultiTenantMongoDbFactory extends SimpleMongoDbFactory {
 
-  private  Company company;
-
-  public Company getCompany() {
-    return company;
+  public MultiTenantMongoDbFactory(final MongoClientURI _uri) {
+    super(_uri);
   }
 
-  public void setCompany(final Company _company) {
-    company = _company;
+  @Override
+  public MongoDatabase getDb() throws DataAccessException {
+    if (Context.get().getCompany() != null) {
+      return getDb(Context.get().getCompany().getTenant());
+    }
+    return super.getDb("eFaps");
   }
-
-  public static Context get() {
-    return CONTEXT.get();
-  }
-
 }

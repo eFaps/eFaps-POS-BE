@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package org.efaps.pos;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.efaps.pos.ConfigProperties.Company;
+import org.efaps.pos.context.Context;
 import org.efaps.pos.service.DemoService;
 import org.efaps.pos.service.SyncService;
-import org.efaps.pos.util.Context;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
