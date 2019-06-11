@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.respository;
+package org.efaps.pos.repository;
 
-import java.util.List;
+import java.util.Optional;
 
-import org.efaps.pos.entity.Job;
+import org.efaps.pos.entity.Warehouse;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface JobRepository
-    extends MongoRepository<Job, String>
+public interface WarehouseRepository
+    extends MongoRepository<Warehouse, String>
 {
-    List<Job> findByDocumentId(String _documentId);
+    Optional<Warehouse> findOneByOid(String _oid);
 }

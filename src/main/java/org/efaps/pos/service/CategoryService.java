@@ -20,7 +20,7 @@ package org.efaps.pos.service;
 import java.util.List;
 
 import org.efaps.pos.entity.Category;
-import org.efaps.pos.respository.CategoryRepository;
+import org.efaps.pos.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

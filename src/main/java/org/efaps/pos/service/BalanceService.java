@@ -23,7 +23,7 @@ import java.util.Optional;
 import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.User;
-import org.efaps.pos.respository.BalanceRepository;
+import org.efaps.pos.repository.BalanceRepository;
 import org.springframework.stereotype.Service;
 
 @Service

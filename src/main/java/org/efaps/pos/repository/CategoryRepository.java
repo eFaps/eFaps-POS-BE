@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.respository;
+package org.efaps.pos.repository;
 
 import org.efaps.pos.entity.Category;
 import org.springframework.data.mongodb.repository.MongoRepository;

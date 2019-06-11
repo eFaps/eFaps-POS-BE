@@ -14,20 +14,15 @@
  * limitations under the License.
  *
  */
+package org.efaps.pos.repository;
 
-package org.efaps.pos.respository;
+import java.util.List;
 
-import java.util.Collection;
-
-import org.efaps.pos.entity.Ticket;
+import org.efaps.pos.entity.Product;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface TicketRepository
-    extends MongoRepository<Ticket, String>
+public interface ProductRepository
+    extends MongoRepository<Product, String>
 {
-    Collection<Ticket> findByOidIsNull();
-
-    Collection<Ticket> findByContactOid(String _contactOid);
-
-    Collection<Ticket> findByBalanceOid(String _balanceOid);
+    List<Product> findByDescriptionLikeIgnoreCase(String _term);
 }

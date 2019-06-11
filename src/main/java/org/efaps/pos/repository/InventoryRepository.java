@@ -14,22 +14,17 @@
  * limitations under the License.
  *
  */
-
-package org.efaps.pos.respository;
+package org.efaps.pos.repository;
 
 import java.util.Collection;
-import java.util.Optional;
 
-import org.efaps.pos.dto.BalanceStatus;
-import org.efaps.pos.entity.Balance;
+import org.efaps.pos.entity.InventoryEntry;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface BalanceRepository
-    extends MongoRepository<Balance, String>
+public interface InventoryRepository
+    extends MongoRepository<InventoryEntry, String>
 {
-    Optional<Balance> findOneByUserOidAndStatus(String _userOid, BalanceStatus _status);
+    Collection<InventoryEntry> findByWarehouseOid(String _warehouseOid);
 
-    Collection<Balance> findByOidIsNull();
-
-    Collection<Balance> findBySyncedIsFalseAndStatus(BalanceStatus _status);
+    Collection<InventoryEntry> findByProductOid(String _productOid);
 }

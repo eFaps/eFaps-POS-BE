@@ -14,14 +14,25 @@
  * limitations under the License.
  *
  */
+package org.efaps.pos.repository;
 
-package org.efaps.pos.respository;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
-import org.efaps.pos.entity.Pos;
+import org.efaps.pos.entity.Contact;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface PosRepository
-    extends MongoRepository<Pos, String>
+public interface ContactRepository
+    extends MongoRepository<Contact, String>
 {
+    Optional<Contact> findOneByOid(String _oid);
 
+    List<Contact> findByOid(String _oid);
+
+    List<Contact> findByIdNumberStartingWith(String _term);
+
+    List<Contact> findByNameStartingWith(String _term);
+
+    Collection<Contact> findByOidIsNull();
 }

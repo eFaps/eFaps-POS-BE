@@ -20,7 +20,7 @@ package org.efaps.pos.service;
 import java.util.List;
 
 import org.efaps.pos.entity.Contact;
-import org.efaps.pos.respository.ContactRepository;
+import org.efaps.pos.repository.ContactRepository;
 import org.springframework.stereotype.Service;
 
 @Service

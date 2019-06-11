@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.respository;
+package org.efaps.pos.repository;
 
 import java.util.List;
 
-import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Job;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface UserRepository
-    extends MongoRepository<User, String>
+public interface JobRepository
+    extends MongoRepository<Job, String>
 {
-    List<User> findUserByVisibleIsTrue();
+    List<Job> findByDocumentId(String _documentId);
 }

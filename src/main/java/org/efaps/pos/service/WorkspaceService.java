@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
-import org.efaps.pos.respository.WorkspaceRepository;
+import org.efaps.pos.repository.WorkspaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -14,13 +14,20 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.respository;
 
-import org.efaps.pos.entity.Printer;
+package org.efaps.pos.repository;
+
+import java.util.Collection;
+
+import org.efaps.pos.entity.Receipt;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface PrinterRepository
-    extends MongoRepository<Printer, String>
+public interface ReceiptRepository
+    extends MongoRepository<Receipt, String>
 {
+    Collection<Receipt> findByOidIsNull();
 
+    Collection<Receipt> findByContactOid(String _contactOid);
+
+    Collection<Receipt> findByBalanceOid(String _balanceOid);
 }

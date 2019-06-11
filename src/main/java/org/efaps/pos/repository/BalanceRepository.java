@@ -15,19 +15,21 @@
  *
  */
 
-package org.efaps.pos.respository;
+package org.efaps.pos.repository;
 
 import java.util.Collection;
+import java.util.Optional;
 
-import org.efaps.pos.entity.Invoice;
+import org.efaps.pos.dto.BalanceStatus;
+import org.efaps.pos.entity.Balance;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface InvoiceRepository
-    extends MongoRepository<Invoice, String>
+public interface BalanceRepository
+    extends MongoRepository<Balance, String>
 {
-    Collection<Invoice> findByOidIsNull();
+    Optional<Balance> findOneByUserOidAndStatus(String _userOid, BalanceStatus _status);
 
-    Collection<Invoice> findByContactOid(String _contactOid);
+    Collection<Balance> findByOidIsNull();
 
-    Collection<Invoice> findByBalanceOid(String _balanceOid);
+    Collection<Balance> findBySyncedIsFalseAndStatus(BalanceStatus _status);
 }

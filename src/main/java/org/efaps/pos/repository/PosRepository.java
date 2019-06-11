@@ -14,17 +14,14 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.respository;
 
-import java.util.Collection;
+package org.efaps.pos.repository;
 
-import org.efaps.pos.entity.InventoryEntry;
+import org.efaps.pos.entity.Pos;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface InventoryRepository
-    extends MongoRepository<InventoryEntry, String>
+public interface PosRepository
+    extends MongoRepository<Pos, String>
 {
-    Collection<InventoryEntry> findByWarehouseOid(String _warehouseOid);
 
-    Collection<InventoryEntry> findByProductOid(String _productOid);
 }

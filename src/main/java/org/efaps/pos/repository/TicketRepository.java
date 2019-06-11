@@ -15,15 +15,19 @@
  *
  */
 
-package org.efaps.pos.respository;
+package org.efaps.pos.repository;
 
-import java.util.Optional;
+import java.util.Collection;
 
-import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.entity.Ticket;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface SequenceRepository
-    extends MongoRepository<Sequence, String>
+public interface TicketRepository
+    extends MongoRepository<Ticket, String>
 {
-    public Optional<Sequence> findByOid(String _oid);
+    Collection<Ticket> findByOidIsNull();
+
+    Collection<Ticket> findByContactOid(String _contactOid);
+
+    Collection<Ticket> findByBalanceOid(String _balanceOid);
 }

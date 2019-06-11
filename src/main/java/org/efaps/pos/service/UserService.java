@@ -19,7 +19,7 @@ package org.efaps.pos.service;
 import java.util.List;
 
 import org.efaps.pos.entity.User;
-import org.efaps.pos.respository.UserRepository;
+import org.efaps.pos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

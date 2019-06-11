@@ -28,7 +28,7 @@ import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Workspace.PrintCmd;
-import org.efaps.pos.respository.PrinterRepository;
+import org.efaps.pos.repository.PrinterRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

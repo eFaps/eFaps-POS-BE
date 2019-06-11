@@ -37,9 +37,9 @@ import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.PrintCmd;
-import org.efaps.pos.respository.CategoryRepository;
-import org.efaps.pos.respository.JobRepository;
-import org.efaps.pos.respository.PrinterRepository;
+import org.efaps.pos.repository.CategoryRepository;
+import org.efaps.pos.repository.JobRepository;
+import org.efaps.pos.repository.PrinterRepository;
 import org.springframework.stereotype.Service;
 
 @Service
