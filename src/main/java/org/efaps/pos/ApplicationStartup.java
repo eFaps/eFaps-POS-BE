@@ -18,8 +18,10 @@
 package org.efaps.pos;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.efaps.pos.ConfigProperties.Company;
 import org.efaps.pos.service.DemoService;
 import org.efaps.pos.service.SyncService;
+import org.efaps.pos.util.Context;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -34,39 +36,53 @@ public class ApplicationStartup
     private final SyncService service;
     private final DemoService demoService;
     private final Environment env;
+    private final ConfigProperties configProperties;
 
     public ApplicationStartup(final Environment _env,
+                              final ConfigProperties _configProperties,
                               final SyncService _service,
                               final DemoService _demoService)
     {
-        this.env = _env;
-        this.service = _service;
-        this.demoService = _demoService;
+        env = _env;
+        configProperties = _configProperties;
+        service = _service;
+        demoService = _demoService;
     }
 
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent _event)
     {
-        if (ArrayUtils.contains(this.env.getActiveProfiles(), "demo")) {
-            this.demoService.init();
+        if (ArrayUtils.contains(env.getActiveProfiles(), "demo")) {
+            demoService.init();
         } else {
-            this.service.syncProducts();
-            this.service.syncCategories();
-            this.service.syncPOSs();
-            this.service.syncWorkspaces();
-            this.service.syncUsers();
-            this.service.syncBalance();
-            this.service.syncReceipts();
-            this.service.syncInvoices();
-            this.service.syncTickets();
-            this.service.syncSequences();
-            this.service.syncContacts();
-            this.service.syncWarehouses();
-            this.service.syncInventory();
-            this.service.syncPrinters();
-            this.service.syncProperties();
-            this.service.syncImages();
-            this.service.syncReports();
+          if (configProperties.getCompanies().size() > 0) {
+            for (final Company company : configProperties.getCompanies()) {
+              Context.get().setCompany(company);
+              sync();
+            }
+          } else {
+            sync();
+          }
         }
+    }
+
+    private void sync() {
+      service.syncProducts();
+      service.syncCategories();
+      service.syncPOSs();
+      service.syncWorkspaces();
+      service.syncUsers();
+      service.syncBalance();
+      service.syncReceipts();
+      service.syncInvoices();
+      service.syncTickets();
+      service.syncSequences();
+      service.syncContacts();
+      service.syncWarehouses();
+      service.syncInventory();
+      service.syncPrinters();
+      service.syncProperties();
+      service.syncImages();
+      service.syncReports();
     }
 }
