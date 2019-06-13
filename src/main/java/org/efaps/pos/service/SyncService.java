@@ -21,6 +21,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -30,8 +32,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.ConfigProperties.Company;
 import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.dto.ContactDto;
@@ -101,6 +106,7 @@ public class SyncService
     private final PrinterRepository printerRepository;
     private final WorkspaceRepository workspaceRepository;
     private final BalanceRepository balanceRepository;
+    private final ConfigProperties configProperties;
 
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
@@ -117,48 +123,65 @@ public class SyncService
                        final PrinterRepository _printerRepository,
                        final WorkspaceRepository _workspaceRepository,
                        final BalanceRepository _balanceRepository,
-                       final EFapsClient _eFapsClient)
+                       final EFapsClient _eFapsClient,
+                       final ConfigProperties _configProperties)
     {
-        this.mongoTemplate = _mongoTemplate;
-        this.gridFsTemplate = _gridFsTemplate;
-        this.receiptRepository = _receiptRepository;
-        this.invoiceRepository = _invoiceRepository;
-        this.ticketRepository = _ticketRepository;
-        this.productRepository = _productRepository;
-        this.sequenceRepository = _sequenceRepository;
-        this.contactRepository = _contactRepository;
-        this.userRepository = _userRepository;
-        this.warehouseRepository = _warehouseRepository;
-        this.inventoryRepository = _inventoryRepository;
-        this.printerRepository = _printerRepository;
-        this.workspaceRepository = _workspaceRepository;
-        this.balanceRepository = _balanceRepository;
-        this.eFapsClient = _eFapsClient;
+        mongoTemplate = _mongoTemplate;
+        gridFsTemplate = _gridFsTemplate;
+        receiptRepository = _receiptRepository;
+        invoiceRepository = _invoiceRepository;
+        ticketRepository = _ticketRepository;
+        productRepository = _productRepository;
+        sequenceRepository = _sequenceRepository;
+        contactRepository = _contactRepository;
+        userRepository = _userRepository;
+        warehouseRepository = _warehouseRepository;
+        inventoryRepository = _inventoryRepository;
+        printerRepository = _printerRepository;
+        workspaceRepository = _workspaceRepository;
+        balanceRepository = _balanceRepository;
+        eFapsClient = _eFapsClient;
+        configProperties = _configProperties;
+    }
+
+    public void runSyncJob(final String _methodName)
+        throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
+        InvocationTargetException
+    {
+        final Method method = getClass().getMethod(_methodName);
+        if (configProperties.getCompanies().size() > 0) {
+            for (final Company company : configProperties.getCompanies()) {
+                Context.get().setCompany(company);
+                method.invoke(this);
+            }
+        } else {
+            method.invoke(this);
+        }
     }
 
     public void syncProperties()
     {
         LOG.info("Syncing Properties");
-        final Map<String, String> properties = this.eFapsClient.getProperties();
+        final Map<String, String> properties = eFapsClient.getProperties();
         final Config config = new Config().setId(Config.KEY).setProperties(properties);
-        this.mongoTemplate.save(config);
+        mongoTemplate.save(config);
     }
 
     public void syncProducts()
     {
         LOG.info("Syncing Products");
-        final List<Product> products = this.eFapsClient.getProducts().stream()
+        final List<Product> products = eFapsClient.getProducts().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         if (!products.isEmpty()) {
-            final List<Product> existingProducts = this.mongoTemplate.findAll(Product.class);
+            final List<Product> existingProducts = mongoTemplate.findAll(Product.class);
             existingProducts.forEach(existing -> {
                 if (!products.stream().filter(product -> product.getOid().equals(existing.getOid())).findFirst()
                                 .isPresent()) {
-                    this.mongoTemplate.remove(existing);
+                    mongoTemplate.remove(existing);
                 }
             });
-            products.forEach(product -> this.mongoTemplate.save(product));
+            products.forEach(product -> mongoTemplate.save(product));
         }
         registerSync(StashId.PRODUCTSYNC);
     }
@@ -166,19 +189,19 @@ public class SyncService
     public void syncCategories()
     {
         LOG.info("Syncing Categories");
-        final List<Category> categories = this.eFapsClient.getCategories().stream()
+        final List<Category> categories = eFapsClient.getCategories().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         if (!categories.isEmpty()) {
-            final List<Category> existingCategories = this.mongoTemplate.findAll(Category.class);
+            final List<Category> existingCategories = mongoTemplate.findAll(Category.class);
             existingCategories.forEach(existing -> {
                 if (!categories.stream()
                                 .filter(category -> category.getOid().equals(existing.getOid())).findFirst()
                                 .isPresent()) {
-                    this.mongoTemplate.remove(existing);
+                    mongoTemplate.remove(existing);
                 }
             });
-            categories.forEach(category -> this.mongoTemplate.save(category));
+            categories.forEach(category -> mongoTemplate.save(category));
         }
         registerSync(StashId.CATEGORYSYNC);
     }
@@ -186,19 +209,19 @@ public class SyncService
     public void syncWorkspaces()
     {
         LOG.info("Syncing Workspaces");
-        final List<Workspace> workspaces = this.eFapsClient.getWorkspaces().stream()
+        final List<Workspace> workspaces = eFapsClient.getWorkspaces().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         if (!workspaces.isEmpty()) {
-            final List<Workspace> existingWorkspaces = this.workspaceRepository.findAll();
+            final List<Workspace> existingWorkspaces = workspaceRepository.findAll();
             existingWorkspaces.forEach(existing -> {
                 if (!workspaces.stream()
                                 .filter(workspace -> workspace.getOid().equals(existing.getOid())).findFirst()
                                 .isPresent()) {
-                    this.workspaceRepository.delete(existing);
+                    workspaceRepository.delete(existing);
                 }
             });
-            workspaces.forEach(workspace -> this.workspaceRepository.save(workspace));
+            workspaces.forEach(workspace -> workspaceRepository.save(workspace));
         }
         registerSync(StashId.WORKSPACESYNC);
     }
@@ -206,12 +229,12 @@ public class SyncService
     public void syncWarehouses()
     {
         LOG.info("Syncing Warehouses");
-        final List<Warehouse> warehouses = this.eFapsClient.getWarehouses().stream()
+        final List<Warehouse> warehouses = eFapsClient.getWarehouses().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         if (!warehouses.isEmpty()) {
-            this.warehouseRepository.deleteAll();
-            warehouses.forEach(workspace -> this.warehouseRepository.save(workspace));
+            warehouseRepository.deleteAll();
+            warehouses.forEach(workspace -> warehouseRepository.save(workspace));
         }
         registerSync(StashId.WAREHOUSESYNC);
     }
@@ -219,12 +242,12 @@ public class SyncService
     public void syncInventory()
     {
         LOG.info("Syncing Inventory");
-        final List<InventoryEntry> entries = this.eFapsClient.getInventory().stream()
+        final List<InventoryEntry> entries = eFapsClient.getInventory().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         if (!entries.isEmpty()) {
-            this.inventoryRepository.deleteAll();
-            entries.forEach(workspace -> this.inventoryRepository.save(workspace));
+            inventoryRepository.deleteAll();
+            entries.forEach(workspace -> inventoryRepository.save(workspace));
         }
         registerSync(StashId.WAREHOUSESYNC);
     }
@@ -232,12 +255,12 @@ public class SyncService
     public void syncPrinters()
     {
         LOG.info("Syncing Printers");
-        final List<Printer> printers = this.eFapsClient.getPrinters().stream()
+        final List<Printer> printers = eFapsClient.getPrinters().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         if (!printers.isEmpty()) {
-            this.printerRepository.deleteAll();
-            printers.forEach(printer -> this.printerRepository.save(printer));
+            printerRepository.deleteAll();
+            printers.forEach(printer -> printerRepository.save(printer));
         }
         registerSync(StashId.PRINTERSYNC);
     }
@@ -245,19 +268,19 @@ public class SyncService
     public void syncPOSs()
     {
         LOG.info("Syncing POSs");
-        final List<Pos> poss = this.eFapsClient.getPOSs().stream()
+        final List<Pos> poss = eFapsClient.getPOSs().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         if (!poss.isEmpty()) {
-            final List<Pos> existingPoss = this.mongoTemplate.findAll(Pos.class);
+            final List<Pos> existingPoss = mongoTemplate.findAll(Pos.class);
             existingPoss.forEach(existing -> {
                 if (!poss.stream()
                                 .filter(pos -> pos.getOid().equals(existing.getOid())).findFirst()
                                 .isPresent()) {
-                    this.mongoTemplate.remove(existing);
+                    mongoTemplate.remove(existing);
                 }
             });
-            poss.forEach(pos -> this.mongoTemplate.save(pos));
+            poss.forEach(pos -> mongoTemplate.save(pos));
         }
         registerSync(StashId.POSSYNC);
     }
@@ -265,12 +288,12 @@ public class SyncService
     public void syncUsers()
     {
         LOG.info("Syncing Users");
-        final List<User> users = this.eFapsClient.getUsers().stream()
+        final List<User> users = eFapsClient.getUsers().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         if (!users.isEmpty()) {
-            this.userRepository.deleteAll();
-            users.forEach(user -> this.userRepository.save(user));
+            userRepository.deleteAll();
+            users.forEach(user -> userRepository.save(user));
         }
         registerSync(StashId.USERSYNC);
     }
@@ -287,48 +310,48 @@ public class SyncService
     public void syncBalance()
     {
         LOG.info("Syncing Balance");
-        final Collection<BalanceDto> tosync = this.balanceRepository.findByOidIsNull().stream()
+        final Collection<BalanceDto> tosync = balanceRepository.findByOidIsNull().stream()
                         .map(receipt -> Converter.toDto(receipt))
                         .collect(Collectors.toList());
         for (final BalanceDto dto : tosync) {
             LOG.debug("Syncing Balance: {}", dto);
-            final BalanceDto recDto = this.eFapsClient.postBalance(dto);
+            final BalanceDto recDto = eFapsClient.postBalance(dto);
             LOG.debug("received Balance: {}", recDto);
             if (recDto.getOid() != null) {
-                final Optional<Balance> balanceOpt = this.balanceRepository.findById(recDto.getId());
+                final Optional<Balance> balanceOpt = balanceRepository.findById(recDto.getId());
                 if (balanceOpt.isPresent()) {
                     final Balance balance = balanceOpt.get();
                     balance.setOid(recDto.getOid());
-                    this.balanceRepository.save(balance);
-                    final Collection<Receipt> reciepts = this.receiptRepository.findByBalanceOid(balance.getId());
+                    balanceRepository.save(balance);
+                    final Collection<Receipt> reciepts = receiptRepository.findByBalanceOid(balance.getId());
                     reciepts.forEach(_doc -> {
                         _doc.setBalanceOid(balance.getOid());
-                        this.receiptRepository.save(_doc);
+                        receiptRepository.save(_doc);
                     });
-                    final Collection<Invoice> invoices = this.invoiceRepository.findByBalanceOid(balance.getId());
+                    final Collection<Invoice> invoices = invoiceRepository.findByBalanceOid(balance.getId());
                     invoices.forEach(_doc -> {
                         _doc.setBalanceOid(balance.getOid());
-                        this.invoiceRepository.save(_doc);
+                        invoiceRepository.save(_doc);
                     });
-                    final Collection<Ticket> tickets = this.ticketRepository.findByBalanceOid(balance.getId());
+                    final Collection<Ticket> tickets = ticketRepository.findByBalanceOid(balance.getId());
                     tickets.forEach(_doc -> {
                         _doc.setBalanceOid(balance.getOid());
-                        this.ticketRepository.save(_doc);
+                        ticketRepository.save(_doc);
                     });
                 }
             }
         }
-        final Collection<BalanceDto> tosync2 = this.balanceRepository.findBySyncedIsFalseAndStatus(BalanceStatus.CLOSED)
+        final Collection<BalanceDto> tosync2 = balanceRepository.findBySyncedIsFalseAndStatus(BalanceStatus.CLOSED)
                         .stream()
                         .map(balance -> Converter.toDto(balance))
                         .collect(Collectors.toList());
         for (final BalanceDto dto : tosync2) {
-            if (this.eFapsClient.putBalance(dto)) {
-                final Optional<Balance> balanceOpt = this.balanceRepository.findById(dto.getId());
+            if (eFapsClient.putBalance(dto)) {
+                final Optional<Balance> balanceOpt = balanceRepository.findById(dto.getId());
                 if (balanceOpt.isPresent()) {
                     final Balance balance = balanceOpt.get();
                     balance.setSynced(true);
-                    this.balanceRepository.save(balance);
+                    balanceRepository.save(balance);
                 }
             }
         }
@@ -338,18 +361,18 @@ public class SyncService
     public void syncReceipts()
     {
         LOG.info("Syncing Receipts");
-        final Collection<Receipt> tosync = this.receiptRepository.findByOidIsNull();
+        final Collection<Receipt> tosync = receiptRepository.findByOidIsNull();
         for (final Receipt receipt : tosync) {
             if (validateContact(receipt) && verifyBalance(receipt)) {
                 LOG.debug("Syncing Receipt: {}", receipt);
-                final ReceiptDto recDto = this.eFapsClient.postReceipt(Converter.toReceiptDto(receipt));
+                final ReceiptDto recDto = eFapsClient.postReceipt(Converter.toReceiptDto(receipt));
                 LOG.debug("received Receipt: {}", recDto);
                 if (recDto.getOid() != null) {
-                    final Optional<Receipt> receiptOpt = this.receiptRepository.findById(recDto.getId());
+                    final Optional<Receipt> receiptOpt = receiptRepository.findById(recDto.getId());
                     if (receiptOpt.isPresent()) {
                         final Receipt retReceipt = receiptOpt.get();
                         retReceipt.setOid(recDto.getOid());
-                        this.receiptRepository.save(retReceipt);
+                        receiptRepository.save(retReceipt);
                     }
                 }
             }  else {
@@ -364,18 +387,18 @@ public class SyncService
         boolean ret = true;
         if (!isOid(_document.getBalanceOid())) {
             ret = false;
-            final Optional<Balance> balanceOpt = this.balanceRepository.findById(_document.getBalanceOid());
+            final Optional<Balance> balanceOpt = balanceRepository.findById(_document.getBalanceOid());
             if (balanceOpt.isPresent()) {
                 final Balance balance = balanceOpt.get();
                 if (isOid(balance.getOid())) {
                     _document.setBalanceOid(balance.getOid());
                     ret = true;
                     if (_document instanceof Receipt) {
-                        this.receiptRepository.save((Receipt) _document);
+                        receiptRepository.save((Receipt) _document);
                     } else if (_document instanceof Invoice) {
-                        this.invoiceRepository.save((Invoice) _document);
+                        invoiceRepository.save((Invoice) _document);
                     } else if (_document instanceof Ticket) {
-                        this.ticketRepository.save((Ticket) _document);
+                        ticketRepository.save((Ticket) _document);
                     }
                 } else {
                     LOG.error("The found Balance does no thave an OID {}", balance);
@@ -388,18 +411,18 @@ public class SyncService
     public void syncInvoices()
     {
         LOG.info("Syncing Invoices");
-        final Collection<Invoice> tosync = this.invoiceRepository.findByOidIsNull();
+        final Collection<Invoice> tosync = invoiceRepository.findByOidIsNull();
         for (final Invoice dto : tosync) {
             LOG.debug("Syncing Invoice: {}", dto);
             if (validateContact(dto) && verifyBalance(dto)) {
-                final InvoiceDto recDto = this.eFapsClient.postInvoice(Converter.toInvoiceDto(dto));
+                final InvoiceDto recDto = eFapsClient.postInvoice(Converter.toInvoiceDto(dto));
                 LOG.debug("received Invoice: {}", recDto);
                 if (recDto.getOid() != null) {
-                    final Optional<Invoice> opt = this.invoiceRepository.findById(recDto.getId());
+                    final Optional<Invoice> opt = invoiceRepository.findById(recDto.getId());
                     if (opt.isPresent()) {
                         final Invoice receipt = opt.get();
                         receipt.setOid(recDto.getOid());
-                        this.invoiceRepository.save(receipt);
+                        invoiceRepository.save(receipt);
                     }
                 }
             } else {
@@ -412,18 +435,18 @@ public class SyncService
     public void syncTickets()
     {
         LOG.info("Syncing Tickets");
-        final Collection<Ticket> tosync = this.ticketRepository.findByOidIsNull();
+        final Collection<Ticket> tosync = ticketRepository.findByOidIsNull();
         for (final Ticket dto : tosync) {
             LOG.debug("Syncing Ticket: {}", dto);
             if (validateContact(dto) && verifyBalance(dto)) {
-                final TicketDto recDto = this.eFapsClient.postTicket(Converter.toTicketDto(dto));
+                final TicketDto recDto = eFapsClient.postTicket(Converter.toTicketDto(dto));
                 LOG.debug("received Ticket: {}", recDto);
                 if (recDto.getOid() != null) {
-                    final Optional<Ticket> opt = this.ticketRepository.findById(recDto.getId());
+                    final Optional<Ticket> opt = ticketRepository.findById(recDto.getId());
                     if (opt.isPresent()) {
                         final Ticket receipt = opt.get();
                         receipt.setOid(recDto.getOid());
-                        this.ticketRepository.save(receipt);
+                        ticketRepository.save(receipt);
                     }
                 }
             } else {
@@ -435,23 +458,23 @@ public class SyncService
 
     private boolean validateContact(final AbstractPayableDocument<?> _entity)
     {
-        return this.contactRepository.findOneByOid(_entity.getContactOid()).isPresent();
+        return contactRepository.findOneByOid(_entity.getContactOid()).isPresent();
     }
 
     public void syncImages()
     {
         LOG.info("Syncing Images");
-        final List<Product> products = this.productRepository.findAll();
+        final List<Product> products = productRepository.findAll();
         for (final Product product : products) {
             if (product.getImageOid() != null) {
                 LOG.debug("Syncing Image {}", product.getImageOid());
-                final Checkout checkout = this.eFapsClient.checkout(product.getImageOid());
+                final Checkout checkout = eFapsClient.checkout(product.getImageOid());
                 if (checkout != null) {
-                    this.gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(product.getImageOid())));
+                    gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(product.getImageOid())));
                     final DBObject metaData = new BasicDBObject();
                     metaData.put("oid", product.getImageOid());
                     metaData.put("contentType", checkout.getContentType().toString());
-                    this.gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
+                    gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
                                     metaData);
                 }
             }
@@ -462,7 +485,7 @@ public class SyncService
     public void syncReports()
     {
         LOG.info("Syncing Reports");
-        final List<Workspace> workspaces = this.workspaceRepository.findAll();
+        final List<Workspace> workspaces = workspaceRepository.findAll();
         final Set<String> reportOids = workspaces.stream()
             .map(Workspace::getPrintCmds)
             .flatMap(Set::stream)
@@ -471,13 +494,13 @@ public class SyncService
 
         for (final String reportOid : reportOids) {
             LOG.debug("Syncing Report {}", reportOid);
-            final Checkout checkout = this.eFapsClient.checkout(reportOid);
+            final Checkout checkout = eFapsClient.checkout(reportOid);
             if (checkout != null) {
-                this.gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(reportOid)));
+                gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(reportOid)));
                 final DBObject metaData = new BasicDBObject();
                 metaData.put("oid", reportOid);
                 metaData.put("contentType", checkout.getContentType().toString());
-                this.gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
+                gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
                                     metaData);
             }
         }
@@ -486,24 +509,24 @@ public class SyncService
 
     public void syncSequences() {
         LOG.info("Syncing Sequences");
-        final List<Sequence> sequences = this.eFapsClient.getSequences().stream()
+        final List<Sequence> sequences = eFapsClient.getSequences().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         for (final Sequence sequence : sequences) {
             LOG.debug("Syncing Sequence: {}", sequence);
-            final Optional<Sequence> seqOpt = this.sequenceRepository.findByOid(sequence.getOid());
+            final Optional<Sequence> seqOpt = sequenceRepository.findByOid(sequence.getOid());
             if (seqOpt.isPresent()) {
                 final Sequence es = seqOpt.get();
                 if (es.getSeq() < sequence.getSeq()) {
                     es.setSeq(sequence.getSeq());
-                    this.sequenceRepository.save(es);
+                    sequenceRepository.save(es);
                 }
                 if (!es.getFormat().equals(sequence.getFormat())) {
                     es.setFormat(sequence.getFormat());
-                    this.sequenceRepository.save(es);
+                    sequenceRepository.save(es);
                 }
             } else {
-                this.sequenceRepository.save(sequence);
+                sequenceRepository.save(sequence);
             }
         }
         registerSync(StashId.SEQUENCESYNC);
@@ -519,51 +542,51 @@ public class SyncService
 
     private void syncContactsUp()
     {
-        final Collection<Contact> tosync = this.contactRepository.findByOidIsNull();
+        final Collection<Contact> tosync = contactRepository.findByOidIsNull();
         for (final Contact contact : tosync) {
             LOG.debug("Syncing Contact: {}", contact);
-            final ContactDto recDto = this.eFapsClient.postContact(Converter.toDto(contact));
+            final ContactDto recDto = eFapsClient.postContact(Converter.toDto(contact));
             LOG.debug("received Contact: {}", recDto);
             if (recDto.getOid() != null) {
                 contact.setOid(recDto.getOid());
-                this.contactRepository.save(contact);
-                this.receiptRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
+                contactRepository.save(contact);
+                receiptRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
                     doc.setContactOid(contact.getOid());
-                    this.receiptRepository.save(doc);
+                    receiptRepository.save(doc);
                 });
-                this.invoiceRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
+                invoiceRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
                     doc.setContactOid(contact.getOid());
-                    this.invoiceRepository.save(doc);
+                    invoiceRepository.save(doc);
                 });
-                this.ticketRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
+                ticketRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
                     doc.setContactOid(contact.getOid());
-                    this.ticketRepository.save(doc);
+                    ticketRepository.save(doc);
                 });
             }
         }
     }
 
     private void syncContactsDown() {
-        final List<Contact> recievedContacts = this.eFapsClient.getContacts().stream()
+        final List<Contact> recievedContacts = eFapsClient.getContacts().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         for (final Contact contact : recievedContacts) {
-           final List<Contact> contacts = this.contactRepository.findByOid(contact.getOid());
+           final List<Contact> contacts = contactRepository.findByOid(contact.getOid());
            if (CollectionUtils.isEmpty(contacts)) {
-               this.contactRepository.save(contact);
+               contactRepository.save(contact);
            } else if (contacts.size() > 1) {
-               contacts.forEach(entity -> this.contactRepository.delete(entity));
-               this.contactRepository.save(contact);
+               contacts.forEach(entity -> contactRepository.delete(entity));
+               contactRepository.save(contact);
            } else {
                contact.setId(contacts.get(0).getId());
-               this.contactRepository.save(contact);
+               contactRepository.save(contact);
            }
         }
 
-        for (final Contact contact : this.contactRepository.findAll()) {
+        for (final Contact contact : contactRepository.findAll()) {
             if (contact.getOid() != null && !recievedContacts.stream().filter(recieved -> recieved.getOid().equals(
                             contact.getOid())).findFirst().isPresent()) {
-                this.contactRepository.delete(contact);
+                contactRepository.delete(contact);
             }
         }
     }
@@ -575,13 +598,13 @@ public class SyncService
 
     private void registerSync(final String _id)
     {
-        SyncInfo syncInfo = this.mongoTemplate.findById(_id, SyncInfo.class);
+        SyncInfo syncInfo = mongoTemplate.findById(_id, SyncInfo.class);
         if (syncInfo == null) {
             syncInfo = new SyncInfo();
             syncInfo.setId(_id);
         }
         syncInfo.setLastSync(LocalDateTime.now());
-        this.mongoTemplate.save(syncInfo);
+        mongoTemplate.save(syncInfo);
     }
 
     private boolean isOid(final String _value) {

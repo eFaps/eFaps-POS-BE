@@ -34,15 +34,16 @@ public class QuartzConfig
     @Autowired
     public QuartzConfig(final SyncService _syncService)
     {
-        this.syncService = _syncService;
+        syncService = _syncService;
     }
 
     @Bean
     public MethodInvokingJobDetailFactoryBean syncPayablesJobDetailFactoryBean()
     {
         final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
-        obj.setTargetObject(this.syncService);
-        obj.setTargetMethod("syncPayables");
+        obj.setTargetObject(syncService);
+        obj.setTargetMethod("runSyncJob");
+        obj.setArguments("syncPayables");
         return obj;
     }
 
@@ -52,7 +53,7 @@ public class QuartzConfig
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncPayablesJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(180 * 1000);
-        stFactory.setRepeatInterval(this.syncPayablesInterval * 1000);
+        stFactory.setRepeatInterval(syncPayablesInterval * 1000);
         return stFactory;
     }
 
@@ -60,8 +61,9 @@ public class QuartzConfig
     public MethodInvokingJobDetailFactoryBean syncContactsJobDetailFactoryBean()
     {
         final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
-        obj.setTargetObject(this.syncService);
-        obj.setTargetMethod("syncContacts");
+        obj.setTargetObject(syncService);
+        obj.setTargetMethod("runSyncJob");
+        obj.setArguments("syncContacts");
         return obj;
     }
 
@@ -71,7 +73,7 @@ public class QuartzConfig
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncContactsJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(180 * 1000);
-        stFactory.setRepeatInterval(this.syncContactsInterval * 1000);
+        stFactory.setRepeatInterval(syncContactsInterval * 1000);
         return stFactory;
     }
 
@@ -81,7 +83,7 @@ public class QuartzConfig
         final SchedulerFactoryBean scheduler = new SchedulerFactoryBean();
         scheduler.setTriggers(syncPayablesTriggerFactoryBean().getObject());
         final Properties quartzProperties = new Properties();
-        quartzProperties.put("org.quartz.threadPool.threadCount", this.threatCount.toString());
+        quartzProperties.put("org.quartz.threadPool.threadCount", threatCount.toString());
         scheduler.setQuartzProperties(quartzProperties);
         return scheduler;
     }
