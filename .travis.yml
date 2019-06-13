@@ -9,6 +9,7 @@ jdk:
 
 install:
   - wget https://raw.githubusercontent.com/eFaps/Utils/master/settings/settings.xml -O mySettings.xml
+  - mvn -version
   - mvn install -s mySettings.xml -DskipTests=true -B -V
 
 script:
