@@ -17,6 +17,7 @@
 package org.efaps.pos.config;
 
 import org.efaps.pos.JwtAuthorizationTokenFilter;
+import org.efaps.pos.context.ContextFilter;
 import org.efaps.pos.controller.JwtAuthenticationEntryPoint;
 import org.efaps.pos.service.UserService;
 import org.efaps.pos.util.JwtTokenUtil;
@@ -44,15 +45,17 @@ public class WebSecurityConfig
     private final JwtTokenUtil jwtTokenUtil;
 
     private final UserService userService;
-
+    ContextFilter contextFilter;
     @Autowired
     public WebSecurityConfig(final JwtAuthenticationEntryPoint _unauthorizedHandler,
                              final JwtTokenUtil _jwtTokenUtil,
-                             final UserService _userService)
+                             final UserService _userService,
+                             final ContextFilter _contextFilter)
     {
         unauthorizedHandler = _unauthorizedHandler;
         jwtTokenUtil = _jwtTokenUtil;
         userService = _userService;
+        contextFilter = _contextFilter;
     }
 
     @Autowired
@@ -87,6 +90,7 @@ public class WebSecurityConfig
         final JwtAuthorizationTokenFilter authenticationTokenFilter = new JwtAuthorizationTokenFilter(
                         userDetailsService(), jwtTokenUtil);
         _httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        _httpSecurity.addFilterBefore(contextFilter, JwtAuthorizationTokenFilter.class);
     }
 
     @Override
