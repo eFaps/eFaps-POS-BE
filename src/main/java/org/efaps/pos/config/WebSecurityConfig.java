@@ -50,16 +50,16 @@ public class WebSecurityConfig
                              final JwtTokenUtil _jwtTokenUtil,
                              final UserService _userService)
     {
-        this.unauthorizedHandler = _unauthorizedHandler;
-        this.jwtTokenUtil = _jwtTokenUtil;
-        this.userService = _userService;
+        unauthorizedHandler = _unauthorizedHandler;
+        jwtTokenUtil = _jwtTokenUtil;
+        userService = _userService;
     }
 
     @Autowired
     public void configureGlobal(final AuthenticationManagerBuilder auth)
         throws Exception
     {
-        auth.userDetailsService(this.userService).passwordEncoder(this.userService.getPasswordEncoder());
+        auth.userDetailsService(userService).passwordEncoder(userService.getPasswordEncoder());
     }
 
     @Bean
@@ -76,7 +76,7 @@ public class WebSecurityConfig
     {
         _httpSecurity.csrf().disable()
                 .exceptionHandling()
-                .authenticationEntryPoint(this.unauthorizedHandler)
+                .authenticationEntryPoint(unauthorizedHandler)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -85,7 +85,7 @@ public class WebSecurityConfig
 
         // Custom JWT based security filter
         final JwtAuthorizationTokenFilter authenticationTokenFilter = new JwtAuthorizationTokenFilter(
-                        userDetailsService(), this.jwtTokenUtil);
+                        userDetailsService(), jwtTokenUtil);
         _httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
@@ -96,6 +96,8 @@ public class WebSecurityConfig
         web.ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate")
             .and()
             .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "users/**")
+            .and()
+            .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
             .and()
             .ignoring().antMatchers(HttpMethod.GET, "/pos", "/login", "/products", "/workspaces")
             .and()
