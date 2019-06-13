@@ -30,6 +30,7 @@ import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.ConfigProperties.Company;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -57,7 +58,9 @@ public class ContextFilter
                .filter(company -> companyKey.equals(company.getKey()))
                .findFirst();
            if (compOpt.isPresent()) {
-               Context.get().setCompany(compOpt.get());
+               final Company company = compOpt.get();
+               Context.get().setCompany(company);
+               MDC.put("company", company.getTenant());
            } else {
                LOG.debug("No company found for given X-CONTEXT-COMPANY Header", companyKey);
            }

@@ -19,22 +19,26 @@ package org.efaps.pos.context;
 
 import org.efaps.pos.ConfigProperties.Company;
 
-public class Context {
+public class Context
+{
 
-  private static final ThreadLocal<Context> CONTEXT = ThreadLocal.withInitial(() -> new Context());
+    private static final ThreadLocal<Context> CONTEXT = ThreadLocal.withInitial(() -> new Context());
 
-  private  Company company;
+    private Company company;
 
-  public Company getCompany() {
-    return company;
-  }
+    public Company getCompany()
+    {
+        return company;
+    }
 
-  public void setCompany(final Company _company) {
-    company = _company;
-  }
+    public void setCompany(final Company _company)
+    {
+        company = _company;
+    }
 
-  public static Context get() {
-    return CONTEXT.get();
-  }
+    public static Context get()
+    {
+        return CONTEXT.get();
+    }
 
 }

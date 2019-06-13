@@ -22,6 +22,7 @@ import org.efaps.pos.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.service.DemoService;
 import org.efaps.pos.service.SyncService;
+import org.slf4j.MDC;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Component;
 public class ApplicationStartup
     implements ApplicationListener<ApplicationReadyEvent>
 {
+
     private final SyncService service;
     private final DemoService demoService;
     private final Environment env;
@@ -55,34 +57,36 @@ public class ApplicationStartup
         if (ArrayUtils.contains(env.getActiveProfiles(), "demo")) {
             demoService.init();
         } else {
-          if (configProperties.getCompanies().size() > 0) {
-            for (final Company company : configProperties.getCompanies()) {
-              Context.get().setCompany(company);
-              sync();
+            if (configProperties.getCompanies().size() > 0) {
+                for (final Company company : configProperties.getCompanies()) {
+                    Context.get().setCompany(company);
+                    MDC.put("company", company.getTenant());
+                    sync();
+                }
+            } else {
+                sync();
             }
-          } else {
-            sync();
-          }
         }
     }
 
-    private void sync() {
-      service.syncProducts();
-      service.syncCategories();
-      service.syncPOSs();
-      service.syncWorkspaces();
-      service.syncUsers();
-      service.syncBalance();
-      service.syncReceipts();
-      service.syncInvoices();
-      service.syncTickets();
-      service.syncSequences();
-      service.syncContacts();
-      service.syncWarehouses();
-      service.syncInventory();
-      service.syncPrinters();
-      service.syncProperties();
-      service.syncImages();
-      service.syncReports();
+    private void sync()
+    {
+        service.syncProducts();
+        service.syncCategories();
+        service.syncPOSs();
+        service.syncWorkspaces();
+        service.syncUsers();
+        service.syncBalance();
+        service.syncReceipts();
+        service.syncInvoices();
+        service.syncTickets();
+        service.syncSequences();
+        service.syncContacts();
+        service.syncWarehouses();
+        service.syncInventory();
+        service.syncPrinters();
+        service.syncProperties();
+        service.syncImages();
+        service.syncReports();
     }
 }
