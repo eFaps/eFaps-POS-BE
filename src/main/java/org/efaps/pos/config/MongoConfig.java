@@ -24,53 +24,65 @@ import org.efaps.pos.context.MultiTenantMongoDbFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 
 @Configuration
-public class MongoConfig extends AbstractMongoConfiguration {
+@Profile({ "!test" })
+public class MongoConfig
+    extends AbstractMongoConfiguration
+{
 
-  private final ConfigProperties configProperties;
+    private final ConfigProperties configProperties;
 
-  public MongoConfig(final ConfigProperties _configProperties) {
-    configProperties = _configProperties;
-  }
+    public MongoConfig(final ConfigProperties _configProperties)
+    {
+        configProperties = _configProperties;
+    }
 
-  @Override
-  @Bean
-  public MappingMongoConverter mappingMongoConverter() throws Exception {
-    final MappingMongoConverter ret = super.mappingMongoConverter();
-    ret.setMapKeyDotReplacement("_xYz4P_");
-    return ret;
-  }
+    @Override
+    @Bean
+    public MappingMongoConverter mappingMongoConverter()
+        throws Exception
+    {
+        final MappingMongoConverter ret = super.mappingMongoConverter();
+        ret.setMapKeyDotReplacement("_xYz4P_");
+        return ret;
+    }
 
-  @Override
-  @Bean
-  @Primary
-  public MongoDbFactory mongoDbFactory() {
-    final MongoClientURI mongoClientURI = new MongoClientURI(configProperties.getMongoClientURI());
-    return new MultiTenantMongoDbFactory(mongoClientURI);
-  }
+    @Override
+    @Bean
+    @Primary
+    public MongoDbFactory mongoDbFactory()
+    {
+        final MongoClientURI mongoClientURI = new MongoClientURI(configProperties.getMongoClientURI());
+        return new MultiTenantMongoDbFactory(mongoClientURI);
+    }
 
-  @Override
-  @Bean
-  @Primary
-  public MongoTemplate mongoTemplate() throws Exception {
-    return new MongoTemplate(mongoDbFactory(), mappingMongoConverter());
-  }
+    @Override
+    @Bean
+    @Primary
+    public MongoTemplate mongoTemplate()
+        throws Exception
+    {
+        return new MongoTemplate(mongoDbFactory(), mappingMongoConverter());
+    }
 
-  @Bean
-  @Override
-  public MongoClient mongoClient() {
-    final MongoClientURI uri = new MongoClientURI(configProperties.getMongoClientURI());
-    return new MongoClient(uri);
-  }
+    @Bean
+    @Override
+    public MongoClient mongoClient()
+    {
+        final MongoClientURI uri = new MongoClientURI(configProperties.getMongoClientURI());
+        return new MongoClient(uri);
+    }
 
-  @Override
-  protected String getDatabaseName() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    @Override
+    protected String getDatabaseName()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

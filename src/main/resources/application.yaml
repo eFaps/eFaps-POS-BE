@@ -4,9 +4,8 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
-  data:
-    mongodb:
-      database: efapsPOS
+
+mongoClientURI: mongodb://localhost:27017/efapsPOS
 
 server:
 #  address: 192.168.1.100
