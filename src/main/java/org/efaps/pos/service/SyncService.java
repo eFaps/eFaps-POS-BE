@@ -75,6 +75,7 @@ import org.efaps.pos.repository.UserRepository;
 import org.efaps.pos.repository.WarehouseRepository;
 import org.efaps.pos.repository.WorkspaceRepository;
 import org.efaps.pos.util.Converter;
+import org.efaps.pos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -385,12 +386,12 @@ public class SyncService
     private boolean verifyBalance(final AbstractPayableDocument<?> _document)
     {
         boolean ret = true;
-        if (!isOid(_document.getBalanceOid())) {
+        if (!Utils.isOid(_document.getBalanceOid())) {
             ret = false;
             final Optional<Balance> balanceOpt = balanceRepository.findById(_document.getBalanceOid());
             if (balanceOpt.isPresent()) {
                 final Balance balance = balanceOpt.get();
-                if (isOid(balance.getOid())) {
+                if (Utils.isOid(balance.getOid())) {
                     _document.setBalanceOid(balance.getOid());
                     ret = true;
                     if (_document instanceof Receipt) {
@@ -607,7 +608,4 @@ public class SyncService
         mongoTemplate.save(syncInfo);
     }
 
-    private boolean isOid(final String _value) {
-        return _value != null && _value.matches("^\\d+\\.\\d+$");
-    }
 }

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
@@ -31,6 +32,7 @@ import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
+import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Config;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
@@ -41,11 +43,13 @@ import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IPos;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
+import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.InvoiceRepository;
 import org.efaps.pos.repository.OrderRepository;
 import org.efaps.pos.repository.ReceiptRepository;
 import org.efaps.pos.repository.TicketRepository;
 import org.efaps.pos.util.Converter;
+import org.efaps.pos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +59,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DocumentService
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
 
     private final PosService posService;
@@ -64,6 +69,7 @@ public class DocumentService
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
     private final TicketRepository ticketRepository;
+    private final BalanceRepository balanceRepository;
     private final List<IReceiptListener> receiptListeners;
     private final List<IInvoiceListener> invoiceListeners;
     private final List<ITicketListener> ticketListeners;
@@ -79,6 +85,7 @@ public class DocumentService
                            final ReceiptRepository _receiptRepository,
                            final InvoiceRepository _invoiceRepository,
                            final TicketRepository _ticketRepository,
+                           final BalanceRepository _balanceRepository,
                            final Optional<List<IReceiptListener>> _receiptListeners,
                            final Optional<List<IInvoiceListener>> _invoiceListeners,
                            final Optional<List<ITicketListener>> _ticketListeners)
@@ -91,6 +98,7 @@ public class DocumentService
         contactService = _contactService;
         invoiceRepository = _invoiceRepository;
         ticketRepository = _ticketRepository;
+        balanceRepository = _balanceRepository;
         receiptListeners = _receiptListeners.isPresent() ? _receiptListeners.get() : Collections.emptyList();
         invoiceListeners = _invoiceListeners.isPresent() ? _invoiceListeners.get() : Collections.emptyList();
         ticketListeners = _ticketListeners.isPresent() ? _ticketListeners.get() : Collections.emptyList();
@@ -160,7 +168,8 @@ public class DocumentService
         }
     }
 
-    public Receipt createReceipt(final String _workspaceOid, final Receipt _receipt)
+    public Receipt createReceipt(final String _workspaceOid,
+                                 final Receipt _receipt)
     {
         validateContact(_workspaceOid, _receipt);
         _receipt.setNumber(sequenceService.getNext(_workspaceOid, DocType.RECEIPT));
@@ -170,8 +179,8 @@ public class DocumentService
                 final Config config = mongoTemplate.findById(Config.KEY, Config.class);
                 PosReceiptDto dto = Converter.toDto(ret);
                 for (final IReceiptListener listener : receiptListeners) {
-                    dto = (PosReceiptDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)),
-                                    dto, config.getProperties());
+                    dto = (PosReceiptDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
+                                    config.getProperties());
                 }
                 ret = receiptRepository.save(Converter.toEntity(dto));
             }
@@ -181,7 +190,8 @@ public class DocumentService
         return ret;
     }
 
-    public Invoice createInvoice(final String _workspaceOid, final Invoice _invoice)
+    public Invoice createInvoice(final String _workspaceOid,
+                                 final Invoice _invoice)
     {
         validateContact(_workspaceOid, _invoice);
         _invoice.setNumber(sequenceService.getNext(_workspaceOid, DocType.INVOICE));
@@ -191,8 +201,8 @@ public class DocumentService
                 final Config config = mongoTemplate.findById(Config.KEY, Config.class);
                 PosInvoiceDto dto = Converter.toDto(ret);
                 for (final IInvoiceListener listener : invoiceListeners) {
-                    dto = (PosInvoiceDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)),
-                                    dto, config.getProperties());
+                    dto = (PosInvoiceDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
+                                    config.getProperties());
                 }
                 ret = invoiceRepository.save(Converter.toEntity(dto));
             }
@@ -202,7 +212,8 @@ public class DocumentService
         return ret;
     }
 
-    public Ticket createTicket(final String _workspaceOid, final Ticket _ticket)
+    public Ticket createTicket(final String _workspaceOid,
+                               final Ticket _ticket)
     {
         validateContact(_workspaceOid, _ticket);
         _ticket.setNumber(sequenceService.getNext(_workspaceOid, DocType.TICKET));
@@ -212,8 +223,8 @@ public class DocumentService
                 final Config config = mongoTemplate.findById(Config.KEY, Config.class);
                 PosTicketDto dto = Converter.toDto(ret);
                 for (final ITicketListener listener : ticketListeners) {
-                    dto = (PosTicketDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)),
-                                    dto, config.getProperties());
+                    dto = (PosTicketDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
+                                    config.getProperties());
                 }
                 ret = ticketRepository.save(Converter.toEntity(dto));
             }
@@ -223,31 +234,55 @@ public class DocumentService
         return ret;
     }
 
-    public Receipt getReceipt(final String _documentId) {
+    public Receipt getReceipt(final String _documentId)
+    {
         return receiptRepository.findById(_documentId).orElse(null);
     }
 
     public Collection<Receipt> getReceipts4Balance(final String _balanceOid)
     {
-        return receiptRepository.findByBalanceOid(_balanceOid);
+        return receiptRepository.findByBalanceOid(evalBalanceOid(_balanceOid));
     }
 
-    public Invoice getInvoice(final String _documentId) {
+    public Invoice getInvoice(final String _documentId)
+    {
         return invoiceRepository.findById(_documentId).orElse(null);
     }
 
     public Collection<Invoice> getInvoices4Balance(final String _balanceOid)
     {
-        return invoiceRepository.findByBalanceOid(_balanceOid);
+        return invoiceRepository.findByBalanceOid(evalBalanceOid(_balanceOid));
     }
 
-    public Ticket getTicket(final String _documentId) {
+    /**
+     * Newly created Balances use the id as key. The UI might ask still with the
+     * id instead of the OID.
+     * @param _key key to be check if it has to be converted
+     * @return oid or id
+     */
+    protected String evalBalanceOid(final String _key)
+    {
+        String ret = _key;
+        if (!Utils.isOid(_key)) {
+            final Optional<Balance> balanceopt = balanceRepository.findById(_key);
+            if (balanceopt.isPresent()) {
+                final Balance balance = balanceopt.get();
+                if (!StringUtils.isEmpty(balance.getOid())) {
+                    ret = balance.getOid();
+                }
+            }
+        }
+        return ret;
+    }
+
+    public Ticket getTicket(final String _documentId)
+    {
         return ticketRepository.findById(_documentId).orElse(null);
     }
 
     public Collection<Ticket> getTickets4Balance(final String _balanceOid)
     {
-        return ticketRepository.findByBalanceOid(_balanceOid);
+        return ticketRepository.findByBalanceOid(evalBalanceOid(_balanceOid));
     }
 
     public AbstractDocument<?> getDocument(final String _documentId)
@@ -265,7 +300,8 @@ public class DocumentService
         return ret;
     }
 
-    private void validateContact(final String _workspaceOid, final AbstractDocument<?> _document)
+    private void validateContact(final String _workspaceOid,
+                                 final AbstractDocument<?> _document)
     {
         if (_document.getContactOid() == null) {
             final Pos pos = posService.getPos4Workspace(_workspaceOid);
@@ -279,8 +315,7 @@ public class DocumentService
     {
         final String name = _pos.getName();
         final String currency = _pos.getCurrency();
-        final ContactDto contactDto = Converter.toDto(
-                        contactService.getContact(_pos.getDefaultContactOid()));
+        final ContactDto contactDto = Converter.toDto(contactService.getContact(_pos.getDefaultContactOid()));
 
         return new IPos()
         {
