@@ -78,6 +78,7 @@ import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -153,6 +154,7 @@ public class SyncService
         if (configProperties.getCompanies().size() > 0) {
             for (final Company company : configProperties.getCompanies()) {
                 Context.get().setCompany(company);
+                MDC.put("company", company.getTenant());
                 method.invoke(this);
             }
         } else {
