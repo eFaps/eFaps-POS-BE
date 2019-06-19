@@ -32,17 +32,17 @@ public class CategoryService
     @Autowired
     public CategoryService(final CategoryRepository _categoryRepository)
     {
-        this.categoryRepository = _categoryRepository;
+        categoryRepository = _categoryRepository;
     }
 
     public List<Category> getCategories()
     {
-        final List<Category> ret = this.categoryRepository.findAll();
+        final List<Category> ret = categoryRepository.findAll();
         return ret;
     }
 
     public Category getCategory(final String _oid)
     {
-        return this.categoryRepository.findById(_oid).get();
+        return categoryRepository.findById(_oid).orElse(null);
     }
 }
