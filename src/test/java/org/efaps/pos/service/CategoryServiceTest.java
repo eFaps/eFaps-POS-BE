@@ -17,10 +17,12 @@
 package org.efaps.pos.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.util.CategoryNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +42,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ActiveProfiles(profiles = "test")
 public class CategoryServiceTest
 {
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -47,27 +50,39 @@ public class CategoryServiceTest
     private CategoryService categoryService;
 
     @BeforeEach
-    public void setup() {
-        this.mongoTemplate.remove(new Query(), Category.class);
+    public void setup()
+    {
+        mongoTemplate.remove(new Query(), Category.class);
     }
 
     @Test
-    public void testGetCategories() {
-        this.mongoTemplate.save(new Category().setOid("1.1"));
-        this.mongoTemplate.save(new Category().setOid("1.2"));
-        this.mongoTemplate.save(new Category().setOid("1.3"));
+    public void testGetCategories()
+    {
+        mongoTemplate.save(new Category().setOid("1.1"));
+        mongoTemplate.save(new Category().setOid("1.2"));
+        mongoTemplate.save(new Category().setOid("1.3"));
 
-        final List<Category> categories = this.categoryService.getCategories();
+        final List<Category> categories = categoryService.getCategories();
         assertEquals(3, categories.size());
     }
 
     @Test
-    public void testGetCategory() {
-        this.mongoTemplate.save(new Category().setOid("1.1"));
-        this.mongoTemplate.save(new Category().setOid("1.2"));
-        this.mongoTemplate.save(new Category().setOid("1.3"));
+    public void testGetCategory()
+        throws CategoryNotFoundException
+    {
+        mongoTemplate.save(new Category().setOid("1.1"));
+        mongoTemplate.save(new Category().setOid("1.2"));
+        mongoTemplate.save(new Category().setOid("1.3"));
 
-        final Category category = this.categoryService.getCategory("1.3");
+        final Category category = categoryService.getCategory("1.3");
         assertEquals("1.3", category.getOid());
+    }
+
+    @Test
+    public void testGetCategoryThrowsError()
+    {
+        assertThrows(CategoryNotFoundException.class, () -> {
+            categoryService.getCategory("notanOID");
+        });
     }
 }

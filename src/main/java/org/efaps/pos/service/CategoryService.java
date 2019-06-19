@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.repository.CategoryRepository;
+import org.efaps.pos.util.CategoryNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,8 @@ public class CategoryService
     }
 
     public Category getCategory(final String _oid)
+        throws CategoryNotFoundException
     {
-        return categoryRepository.findById(_oid).orElse(null);
+        return categoryRepository.findById(_oid).orElseThrow(() -> new CategoryNotFoundException());
     }
 }
