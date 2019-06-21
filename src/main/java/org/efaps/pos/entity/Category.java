@@ -32,26 +32,39 @@ public class Category
 
     private String name;
 
+    private int weight;
+
     public String getOid()
     {
-        return this.oid;
+        return oid;
     }
 
     public Category setOid(final String _oid)
     {
-        this.oid = _oid;
-        this.id = _oid;
+        oid = _oid;
+        id = _oid;
         return this;
     }
 
     public String getName()
     {
-        return this.name;
+        return name;
     }
 
     public Category setName(final String _name)
     {
-        this.name = _name;
+        name = _name;
+        return this;
+    }
+
+    public int getWeight()
+    {
+        return weight;
+    }
+
+    public Category setWeight(final int weight)
+    {
+        this.weight = weight;
         return this;
     }
 

@@ -93,10 +93,10 @@ public final class Converter
                      final ContactService _contactService)
     {
         INSTANCE = this;
-        this.productService = _productService;
-        this.inventoryService = _inventoryService;
-        this.documentService = _documentService;
-        this.contactService = _contactService;
+        productService = _productService;
+        inventoryService = _inventoryService;
+        documentService = _documentService;
+        contactService = _contactService;
     }
 
     public static Receipt toEntity(final PosReceiptDto _dto)
@@ -377,6 +377,7 @@ public final class Converter
         return CategoryDto.builder()
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
+                        .withWeight(_entity.getWeight())
                         .build();
     }
 
@@ -384,7 +385,8 @@ public final class Converter
     {
         return new Category()
                         .setName(_dto.getName())
-                        .setOid(_dto.getOid());
+                        .setOid(_dto.getOid())
+                        .setWeight(_dto.getWeight());
     }
 
     public static Contact toEntity(final ContactDto _dto)

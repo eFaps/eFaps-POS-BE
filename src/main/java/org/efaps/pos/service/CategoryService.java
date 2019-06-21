@@ -23,6 +23,8 @@ import org.efaps.pos.entity.Category;
 import org.efaps.pos.repository.CategoryRepository;
 import org.efaps.pos.util.CategoryNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,7 +40,7 @@ public class CategoryService
 
     public List<Category> getCategories()
     {
-        final List<Category> ret = categoryRepository.findAll();
+        final List<Category> ret = categoryRepository.findAll(Sort.by(Order.by("weight")));
         return ret;
     }
 
