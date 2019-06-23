@@ -21,7 +21,9 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.efaps.pos.dto.DocStatus;
 import org.springframework.data.annotation.Id;
 
@@ -206,101 +208,107 @@ public abstract class AbstractDocument<T>
 
         public Integer getIndex()
         {
-            return this.index;
+            return index;
         }
 
         public Item setIndex(final Integer _index)
         {
-            this.index = _index;
+            index = _index;
             return this;
         }
 
         public String getOid()
         {
-            return this.oid;
+            return oid;
         }
 
         public Item setOid(final String _oid)
         {
-            this.oid = _oid;
+            oid = _oid;
             return this;
         }
 
         public String getProductOid()
         {
-            return this.productOid;
+            return productOid;
         }
 
         public Item setProductOid(final String _productOid)
         {
-            this.productOid = _productOid;
+            productOid = _productOid;
             return this;
         }
 
         public BigDecimal getQuantity()
         {
-            return this.quantity;
+            return quantity;
         }
 
         public Item setQuantity(final BigDecimal _quantity)
         {
-            this.quantity = _quantity;
+            quantity = _quantity;
             return this;
         }
 
         public BigDecimal getNetUnitPrice()
         {
-            return this.netUnitPrice;
+            return netUnitPrice;
         }
 
         public Item setNetUnitPrice(final BigDecimal _netUnitPrice)
         {
-            this.netUnitPrice = _netUnitPrice;
+            netUnitPrice = _netUnitPrice;
             return this;
         }
 
         public BigDecimal getCrossUnitPrice()
         {
-            return this.crossUnitPrice;
+            return crossUnitPrice;
         }
 
         public Item setCrossUnitPrice(final BigDecimal _crossUnitPrice)
         {
-            this.crossUnitPrice = _crossUnitPrice;
+            crossUnitPrice = _crossUnitPrice;
             return this;
         }
 
         public BigDecimal getNetPrice()
         {
-            return this.netPrice;
+            return netPrice;
         }
 
         public Item setNetPrice(final BigDecimal _netPrice)
         {
-            this.netPrice = _netPrice;
+            netPrice = _netPrice;
             return this;
         }
 
         public BigDecimal getCrossPrice()
         {
-            return this.crossPrice;
+            return crossPrice;
         }
 
         public Item setCrossPrice(final BigDecimal _crossPrice)
         {
-            this.crossPrice = _crossPrice;
+            crossPrice = _crossPrice;
             return this;
         }
 
         public Set<TaxEntry> getTaxes()
         {
-            return this.taxes;
+            return taxes;
         }
 
         public Item setTaxes(final Set<TaxEntry> _taxes)
         {
-            this.taxes = _taxes;
+            taxes = _taxes;
             return this;
+        }
+
+        @Override
+        public String toString()
+        {
+            return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
         }
     }
 
@@ -313,35 +321,41 @@ public abstract class AbstractDocument<T>
 
         public Tax getTax()
         {
-            return this.tax;
+            return tax;
         }
 
         public TaxEntry setTax(final Tax _tax)
         {
-            this.tax = _tax;
+            tax = _tax;
             return this;
         }
 
         public BigDecimal getBase()
         {
-            return this.base;
+            return base;
         }
 
         public TaxEntry setBase(final BigDecimal _base)
         {
-            this.base = _base;
+            base = _base;
             return this;
         }
 
         public BigDecimal getAmount()
         {
-            return this.amount;
+            return amount;
         }
 
         public TaxEntry setAmount(final BigDecimal _amount)
         {
-            this.amount = _amount;
+            amount = _amount;
             return this;
+        }
+
+        @Override
+        public String toString()
+        {
+            return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
         }
     }
 }

@@ -404,6 +404,7 @@ public final class Converter
         return TaxDto.builder()
                         .withOID(_entity.getOid())
                         .withKey(_entity.getKey())
+                        .withCatKey(_entity.getCatKey())
                         .withName(_entity.getName())
                         .withPercent(_entity.getPercent())
                         .build();
@@ -414,6 +415,7 @@ public final class Converter
         return new Tax()
                         .setOid(_dto.getOid())
                         .setKey(_dto.getKey())
+                        .setCatKey(_dto.getCatKey())
                         .setName(_dto.getName())
                         .setPercent(_dto.getPercent());
     }
