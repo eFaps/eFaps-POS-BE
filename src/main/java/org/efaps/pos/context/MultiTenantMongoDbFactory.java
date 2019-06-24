@@ -34,6 +34,6 @@ public class MultiTenantMongoDbFactory extends SimpleMongoDbFactory {
     if (Context.get().getCompany() != null) {
       return getDb(Context.get().getCompany().getTenant());
     }
-    return super.getDb("eFaps");
+    return super.getDb();
   }
 }
