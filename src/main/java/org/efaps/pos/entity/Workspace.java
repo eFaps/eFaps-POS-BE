@@ -17,10 +17,12 @@
 
 package org.efaps.pos.entity;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.efaps.pos.dto.DiscountType;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PosLayout;
 import org.efaps.pos.dto.PrintTarget;
@@ -53,103 +55,116 @@ public class Workspace
 
     private PosLayout posLayout;
 
+    private Set<Discount> discounts;
+
     public String getOid()
     {
-        return this.oid;
+        return oid;
     }
 
     public Workspace setOid(final String _oid)
     {
-        this.oid = _oid;
-        this.id = _oid;
+        oid = _oid;
+        id = _oid;
         return this;
     }
 
     public String getName()
     {
-        return this.name;
+        return name;
     }
 
     public Workspace setName(final String _name)
     {
-        this.name = _name;
+        name = _name;
         return this;
     }
 
     public String getPosOid()
     {
-        return this.posOid;
+        return posOid;
     }
 
     public Workspace setPosOid(final String _posOid)
     {
-        this.posOid = _posOid;
+        posOid = _posOid;
         return this;
     }
 
     public Set<DocType> getDocTypes()
     {
-        return this.docTypes;
+        return docTypes;
     }
 
     public Workspace setDocTypes(final Set<DocType> _docTypes)
     {
-        this.docTypes = _docTypes;
+        docTypes = _docTypes;
         return this;
     }
 
     public SpotConfig getSpotConfig()
     {
-        return this.spotConfig;
+        return spotConfig;
     }
 
     public Workspace setSpotConfig(final SpotConfig _spotConfig)
     {
-        this.spotConfig = _spotConfig;
+        spotConfig = _spotConfig;
         return this;
     }
 
     public Integer getSpotCount()
     {
-        return this.spotCount;
+        return spotCount;
     }
 
     public Workspace setSpotCount(final Integer _spotCount)
     {
-        this.spotCount = _spotCount;
+        spotCount = _spotCount;
         return this;
     }
 
     public String getWarehouseOid()
     {
-        return this.warehouseOid;
+        return warehouseOid;
     }
 
     public Workspace setWarehouseOid(final String _warehouseOid)
     {
-        this.warehouseOid = _warehouseOid;
+        warehouseOid = _warehouseOid;
         return this;
     }
 
     public Set<PrintCmd> getPrintCmds()
     {
-        return this.printCmds == null ? Collections.emptySet() : this.printCmds;
+        return printCmds == null ? Collections.emptySet() : printCmds;
     }
 
     public Workspace setPrintCmds(final Set<PrintCmd> _printCmds)
     {
-        this.printCmds = _printCmds;
+        printCmds = _printCmds;
         return this;
     }
 
     public PosLayout getPosLayout()
     {
-        return this.posLayout;
+        return posLayout;
     }
 
     public Workspace setPosLayout(final PosLayout _posLayout)
     {
-        this.posLayout = _posLayout;
+        posLayout = _posLayout;
+        return this;
+    }
+
+    public Set<Discount> getDiscounts()
+    {
+        return discounts;
+    }
+
+    public Workspace setDiscounts(final Set<Discount> discounts)
+    {
+        this.discounts = discounts;
         return this;
     }
 
@@ -169,45 +184,101 @@ public class Workspace
 
         public String getPrinterOid()
         {
-            return this.printerOid;
+            return printerOid;
         }
 
         public PrintCmd setPrinterOid(final String _printerOid)
         {
-            this.printerOid = _printerOid;
+            printerOid = _printerOid;
             return this;
         }
 
         public PrintTarget getTarget()
         {
-            return this.target;
+            return target;
         }
 
         public PrintCmd setTarget(final PrintTarget _target)
         {
-            this.target = _target;
+            target = _target;
             return this;
         }
 
         public String getTargetOid()
         {
-            return this.targetOid;
+            return targetOid;
         }
 
         public PrintCmd setTargetOid(final String _targetOid)
         {
-            this.targetOid = _targetOid;
+            targetOid = _targetOid;
             return this;
         }
 
         public String getReportOid()
         {
-            return this.reportOid;
+            return reportOid;
         }
 
         public PrintCmd setReportOid(final String _reportOid)
         {
-            this.reportOid = _reportOid;
+            reportOid = _reportOid;
+            return this;
+        }
+    }
+
+    public static class Discount
+    {
+
+        private DiscountType type;
+
+        private BigDecimal value;
+
+        private String productOid;
+
+        private String label;
+
+        public DiscountType getType()
+        {
+            return type;
+        }
+
+        public Discount setType(final DiscountType type)
+        {
+            this.type = type;
+            return this;
+        }
+
+        public BigDecimal getValue()
+        {
+            return value;
+        }
+
+        public Discount setValue(final BigDecimal value)
+        {
+            this.value = value;
+            return this;
+        }
+
+        public String getProductOid()
+        {
+            return productOid;
+        }
+
+        public Discount setProductOid(final String productOid)
+        {
+            this.productOid = productOid;
+            return this;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        public Discount setLabel(final String label)
+        {
+            this.label = label;
             return this;
         }
     }

@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.DiscountDto;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
@@ -70,6 +71,7 @@ import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.entity.Workspace.Discount;
 import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.service.DocumentService;
@@ -326,6 +328,11 @@ public final class Converter
                                 .map(cmd -> Converter.toDto(cmd))
                                 .collect(Collectors.toSet()))
                         .withPosLayout(_entity.getPosLayout())
+                        .withDiscounts(_entity.getDiscounts() == null
+                            ? Collections.emptySet()
+                            : _entity.getDiscounts().stream()
+                                .map(discount -> Converter.toDto(discount))
+                                .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -344,7 +351,12 @@ public final class Converter
                             : _dto.getPrintCmds().stream()
                                     .map(cmd -> Converter.toEntity(cmd))
                                     .collect(Collectors.toSet()))
-                        .setPosLayout(_dto.getPosLayout());
+                        .setPosLayout(_dto.getPosLayout())
+                        .setDiscounts(_dto.getDiscounts() == null
+                            ? null
+                            : _dto.getDiscounts().stream()
+                                    .map(discount -> Converter.toEntity(discount))
+                                    .collect(Collectors.toSet()));
     }
 
     public static PosDto toDto(final Pos _entity)
@@ -814,7 +826,25 @@ public final class Converter
                         .setTarget(_dto.getTarget())
                         .setTargetOid(_dto.getTargetOid())
                         .setReportOid(_dto.getReportOid());
+    }
 
+    public static Discount toEntity(final DiscountDto _dto)
+    {
+        return new Discount()
+                        .setLabel(_dto.getLabel())
+                        .setProductOid(_dto.getProductOid())
+                        .setType(_dto.getType())
+                        .setValue(_dto.getValue());
+    }
+
+    public static DiscountDto toDto(final Discount _entity)
+    {
+        return DiscountDto.builder()
+                        .withLabel(_entity.getLabel())
+                        .withProductOid(_entity.getProductOid())
+                        .withType(_entity.getType())
+                        .withValue(_entity.getValue())
+                        .build();
     }
 
     public static Balance toEntity(final BalanceDto _dto) {
