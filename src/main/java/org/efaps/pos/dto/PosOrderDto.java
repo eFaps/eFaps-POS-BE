@@ -28,15 +28,24 @@ public class PosOrderDto
 
     private final SpotDto spot;
 
+    private final DiscountDto discount;
+
+
     public PosOrderDto(final Builder _builder)
     {
         super(_builder);
-        this.spot = _builder.spot;
+        spot = _builder.spot;
+        discount = _builder.discount;
     }
 
     public SpotDto getSpot()
     {
-        return this.spot;
+        return spot;
+    }
+
+    public DiscountDto getDiscount()
+    {
+        return discount;
     }
 
     public static Builder builder()
@@ -49,10 +58,17 @@ public class PosOrderDto
     {
 
         private SpotDto spot;
+        private DiscountDto discount;
 
         public Builder withSpot(final SpotDto _spot)
         {
-            this.spot = _spot;
+            spot = _spot;
+            return this;
+        }
+
+        public Builder withDiscount(final DiscountDto _discount)
+        {
+            discount = _discount;
             return this;
         }
 

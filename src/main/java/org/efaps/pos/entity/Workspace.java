@@ -17,12 +17,10 @@
 
 package org.efaps.pos.entity;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.efaps.pos.dto.DiscountType;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PosLayout;
 import org.efaps.pos.dto.PrintTarget;
@@ -226,61 +224,4 @@ public class Workspace
             return this;
         }
     }
-
-    public static class Discount
-    {
-
-        private DiscountType type;
-
-        private BigDecimal value;
-
-        private String productOid;
-
-        private String label;
-
-        public DiscountType getType()
-        {
-            return type;
-        }
-
-        public Discount setType(final DiscountType type)
-        {
-            this.type = type;
-            return this;
-        }
-
-        public BigDecimal getValue()
-        {
-            return value;
-        }
-
-        public Discount setValue(final BigDecimal value)
-        {
-            this.value = value;
-            return this;
-        }
-
-        public String getProductOid()
-        {
-            return productOid;
-        }
-
-        public Discount setProductOid(final String productOid)
-        {
-            this.productOid = productOid;
-            return this;
-        }
-
-        public String getLabel()
-        {
-            return label;
-        }
-
-        public Discount setLabel(final String label)
-        {
-            this.label = label;
-            return this;
-        }
-    }
-
 }

@@ -54,6 +54,7 @@ import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.Discount;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Job;
@@ -71,7 +72,6 @@ import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
-import org.efaps.pos.entity.Workspace.Discount;
 import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.service.DocumentService;
@@ -208,7 +208,8 @@ public final class Converter
                             : _dto.getTaxes().stream()
                                 .map(_tax -> Converter.toEntity(_tax))
                                 .collect(Collectors.toSet()))
-                        .setSpot(_dto.getSpot() == null ? null : toEntity(_dto.getSpot()));
+                        .setSpot(_dto.getSpot() == null ? null : toEntity(_dto.getSpot()))
+                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()));
     }
 
     public static Spot toEntity(final SpotDto _dto)
@@ -489,6 +490,7 @@ public final class Converter
                                 .map(_tax -> Converter.toDto(_tax))
                                 .collect(Collectors.toSet()))
                         .withSpot(toDto(_entity.getSpot()))
+                        .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .build();
     }
 

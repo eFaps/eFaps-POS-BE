@@ -25,14 +25,27 @@ public class Order
 
     private Spot spot;
 
+    private Discount discount;
+
     public Spot getSpot()
     {
-        return this.spot;
+        return spot;
     }
 
     public Order setSpot(final Spot _spot)
     {
-        this.spot = _spot;
+        spot = _spot;
+        return this;
+    }
+
+    public Discount getDiscount()
+    {
+        return discount;
+    }
+
+    public Order setDiscount(final Discount discount)
+    {
+        this.discount = discount;
         return this;
     }
 }
