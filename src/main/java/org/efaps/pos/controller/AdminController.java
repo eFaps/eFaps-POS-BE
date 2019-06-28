@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.controller;
 
+import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.service.SyncService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,32 +32,36 @@ public class AdminController
     /** The sync service. */
     private final SyncService syncService;
 
+    private final ConfigProperties properties;
+
     @Autowired
-    public AdminController(final SyncService _syncService)
+    public AdminController(final ConfigProperties _properties,
+                           final SyncService _syncService)
     {
-        this.syncService = _syncService;
+        syncService = _syncService;
+        properties = _properties;
     }
 
     @GetMapping(path = "/sync")
     public void sync()
     {
-        this.syncService.syncProducts();
-        this.syncService.syncCategories();
-        this.syncService.syncPOSs();
-        this.syncService.syncWorkspaces();
-        this.syncService.syncUsers();
-        this.syncService.syncSequences();
-        this.syncService.syncContacts();
-        this.syncService.syncWarehouses();
-        this.syncService.syncInventory();
-        this.syncService.syncPrinters();
-        this.syncService.syncImages();
-        this.syncService.syncReports();
+        syncService.syncProducts();
+        syncService.syncCategories();
+        syncService.syncPOSs();
+        syncService.syncWorkspaces();
+        syncService.syncUsers();
+        syncService.syncSequences();
+        syncService.syncContacts();
+        syncService.syncWarehouses();
+        syncService.syncInventory();
+        syncService.syncPrinters();
+        syncService.syncImages();
+        syncService.syncReports();
     }
 
     @GetMapping(path = "/version")
-    public String version() {
-        return org.efaps.pos.util.Version.VERSION;
+    public String version()
+    {
+        return properties.getVersion();
     }
-
 }
