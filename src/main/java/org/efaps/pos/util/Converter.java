@@ -450,7 +450,9 @@ public final class Converter
         return new Payment()
                         .setOid(_dto.getOid())
                         .setType(_dto.getType())
-                        .setAmount(_dto.getAmount());
+                        .setAmount(_dto.getAmount())
+                        .setCardTypeId(_dto.getCardTypeId())
+                        .setCardLabel(_dto.getCardLabel());
     }
 
     public static PaymentDto toDto(final Payment _entity)
@@ -459,6 +461,8 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withType(_entity.getType())
                         .withAmount(_entity.getAmount())
+                        .withCardTypeId(_entity.getCardTypeId())
+                        .withCardLabel(_entity.getCardLabel())
                         .build();
     }
 
