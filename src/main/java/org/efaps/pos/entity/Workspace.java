@@ -55,6 +55,9 @@ public class Workspace
 
     private Set<Discount> discounts;
 
+    private Set<Card> cards;
+
+
     public String getOid()
     {
         return oid;
@@ -160,9 +163,20 @@ public class Workspace
         return discounts;
     }
 
-    public Workspace setDiscounts(final Set<Discount> discounts)
+    public Workspace setDiscounts(final Set<Discount> _discounts)
     {
-        this.discounts = discounts;
+        discounts = _discounts;
+        return this;
+    }
+
+    public Set<Card> getCards()
+    {
+        return cards;
+    }
+
+    public Workspace setCards(final Set<Card> _cards)
+    {
+        cards = _cards;
         return this;
     }
 
@@ -221,6 +235,36 @@ public class Workspace
         public PrintCmd setReportOid(final String _reportOid)
         {
             reportOid = _reportOid;
+            return this;
+        }
+    }
+
+    public static class Card
+    {
+
+        private String label;
+
+        private Long cardTypeId;
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        public Card setLabel(final String _label)
+        {
+            label = _label;
+            return this;
+        }
+
+        public Long getCardTypeId()
+        {
+            return cardTypeId;
+        }
+
+        public Card setCardTypeId(final Long _cardTypeId)
+        {
+            cardTypeId = _cardTypeId;
             return this;
         }
     }

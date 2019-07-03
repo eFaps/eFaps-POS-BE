@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.dto.BalanceDto;
+import org.efaps.pos.dto.CardDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DiscountDto;
@@ -72,6 +73,7 @@ import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.entity.Workspace.Card;
 import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.service.DocumentService;
@@ -334,6 +336,11 @@ public final class Converter
                             : _entity.getDiscounts().stream()
                                 .map(discount -> Converter.toDto(discount))
                                 .collect(Collectors.toSet()))
+                        .withCards(_entity.getCards() == null
+                            ? Collections.emptySet()
+                            : _entity.getCards().stream()
+                                .map(card -> Converter.toDto(card))
+                                .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -357,6 +364,11 @@ public final class Converter
                             ? null
                             : _dto.getDiscounts().stream()
                                     .map(discount -> Converter.toEntity(discount))
+                                    .collect(Collectors.toSet()))
+                        .setCards(_dto.getCards() == null
+                            ? null
+                            : _dto.getCards().stream()
+                                    .map(card -> Converter.toEntity(card))
                                     .collect(Collectors.toSet()));
     }
 
@@ -837,6 +849,21 @@ public final class Converter
                         .setProductOid(_dto.getProductOid())
                         .setType(_dto.getType())
                         .setValue(_dto.getValue());
+    }
+
+    public static Card toEntity(final CardDto _dto)
+    {
+        return new Card()
+                        .setLabel(_dto.getLabel())
+                        .setCardTypeId(_dto.getCardTypeId());
+    }
+
+    public static CardDto toDto(final Card _entity)
+    {
+        return CardDto.builder()
+                        .withLabel(_entity.getLabel())
+                        .withCardTypeId(_entity.getCardTypeId())
+                        .build();
     }
 
     public static DiscountDto toDto(final Discount _entity)
