@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.PosGridSize;
 import org.efaps.pos.dto.PosLayout;
 import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.dto.SpotConfig;
@@ -57,6 +58,9 @@ public class Workspace
 
     private Set<Card> cards;
 
+    private PosGridSize gridSize;
+
+    private boolean gridShowPrice;
 
     public String getOid()
     {
@@ -177,6 +181,28 @@ public class Workspace
     public Workspace setCards(final Set<Card> _cards)
     {
         cards = _cards;
+        return this;
+    }
+
+    public PosGridSize getGridSize()
+    {
+        return gridSize;
+    }
+
+    public Workspace setGridSize(final PosGridSize _gridSize)
+    {
+        gridSize = _gridSize;
+        return this;
+    }
+
+    public boolean isGridShowPrice()
+    {
+        return gridShowPrice;
+    }
+
+    public Workspace setGridShowPrice(final boolean _gridShowPrice)
+    {
+        gridShowPrice = _gridShowPrice;
         return this;
     }
 

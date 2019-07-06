@@ -344,6 +344,8 @@ public final class Converter
                             : _entity.getCards().stream()
                                 .map(card -> Converter.toDto(card))
                                 .collect(Collectors.toSet()))
+                        .withGridShowPrice(_entity.isGridShowPrice())
+                        .withGridSize(_entity.getGridSize())
                         .build();
     }
 
@@ -372,7 +374,9 @@ public final class Converter
                             ? null
                             : _dto.getCards().stream()
                                     .map(card -> Converter.toEntity(card))
-                                    .collect(Collectors.toSet()));
+                                    .collect(Collectors.toSet()))
+                        .setGridShowPrice(_dto.isGridShowPrice())
+                        .setGridSize(_dto.getGridSize());
     }
 
     public static PosDto toDto(final Pos _entity)
