@@ -33,9 +33,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.efaps.pos.dto.PrintResponseDto;
 import org.efaps.pos.dto.PrinterType;
 import org.efaps.pos.entity.AbstractDocument;
+import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Printer;
+import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.repository.PrinterRepository;
 import org.efaps.pos.util.Converter;
@@ -113,6 +116,12 @@ public class PrintService
         Object content;
         if (_document instanceof Order) {
             content = Converter.toDto((Order) _document);
+        } else if (_document instanceof Receipt) {
+            content = Converter.toDto((Receipt) _document);
+        } else if (_document instanceof Invoice) {
+            content = Converter.toDto((Invoice) _document);
+        } else if (_document instanceof Ticket) {
+            content = Converter.toDto((Ticket) _document);
         } else {
             content = _document;
         }

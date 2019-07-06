@@ -43,6 +43,7 @@ public abstract class AbstractDocument<T>
     private Set<TaxEntry> taxes;
     private String contactOid;
     private String workspaceOid;
+    private Discount discount;
 
     public String getId()
     {
@@ -185,6 +186,18 @@ public abstract class AbstractDocument<T>
     public T setWorkspaceOid(final String _workspaceOid)
     {
         this.workspaceOid = _workspaceOid;
+        return (T) this;
+    }
+
+    public Discount getDiscount()
+    {
+        return discount;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setDiscount(final Discount discount)
+    {
+        this.discount = discount;
         return (T) this;
     }
 

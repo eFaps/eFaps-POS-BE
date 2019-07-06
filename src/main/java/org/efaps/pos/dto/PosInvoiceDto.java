@@ -30,10 +30,17 @@ public class PosInvoiceDto
     extends AbstractPayableDocumentDto
     implements IInvoice
 {
+    private final DiscountDto discount;
 
     public PosInvoiceDto(final Builder _builder)
     {
         super(_builder);
+        discount = _builder.discount;
+    }
+
+    public DiscountDto getDiscount()
+    {
+        return discount;
     }
 
     @Override
@@ -56,6 +63,13 @@ public class PosInvoiceDto
     public static final class Builder
         extends AbstractPayableDocumentDto.Builder<Builder, PosInvoiceDto>
     {
+        private DiscountDto discount;
+
+        public Builder withDiscount(final DiscountDto _discount)
+        {
+            discount = _discount;
+            return this;
+        }
 
         public Builder withItems(final Set<PosDocItemDto> _items)
         {

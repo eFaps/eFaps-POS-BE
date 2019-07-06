@@ -129,7 +129,8 @@ public final class Converter
                             : _dto.getPayments().stream()
                                 .map(_payment -> Converter.toEntity(_payment))
                                 .collect(Collectors.toSet()))
-                        .setBalanceOid(_dto.getBalanceOid());
+                        .setBalanceOid(_dto.getBalanceOid())
+                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()));
     }
 
     public static Invoice toEntity(final PosInvoiceDto _dto)
@@ -158,7 +159,8 @@ public final class Converter
                             : _dto.getPayments().stream()
                                 .map(_payment -> Converter.toEntity(_payment))
                                 .collect(Collectors.toSet()))
-                        .setBalanceOid(_dto.getBalanceOid());
+                        .setBalanceOid(_dto.getBalanceOid())
+                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()));
     }
 
     public static Ticket toEntity(final PosTicketDto _dto)
@@ -187,7 +189,8 @@ public final class Converter
                             : _dto.getPayments().stream()
                                 .map(_payment -> Converter.toEntity(_payment))
                                 .collect(Collectors.toSet()))
-                        .setBalanceOid(_dto.getBalanceOid());
+                        .setBalanceOid(_dto.getBalanceOid())
+                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()));
     }
 
     public static Order toEntity(final PosOrderDto _dto)
@@ -568,6 +571,7 @@ public final class Converter
                                  .map(_item -> toDto(_item))
                                  .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
+                        .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .build();
     }
 
@@ -600,6 +604,7 @@ public final class Converter
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
+                        .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .build();
     }
 
@@ -632,6 +637,7 @@ public final class Converter
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
+                        .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .build();
     }
 

@@ -30,10 +30,17 @@ public class PosReceiptDto
     extends AbstractPayableDocumentDto
     implements IReceipt
 {
+    private final DiscountDto discount;
 
     public PosReceiptDto(final Builder _builder)
     {
         super(_builder);
+        discount = _builder.discount;
+    }
+
+    public DiscountDto getDiscount()
+    {
+        return discount;
     }
 
     @Override
@@ -56,6 +63,13 @@ public class PosReceiptDto
     public static final class Builder
         extends AbstractPayableDocumentDto.Builder<Builder, PosReceiptDto>
     {
+        private DiscountDto discount;
+
+        public Builder withDiscount(final DiscountDto _discount)
+        {
+            discount = _discount;
+            return this;
+        }
 
         public Builder withItems(final Set<PosDocItemDto> _items)
         {

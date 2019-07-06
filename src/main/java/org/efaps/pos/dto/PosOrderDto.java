@@ -30,7 +30,6 @@ public class PosOrderDto
 
     private final DiscountDto discount;
 
-
     public PosOrderDto(final Builder _builder)
     {
         super(_builder);
