@@ -26,7 +26,7 @@ public class PosOrderDto
     extends AbstractDocumentDto
 {
 
-    private final SpotDto spot;
+    private final PosSpotDto spot;
 
     private final DiscountDto discount;
 
@@ -37,7 +37,7 @@ public class PosOrderDto
         discount = _builder.discount;
     }
 
-    public SpotDto getSpot()
+    public PosSpotDto getSpot()
     {
         return spot;
     }
@@ -56,10 +56,10 @@ public class PosOrderDto
         extends AbstractDocumentDto.Builder<Builder, PosOrderDto>
     {
 
-        private SpotDto spot;
+        private PosSpotDto spot;
         private DiscountDto discount;
 
-        public Builder withSpot(final SpotDto _spot)
+        public Builder withSpot(final PosSpotDto _spot)
         {
             spot = _spot;
             return this;

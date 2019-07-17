@@ -18,6 +18,7 @@
 package org.efaps.pos.entity;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -61,6 +62,9 @@ public class Workspace
     private PosGridSize gridSize;
 
     private boolean gridShowPrice;
+
+    private List<Floor> floors;
+
 
     public String getOid()
     {
@@ -206,6 +210,17 @@ public class Workspace
         return this;
     }
 
+    public List<Floor> getFloors()
+    {
+        return floors;
+    }
+
+    public Workspace setFloors(final List<Floor> _floors)
+    {
+        floors = _floors;
+        return this;
+    }
+
     @Override
     public String toString()
     {
@@ -291,6 +306,49 @@ public class Workspace
         public Card setCardTypeId(final Long _cardTypeId)
         {
             cardTypeId = _cardTypeId;
+            return this;
+        }
+    }
+
+    public static class Floor
+    {
+
+        private String name;
+
+        private List<Spot> spots;
+
+        private String imageOid;
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public Floor setName(final String name)
+        {
+            this.name = name;
+            return this;
+        }
+
+        public List<Spot> getSpots()
+        {
+            return spots;
+        }
+
+        public Floor setSpots(final List<Spot> spots)
+        {
+            this.spots = spots;
+            return this;
+        }
+
+        public String getImageOid()
+        {
+            return imageOid;
+        }
+
+        public Floor setImageOid(final String imageOid)
+        {
+            this.imageOid = imageOid;
             return this;
         }
     }
