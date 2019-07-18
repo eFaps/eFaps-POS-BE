@@ -61,6 +61,7 @@ import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.entity.Workspace.Floor;
 import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.ContactRepository;
@@ -470,19 +471,31 @@ public class SyncService
         final List<Product> products = productRepository.findAll();
         for (final Product product : products) {
             if (product.getImageOid() != null) {
-                LOG.debug("Syncing Image {}", product.getImageOid());
-                final Checkout checkout = eFapsClient.checkout(product.getImageOid());
-                if (checkout != null) {
-                    gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(product.getImageOid())));
-                    final DBObject metaData = new BasicDBObject();
-                    metaData.put("oid", product.getImageOid());
-                    metaData.put("contentType", checkout.getContentType().toString());
-                    gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
-                                    metaData);
-                }
+                LOG.debug("Syncing Product-Image {}", product.getImageOid());
+                storeImage(product.getImageOid());
+            }
+        }
+
+        final List<Workspace> workspaces = workspaceRepository.findAll();
+        for (final Workspace workspace : workspaces) {
+            for (final Floor floor : workspace.getFloors()) {
+                LOG.debug("Syncing Floor-Image {}", floor.getImageOid());
+                storeImage(floor.getImageOid());
             }
         }
         registerSync(StashId.IMAGESYNC);
+    }
+
+    protected void storeImage(final String imageOid) {
+        final Checkout checkout = eFapsClient.checkout(imageOid);
+        if (checkout != null) {
+            gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(imageOid)));
+            final DBObject metaData = new BasicDBObject();
+            metaData.put("oid", imageOid);
+            metaData.put("contentType", checkout.getContentType().toString());
+            gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
+                        metaData);
+        }
     }
 
     public void syncReports()
