@@ -408,6 +408,7 @@ public final class Converter
 
     public static Floor toEntity(final FloorDto _dto) {
         return new Floor()
+                        .setOid(_dto.getOid())
                         .setImageOid(_dto.getImageOid())
                         .setName(_dto.getName())
                         .setSpots(_dto.getSpots() == null
@@ -420,6 +421,7 @@ public final class Converter
     public static FloorDto toDto(final Floor _entity)
     {
         return FloorDto.builder()
+                        .withOID(_entity.getOid())
                         .withImageOid(_entity.getImageOid())
                         .withName(_entity.getName())
                         .withSpots(_entity.getSpots() == null

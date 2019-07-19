@@ -313,11 +313,24 @@ public class Workspace
     public static class Floor
     {
 
+        private String oid;
+
         private String name;
 
         private List<Spot> spots;
 
         private String imageOid;
+
+        public String getOid()
+        {
+            return oid;
+        }
+
+        public Floor setOid(final String oid)
+        {
+            this.oid = oid;
+            return this;
+        }
 
         public String getName()
         {
