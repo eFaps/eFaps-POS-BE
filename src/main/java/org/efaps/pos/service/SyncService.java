@@ -416,10 +416,10 @@ public class SyncService
     {
         LOG.info("Syncing Invoices");
         final Collection<Invoice> tosync = invoiceRepository.findByOidIsNull();
-        for (final Invoice dto : tosync) {
-            LOG.debug("Syncing Invoice: {}", dto);
-            if (validateContact(dto) && verifyBalance(dto)) {
-                final InvoiceDto recDto = eFapsClient.postInvoice(Converter.toInvoiceDto(dto));
+        for (final Invoice invoice : tosync) {
+            LOG.debug("Syncing Invoice: {}", invoice);
+            if (validateContact(invoice) && verifyBalance(invoice)) {
+                final InvoiceDto recDto = eFapsClient.postInvoice(Converter.toInvoiceDto(invoice));
                 LOG.debug("received Invoice: {}", recDto);
                 if (recDto.getOid() != null) {
                     final Optional<Invoice> opt = invoiceRepository.findById(recDto.getId());
@@ -430,7 +430,7 @@ public class SyncService
                     }
                 }
             } else {
-                LOG.debug("skipped Invoice: {}", dto);
+                LOG.debug("skipped Invoice: {}", invoice);
             }
         }
         registerSync(StashId.INVOICESYNC);
@@ -462,7 +462,21 @@ public class SyncService
 
     private boolean validateContact(final AbstractPayableDocument<?> _entity)
     {
-        return contactRepository.findOneByOid(_entity.getContactOid()).isPresent();
+        boolean ret = false;
+        if (Utils.isOid(_entity.getContactOid())) {
+            ret = contactRepository.findOneByOid(_entity.getContactOid()).isPresent();
+        } else {
+            final Optional<Contact> optContact = contactRepository.findById(_entity.getContactOid());
+            if (optContact.isPresent()) {
+                final String contactOid = optContact.get().getOid();
+                if (Utils.isOid(contactOid)) {
+                    _entity.setContactOid(contactOid);
+                    mongoTemplate.save(_entity);
+                    ret = true;
+                }
+            }
+        }
+        return ret;
     }
 
     public void syncImages()
