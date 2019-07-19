@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,30 @@
  *
  */
 
-package org.efaps.pos.respository;
+package org.efaps.pos.context;
 
-import java.util.Collection;
+import org.efaps.pos.ConfigProperties.Company;
 
-import org.efaps.pos.entity.Ticket;
-import org.springframework.data.mongodb.repository.MongoRepository;
-
-public interface TicketRepository
-    extends MongoRepository<Ticket, String>
+public class Context
 {
-    Collection<Ticket> findByOidIsNull();
 
-    Collection<Ticket> findByContactOid(String _contactOid);
+    private static final ThreadLocal<Context> CONTEXT = ThreadLocal.withInitial(() -> new Context());
 
-    Collection<Ticket> findByBalanceOid(String _balanceOid);
+    private Company company;
+
+    public Company getCompany()
+    {
+        return company;
+    }
+
+    public void setCompany(final Company _company)
+    {
+        company = _company;
+    }
+
+    public static Context get()
+    {
+        return CONTEXT.get();
+    }
+
 }

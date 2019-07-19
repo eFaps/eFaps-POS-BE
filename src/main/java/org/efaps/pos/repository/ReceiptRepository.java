@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,19 @@
  *
  */
 
-package org.efaps.pos.respository;
+package org.efaps.pos.repository;
 
-import java.util.Optional;
+import java.util.Collection;
 
-import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.entity.Receipt;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface SequenceRepository
-    extends MongoRepository<Sequence, String>
+public interface ReceiptRepository
+    extends MongoRepository<Receipt, String>
 {
-    public Optional<Sequence> findByOid(String _oid);
+    Collection<Receipt> findByOidIsNull();
+
+    Collection<Receipt> findByContactOid(String _contactOid);
+
+    Collection<Receipt> findByBalanceOid(String _balanceOid);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
  */
 package org.efaps.pos.controller;
 
+import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.PosVersionsDto;
+import org.efaps.pos.entity.Config;
 import org.efaps.pos.service.SyncService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,32 +35,44 @@ public class AdminController
     /** The sync service. */
     private final SyncService syncService;
 
+    private final ConfigProperties properties;
+
+    private final MongoTemplate mongoTemplate;
+
     @Autowired
-    public AdminController(final SyncService _syncService)
+    public AdminController(final ConfigProperties _properties,
+                           final SyncService _syncService,
+                           final MongoTemplate _mongoTemplate)
     {
-        this.syncService = _syncService;
+        syncService = _syncService;
+        properties = _properties;
+        mongoTemplate = _mongoTemplate;
     }
 
     @GetMapping(path = "/sync")
     public void sync()
     {
-        this.syncService.syncProducts();
-        this.syncService.syncCategories();
-        this.syncService.syncPOSs();
-        this.syncService.syncWorkspaces();
-        this.syncService.syncUsers();
-        this.syncService.syncSequences();
-        this.syncService.syncContacts();
-        this.syncService.syncWarehouses();
-        this.syncService.syncInventory();
-        this.syncService.syncPrinters();
-        this.syncService.syncImages();
-        this.syncService.syncReports();
+        syncService.syncProducts();
+        syncService.syncCategories();
+        syncService.syncPOSs();
+        syncService.syncWorkspaces();
+        syncService.syncUsers();
+        syncService.syncSequences();
+        syncService.syncContacts();
+        syncService.syncWarehouses();
+        syncService.syncInventory();
+        syncService.syncPrinters();
+        syncService.syncImages();
+        syncService.syncReports();
     }
 
-    @GetMapping(path = "/version")
-    public String version() {
-        return org.efaps.pos.util.Version.VERSION;
+    @GetMapping(path = "/versions")
+    public PosVersionsDto version()
+    {
+        final Config config = mongoTemplate.findById(Config.KEY, Config.class);
+        final String remote = config.getProperties().getOrDefault("org.efaps.pos.Version", "0.0.0");
+        return PosVersionsDto.builder()
+                        .withRemote(remote)
+                        .withLocal(properties.getVersion()).build();
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.Optional;
 import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.User;
-import org.efaps.pos.respository.BalanceRepository;
+import org.efaps.pos.repository.BalanceRepository;
 import org.springframework.stereotype.Service;
 
 @Service

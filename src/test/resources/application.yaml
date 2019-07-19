@@ -4,6 +4,8 @@ spring:
     mongodb:
       host: localhost
 
+mongoClientURI: mongodb://localhost:27017/efapsPOS
+
 org:
   quartz:
     threadPool:

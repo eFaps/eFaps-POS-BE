@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.efaps.pos.config;
 
 import org.efaps.pos.JwtAuthorizationTokenFilter;
+import org.efaps.pos.context.ContextFilter;
 import org.efaps.pos.controller.JwtAuthenticationEntryPoint;
 import org.efaps.pos.service.UserService;
 import org.efaps.pos.util.JwtTokenUtil;
@@ -44,22 +45,24 @@ public class WebSecurityConfig
     private final JwtTokenUtil jwtTokenUtil;
 
     private final UserService userService;
-
+    ContextFilter contextFilter;
     @Autowired
     public WebSecurityConfig(final JwtAuthenticationEntryPoint _unauthorizedHandler,
                              final JwtTokenUtil _jwtTokenUtil,
-                             final UserService _userService)
+                             final UserService _userService,
+                             final ContextFilter _contextFilter)
     {
-        this.unauthorizedHandler = _unauthorizedHandler;
-        this.jwtTokenUtil = _jwtTokenUtil;
-        this.userService = _userService;
+        unauthorizedHandler = _unauthorizedHandler;
+        jwtTokenUtil = _jwtTokenUtil;
+        userService = _userService;
+        contextFilter = _contextFilter;
     }
 
     @Autowired
     public void configureGlobal(final AuthenticationManagerBuilder auth)
         throws Exception
     {
-        auth.userDetailsService(this.userService).passwordEncoder(this.userService.getPasswordEncoder());
+        auth.userDetailsService(userService).passwordEncoder(userService.getPasswordEncoder());
     }
 
     @Bean
@@ -76,7 +79,7 @@ public class WebSecurityConfig
     {
         _httpSecurity.csrf().disable()
                 .exceptionHandling()
-                .authenticationEntryPoint(this.unauthorizedHandler)
+                .authenticationEntryPoint(unauthorizedHandler)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -85,8 +88,9 @@ public class WebSecurityConfig
 
         // Custom JWT based security filter
         final JwtAuthorizationTokenFilter authenticationTokenFilter = new JwtAuthorizationTokenFilter(
-                        userDetailsService(), this.jwtTokenUtil);
+                        userDetailsService(), jwtTokenUtil);
         _httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        _httpSecurity.addFilterBefore(contextFilter, JwtAuthorizationTokenFilter.class);
     }
 
     @Override
@@ -97,7 +101,9 @@ public class WebSecurityConfig
             .and()
             .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "users/**")
             .and()
-            .ignoring().antMatchers(HttpMethod.GET, "/pos", "/login", "/products", "/workspaces")
+            .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
+           // .and()
+           // .ignoring().antMatchers(HttpMethod.GET, "/pos", "/login", "/products", "/workspaces")
             .and()
             .ignoring().antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html",
                                         "/**/*.css", "/**/*.js", "/**/*.json", "/**/*.svg")

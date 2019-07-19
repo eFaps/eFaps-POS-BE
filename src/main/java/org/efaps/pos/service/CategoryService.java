@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,11 @@ package org.efaps.pos.service;
 import java.util.List;
 
 import org.efaps.pos.entity.Category;
-import org.efaps.pos.respository.CategoryRepository;
+import org.efaps.pos.repository.CategoryRepository;
+import org.efaps.pos.util.CategoryNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,17 +35,18 @@ public class CategoryService
     @Autowired
     public CategoryService(final CategoryRepository _categoryRepository)
     {
-        this.categoryRepository = _categoryRepository;
+        categoryRepository = _categoryRepository;
     }
 
     public List<Category> getCategories()
     {
-        final List<Category> ret = this.categoryRepository.findAll();
+        final List<Category> ret = categoryRepository.findAll(Sort.by(Order.by("weight")));
         return ret;
     }
 
     public Category getCategory(final String _oid)
+        throws CategoryNotFoundException
     {
-        return this.categoryRepository.findById(_oid).get();
+        return categoryRepository.findById(_oid).orElseThrow(() -> new CategoryNotFoundException());
     }
 }

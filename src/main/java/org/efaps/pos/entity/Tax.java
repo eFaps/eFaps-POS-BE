@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ package org.efaps.pos.entity;
 import java.math.BigDecimal;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Tax
 {
@@ -28,57 +29,70 @@ public class Tax
 
     private String key;
 
+    private String catKey;
+
     private String name;
 
     private BigDecimal percent;
 
     public String getOid()
     {
-        return this.oid;
+        return oid;
     }
 
     public Tax setOid(final String _oid)
     {
-        this.oid = _oid;
+        oid = _oid;
         return this;
     }
 
     public String getKey()
     {
-        return this.key;
+        return key;
     }
 
     public Tax setKey(final String _key)
     {
-        this.key = _key;
+        key = _key;
+        return this;
+    }
+
+    public String getCatKey()
+    {
+        return catKey;
+    }
+
+    public Tax setCatKey(final String catKey)
+    {
+        this.catKey = catKey;
         return this;
     }
 
     public String getName()
     {
-        return this.name;
+        return name;
     }
 
     public Tax setName(final String _name)
     {
-        this.name = _name;
+        name = _name;
         return this;
     }
 
     public BigDecimal getPercent()
     {
-        return this.percent;
+        return percent;
     }
 
     public Tax setPercent(final BigDecimal _percent)
     {
-        this.percent = _percent;
+        percent = _percent;
         return this;
     }
 
     @Override
     public String toString()
     {
-        return ReflectionToStringBuilder.toString(this);
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

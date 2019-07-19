@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,16 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.respository;
 
-import java.util.Optional;
+package org.efaps.pos.util;
 
-import org.efaps.pos.entity.Warehouse;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-public interface WarehouseRepository
-    extends MongoRepository<Warehouse, String>
+@ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "Category Not Found")
+public class CategoryNotFoundException extends Exception
 {
-    Optional<Warehouse> findOneByOid(String _oid);
+
+    private static final long serialVersionUID = 1L;
+
 }

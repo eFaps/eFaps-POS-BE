@@ -5,10 +5,11 @@ cache:
     - $HOME/.m2
 
 jdk:
-  - oraclejdk8
+  - openjdk11
 
 install:
   - wget https://raw.githubusercontent.com/eFaps/Utils/master/settings/settings.xml -O mySettings.xml
+  - mvn -version
   - mvn install -s mySettings.xml -DskipTests=true -B -V
 
 script:
@@ -16,5 +17,5 @@ script:
   - mvn clean clover:setup test clover:aggregate clover:clover -s mySettings.xml -B
  
 after_success:
- - "[[ $TRAVIS_BRANCH == \"master\" ]] && [[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && mvn deploy -DskipTests -s mySettings.xml"
+ - "[[ $TRAVIS_BRANCH == \"master\" || $TRAVIS_BRANCH == \"java-11\" ]] && [[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && mvn deploy -DskipTests -s mySettings.xml"
  - bash <(curl -s https://codecov.io/bash)

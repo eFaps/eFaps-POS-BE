@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.service.CategoryService;
+import org.efaps.pos.util.CategoryNotFoundException;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,19 +39,23 @@ public class CategoryController
 {
     private final CategoryService service;
 
-    public CategoryController(final CategoryService _service) {
-        this.service = _service;
+    public CategoryController(final CategoryService _service)
+    {
+        service = _service;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CategoryDto> getCategorys() {
-        return this.service.getCategories().stream()
+    public List<CategoryDto> getCategorys()
+    {
+        return service.getCategories().stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(path = "/{oid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CategoryDto getCategory(@PathVariable("oid") final String _oid) {
-        return Converter.toDto(this.service.getCategory(_oid));
+    public CategoryDto getCategory(@PathVariable("oid") final String _oid)
+        throws CategoryNotFoundException
+    {
+        return Converter.toDto(service.getCategory(_oid));
     }
 }

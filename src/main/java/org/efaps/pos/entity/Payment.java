@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,37 +27,61 @@ public class Payment
     private String oid;
     private PaymentType type;
     private BigDecimal amount;
+    private Long cardTypeId;
+    private String cardLabel;
 
     public String getOid()
     {
-        return this.oid;
+        return oid;
     }
 
     public Payment setOid(final String _oid)
     {
-        this.oid = _oid;
+        oid = _oid;
         return this;
     }
 
     public PaymentType getType()
     {
-        return this.type;
+        return type;
     }
 
     public Payment setType(final PaymentType _type)
     {
-        this.type = _type;
+        type = _type;
         return this;
     }
 
     public BigDecimal getAmount()
     {
-        return this.amount;
+        return amount;
     }
 
     public Payment setAmount(final BigDecimal _amount)
     {
-        this.amount = _amount;
+        amount = _amount;
+        return this;
+    }
+
+    public Long getCardTypeId()
+    {
+        return cardTypeId;
+    }
+
+    public Payment setCardTypeId(final Long _cardTypeId)
+    {
+        cardTypeId = _cardTypeId;
+        return this;
+    }
+
+    public String getCardLabel()
+    {
+        return cardLabel;
+    }
+
+    public Payment setCardLabel(final String _cardLabel)
+    {
+        cardLabel = _cardLabel;
         return this;
     }
 }

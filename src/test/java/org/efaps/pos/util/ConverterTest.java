@@ -102,9 +102,9 @@ public class ConverterTest
 
     @BeforeEach
     public void setup() {
-        this.mongoTemplate.remove(new Query(), Product.class);
-        this.mongoTemplate.remove(new Query(), Order.class);
-        this.mongoTemplate.remove(new Query(), Warehouse.class);
+        mongoTemplate.remove(new Query(), Product.class);
+        mongoTemplate.remove(new Query(), Order.class);
+        mongoTemplate.remove(new Query(), Warehouse.class);
     }
 
     @Test
@@ -415,7 +415,7 @@ public class ConverterTest
         final Product product = new Product()
                         .setOid("1234.652")
                         .setDescription("This is a description");
-        this.mongoTemplate.save(product);
+        mongoTemplate.save(product);
 
         final Item entity = new Item()
                         .setIndex(1)
@@ -464,11 +464,11 @@ public class ConverterTest
     @Test
     public void testSpotToEntity() {
         final SpotDto dto = SpotDto.builder()
-                        .withId("id 1")
                         .withLabel("Label")
+                        .withOID("123.45")
                         .build();
         final Spot entity = Converter.toEntity(dto);
-        assertEquals(dto.getId(), entity.getId());
+        assertEquals(dto.getOid(), entity.getId());
         assertEquals(dto.getLabel(), entity.getLabel());
     }
 
@@ -564,9 +564,9 @@ public class ConverterTest
     @Test
     public void testInventoryToDto() {
         final Product product = new Product().setOid("productOid");
-        this.mongoTemplate.save(product);
+        mongoTemplate.save(product);
         final Warehouse warehouse = new Warehouse().setOid("warehouseOid");
-        this.mongoTemplate.save(warehouse);
+        mongoTemplate.save(warehouse);
 
         final InventoryEntry entity = new InventoryEntry()
                         .setOid("id 1")
@@ -583,7 +583,7 @@ public class ConverterTest
     @Test
     public void testJobToDto() {
         final Order order = new Order();
-        this.mongoTemplate.save(order);
+        mongoTemplate.save(order);
         final Job entity = new Job()
                         .setId("someId")
                         .setDocumentId(order.getId());

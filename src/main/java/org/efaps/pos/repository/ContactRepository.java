@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,25 @@
  * limitations under the License.
  *
  */
-
-package org.efaps.pos.respository;
+package org.efaps.pos.repository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
-import org.efaps.pos.dto.BalanceStatus;
-import org.efaps.pos.entity.Balance;
+import org.efaps.pos.entity.Contact;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface BalanceRepository
-    extends MongoRepository<Balance, String>
+public interface ContactRepository
+    extends MongoRepository<Contact, String>
 {
-    Optional<Balance> findOneByUserOidAndStatus(String _userOid, BalanceStatus _status);
+    Optional<Contact> findOneByOid(String _oid);
 
-    Collection<Balance> findByOidIsNull();
+    List<Contact> findByOid(String _oid);
 
-    Collection<Balance> findBySyncedIsFalseAndStatus(BalanceStatus _status);
+    List<Contact> findByIdNumberStartingWith(String _term);
+
+    List<Contact> findByNameStartingWith(String _term);
+
+    Collection<Contact> findByOidIsNull();
 }

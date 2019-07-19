@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
@@ -51,6 +52,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.RequestEntity.HeadersBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -74,17 +76,17 @@ public class EFapsClient
                        final RestTemplate _restTemplate,
                        final SSOClient _ssoClient)
     {
-        this.mongoTemplate = _mongoTemplate;
-        this.config = _config;
-        this.restTemplate = _restTemplate;
-        this.ssoClient = _ssoClient;
+        mongoTemplate = _mongoTemplate;
+        config = _config;
+        restTemplate = _restTemplate;
+        ssoClient = _ssoClient;
     }
 
     public Map<String, String> getProperties() {
         Map<String, String> ret = new HashMap<>();
         try {
-            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getConfigPath());
-            final ResponseEntity<Map<String, String>> response = this.restTemplate.exchange(requestEntity,
+            final RequestEntity<?> requestEntity = get(config.getEFaps().getConfigPath());
+            final ResponseEntity<Map<String, String>> response = restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<Map<String, String>>()
                             {
                             });
@@ -99,8 +101,8 @@ public class EFapsClient
     {
         List<ProductDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getProductPath());
-            final ResponseEntity<List<ProductDto>> response = this.restTemplate.exchange(requestEntity,
+            final RequestEntity<?> requestEntity = get(config.getEFaps().getProductPath());
+            final ResponseEntity<List<ProductDto>> response = restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<ProductDto>>()
                             {
                             });
@@ -115,8 +117,8 @@ public class EFapsClient
     {
         List<CategoryDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getCategoryPath());
-            final ResponseEntity<List<CategoryDto>> response = this.restTemplate.exchange(requestEntity,
+            final RequestEntity<?> requestEntity = get(config.getEFaps().getCategoryPath());
+            final ResponseEntity<List<CategoryDto>> response = restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<CategoryDto>>()
                             {
                             });
@@ -131,8 +133,8 @@ public class EFapsClient
     {
         List<WorkspaceDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getWorkspacePath());
-            final ResponseEntity<List<WorkspaceDto>> response = this.restTemplate.exchange(requestEntity,
+            final RequestEntity<?> requestEntity = get(config.getEFaps().getWorkspacePath());
+            final ResponseEntity<List<WorkspaceDto>> response = restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<WorkspaceDto>>()
                             {
                             });
@@ -147,8 +149,8 @@ public class EFapsClient
     {
         List<WarehouseDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getWarehousePath());
-            final ResponseEntity<List<WarehouseDto>> response = this.restTemplate.exchange(requestEntity,
+            final RequestEntity<?> requestEntity = get(config.getEFaps().getWarehousePath());
+            final ResponseEntity<List<WarehouseDto>> response = restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<WarehouseDto>>()
                             {
                             });
@@ -163,8 +165,8 @@ public class EFapsClient
     {
         List<PrinterDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getPrinterPath());
-            final ResponseEntity<List<PrinterDto>> response = this.restTemplate.exchange(requestEntity,
+            final RequestEntity<?> requestEntity = get(config.getEFaps().getPrinterPath());
+            final ResponseEntity<List<PrinterDto>> response = restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<PrinterDto>>()
                             {
                             });
@@ -179,8 +181,8 @@ public class EFapsClient
     {
         List<InventoryEntryDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getInventoryPath());
-            final ResponseEntity<List<InventoryEntryDto>> response = this.restTemplate.exchange(requestEntity,
+            final RequestEntity<?> requestEntity = get(config.getEFaps().getInventoryPath());
+            final ResponseEntity<List<InventoryEntryDto>> response = restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<InventoryEntryDto>>()
                             {
                             });
@@ -195,8 +197,8 @@ public class EFapsClient
     {
         List<PosDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getPosPath());
-            final ResponseEntity<List<PosDto>> response = this.restTemplate.exchange(requestEntity,
+            final RequestEntity<?> requestEntity = get(config.getEFaps().getPosPath());
+            final ResponseEntity<List<PosDto>> response = restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<PosDto>>()
                             {
                             });
@@ -211,8 +213,8 @@ public class EFapsClient
     {
         List<UserDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getUserPath());
-            final ResponseEntity<List<UserDto>> response = this.restTemplate.exchange(requestEntity,
+            final RequestEntity<?> requestEntity = get(config.getEFaps().getUserPath());
+            final ResponseEntity<List<UserDto>> response = restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<UserDto>>()
                             {
                             });
@@ -227,8 +229,8 @@ public class EFapsClient
     {
         List<SequenceDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getSequencePath());
-            final ResponseEntity<List<SequenceDto>> response = this.restTemplate.exchange(requestEntity,
+            final RequestEntity<?> requestEntity = get(config.getEFaps().getSequencePath());
+            final ResponseEntity<List<SequenceDto>> response = restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<SequenceDto>>()
                             {
                             });
@@ -243,8 +245,8 @@ public class EFapsClient
     {
         List<ContactDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(this.config.getEFaps().getContactPath());
-            final ResponseEntity<List<ContactDto>> response = this.restTemplate.exchange(requestEntity,
+            final RequestEntity<?> requestEntity = get(config.getEFaps().getContactPath());
+            final ResponseEntity<List<ContactDto>> response = restTemplate.exchange(requestEntity,
                             new ParameterizedTypeReference<List<ContactDto>>()
                             {
                             });
@@ -259,8 +261,8 @@ public class EFapsClient
     {
         BalanceDto ret = _balance;
         try {
-            final RequestEntity<BalanceDto> requestEntity = post(this.config.getEFaps().getBalancePath(), _balance);
-            final ResponseEntity<BalanceDto> response = this.restTemplate.exchange(requestEntity, BalanceDto.class);
+            final RequestEntity<BalanceDto> requestEntity = post(config.getEFaps().getBalancePath(), _balance);
+            final ResponseEntity<BalanceDto> response = restTemplate.exchange(requestEntity, BalanceDto.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Receipts", e);
@@ -272,9 +274,9 @@ public class EFapsClient
     {
         boolean ret = false;
         try {
-            final RequestEntity<BalanceDto> requestEntity = put(this.config.getEFaps().getBalancePath()
+            final RequestEntity<BalanceDto> requestEntity = put(config.getEFaps().getBalancePath()
                             + "/" + _balance.getOid(), _balance);
-            final ResponseEntity<Void> response = this.restTemplate.exchange(requestEntity, Void.class);
+            final ResponseEntity<Void> response = restTemplate.exchange(requestEntity, Void.class);
             ret = response.getStatusCode().is2xxSuccessful();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Balance update", e);
@@ -286,8 +288,8 @@ public class EFapsClient
     {
         ReceiptDto ret = _receipt;
         try {
-            final RequestEntity<ReceiptDto> requestEntity = post(this.config.getEFaps().getReceiptPath(), _receipt);
-            final ResponseEntity<ReceiptDto> response = this.restTemplate.exchange(requestEntity, ReceiptDto.class);
+            final RequestEntity<ReceiptDto> requestEntity = post(config.getEFaps().getReceiptPath(), _receipt);
+            final ResponseEntity<ReceiptDto> response = restTemplate.exchange(requestEntity, ReceiptDto.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Receipts", e);
@@ -299,8 +301,8 @@ public class EFapsClient
     {
         InvoiceDto ret = _invoice;
         try {
-            final RequestEntity<InvoiceDto> requestEntity = post(this.config.getEFaps().getInvoicePath(), _invoice);
-            final ResponseEntity<InvoiceDto> response = this.restTemplate.exchange(requestEntity, InvoiceDto.class);
+            final RequestEntity<InvoiceDto> requestEntity = post(config.getEFaps().getInvoicePath(), _invoice);
+            final ResponseEntity<InvoiceDto> response = restTemplate.exchange(requestEntity, InvoiceDto.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Invoices", e);
@@ -312,8 +314,8 @@ public class EFapsClient
     {
         TicketDto ret = _ticket;
         try {
-            final RequestEntity<TicketDto> requestEntity = post(this.config.getEFaps().getTicketPath(), _ticket);
-            final ResponseEntity<TicketDto> response = this.restTemplate.exchange(requestEntity, TicketDto.class);
+            final RequestEntity<TicketDto> requestEntity = post(config.getEFaps().getTicketPath(), _ticket);
+            final ResponseEntity<TicketDto> response = restTemplate.exchange(requestEntity, TicketDto.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Tickets", e);
@@ -325,8 +327,8 @@ public class EFapsClient
     {
         ContactDto ret = _contact;
         try {
-            final RequestEntity<ContactDto> requestEntity = post(this.config.getEFaps().getContactPath(), _contact);
-            final ResponseEntity<ContactDto> response = this.restTemplate.exchange(requestEntity, ContactDto.class);
+            final RequestEntity<ContactDto> requestEntity = post(config.getEFaps().getContactPath(), _contact);
+            final ResponseEntity<ContactDto> response = restTemplate.exchange(requestEntity, ContactDto.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Invoices", e);
@@ -338,10 +340,10 @@ public class EFapsClient
     {
         Checkout ret = null;
         try {
-            final URI uri = UriComponentsBuilder.fromUri(this.config.getEFaps().getBaseUrl()).path(this.config
+            final URI uri = UriComponentsBuilder.fromUri(config.getEFaps().getBaseUrl()).path(config
                             .getEFaps().getCheckoutPath()).queryParam("oid", _oid).build().toUri();
             final RequestEntity<?> requestEntity = get(uri);
-            final ResponseEntity<byte[]> response = this.restTemplate.exchange(requestEntity, byte[].class);
+            final ResponseEntity<byte[]> response = restTemplate.exchange(requestEntity, byte[].class);
             if (response.getBody() != null) {
                 ret = new Checkout();
                 ret.setContent(response.getBody());
@@ -354,13 +356,21 @@ public class EFapsClient
         return ret;
     }
 
+    private <T extends HeadersBuilder<T>> HeadersBuilder<T> addHeader(final HeadersBuilder<T> _builder) {
+      HeadersBuilder<T> ret = _builder.header("Authorization", getAuth());
+      if (Context.get().getCompany() != null) {
+        ret = ret.header("X-CONTEXT-COMPANY", Context.get().getCompany().getKey());
+      }
+      return ret;
+    }
+
     private String getAuth()
     {
         String auth = "";
-        if (this.config.getSso() != null && StringUtils.isNotEmpty(this.config.getSso().getUrl())) {
-            auth = "Bearer " + this.ssoClient.getToken();
-        } else if (this.config.getAuth() != null) {
-            auth = "Basic " + Base64.getEncoder().encodeToString((this.config.getAuth().getUser() + ":" + this.config
+        if (config.getSso() != null && StringUtils.isNotEmpty(config.getSso().getUrl())) {
+            auth = "Bearer " + ssoClient.getToken();
+        } else if (config.getAuth() != null) {
+            auth = "Basic " + Base64.getEncoder().encodeToString((config.getAuth().getUser() + ":" + config
                             .getAuth().getPassword()).getBytes(StandardCharsets.UTF_8));
         }
         return auth;
@@ -375,13 +385,13 @@ public class EFapsClient
         }
         final Map<String, String> map = new HashMap<>();
         map.put("identifier", ident);
-        return UriComponentsBuilder.fromUri(this.config.getEFaps().getBaseUrl()).path(_path)
+        return UriComponentsBuilder.fromUri(config.getEFaps().getBaseUrl()).path(_path)
                         .buildAndExpand(map);
     }
 
     private RequestEntity<?> get(final URI _uri)
     {
-        return RequestEntity.get(_uri).header("Authorization", getAuth()).build();
+      return addHeader(RequestEntity.get(_uri)).build();
     }
 
     private RequestEntity<?> get(final String _path)
@@ -393,30 +403,28 @@ public class EFapsClient
     private <T> RequestEntity<T> post(final String _path, final T _body)
         throws IdentException
     {
-        return RequestEntity.post(getUriComponent(_path).toUri())
-                        .header("Authorization", getAuth())
+        return addHeader(RequestEntity.post(getUriComponent(_path).toUri()))
                         .accept(MediaType.APPLICATION_JSON).body(_body);
     }
 
     private <T> RequestEntity<T> put(final String _path, final T _body)
         throws IdentException
     {
-        return RequestEntity.put(getUriComponent(_path).toUri())
-                        .header("Authorization", getAuth())
-                        .body(_body);
+        return addHeader(RequestEntity.put(getUriComponent(_path).toUri()))
+            .accept(MediaType.APPLICATION_JSON).body(_body);
     }
 
     private String getIdentifier() {
         String ret = null;
-        final Identifier identifier = this.mongoTemplate.findById(Identifier.KEY, Identifier.class);
+        final Identifier identifier = mongoTemplate.findById(Identifier.KEY, Identifier.class);
         if (identifier == null) {
             try {
-                final UriComponents uriComp = UriComponentsBuilder.fromUri(this.config.getEFaps().getBaseUrl())
-                                    .path(this.config.getEFaps().getBackendPath())
+                final UriComponents uriComp = UriComponentsBuilder.fromUri(config.getEFaps().getBaseUrl())
+                                    .path(config.getEFaps().getBackendPath())
                                     .path("/identifier")
                                     .build();
                 final RequestEntity<?> requestEntity = get(uriComp.toUri());
-                final ResponseEntity<String> response = this.restTemplate.exchange(requestEntity,
+                final ResponseEntity<String> response = restTemplate.exchange(requestEntity,
                                 new ParameterizedTypeReference<String>()
                                 {
                                 });
@@ -427,7 +435,7 @@ public class EFapsClient
                                         .setId(Identifier.KEY)
                                         .setCreated(LocalDateTime.now())
                                         .setIdentifier(ident);
-                    this.mongoTemplate.save(newIdentifier);
+                    mongoTemplate.save(newIdentifier);
                 }
             } catch (final RestClientException e) {
                 LOG.error("Catched error during retrieval of identifier", e);

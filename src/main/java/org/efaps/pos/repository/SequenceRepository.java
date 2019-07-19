@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.respository;
 
-import org.efaps.pos.entity.Category;
+package org.efaps.pos.repository;
+
+import java.util.Optional;
+
+import org.efaps.pos.entity.Sequence;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface CategoryRepository
-    extends MongoRepository<Category, String>
+public interface SequenceRepository
+    extends MongoRepository<Sequence, String>
 {
-
+    public Optional<Sequence> findByOid(String _oid);
 }

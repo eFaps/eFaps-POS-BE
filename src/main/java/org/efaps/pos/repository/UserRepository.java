@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,15 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.respository;
+package org.efaps.pos.repository;
 
-import java.util.Collection;
+import java.util.List;
 
-import org.efaps.pos.entity.InventoryEntry;
+import org.efaps.pos.entity.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface InventoryRepository
-    extends MongoRepository<InventoryEntry, String>
+public interface UserRepository
+    extends MongoRepository<User, String>
 {
-    Collection<InventoryEntry> findByWarehouseOid(String _warehouseOid);
-
-    Collection<InventoryEntry> findByProductOid(String _productOid);
+    List<User> findUserByVisibleIsTrue();
 }

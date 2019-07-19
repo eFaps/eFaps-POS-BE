@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,17 +59,17 @@ public class PrintContoller
                           final JobService _jobService,
                           final PrintService _printService)
     {
-        this.workspaceService = _workspaceService;
-        this.documentService = _service;
-        this.jobService = _jobService;
-        this.printService = _printService;
+        workspaceService = _workspaceService;
+        documentService = _service;
+        jobService = _jobService;
+        printService = _printService;
     }
 
     @GetMapping(path = "/preview/{key}",
                     produces = { MediaType.IMAGE_PNG_VALUE })
     public ResponseEntity<byte[]> getPreview(@PathVariable("key") final String _key)
     {
-        final byte[] data = this.printService.getPreview(_key);
+        final byte[] data = printService.getPreview(_key);
         return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_PNG)
                         .cacheControl(CacheControl.noCache())
@@ -82,13 +82,13 @@ public class PrintContoller
                                            @RequestParam(name = "documentId") final String _documentId)
     {
         final List<PrintResponseDto> ret = new ArrayList<>();
-        final Workspace workspace = this.workspaceService.getWorkspace((User) _authentication.getPrincipal(),
+        final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
                         _workspaceOid);
-        final Order order = this.documentService.getOrder(_documentId);
-        final Collection<Job> jobs = this.jobService.createJobs(workspace, order);
+        final Order order = documentService.getOrder(_documentId);
+        final Collection<Job> jobs = jobService.createJobs(workspace, order);
 
         for (final Job job : jobs) {
-            final Optional<PrintResponseDto> responseOpt = this.printService.queue(job);
+            final Optional<PrintResponseDto> responseOpt = printService.queue(job);
             if (responseOpt.isPresent()) {
                 ret.add(responseOpt.get());
             }
@@ -102,15 +102,37 @@ public class PrintContoller
                                            @RequestParam(name = "documentId") final String _documentId)
     {
         final List<PrintResponseDto> ret = new ArrayList<>();
-        final Workspace workspace = this.workspaceService.getWorkspace((User) _authentication.getPrincipal(),
+        final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
                         _workspaceOid);
 
-        final AbstractDocument<?> document = this.documentService.getDocument(_documentId);
+        final AbstractDocument<?> document = documentService.getDocument(_documentId);
 
         workspace.getPrintCmds().stream()
             .filter(printCmd -> PrintTarget.PRELIMINARY.equals(printCmd.getTarget()))
             .forEach(printCmd -> {
-                final Optional<PrintResponseDto> responseOpt = this.printService.queue(printCmd, document);
+                final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd, document);
+                if (responseOpt.isPresent()) {
+                    ret.add(responseOpt.get());
+                }
+            });
+        return ret;
+    }
+
+    @PostMapping(path = "copy", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PrintResponseDto> printCopy(final Authentication _authentication,
+                                           @RequestParam(name = "workspaceOid") final String _workspaceOid,
+                                           @RequestParam(name = "documentId") final String _documentId)
+    {
+        final List<PrintResponseDto> ret = new ArrayList<>();
+        final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
+                        _workspaceOid);
+
+        final AbstractDocument<?> document = documentService.getDocument(_documentId);
+
+        workspace.getPrintCmds().stream()
+            .filter(printCmd -> PrintTarget.COPY.equals(printCmd.getTarget()))
+            .forEach(printCmd -> {
+                final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd, document);
                 if (responseOpt.isPresent()) {
                     ret.add(responseOpt.get());
                 }

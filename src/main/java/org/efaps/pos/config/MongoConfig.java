@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,73 @@
  */
 package org.efaps.pos.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+
+import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.context.MultiTenantMongoDbFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 
 @Configuration
+@Profile({ "!test" })
 public class MongoConfig
+    extends AbstractMongoConfiguration
 {
-    @Autowired
-    void setMapKeyDotReplacement(final MappingMongoConverter _mappingMongoConverter) {
-        _mappingMongoConverter.setMapKeyDotReplacement("_xYz4P_");
+
+    private final ConfigProperties configProperties;
+
+    public MongoConfig(final ConfigProperties _configProperties)
+    {
+        configProperties = _configProperties;
+    }
+
+    @Override
+    @Bean
+    public MappingMongoConverter mappingMongoConverter()
+        throws Exception
+    {
+        final MappingMongoConverter ret = super.mappingMongoConverter();
+        ret.setMapKeyDotReplacement("_xYz4P_");
+        return ret;
+    }
+
+    @Override
+    @Bean
+    @Primary
+    public MongoDbFactory mongoDbFactory()
+    {
+        final MongoClientURI mongoClientURI = new MongoClientURI(configProperties.getMongoClientURI());
+        return new MultiTenantMongoDbFactory(mongoClientURI);
+    }
+
+    @Override
+    @Bean
+    @Primary
+    public MongoTemplate mongoTemplate()
+        throws Exception
+    {
+        return new MongoTemplate(mongoDbFactory(), mappingMongoConverter());
+    }
+
+    @Bean
+    @Override
+    public MongoClient mongoClient()
+    {
+        final MongoClientURI uri = new MongoClientURI(configProperties.getMongoClientURI());
+        return new MongoClient(uri);
+    }
+
+    @Override
+    protected String getDatabaseName()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

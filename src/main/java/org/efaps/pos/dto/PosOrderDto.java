@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,17 +26,25 @@ public class PosOrderDto
     extends AbstractDocumentDto
 {
 
-    private final SpotDto spot;
+    private final PosSpotDto spot;
+
+    private final DiscountDto discount;
 
     public PosOrderDto(final Builder _builder)
     {
         super(_builder);
-        this.spot = _builder.spot;
+        spot = _builder.spot;
+        discount = _builder.discount;
     }
 
-    public SpotDto getSpot()
+    public PosSpotDto getSpot()
     {
-        return this.spot;
+        return spot;
+    }
+
+    public DiscountDto getDiscount()
+    {
+        return discount;
     }
 
     public static Builder builder()
@@ -48,11 +56,18 @@ public class PosOrderDto
         extends AbstractDocumentDto.Builder<Builder, PosOrderDto>
     {
 
-        private SpotDto spot;
+        private PosSpotDto spot;
+        private DiscountDto discount;
 
-        public Builder withSpot(final SpotDto _spot)
+        public Builder withSpot(final PosSpotDto _spot)
         {
-            this.spot = _spot;
+            spot = _spot;
+            return this;
+        }
+
+        public Builder withDiscount(final DiscountDto _discount)
+        {
+            discount = _discount;
             return this;
         }
 

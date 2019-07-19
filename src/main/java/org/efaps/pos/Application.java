@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +33,7 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableCaching
+@EnableConfigurationProperties
 public class Application
 {
 
@@ -55,13 +57,13 @@ public class Application
             @Override
             public String encode(final CharSequence _rawPassword)
             {
-                return this.passwordEncryptor.encryptPassword(_rawPassword.toString());
+                return passwordEncryptor.encryptPassword(_rawPassword.toString());
             }
 
             @Override
             public boolean matches(final CharSequence _rawPassword, final String _encodedPassword)
             {
-                return this.passwordEncryptor.checkPassword(_rawPassword.toString(), _encodedPassword);
+                return passwordEncryptor.checkPassword(_rawPassword.toString(), _encodedPassword);
             }
         };
     }

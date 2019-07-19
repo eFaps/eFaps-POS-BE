@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,27 +18,27 @@ package org.efaps.pos.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-@JsonDeserialize(builder = SpotDto.Builder.class)
-public class SpotDto
+@JsonDeserialize(builder = PosSpotDto.Builder.class)
+public class PosSpotDto
 {
 
     private final String id;
     private final String label;
 
-    private SpotDto(final Builder _builder)
+    private PosSpotDto(final Builder _builder)
     {
-        this.id = _builder.id;
-        this.label = _builder.label;
+        id = _builder.id;
+        label = _builder.label;
     }
 
     public String getId()
     {
-        return this.id;
+        return id;
     }
 
     public String getLabel()
     {
-        return this.label;
+        return label;
     }
 
     public static Builder builder()
@@ -54,19 +54,19 @@ public class SpotDto
 
         public Builder withId(final String _id)
         {
-            this.id = _id;
+            id = _id;
             return this;
         }
 
         public Builder withLabel(final String _label)
         {
-            this.label = _label;
+            label = _label;
             return this;
         }
 
-        public SpotDto build()
+        public PosSpotDto build()
         {
-            return new SpotDto(this);
+            return new PosSpotDto(this);
         }
     }
 }

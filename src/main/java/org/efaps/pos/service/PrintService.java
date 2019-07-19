@@ -19,29 +19,32 @@ import javax.imageio.ImageIO;
 import javax.print.PrintServiceLookup;
 import javax.print.attribute.HashPrintServiceAttributeSet;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.engine.data.JsonQLDataSource;
+import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
+
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.efaps.pos.dto.PrintResponseDto;
 import org.efaps.pos.dto.PrinterType;
 import org.efaps.pos.entity.AbstractDocument;
+import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Printer;
+import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.Workspace.PrintCmd;
-import org.efaps.pos.respository.PrinterRepository;
+import org.efaps.pos.repository.PrinterRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperPrintManager;
-import net.sf.jasperreports.engine.data.JsonDataSource;
-import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 
 @Service
 public class PrintService
@@ -62,9 +65,9 @@ public class PrintService
                         final GridFsService _gridFsService,
                         final PrinterRepository _printerRepository,
                         final DocumentService _documentService) {
-        this.jacksonObjectMapper = _jacksonObjectMapper;
-        this.gridFsService = _gridFsService;
-        this.printerRepository = _printerRepository;
+        jacksonObjectMapper = _jacksonObjectMapper;
+        gridFsService = _gridFsService;
+        printerRepository = _printerRepository;
     }
 
     public byte[] print2Image(final Object _object, final String _reportOid, final Map<String, Object> _parameters)
@@ -72,10 +75,10 @@ public class PrintService
         byte[] ret = null;
         try {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Creating report for {}", this.jacksonObjectMapper.writeValueAsString(_object));
+                LOG.debug("Creating report for {}", jacksonObjectMapper.writeValueAsString(_object));
             }
-            ret = print2Image(new ByteArrayInputStream(this.jacksonObjectMapper.writeValueAsBytes(_object)),
-                            this.gridFsService.getContent(_reportOid), _parameters);
+            ret = print2Image(new ByteArrayInputStream(jacksonObjectMapper.writeValueAsBytes(_object)),
+                            gridFsService.getContent(_reportOid), _parameters);
         } catch (final IllegalStateException | IOException e) {
             LOG.error("Catched", e);
         }
@@ -90,7 +93,7 @@ public class PrintService
             if (MapUtils.isNotEmpty(_parameters)) {
                 parameters.putAll(_parameters);
             }
-            final JsonDataSource datasource = new JsonDataSource(_json);
+            final JsonQLDataSource datasource = new JsonQLDataSource(_json);
             final JasperPrint jasperPrint = JasperFillManager.fillReport(_report, parameters,
                             datasource);
             final Image image = JasperPrintManager.printPageToImage(jasperPrint, 0, 1);
@@ -113,6 +116,12 @@ public class PrintService
         Object content;
         if (_document instanceof Order) {
             content = Converter.toDto((Order) _document);
+        } else if (_document instanceof Receipt) {
+            content = Converter.toDto((Receipt) _document);
+        } else if (_document instanceof Invoice) {
+            content = Converter.toDto((Invoice) _document);
+        } else if (_document instanceof Ticket) {
+            content = Converter.toDto((Ticket) _document);
         } else {
             content = _document;
         }
@@ -122,7 +131,7 @@ public class PrintService
     private Optional<PrintResponseDto> queue(final String _printerOid, final String _reportOid, final Object _content)
     {
         Optional<PrintResponseDto> ret;
-        final Optional<Printer> printerOpt = this.printerRepository.findById(_printerOid);
+        final Optional<Printer> printerOpt = printerRepository.findById(_printerOid);
         if (printerOpt.isPresent()) {
             final Map<String, Object> parameters = new HashMap<>();
             parameters.put("PRINTER", printerOpt.get().getName());
@@ -156,15 +165,15 @@ public class PrintService
     {
         try {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Creating report for {}", this.jacksonObjectMapper.writeValueAsString(_object));
+                LOG.debug("Creating report for {}", jacksonObjectMapper.writeValueAsString(_object));
             }
             final Map<String, Object> parameters = new HashMap<>();
             if (MapUtils.isNotEmpty(_parameters)) {
                 parameters.putAll(_parameters);
             }
-            final JsonDataSource datasource = new JsonDataSource(new ByteArrayInputStream(this.jacksonObjectMapper
+            final JsonQLDataSource datasource = new JsonQLDataSource(new ByteArrayInputStream(jacksonObjectMapper
                             .writeValueAsBytes(_object)));
-            final JasperPrint jasperPrint = JasperFillManager.fillReport(this.gridFsService.getContent(_reportOid),
+            final JasperPrint jasperPrint = JasperFillManager.fillReport(gridFsService.getContent(_reportOid),
                             parameters, datasource);
 
             final JRPrintServiceExporter exporter = new JRPrintServiceExporter();

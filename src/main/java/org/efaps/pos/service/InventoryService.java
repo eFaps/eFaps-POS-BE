@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Warehouse;
-import org.efaps.pos.respository.InventoryRepository;
-import org.efaps.pos.respository.WarehouseRepository;
+import org.efaps.pos.repository.InventoryRepository;
+import org.efaps.pos.repository.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,19 @@
  *
  */
 
-package org.efaps.pos.respository;
+package org.efaps.pos.repository;
 
 import java.util.Collection;
 
-import org.efaps.pos.dto.DocStatus;
-import org.efaps.pos.entity.Order;
+import org.efaps.pos.entity.Ticket;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface OrderRepository
-    extends MongoRepository<Order, String>
+public interface TicketRepository
+    extends MongoRepository<Ticket, String>
 {
-    Collection<Order> findBySpotIsNotNull();
+    Collection<Ticket> findByOidIsNull();
 
-    Collection<Order> findByStatus(DocStatus _status);
+    Collection<Ticket> findByContactOid(String _contactOid);
 
-    Collection<Order> findByNumberLikeIgnoreCase(String _term);
+    Collection<Ticket> findByBalanceOid(String _balanceOid);
 }

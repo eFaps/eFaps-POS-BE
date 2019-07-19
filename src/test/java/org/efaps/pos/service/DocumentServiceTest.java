@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
+import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
@@ -64,46 +65,47 @@ public class DocumentServiceTest
     @BeforeEach
     public void setup()
     {
-        this.mongoTemplate.remove(new Query(), Order.class);
-        this.mongoTemplate.remove(new Query(), Receipt.class);
-        this.mongoTemplate.remove(new Query(), Ticket.class);
-        this.mongoTemplate.remove(new Query(), Invoice.class);
-        this.mongoTemplate.remove(new Query(), Workspace.class);
-        this.mongoTemplate.remove(new Query(), Pos.class);
-        this.mongoTemplate.remove(new Query(), Contact.class);
+        mongoTemplate.remove(new Query(), Order.class);
+        mongoTemplate.remove(new Query(), Receipt.class);
+        mongoTemplate.remove(new Query(), Ticket.class);
+        mongoTemplate.remove(new Query(), Invoice.class);
+        mongoTemplate.remove(new Query(), Workspace.class);
+        mongoTemplate.remove(new Query(), Pos.class);
+        mongoTemplate.remove(new Query(), Contact.class);
+        mongoTemplate.remove(new Query(), Balance.class);
     }
 
     @Test
     public void testGetOrder()
     {
         final Order order = new Order().setOid("1.2");
-        this.mongoTemplate.save(new Order().setOid("1.1"));
-        this.mongoTemplate.save(order);
-        this.mongoTemplate.save(new Order().setOid("1.3"));
+        mongoTemplate.save(new Order().setOid("1.1"));
+        mongoTemplate.save(order);
+        mongoTemplate.save(new Order().setOid("1.3"));
 
-        final Order recievedOrder = this.documentService.getOrder(order.getId());
+        final Order recievedOrder = documentService.getOrder(order.getId());
         assertEquals("1.2", recievedOrder.getOid());
     }
 
     @Test
     public void testGetOrders()
     {
-        this.mongoTemplate.save(new Order().setOid("1.1"));
-        this.mongoTemplate.save(new Order().setOid("1.2"));
-        this.mongoTemplate.save(new Order().setOid("1.3"));
+        mongoTemplate.save(new Order().setOid("1.1"));
+        mongoTemplate.save(new Order().setOid("1.2"));
+        mongoTemplate.save(new Order().setOid("1.3"));
 
-        final List<Order> orders = this.documentService.getOrders();
+        final List<Order> orders = documentService.getOrders();
         assertEquals(3, orders.size());
     }
 
     @Test
     public void testGetOrders4Spots()
     {
-        this.mongoTemplate.save(new Order().setOid("1.1"));
-        this.mongoTemplate.save(new Order().setOid("1.2").setSpot(new Spot()));
-        this.mongoTemplate.save(new Order().setOid("1.3"));
+        mongoTemplate.save(new Order().setOid("1.1"));
+        mongoTemplate.save(new Order().setOid("1.2").setSpot(new Spot()));
+        mongoTemplate.save(new Order().setOid("1.3"));
 
-        final Collection<Order> orders = this.documentService.getOrders4Spots();
+        final Collection<Order> orders = documentService.getOrders4Spots();
         assertEquals(1, orders.size());
         assertEquals("1.2", orders.iterator().next().getOid());
     }
@@ -115,57 +117,57 @@ public class DocumentServiceTest
         newOrder.setNetTotal(new BigDecimal("123.45869"));
         newOrder.setTaxes(Collections.emptySet());
 
-        final Order order = this.documentService.createOrder(newOrder);
+        final Order order = documentService.createOrder(newOrder);
         assertNotNull(order.getNumber());
         assertNotNull(order.getId());
         assertEquals(new BigDecimal("123.46"), order.getNetTotal());
         assertEquals(new BigDecimal("123.46"), order.getCrossTotal());
-        assertEquals(1, this.mongoTemplate.findAll(Order.class).size());
+        assertEquals(1, mongoTemplate.findAll(Order.class).size());
     }
 
     @Test
     public void testUpdateOrder()
     {
-        this.mongoTemplate.save(new Order());
-        final Order updateOrder = this.mongoTemplate.findAll(Order.class).get(0);
+        mongoTemplate.save(new Order());
+        final Order updateOrder = mongoTemplate.findAll(Order.class).get(0);
         updateOrder.setNetTotal(new BigDecimal("123.45869"));
         updateOrder.setTaxes(Collections.singleton(new TaxEntry().setAmount(new BigDecimal(100))));
 
-        final Order order = this.documentService.updateOrder(updateOrder);
+        final Order order = documentService.updateOrder(updateOrder);
         assertNotNull(order.getId());
         assertEquals(new BigDecimal("123.46"), order.getNetTotal());
         assertEquals(new BigDecimal("223.46"), order.getCrossTotal());
-        assertEquals(1, this.mongoTemplate.findAll(Order.class).size());
+        assertEquals(1, mongoTemplate.findAll(Order.class).size());
     }
 
     @Test
     public void testDeleteOrderSetCanceled()
     {
-        this.mongoTemplate.save(new Order().setStatus(DocStatus.OPEN));
-        final Order order = this.mongoTemplate.findAll(Order.class).get(0);
+        mongoTemplate.save(new Order().setStatus(DocStatus.OPEN));
+        final Order order = mongoTemplate.findAll(Order.class).get(0);
 
-        this.documentService.deleteOrder(order.getId());
-        assertEquals(1, this.mongoTemplate.findAll(Order.class).size());
-        final Order deleted = this.mongoTemplate.findById(order.getId(), Order.class);
+        documentService.deleteOrder(order.getId());
+        assertEquals(1, mongoTemplate.findAll(Order.class).size());
+        final Order deleted = mongoTemplate.findById(order.getId(), Order.class);
         assertEquals(DocStatus.CANCELED, deleted.getStatus());
     }
 
     @Test
     public void testDeleteOrderWrongStatus()
     {
-        this.mongoTemplate.save(new Order().setStatus(DocStatus.CLOSED));
-        final Order order = this.mongoTemplate.findAll(Order.class).get(0);
+        mongoTemplate.save(new Order().setStatus(DocStatus.CLOSED));
+        final Order order = mongoTemplate.findAll(Order.class).get(0);
 
-        this.documentService.deleteOrder(order.getId());
-        assertEquals(1, this.mongoTemplate.findAll(Order.class).size());
+        documentService.deleteOrder(order.getId());
+        assertEquals(1, mongoTemplate.findAll(Order.class).size());
     }
 
     @Test
     public void testDeleteOrderNotFound()
     {
-        this.mongoTemplate.save(new Order().setStatus(DocStatus.CLOSED));
-        this.documentService.deleteOrder("a different id");
-        assertEquals(1, this.mongoTemplate.findAll(Order.class).size());
+        mongoTemplate.save(new Order().setStatus(DocStatus.CLOSED));
+        documentService.deleteOrder("a different id");
+        assertEquals(1, mongoTemplate.findAll(Order.class).size());
     }
 
     @Test
@@ -174,13 +176,13 @@ public class DocumentServiceTest
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
-        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
-        this.mongoTemplate.save(new Pos().setOid(posOid)
+        mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        mongoTemplate.save(new Pos().setOid(posOid)
                         .setDefaultContactOid(contactOid)
                         .setCompany(new Company()
                                         .setName("company")
                                         .setTaxNumber("12345678911")));
-        this.mongoTemplate.save(new Contact().setOid(contactOid));
+        mongoTemplate.save(new Contact().setOid(contactOid));
 
         final Receipt newReceipt = new Receipt()
                         .setContactOid("1123.1")
@@ -188,7 +190,7 @@ public class DocumentServiceTest
                         .setTaxes(Collections.emptySet())
                         .setDate(LocalDate.now());
 
-        final Receipt receipt = this.documentService.createReceipt(wsOid, newReceipt);
+        final Receipt receipt = documentService.createReceipt(wsOid, newReceipt);
         assertNotNull(receipt.getNumber());
         assertNotNull(receipt.getId());
     }
@@ -199,20 +201,20 @@ public class DocumentServiceTest
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
-        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
-        this.mongoTemplate.save(new Pos().setOid(posOid)
+        mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        mongoTemplate.save(new Pos().setOid(posOid)
                         .setDefaultContactOid(contactOid)
                         .setCompany(new Company()
                                         .setName("company")
                                         .setTaxNumber("12345678911")));
-        this.mongoTemplate.save(new Contact().setOid(contactOid));
+        mongoTemplate.save(new Contact().setOid(contactOid));
 
         final Receipt newReceipt = new Receipt()
                         .setContactOid("1123.1")
                         .setNetTotal(new BigDecimal("123.45869"))
                         .setTaxes(Collections.emptySet());
 
-        final Receipt receipt = this.documentService.createReceipt(wsOid, newReceipt);
+        final Receipt receipt = documentService.createReceipt(wsOid, newReceipt);
         assertNotNull(receipt.getNumber());
         assertNotNull(receipt.getId());
     }
@@ -223,13 +225,13 @@ public class DocumentServiceTest
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
-        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
-        this.mongoTemplate.save(new Pos().setOid(posOid)
+        mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        mongoTemplate.save(new Pos().setOid(posOid)
                         .setDefaultContactOid(contactOid)
                         .setCompany(new Company()
                                         .setName("company")
                                         .setTaxNumber("12345678911")));
-        this.mongoTemplate.save(new Contact().setOid(contactOid));
+        mongoTemplate.save(new Contact().setOid(contactOid));
 
         final Invoice invoice = new Invoice()
                         .setContactOid("1123.1")
@@ -237,7 +239,7 @@ public class DocumentServiceTest
                         .setTaxes(Collections.emptySet())
                         .setDate(LocalDate.now());
 
-        final Invoice createdInvoice = this.documentService.createInvoice(wsOid, invoice);
+        final Invoice createdInvoice = documentService.createInvoice(wsOid, invoice);
         assertNotNull(createdInvoice.getNumber());
         assertNotNull(createdInvoice.getId());
     }
@@ -248,20 +250,20 @@ public class DocumentServiceTest
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
-        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
-        this.mongoTemplate.save(new Pos().setOid(posOid)
+        mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        mongoTemplate.save(new Pos().setOid(posOid)
                         .setDefaultContactOid(contactOid)
                         .setCompany(new Company()
                                         .setName("company")
                                         .setTaxNumber("12345678911")));
-        this.mongoTemplate.save(new Contact().setOid(contactOid));
+        mongoTemplate.save(new Contact().setOid(contactOid));
 
         final Invoice invoice = new Invoice()
                         .setContactOid("1123.1")
                         .setNetTotal(new BigDecimal("123.45869"))
                         .setTaxes(Collections.emptySet());
 
-        final Invoice createdInvoice = this.documentService.createInvoice(wsOid, invoice);
+        final Invoice createdInvoice = documentService.createInvoice(wsOid, invoice);
         assertNotNull(createdInvoice.getNumber());
         assertNotNull(createdInvoice.getId());
     }
@@ -272,13 +274,13 @@ public class DocumentServiceTest
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
-        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
-        this.mongoTemplate.save(new Pos().setOid(posOid)
+        mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        mongoTemplate.save(new Pos().setOid(posOid)
                         .setDefaultContactOid(contactOid)
                         .setCompany(new Company()
                                         .setName("company")
                                         .setTaxNumber("12345678911")));
-        this.mongoTemplate.save(new Contact().setOid(contactOid));
+        mongoTemplate.save(new Contact().setOid(contactOid));
 
         final Ticket ticket = new Ticket()
                         .setContactOid("1123.1")
@@ -286,7 +288,7 @@ public class DocumentServiceTest
                         .setTaxes(Collections.emptySet())
                         .setDate(LocalDate.now());
 
-        final Ticket createdTicket = this.documentService.createTicket(wsOid, ticket);
+        final Ticket createdTicket = documentService.createTicket(wsOid, ticket);
         assertNotNull(createdTicket.getNumber());
         assertNotNull(createdTicket.getId());
     }
@@ -297,21 +299,54 @@ public class DocumentServiceTest
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
-        this.mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
-        this.mongoTemplate.save(new Pos().setOid(posOid)
+        mongoTemplate.save(new Workspace().setOid(wsOid).setPosOid(posOid));
+        mongoTemplate.save(new Pos().setOid(posOid)
                         .setDefaultContactOid(contactOid)
                         .setCompany(new Company()
                                         .setName("company")
                                         .setTaxNumber("12345678911")));
-        this.mongoTemplate.save(new Contact().setOid(contactOid));
+        mongoTemplate.save(new Contact().setOid(contactOid));
 
         final Ticket ticket = new Ticket()
                         .setContactOid("1123.1")
                         .setNetTotal(new BigDecimal("123.45869"))
                         .setTaxes(Collections.emptySet());
 
-        final Ticket createdTicket = this.documentService.createTicket(wsOid, ticket);
+        final Ticket createdTicket = documentService.createTicket(wsOid, ticket);
         assertNotNull(createdTicket.getNumber());
         assertNotNull(createdTicket.getId());
     }
+
+    @Test
+    public void testEvalBalanceOidIsValidOid() {
+        final String key = "123.45";
+        final String oid = documentService.evalBalanceOid(key);
+        assertEquals(key, oid);
+    }
+
+    @Test
+    public void testEvalBalanceOidNoBalanceFound() {
+        final String key = "AnId";
+        final String oid = documentService.evalBalanceOid(key);
+        assertEquals(key, oid);
+    }
+
+    @Test
+    public void testEvalBalanceOidBalanceNoOIDYet() {
+        final Balance balance = new Balance();
+        mongoTemplate.save(balance);
+        final String key = balance.getId();
+        final String oid = documentService.evalBalanceOid(key);
+        assertEquals(key, oid);
+    }
+
+    @Test
+    public void testEvalBalanceOidBalanceHasOID() {
+        final Balance balance = new Balance().setOid("123.456");
+        mongoTemplate.save(balance);
+        final String key = balance.getId();
+        final String oid = documentService.evalBalanceOid(key);
+        assertEquals(balance.getOid(), oid);
+    }
+
 }

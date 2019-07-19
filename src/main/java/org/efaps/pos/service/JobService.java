@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,9 @@ import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.PrintCmd;
-import org.efaps.pos.respository.CategoryRepository;
-import org.efaps.pos.respository.JobRepository;
-import org.efaps.pos.respository.PrinterRepository;
+import org.efaps.pos.repository.CategoryRepository;
+import org.efaps.pos.repository.JobRepository;
+import org.efaps.pos.repository.PrinterRepository;
 import org.springframework.stereotype.Service;
 
 @Service
