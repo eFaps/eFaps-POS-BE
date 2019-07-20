@@ -24,6 +24,7 @@ public class Order
 {
 
     private Spot spot;
+    private String payableOid;
 
     public Spot getSpot()
     {
@@ -33,6 +34,17 @@ public class Order
     public Order setSpot(final Spot _spot)
     {
         spot = _spot;
+        return this;
+    }
+
+    public String getPayableOid()
+    {
+        return payableOid;
+    }
+
+    public Order setPayableOid(final String payableOid)
+    {
+        this.payableOid = payableOid;
         return this;
     }
 }

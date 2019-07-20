@@ -305,6 +305,7 @@ public class SyncService
     public void syncPayables()
     {
         syncContactsUp();
+        syncOrders();
         syncBalance();
         syncReceipts();
         syncInvoices();
@@ -360,6 +361,11 @@ public class SyncService
             }
         }
         registerSync(StashId.BALANCESYNC);
+    }
+
+    public void syncOrders()
+    {
+
     }
 
     public void syncReceipts()

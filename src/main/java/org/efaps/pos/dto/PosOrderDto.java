@@ -30,11 +30,14 @@ public class PosOrderDto
 
     private final DiscountDto discount;
 
+    private final String payableOid;
+
     public PosOrderDto(final Builder _builder)
     {
         super(_builder);
         spot = _builder.spot;
         discount = _builder.discount;
+        payableOid = _builder.payableOid;
     }
 
     public PosSpotDto getSpot()
@@ -45,6 +48,11 @@ public class PosOrderDto
     public DiscountDto getDiscount()
     {
         return discount;
+    }
+
+    public String getPayableOid()
+    {
+        return payableOid;
     }
 
     public static Builder builder()
@@ -58,6 +66,7 @@ public class PosOrderDto
 
         private PosSpotDto spot;
         private DiscountDto discount;
+        private String payableOid;
 
         public Builder withSpot(final PosSpotDto _spot)
         {
@@ -68,6 +77,12 @@ public class PosOrderDto
         public Builder withDiscount(final DiscountDto _discount)
         {
             discount = _discount;
+            return this;
+        }
+
+        public Builder withPayableOid(final String _payableOid)
+        {
+            payableOid = _payableOid;
             return this;
         }
 

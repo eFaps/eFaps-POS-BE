@@ -217,6 +217,7 @@ public final class Converter
                                 .map(_tax -> Converter.toEntity(_tax))
                                 .collect(Collectors.toSet()))
                         .setSpot(_dto.getSpot() == null ? null : toEntity(_dto.getSpot()))
+                        .setPayableOid(_dto.getPayableOid())
                         .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()));
     }
 
@@ -567,6 +568,7 @@ public final class Converter
                                 .collect(Collectors.toSet()))
                         .withSpot(toSpotDto(_entity.getSpot()))
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
+                        .withPayableOid(_entity.getPayableOid())
                         .build();
     }
 
