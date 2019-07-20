@@ -87,18 +87,18 @@ public class SyncServiceTest
     @BeforeEach
     public void setup()
     {
-        this.mongoTemplate.remove(new Query(), Product.class);
-        this.mongoTemplate.remove(new Query(), Category.class);
-        this.mongoTemplate.remove(new Query(), Workspace.class);
-        this.mongoTemplate.remove(new Query(), Warehouse.class);
-        this.mongoTemplate.remove(new Query(), Printer.class);
-        this.mongoTemplate.remove(new Query(), Pos.class);
-        this.mongoTemplate.remove(new Query(), User.class);
-        this.mongoTemplate.remove(new Query(), Receipt.class);
-        this.mongoTemplate.remove(new Query(), Contact.class);
-        this.mongoTemplate.remove(new Query(), Invoice.class);
-        this.mongoTemplate.remove(new Query(), Ticket.class);
-        this.mongoTemplate.save(new Identifier()
+        mongoTemplate.remove(new Query(), Product.class);
+        mongoTemplate.remove(new Query(), Category.class);
+        mongoTemplate.remove(new Query(), Workspace.class);
+        mongoTemplate.remove(new Query(), Warehouse.class);
+        mongoTemplate.remove(new Query(), Printer.class);
+        mongoTemplate.remove(new Query(), Pos.class);
+        mongoTemplate.remove(new Query(), User.class);
+        mongoTemplate.remove(new Query(), Receipt.class);
+        mongoTemplate.remove(new Query(), Contact.class);
+        mongoTemplate.remove(new Query(), Invoice.class);
+        mongoTemplate.remove(new Query(), Ticket.class);
+        mongoTemplate.save(new Identifier()
                         .setId(Identifier.KEY)
                         .setCreated(LocalDateTime.now())
                         .setIdentifier("TESTIDENT"));
@@ -108,7 +108,7 @@ public class SyncServiceTest
     public void testSyncProductsFirstTime()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Product.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Product.class).isEmpty());
 
         final ProductDto product1 = ProductDto.builder()
                         .withDescription("A product description")
@@ -117,12 +117,12 @@ public class SyncServiceTest
 
         final List<ProductDto> productDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
+            .andRespond(withSuccess(mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncProducts();
+        syncService.syncProducts();
 
-        final List<Product> products = this.mongoTemplate.findAll(Product.class);
+        final List<Product> products = mongoTemplate.findAll(Product.class);
         assertEquals(1, products.size());
     }
 
@@ -130,12 +130,12 @@ public class SyncServiceTest
     public void testSyncProductsUpdate()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Product.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Product.class).isEmpty());
 
         final Product product = new Product()
                         .setOid("5586.1651")
                         .setDescription("Some old description");
-        this.mongoTemplate.save(product);
+        mongoTemplate.save(product);
 
         final ProductDto product1 = ProductDto.builder()
                         .withDescription("An updated product description")
@@ -144,12 +144,12 @@ public class SyncServiceTest
 
         final List<ProductDto> productDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
+            .andRespond(withSuccess(mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncProducts();
+        syncService.syncProducts();
 
-        final List<Product> products = this.mongoTemplate.findAll(Product.class);
+        final List<Product> products = mongoTemplate.findAll(Product.class);
         assertEquals(1, products.size());
         assertEquals("5586.1651", products.get(0).getOid());
         assertEquals("An updated product description", products.get(0).getDescription());
@@ -159,12 +159,12 @@ public class SyncServiceTest
     public void testSyncProductsRemoveObsolete()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Product.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Product.class).isEmpty());
 
         final Product product = new Product()
                         .setOid("5586.1650")
                         .setDescription("This product should be removed");
-        this.mongoTemplate.save(product);
+        mongoTemplate.save(product);
 
         final ProductDto product1 = ProductDto.builder()
                         .withDescription("An updated product description")
@@ -173,12 +173,12 @@ public class SyncServiceTest
 
         final List<ProductDto> productDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
+            .andRespond(withSuccess(mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncProducts();
+        syncService.syncProducts();
 
-        final List<Product> products = this.mongoTemplate.findAll(Product.class);
+        final List<Product> products = mongoTemplate.findAll(Product.class);
         assertEquals(1, products.size());
         assertEquals("5586.1651", products.get(0).getOid());
         assertEquals("An updated product description", products.get(0).getDescription());
@@ -188,7 +188,7 @@ public class SyncServiceTest
     public void testSyncCategoriesFirstTime()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Category.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Category.class).isEmpty());
 
         final CategoryDto product1 = CategoryDto.builder()
                         .withOID("5586.1651")
@@ -197,12 +197,12 @@ public class SyncServiceTest
 
         final List<CategoryDto> categoryDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/categories"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(categoryDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/categories"))
+            .andRespond(withSuccess(mapper.writeValueAsString(categoryDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncCategories();
+        syncService.syncCategories();
 
-        final List<Category> categories = this.mongoTemplate.findAll(Category.class);
+        final List<Category> categories = mongoTemplate.findAll(Category.class);
         assertEquals(1, categories.size());
     }
 
@@ -210,12 +210,12 @@ public class SyncServiceTest
     public void testSyncCategoriesRemoveObsolete()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Category.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Category.class).isEmpty());
 
         final Category category = new Category()
                         .setOid("5586.1650")
                         .setName("This category should be removed");
-        this.mongoTemplate.save(category);
+        mongoTemplate.save(category);
 
         final CategoryDto category1 = CategoryDto.builder()
                         .withName("An updated category description")
@@ -224,12 +224,12 @@ public class SyncServiceTest
 
         final List<CategoryDto> categoryDtos = Arrays.asList(category1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/categories"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(categoryDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/categories"))
+            .andRespond(withSuccess(mapper.writeValueAsString(categoryDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncCategories();
+        syncService.syncCategories();
 
-        final List<Category> categories = this.mongoTemplate.findAll(Category.class);
+        final List<Category> categories = mongoTemplate.findAll(Category.class);
         assertEquals(1, categories.size());
         assertEquals("5586.1651", categories.get(0).getOid());
         assertEquals("An updated category description", categories.get(0).getName());
@@ -239,7 +239,7 @@ public class SyncServiceTest
     public void testSyncWorkspacesFirstTime()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Workspace.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Workspace.class).isEmpty());
 
         final WorkspaceDto product1 = WorkspaceDto.builder()
                         .withOID("5586.1651")
@@ -248,12 +248,12 @@ public class SyncServiceTest
 
         final List<WorkspaceDto> workspaceDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/workspaces"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(workspaceDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/workspaces"))
+            .andRespond(withSuccess(mapper.writeValueAsString(workspaceDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncWorkspaces();
+        syncService.syncWorkspaces();
 
-        final List<Workspace> categories = this.mongoTemplate.findAll(Workspace.class);
+        final List<Workspace> categories = mongoTemplate.findAll(Workspace.class);
         assertEquals(1, categories.size());
     }
 
@@ -261,12 +261,12 @@ public class SyncServiceTest
     public void testSyncWorkspacesRemoveObsolete()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Workspace.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Workspace.class).isEmpty());
 
         final Workspace workspace = new Workspace()
                         .setOid("5586.1650")
                         .setName("This workspace should be removed");
-        this.mongoTemplate.save(workspace);
+        mongoTemplate.save(workspace);
 
         final WorkspaceDto workspace1 = WorkspaceDto.builder()
                         .withName("A workspace description")
@@ -275,12 +275,12 @@ public class SyncServiceTest
 
         final List<WorkspaceDto> workspaceDtos = Arrays.asList(workspace1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/workspaces"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(workspaceDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/workspaces"))
+            .andRespond(withSuccess(mapper.writeValueAsString(workspaceDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncWorkspaces();
+        syncService.syncWorkspaces();
 
-        final List<Workspace> workspaces = this.mongoTemplate.findAll(Workspace.class);
+        final List<Workspace> workspaces = mongoTemplate.findAll(Workspace.class);
         assertEquals(1, workspaces.size());
         assertEquals("5586.1651", workspaces.get(0).getOid());
         assertEquals("A workspace description", workspaces.get(0).getName());
@@ -290,7 +290,7 @@ public class SyncServiceTest
     public void testSyncWarehousesFirstTime()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Warehouse.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Warehouse.class).isEmpty());
 
         final WarehouseDto product1 = WarehouseDto.builder()
                         .withOID("5586.1651")
@@ -299,12 +299,12 @@ public class SyncServiceTest
 
         final List<WarehouseDto> warehouseDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/warehouses"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(warehouseDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/warehouses"))
+            .andRespond(withSuccess(mapper.writeValueAsString(warehouseDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncWarehouses();
+        syncService.syncWarehouses();
 
-        final List<Warehouse> warehouses = this.mongoTemplate.findAll(Warehouse.class);
+        final List<Warehouse> warehouses = mongoTemplate.findAll(Warehouse.class);
         assertEquals(1, warehouses.size());
     }
 
@@ -312,12 +312,12 @@ public class SyncServiceTest
     public void testSyncWarehousesRemoveObsolete()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Warehouse.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Warehouse.class).isEmpty());
 
         final Warehouse warehouse = new Warehouse()
                         .setOid("5586.1650")
                         .setName("This warehouse should be removed");
-        this.mongoTemplate.save(warehouse);
+        mongoTemplate.save(warehouse);
 
         final WarehouseDto warehouse1 = WarehouseDto.builder()
                         .withName("A warehouse description")
@@ -326,12 +326,12 @@ public class SyncServiceTest
 
         final List<WarehouseDto> warehouseDtos = Arrays.asList(warehouse1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/warehouses"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(warehouseDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/warehouses"))
+            .andRespond(withSuccess(mapper.writeValueAsString(warehouseDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncWarehouses();
+        syncService.syncWarehouses();
 
-        final List<Warehouse> warehouses = this.mongoTemplate.findAll(Warehouse.class);
+        final List<Warehouse> warehouses = mongoTemplate.findAll(Warehouse.class);
         assertEquals(1, warehouses.size());
         assertEquals("5586.1651", warehouses.get(0).getOid());
         assertEquals("A warehouse description", warehouses.get(0).getName());
@@ -341,7 +341,7 @@ public class SyncServiceTest
     public void testSyncPrintersFirstTime()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Printer.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Printer.class).isEmpty());
 
         final PrinterDto product1 = PrinterDto.builder()
                         .withOID("5586.1651")
@@ -350,12 +350,12 @@ public class SyncServiceTest
 
         final List<PrinterDto> printerDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/printers"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(printerDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/printers"))
+            .andRespond(withSuccess(mapper.writeValueAsString(printerDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncPrinters();
+        syncService.syncPrinters();
 
-        final List<Printer> printers = this.mongoTemplate.findAll(Printer.class);
+        final List<Printer> printers = mongoTemplate.findAll(Printer.class);
         assertEquals(1, printers.size());
     }
 
@@ -363,12 +363,12 @@ public class SyncServiceTest
     public void testSyncPrintersRemoveObsolete()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Printer.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Printer.class).isEmpty());
 
         final Printer printer = new Printer()
                         .setOid("5586.1650")
                         .setName("This printer should be removed");
-        this.mongoTemplate.save(printer);
+        mongoTemplate.save(printer);
 
         final PrinterDto printer1 = PrinterDto.builder()
                         .withName("A printer description")
@@ -377,12 +377,12 @@ public class SyncServiceTest
 
         final List<PrinterDto> printerDtos = Arrays.asList(printer1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/printers"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(printerDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/printers"))
+            .andRespond(withSuccess(mapper.writeValueAsString(printerDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncPrinters();
+        syncService.syncPrinters();
 
-        final List<Printer> printers = this.mongoTemplate.findAll(Printer.class);
+        final List<Printer> printers = mongoTemplate.findAll(Printer.class);
         assertEquals(1, printers.size());
         assertEquals("5586.1651", printers.get(0).getOid());
         assertEquals("A printer description", printers.get(0).getName());
@@ -392,7 +392,7 @@ public class SyncServiceTest
     public void testSyncPossFirstTime()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Pos.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Pos.class).isEmpty());
 
         final PosDto product1 = PosDto.builder()
                         .withOID("5586.1651")
@@ -401,12 +401,12 @@ public class SyncServiceTest
 
         final List<PosDto> posDtos = Arrays.asList(product1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/poss"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(posDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/poss"))
+            .andRespond(withSuccess(mapper.writeValueAsString(posDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncPOSs();
+        syncService.syncPOSs();
 
-        final List<Pos> poss = this.mongoTemplate.findAll(Pos.class);
+        final List<Pos> poss = mongoTemplate.findAll(Pos.class);
         assertEquals(1, poss.size());
     }
 
@@ -414,12 +414,12 @@ public class SyncServiceTest
     public void testSyncPossRemoveObsolete()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Pos.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Pos.class).isEmpty());
 
         final Pos pos = new Pos()
                         .setOid("5586.1650")
                         .setName("This pos should be removed");
-        this.mongoTemplate.save(pos);
+        mongoTemplate.save(pos);
 
         final PosDto pos1 = PosDto.builder()
                         .withName("A pos description")
@@ -428,12 +428,12 @@ public class SyncServiceTest
 
         final List<PosDto> posDtos = Arrays.asList(pos1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/poss"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(posDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/poss"))
+            .andRespond(withSuccess(mapper.writeValueAsString(posDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncPOSs();
+        syncService.syncPOSs();
 
-        final List<Pos> poss = this.mongoTemplate.findAll(Pos.class);
+        final List<Pos> poss = mongoTemplate.findAll(Pos.class);
         assertEquals(1, poss.size());
         assertEquals("5586.1651", poss.get(0).getOid());
         assertEquals("A pos description", poss.get(0).getName());
@@ -443,7 +443,7 @@ public class SyncServiceTest
     public void testSyncUsersFirstTime()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(User.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(User.class).isEmpty());
 
         final UserDto user1 = UserDto.builder()
                         .withOID("5586.1651")
@@ -452,12 +452,12 @@ public class SyncServiceTest
 
         final List<UserDto> userDtos = Arrays.asList(user1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/users"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(userDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/users"))
+            .andRespond(withSuccess(mapper.writeValueAsString(userDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncUsers();
+        syncService.syncUsers();
 
-        final List<User> users = this.mongoTemplate.findAll(User.class);
+        final List<User> users = mongoTemplate.findAll(User.class);
         assertEquals(1, users.size());
     }
 
@@ -465,12 +465,12 @@ public class SyncServiceTest
     public void testSyncUsersRemoveObsolete()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(User.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(User.class).isEmpty());
 
         final User user = new User()
                         .setOid("5586.1650")
                         .setFirstName("This user should be removed");
-        this.mongoTemplate.save(user);
+        mongoTemplate.save(user);
 
         final UserDto user1 = UserDto.builder()
                         .withOID("5586.1651")
@@ -479,12 +479,12 @@ public class SyncServiceTest
 
         final List<UserDto> userDtos = Arrays.asList(user1);
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/users"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(userDtos), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/users"))
+            .andRespond(withSuccess(mapper.writeValueAsString(userDtos), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncUsers();
+        syncService.syncUsers();
 
-        final List<User> users = this.mongoTemplate.findAll(User.class);
+        final List<User> users = mongoTemplate.findAll(User.class);
         assertEquals(1, users.size());
         assertEquals("5586.1651", users.get(0).getOid());
         assertEquals("A user description", users.get(0).getFirstName());
@@ -493,16 +493,16 @@ public class SyncServiceTest
     //@Test
     public void testSyncReceiptsNoContact()
     {
-        assertTrue(this.mongoTemplate.findAll(Receipt.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Receipt.class).isEmpty());
         final Receipt receipt1 = new Receipt()
                         .setOid("5586.1650");
-        this.mongoTemplate.save(receipt1);
+        mongoTemplate.save(receipt1);
         final Receipt receipt2 = new Receipt();
-        this.mongoTemplate.save(receipt2);
+        mongoTemplate.save(receipt2);
 
-        this.syncService.syncReceipts();
+        syncService.syncReceipts();
 
-        final Receipt checkReceipt2 = this.mongoTemplate.findById(receipt2.getId(), Receipt.class);
+        final Receipt checkReceipt2 = mongoTemplate.findById(receipt2.getId(), Receipt.class);
         assertNull(checkReceipt2.getOid());
     }
 
@@ -510,44 +510,45 @@ public class SyncServiceTest
     public void testSyncReceipts()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Receipt.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Receipt.class).isEmpty());
         final Contact contact = new Contact().setOid("123.456");
-        this.mongoTemplate.save(contact);
+        mongoTemplate.save(contact);
         final Receipt receipt1 = new Receipt()
                         .setOid("5586.1650");
-        this.mongoTemplate.save(receipt1);
+        mongoTemplate.save(receipt1);
         final Receipt receipt2 = new Receipt()
                         .setContactOid(contact.getOid())
-                        .setBalanceOid("123.456");;
-        this.mongoTemplate.save(receipt2);
+                        .setBalanceOid("123.456");
+        mongoTemplate.save(receipt2);
 
         final ReceiptDto responseDto = ReceiptDto.builder()
                         .withId(receipt2.getId())
                         .withOID("5555.6666")
                         .build();
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/receipts"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(responseDto), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/receipts"))
+            .andRespond(withSuccess(mapper.writeValueAsString(responseDto), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncReceipts();
+        syncService.syncReceipts();
 
-        final Receipt checkReceipt2 = this.mongoTemplate.findById(receipt2.getId(), Receipt.class);
+        final Receipt checkReceipt2 = mongoTemplate.findById(receipt2.getId(), Receipt.class);
         assertEquals(responseDto.getOid(), checkReceipt2.getOid());
     }
 
     @Test
     public void testSyncInvoicesNoContact()
     {
-        assertTrue(this.mongoTemplate.findAll(Invoice.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Invoice.class).isEmpty());
         final Invoice invoice1 = new Invoice()
-                        .setOid("5586.1650");
-        this.mongoTemplate.save(invoice1);
+                        .setOid("5586.1650")
+                        .setContactOid("123.456");
+        mongoTemplate.save(invoice1);
         final Invoice invoice2 = new Invoice();
-        this.mongoTemplate.save(invoice2);
+        mongoTemplate.save(invoice2).setContactOid("116516515");
 
-        this.syncService.syncInvoices();
+        syncService.syncInvoices();
 
-        final Invoice checkInvoice2 = this.mongoTemplate.findById(invoice2.getId(), Invoice.class);
+        final Invoice checkInvoice2 = mongoTemplate.findById(invoice2.getId(), Invoice.class);
         assertNull(checkInvoice2.getOid());
     }
 
@@ -555,44 +556,44 @@ public class SyncServiceTest
     public void testSyncInvoices()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Invoice.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Invoice.class).isEmpty());
         final Contact contact = new Contact().setOid("123.456");
-        this.mongoTemplate.save(contact);
+        mongoTemplate.save(contact);
         final Invoice invoice1 = new Invoice()
                         .setOid("5586.1650");
-        this.mongoTemplate.save(invoice1);
+        mongoTemplate.save(invoice1);
         final Invoice invoice2 = new Invoice()
                         .setContactOid(contact.getOid())
-                        .setBalanceOid("123.456");;
-        this.mongoTemplate.save(invoice2);
+                        .setBalanceOid("123.456");
+        mongoTemplate.save(invoice2);
 
         final InvoiceDto responseDto = InvoiceDto.builder()
                         .withId(invoice2.getId())
                         .withOID("5555.6666")
                         .build();
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/invoices"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(responseDto), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/invoices"))
+            .andRespond(withSuccess(mapper.writeValueAsString(responseDto), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncInvoices();
+        syncService.syncInvoices();
 
-        final Invoice checkInvoice2 = this.mongoTemplate.findById(invoice2.getId(), Invoice.class);
+        final Invoice checkInvoice2 = mongoTemplate.findById(invoice2.getId(), Invoice.class);
         assertEquals(responseDto.getOid(), checkInvoice2.getOid());
     }
 
     @Test
     public void testSyncTicketsNoContact()
     {
-        assertTrue(this.mongoTemplate.findAll(Ticket.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Ticket.class).isEmpty());
         final Ticket ticket1 = new Ticket()
                         .setOid("5586.1650");
-        this.mongoTemplate.save(ticket1);
+        mongoTemplate.save(ticket1);
         final Ticket ticket2 = new Ticket();
-        this.mongoTemplate.save(ticket2);
+        mongoTemplate.save(ticket2);
 
-        this.syncService.syncTickets();
+        syncService.syncTickets();
 
-        final Ticket checkTicket2 = this.mongoTemplate.findById(ticket2.getId(), Ticket.class);
+        final Ticket checkTicket2 = mongoTemplate.findById(ticket2.getId(), Ticket.class);
         assertNull(checkTicket2.getOid());
     }
 
@@ -600,17 +601,17 @@ public class SyncServiceTest
     public void testSyncTickets()
         throws JsonProcessingException
     {
-        assertTrue(this.mongoTemplate.findAll(Ticket.class).isEmpty());
+        assertTrue(mongoTemplate.findAll(Ticket.class).isEmpty());
         final Contact contact = new Contact().setOid("123.456");
-        this.mongoTemplate.save(contact);
+        mongoTemplate.save(contact);
         final Ticket ticket1 = new Ticket()
                         .setOid("5586.1650")
                         .setBalanceOid("123.456");
-        this.mongoTemplate.save(ticket1);
+        mongoTemplate.save(ticket1);
         final Ticket ticket2 = new Ticket()
                         .setContactOid(contact.getOid())
                         .setBalanceOid("123.456");
-        this.mongoTemplate.save(ticket2);
+        mongoTemplate.save(ticket2);
 
         final TicketDto responseDto = TicketDto.builder()
                         .withId(ticket2.getId())
@@ -618,12 +619,12 @@ public class SyncServiceTest
                         .withBalanceOid("123.456")
                         .build();
 
-        this.server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/tickets"))
-            .andRespond(withSuccess(this.mapper.writeValueAsString(responseDto), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/tickets"))
+            .andRespond(withSuccess(mapper.writeValueAsString(responseDto), MediaType.APPLICATION_JSON));
 
-        this.syncService.syncTickets();
+        syncService.syncTickets();
 
-        final Ticket checkTicket2 = this.mongoTemplate.findById(ticket2.getId(), Ticket.class);
+        final Ticket checkTicket2 = mongoTemplate.findById(ticket2.getId(), Ticket.class);
         assertEquals(responseDto.getOid(), checkTicket2.getOid());
     }
 }

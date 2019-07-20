@@ -523,7 +523,7 @@ public class SyncService
         boolean ret = false;
         if (Utils.isOid(_entity.getContactOid())) {
             ret = contactRepository.findOneByOid(_entity.getContactOid()).isPresent();
-        } else {
+        } else if (_entity.getContactOid() != null){
             final Optional<Contact> optContact = contactRepository.findById(_entity.getContactOid());
             if (optContact.isPresent()) {
                 final String contactOid = optContact.get().getOid();
