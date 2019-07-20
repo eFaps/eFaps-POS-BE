@@ -31,4 +31,6 @@ public interface OrderRepository
     Collection<Order> findByStatus(DocStatus _status);
 
     Collection<Order> findByNumberLikeIgnoreCase(String _term);
+
+    Collection<Order> findByOidIsNullAndStatus(DocStatus _status);
 }

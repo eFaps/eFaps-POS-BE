@@ -133,6 +133,7 @@ public class ConfigProperties
         private String workspacePath;
         private String posPath;
         private String userPath;
+        private String orderPath;
         private String receiptPath;
         private String invoicePath;
         private String ticketPath;
@@ -203,6 +204,16 @@ public class ConfigProperties
         public void setUserPath(final String _userPath)
         {
             userPath = _userPath;
+        }
+
+        public String getOrderPath()
+        {
+            return orderPath;
+        }
+
+        public void setOrderPath(final String _orderPath)
+        {
+            orderPath = _orderPath;
         }
 
         public String getReceiptPath()

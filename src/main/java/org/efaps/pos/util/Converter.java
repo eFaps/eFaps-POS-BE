@@ -29,6 +29,7 @@ import org.efaps.pos.dto.FloorDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.JobDto;
+import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
@@ -709,6 +710,33 @@ public final class Converter
                         .withName(_entity.getName())
                         .withIdType(_entity.getIdType())
                         .withIdNumber(_entity.getIdNumber())
+                        .build();
+    }
+
+    public static OrderDto toOrderDto(final Order _entity)
+    {
+        return OrderDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withNumber(_entity.getNumber())
+                        .withDate(_entity.getDate())
+                        .withCurrency(_entity.getCurrency())
+                        .withStatus(_entity.getStatus())
+                        .withCrossTotal(_entity.getCrossTotal())
+                        .withNetTotal(_entity.getNetTotal())
+                        .withContactOid(_entity.getContactOid())
+                        .withWorkspaceOid(_entity.getWorkspaceOid())
+                        .withItems(_entity.getItems() == null
+                            ? null
+                            : _entity.getItems().stream()
+                                    .map(_item -> toItemDto(_item))
+                                    .collect(Collectors.toSet()))
+                        .withTaxes(_entity.getTaxes() == null
+                            ? null
+                            : _entity.getTaxes().stream()
+                                    .map(_tax -> Converter.toDto(_tax))
+                                    .collect(Collectors.toSet()))
+                        .withPayableOid(_entity.getPayableOid())
                         .build();
     }
 

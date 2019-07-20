@@ -32,6 +32,7 @@ efaps:
   workspacePath: /servlet/rest/pos/{identifier}/workspaces
   posPath: /servlet/rest/pos/{identifier}/poss
   userPath: /servlet/rest/pos/{identifier}/users
+  orderPath: /servlet/rest/pos/{identifier}/orders
   receiptPath: /servlet/rest/pos/{identifier}/receipts
   invoicePath: /servlet/rest/pos/{identifier}/invoices
   ticketPath: /servlet/rest/pos/{identifier}/tickets

@@ -88,5 +88,6 @@ public class ApplicationStartup
         service.syncProperties();
         service.syncImages();
         service.syncReports();
+        service.syncOrders();
     }
 }

@@ -33,6 +33,7 @@ import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
+import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.ProductDto;
@@ -319,6 +320,19 @@ public class EFapsClient
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Tickets", e);
+        }
+        return ret;
+    }
+
+    public OrderDto postOrder(final OrderDto _order)
+    {
+        OrderDto ret = _order;
+        try {
+            final RequestEntity<OrderDto> requestEntity = post(config.getEFaps().getOrderPath(), _order);
+            final ResponseEntity<OrderDto> response = restTemplate.exchange(requestEntity, OrderDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during post for Orders", e);
         }
         return ret;
     }

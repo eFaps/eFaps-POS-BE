@@ -40,7 +40,9 @@ import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.InvoiceDto;
+import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.entity.AbstractPayableDocument;
@@ -50,6 +52,7 @@ import org.efaps.pos.entity.Config;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
+import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
@@ -67,6 +70,7 @@ import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.ContactRepository;
 import org.efaps.pos.repository.InventoryRepository;
 import org.efaps.pos.repository.InvoiceRepository;
+import org.efaps.pos.repository.OrderRepository;
 import org.efaps.pos.repository.PrinterRepository;
 import org.efaps.pos.repository.ProductRepository;
 import org.efaps.pos.repository.ReceiptRepository;
@@ -109,6 +113,7 @@ public class SyncService
     private final PrinterRepository printerRepository;
     private final WorkspaceRepository workspaceRepository;
     private final BalanceRepository balanceRepository;
+    private final OrderRepository orderRepository;
     private final ConfigProperties configProperties;
 
     @Autowired
@@ -126,6 +131,7 @@ public class SyncService
                        final PrinterRepository _printerRepository,
                        final WorkspaceRepository _workspaceRepository,
                        final BalanceRepository _balanceRepository,
+                       final OrderRepository _orderRepository,
                        final EFapsClient _eFapsClient,
                        final ConfigProperties _configProperties)
     {
@@ -143,6 +149,7 @@ public class SyncService
         printerRepository = _printerRepository;
         workspaceRepository = _workspaceRepository;
         balanceRepository = _balanceRepository;
+        orderRepository = _orderRepository;
         eFapsClient = _eFapsClient;
         configProperties = _configProperties;
     }
@@ -305,11 +312,11 @@ public class SyncService
     public void syncPayables()
     {
         syncContactsUp();
-        syncOrders();
         syncBalance();
         syncReceipts();
         syncInvoices();
         syncTickets();
+        syncOrders();
     }
 
     public void syncBalance()
@@ -365,7 +372,21 @@ public class SyncService
 
     public void syncOrders()
     {
-
+        LOG.info("Syncing Canceled Orders");
+        final Collection<Order> tosync = orderRepository.findByOidIsNullAndStatus(DocStatus.CANCELED);
+        for (final Order order : tosync) {
+            LOG.debug("Syncing Order: {}", order);
+            final OrderDto recDto = eFapsClient.postOrder(Converter.toOrderDto(order));
+            LOG.debug("received Order: {}", recDto);
+            if (recDto.getOid() != null) {
+                final Optional<Order> orderOpt = orderRepository.findById(recDto.getId());
+                if (orderOpt.isPresent()) {
+                    final Order retOrder = orderOpt.get();
+                    retOrder.setOid(recDto.getOid());
+                    orderRepository.save(retOrder);
+                }
+            }
+        }
     }
 
     public void syncReceipts()
