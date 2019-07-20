@@ -19,7 +19,7 @@ package org.efaps.pos.entity;
 
 import java.util.Set;
 
-public class AbstractPayableDocument<T>
+public abstract class AbstractPayableDocument<T>
     extends AbstractDocument<T>
 {
 

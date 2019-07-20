@@ -32,6 +32,7 @@ import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
+import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Config;
 import org.efaps.pos.entity.Invoice;
@@ -289,8 +290,14 @@ public class DocumentService
     {
         AbstractDocument<?> ret = getOrder(_documentId);
         if (ret == null) {
-            ret = getReceipt(_documentId);
+            ret = getPayable(_documentId);
         }
+        return ret;
+    }
+
+    public AbstractPayableDocument<?> getPayable(final String _documentId)
+    {
+        AbstractPayableDocument<?> ret = getReceipt(_documentId);
         if (ret == null) {
             ret = getInvoice(_documentId);
         }

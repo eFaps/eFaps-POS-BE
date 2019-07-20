@@ -115,7 +115,7 @@ public class SyncService
     private final BalanceRepository balanceRepository;
     private final OrderRepository orderRepository;
     private final ConfigProperties configProperties;
-
+    private final DocumentService documentService;
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
                        final GridFsTemplate _gridFsTemplate,
@@ -133,7 +133,8 @@ public class SyncService
                        final BalanceRepository _balanceRepository,
                        final OrderRepository _orderRepository,
                        final EFapsClient _eFapsClient,
-                       final ConfigProperties _configProperties)
+                       final ConfigProperties _configProperties,
+                       final DocumentService _documentService)
     {
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
@@ -152,6 +153,7 @@ public class SyncService
         orderRepository = _orderRepository;
         eFapsClient = _eFapsClient;
         configProperties = _configProperties;
+        documentService = _documentService;
     }
 
     public void runSyncJob(final String _methodName)
@@ -385,6 +387,35 @@ public class SyncService
                     retOrder.setOid(recDto.getOid());
                     orderRepository.save(retOrder);
                 }
+            }
+        }
+        LOG.info("Syncing Closed Orders");
+        final Collection<Order> tosync2 = orderRepository.findByOidIsNullAndStatus(DocStatus.CLOSED);
+        for (final Order order : tosync2) {
+            boolean sync = true;
+            if (order.getPayableOid() != null && !Utils.isOid(order.getPayableOid())) {
+                final AbstractPayableDocument<?> payable = documentService.getPayable(order.getPayableOid());
+                if (payable != null && Utils.isOid(payable.getOid())) {
+                    order.setPayableOid(payable.getOid());
+                    orderRepository.save(order);
+                } else {
+                    sync = false;
+                }
+            }
+            if (sync) {
+                LOG.debug("Syncing Order: {}", order);
+                final OrderDto recDto = eFapsClient.postOrder(Converter.toOrderDto(order));
+                LOG.debug("received Order: {}", recDto);
+                if (recDto.getOid() != null) {
+                    final Optional<Order> orderOpt = orderRepository.findById(recDto.getId());
+                    if (orderOpt.isPresent()) {
+                        final Order retOrder = orderOpt.get();
+                        retOrder.setOid(recDto.getOid());
+                        orderRepository.save(retOrder);
+                    }
+                }
+            } else {
+                LOG.info("skipped Order: {}", order);
             }
         }
     }
