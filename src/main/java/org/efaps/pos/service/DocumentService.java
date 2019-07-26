@@ -240,9 +240,9 @@ public class DocumentService
         return receiptRepository.findById(_documentId).orElse(null);
     }
 
-    public Collection<Receipt> getReceipts4Balance(final String _balanceOid)
+    public Collection<Receipt> getReceipts4Balance(final String _key)
     {
-        return receiptRepository.findByBalanceOid(evalBalanceOid(_balanceOid));
+        return receiptRepository.findByBalanceOid(evalBalanceOid(_key));
     }
 
     public Invoice getInvoice(final String _documentId)
@@ -250,9 +250,9 @@ public class DocumentService
         return invoiceRepository.findById(_documentId).orElse(null);
     }
 
-    public Collection<Invoice> getInvoices4Balance(final String _balanceOid)
+    public Collection<Invoice> getInvoices4Balance(final String _key)
     {
-        return invoiceRepository.findByBalanceOid(evalBalanceOid(_balanceOid));
+        return invoiceRepository.findByBalanceOid(evalBalanceOid(_key));
     }
 
     /**
@@ -281,9 +281,9 @@ public class DocumentService
         return ticketRepository.findById(_documentId).orElse(null);
     }
 
-    public Collection<Ticket> getTickets4Balance(final String _balanceOid)
+    public Collection<Ticket> getTickets4Balance(final String _key)
     {
-        return ticketRepository.findByBalanceOid(evalBalanceOid(_balanceOid));
+        return ticketRepository.findByBalanceOid(evalBalanceOid(_key));
     }
 
     public AbstractDocument<?> getDocument(final String _documentId)

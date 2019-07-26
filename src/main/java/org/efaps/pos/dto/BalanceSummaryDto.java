@@ -23,16 +23,43 @@ public class BalanceSummaryDto
 {
 
     private final BalanceDto balance;
-
+    private final BalanceSummaryDetailDto detail;
+    private final BalanceSummaryDetailDto invoiceDetail;
+    private final BalanceSummaryDetailDto receiptDetail;
+    private final BalanceSummaryDetailDto ticketDetail;
 
     private BalanceSummaryDto(final Builder _builder)
     {
         balance = _builder.balance;
+        detail = _builder.detail;
+        invoiceDetail = _builder.invoiceDetail;
+        receiptDetail = _builder.receiptDetail;
+        ticketDetail = _builder.ticketDetail;
     }
 
     public BalanceDto getBalance()
     {
         return balance;
+    }
+
+    public BalanceSummaryDetailDto getDetail()
+    {
+        return detail;
+    }
+
+    public BalanceSummaryDetailDto getInvoiceDetail()
+    {
+        return invoiceDetail;
+    }
+
+    public BalanceSummaryDetailDto getReceiptDetail()
+    {
+        return receiptDetail;
+    }
+
+    public BalanceSummaryDetailDto getTicketDetail()
+    {
+        return ticketDetail;
     }
 
     public static Builder builder()
@@ -42,10 +69,40 @@ public class BalanceSummaryDto
 
     public static class Builder
     {
-        private BalanceDto balance;
 
-        public Builder withBalance(final BalanceDto _balance) {
+        private BalanceDto balance;
+        private BalanceSummaryDetailDto detail;
+        private BalanceSummaryDetailDto invoiceDetail;
+        private BalanceSummaryDetailDto receiptDetail;
+        private BalanceSummaryDetailDto ticketDetail;
+
+        public Builder withBalance(final BalanceDto _balance)
+        {
             balance = _balance;
+            return this;
+        }
+
+        public Builder withDetail(final BalanceSummaryDetailDto _detail)
+        {
+            detail = _detail;
+            return this;
+        }
+
+        public Builder withInvoiceDetail(final BalanceSummaryDetailDto _invoiceDetail)
+        {
+            invoiceDetail = _invoiceDetail;
+            return this;
+        }
+
+        public Builder withReceiptDetail(final BalanceSummaryDetailDto _receiptDetail)
+        {
+            receiptDetail = _receiptDetail;
+            return this;
+        }
+
+        public Builder withTicketDetail(final BalanceSummaryDetailDto _ticketDetail)
+        {
+            ticketDetail = _ticketDetail;
             return this;
         }
 

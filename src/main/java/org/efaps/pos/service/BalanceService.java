@@ -17,15 +17,31 @@
 
 package org.efaps.pos.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.efaps.pos.dto.BalanceStatus;
+import org.efaps.pos.dto.BalanceSummaryDetailDto;
 import org.efaps.pos.dto.BalanceSummaryDto;
+import org.efaps.pos.dto.PaymentInfoDto;
+import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
+import org.efaps.pos.entity.Invoice;
+import org.efaps.pos.entity.Payment;
+import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.util.Converter;
+import org.efaps.pos.util.PaymentGroup;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,10 +49,13 @@ public class BalanceService
 {
     private final BalanceRepository repository;
     private final SequenceService sequenceService;
+    private final DocumentService documentService;
 
-    public BalanceService(final BalanceRepository _repository, final SequenceService _sequenceService) {
+    public BalanceService(final BalanceRepository _repository, final SequenceService _sequenceService,
+                          final DocumentService _documentService) {
         repository = _repository;
         sequenceService = _sequenceService;
+        documentService = _documentService;
     }
 
     public Optional<Balance> getCurrent(final User _principal, final boolean _createNew)
@@ -74,8 +93,86 @@ public class BalanceService
     public BalanceSummaryDto getSummary(final String _balanceId) {
         final Balance balance = repository.findById(_balanceId).orElseThrow();
 
+        final Collection<Invoice> invoices = documentService.getInvoices4Balance(balance.getOid() == null
+                        ? balance.getId() : balance.getOid());
+        final Collection<Receipt> receipts = documentService.getReceipts4Balance(balance.getOid() == null
+                        ? balance.getId() : balance.getOid());
+        final Collection<Ticket> tickets = documentService.getTickets4Balance(balance.getOid() == null
+                        ? balance.getId() : balance.getOid());
+
+        final List<AbstractPayableDocument<?>> all = new ArrayList<>();
+        all.addAll(invoices);
+        all.addAll(receipts);
+        all.addAll(tickets);
+
+        final BalanceSummaryDetailDto detail = getDetail(all);
+        final BalanceSummaryDetailDto invoiceDetail = getDetail(invoices);
+        final BalanceSummaryDetailDto receiptDetail = getDetail(receipts);
+        final BalanceSummaryDetailDto ticketDetail = getDetail(tickets);
+
         return BalanceSummaryDto.builder()
+                        .withDetail(detail)
+                        .withReceiptDetail(receiptDetail)
+                        .withInvoiceDetail(invoiceDetail)
+                        .withTicketDetail(ticketDetail)
                         .withBalance(Converter.toDto(balance))
+                        .build();
+    }
+
+
+    protected BalanceSummaryDetailDto getDetail(final Collection<? extends AbstractPayableDocument<?>> _payable) {
+        final List<Payment> pay = _payable.stream()
+                        .map(invoice -> invoice.getPayments())
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toList());
+        final int count = pay.size();
+
+        final Map<PaymentGroup, Long> counted = pay.stream()
+                        .collect(Collectors.groupingBy(payment -> getPaymentGroup(payment), Collectors.counting()));
+
+        final Map<PaymentGroup, BigDecimal> summed = pay.stream()
+                        .collect(Collectors.groupingBy(payment -> getPaymentGroup(payment),
+                                        Collectors.reducing(
+                                                        BigDecimal.ZERO,
+                                                        Payment::getAmount,
+                                                        BigDecimal::add)));
+
+        final Map<PaymentGroup, PaymentInfoDto> infos = new HashMap<>();
+
+        for (final Entry<PaymentGroup, Long> entry : counted.entrySet()) {
+            infos.put(entry.getKey(), entry.getKey().getInfo(entry.getValue().intValue(), null));
+        }
+        for (final Entry<PaymentGroup, BigDecimal> entry : summed.entrySet()) {
+            if (infos.containsKey(entry.getKey())) {
+                infos.put(entry.getKey(),
+                                entry.getKey().getInfo(infos.get(entry.getKey()).getCount(), entry.getValue()));
+            } else {
+                infos.put(entry.getKey(), entry.getKey().getInfo(0, entry.getValue()));
+            }
+        }
+
+        final BigDecimal netTotal = _payable.stream()
+            .map(AbstractPayableDocument::getNetTotal)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        final BigDecimal crossTotal = _payable.stream()
+                        .map(AbstractPayableDocument::getCrossTotal)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return BalanceSummaryDetailDto.builder()
+            .withDocumentCount(_payable.size())
+            .withPaymentCount(count)
+            .withNetTotal(netTotal)
+            .withCrossTotal(crossTotal)
+            .withPayments(infos.values())
+            .build();
+    }
+
+    protected PaymentGroup getPaymentGroup(final Payment _payment) {
+        return PaymentGroup.builder()
+                        .withType(_payment.getType())
+                        .withCardTypeId(_payment.getCardTypeId())
+                        .withCardLabel(_payment.getCardLabel())
                         .build();
     }
 
