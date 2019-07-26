@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.BalanceDto;
+import org.efaps.pos.dto.BalanceSummaryDto;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.service.BalanceService;
@@ -45,14 +46,14 @@ public class BalanceController
 
     public BalanceController(final BalanceService _balanceService)
     {
-        this.balanceService = _balanceService;
+        balanceService = _balanceService;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BalanceDto> getCurrentBalance(final Authentication _authentication,
                                 @RequestParam(name = "createNew", required = false) final boolean _createNew)
     {
-        final Optional<Balance> balanceOpt = this.balanceService.getCurrent((User) _authentication.getPrincipal(),
+        final Optional<Balance> balanceOpt = balanceService.getCurrent((User) _authentication.getPrincipal(),
                         _createNew);
         ResponseEntity<BalanceDto> ret;
         if (balanceOpt.isPresent()) {
@@ -67,6 +68,12 @@ public class BalanceController
     public BalanceDto updateBalance(@PathVariable("id") final String _id,
                                    @RequestBody final BalanceDto _balanceDto)
     {
-        return Converter.toDto(this.balanceService.update(Converter.toEntity(_balanceDto)));
+        return Converter.toDto(balanceService.update(Converter.toEntity(_balanceDto)));
     }
+
+    @GetMapping(path = "{id}/summary", produces = MediaType.APPLICATION_JSON_VALUE)
+    public BalanceSummaryDto getSummary(@PathVariable("id") final String _balanceId) {
+        return balanceService.getSummary(_balanceId);
+    }
+
 }

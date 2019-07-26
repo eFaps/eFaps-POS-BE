@@ -21,9 +21,11 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.efaps.pos.dto.BalanceStatus;
+import org.efaps.pos.dto.BalanceSummaryDto;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.repository.BalanceRepository;
+import org.efaps.pos.util.Converter;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,23 +35,23 @@ public class BalanceService
     private final SequenceService sequenceService;
 
     public BalanceService(final BalanceRepository _repository, final SequenceService _sequenceService) {
-        this.repository = _repository;
-        this.sequenceService = _sequenceService;
+        repository = _repository;
+        sequenceService = _sequenceService;
     }
 
     public Optional<Balance> getCurrent(final User _principal, final boolean _createNew)
     {
         final Optional<Balance> ret;
-        final Optional<Balance> balanceOpt = this.repository.findOneByUserOidAndStatus(_principal.getOid(),
+        final Optional<Balance> balanceOpt = repository.findOneByUserOidAndStatus(_principal.getOid(),
                         BalanceStatus.OPEN);
         if (!balanceOpt.isPresent() && _createNew) {
-            final String number = this.sequenceService.getNextNumber("Balance", false);
+            final String number = sequenceService.getNextNumber("Balance", false);
             final Balance balance = new Balance()
                             .setStartAt(LocalDateTime.now())
                             .setUserOid(_principal.getOid())
                             .setStatus(BalanceStatus.OPEN)
                             .setNumber(number);
-            ret = Optional.of(this.repository.save(balance));
+            ret = Optional.of(repository.save(balance));
         } else {
             ret = balanceOpt;
         }
@@ -58,14 +60,23 @@ public class BalanceService
 
     public Balance update(final Balance _retrievedBalance) {
         Balance ret = _retrievedBalance;
-        final Optional<Balance> balanceOpt = this.repository.findById(_retrievedBalance.getId());
+        final Optional<Balance> balanceOpt = repository.findById(_retrievedBalance.getId());
         if (balanceOpt.isPresent()) {
             final Balance balance = balanceOpt.get();
             balance.setStatus(BalanceStatus.CLOSED)
                 .setEndAt(LocalDateTime.now())
                 .setSynced(false);
-            ret = this.repository.save(balance);
+            ret = repository.save(balance);
         }
         return ret;
     }
+
+    public BalanceSummaryDto getSummary(final String _balanceId) {
+        final Balance balance = repository.findById(_balanceId).orElseThrow();
+
+        return BalanceSummaryDto.builder()
+                        .withBalance(Converter.toDto(balance))
+                        .build();
+    }
+
 }
