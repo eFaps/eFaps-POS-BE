@@ -102,10 +102,8 @@ public class WebSecurityConfig
             .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "users/**")
             .and()
             .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
-           // .and()
-           // .ignoring().antMatchers(HttpMethod.GET, "/pos", "/login", "/products", "/workspaces")
             .and()
-            .ignoring().antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html",
+            .ignoring().antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/favicon.png", "/**/*.html",
                                         "/**/*.css", "/**/*.js", "/**/*.json", "/**/*.svg")
             .and()
             .ignoring().antMatchers(HttpMethod.OPTIONS)
