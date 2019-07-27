@@ -32,6 +32,8 @@ import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.dto.BalanceSummaryDetailDto;
 import org.efaps.pos.dto.BalanceSummaryDto;
 import org.efaps.pos.dto.PaymentInfoDto;
+import org.efaps.pos.dto.TaxEntryDto;
+import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Invoice;
@@ -159,12 +161,40 @@ public class BalanceService
                         .map(AbstractPayableDocument::getCrossTotal)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        final List<TaxEntry> taxes = _payable.stream().map(invoice -> invoice.getTaxes())
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+
+        taxes.stream().collect(Collectors.groupingBy(tax -> tax.getTax().getKey()));
+
+        final Collection<List<TaxEntry>> taxmap = _payable.stream().map(invoice -> invoice.getTaxes())
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.groupingBy(tax -> tax.getTax().getKey()))
+                        .values();
+        final List<TaxEntryDto> taxEntries = new ArrayList<>();
+        for (final List<TaxEntry> taxlist : taxmap) {
+
+            final BigDecimal amount = taxlist.stream()
+                            .map(TaxEntry::getAmount)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+            final BigDecimal base = taxlist.stream()
+                            .map(TaxEntry::getBase)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            taxEntries.add(TaxEntryDto.builder()
+                .withAmount(amount)
+                .withBase(base)
+                .withTax(Converter.toDto(taxlist.get(0).getTax()))
+                .build());
+        }
+
         return BalanceSummaryDetailDto.builder()
             .withDocumentCount(_payable.size())
             .withPaymentCount(count)
             .withNetTotal(netTotal)
             .withCrossTotal(crossTotal)
             .withPayments(infos.values())
+            .withtTaxEntries(taxEntries)
             .build();
     }
 

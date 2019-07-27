@@ -1,3 +1,20 @@
+/*
+ * Copyright 2003 - 2019 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package org.efaps.pos.dto;
 
 import java.math.BigDecimal;
@@ -11,6 +28,8 @@ public class BalanceSummaryDetailDto
     private final BigDecimal netTotal;
     private final BigDecimal crossTotal;
     private final Collection<PaymentInfoDto> paymentInfos;
+    private final Collection<TaxEntryDto> taxEntries;
+
 
     private BalanceSummaryDetailDto(final Builder _builder)
     {
@@ -19,6 +38,7 @@ public class BalanceSummaryDetailDto
         netTotal = _builder.netTotal == null ? BigDecimal.ZERO : _builder.netTotal;
         crossTotal = _builder.crossTotal == null ? BigDecimal.ZERO : _builder.crossTotal;
         paymentInfos = _builder.paymentInfos;
+        taxEntries = _builder.taxEntries;
     }
 
     public int getDocumentCount()
@@ -46,6 +66,11 @@ public class BalanceSummaryDetailDto
         return paymentInfos;
     }
 
+    public Collection<TaxEntryDto> getTaxEntries()
+    {
+        return taxEntries;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -59,6 +84,7 @@ public class BalanceSummaryDetailDto
         private BigDecimal netTotal;
         private BigDecimal crossTotal;
         private Collection<PaymentInfoDto> paymentInfos;
+        private Collection<TaxEntryDto> taxEntries;
 
         public Builder withDocumentCount(final int _documentCount)
         {
@@ -87,6 +113,12 @@ public class BalanceSummaryDetailDto
         public Builder withPayments(final Collection<PaymentInfoDto> _paymentInfos)
         {
             paymentInfos = _paymentInfos;
+            return this;
+        }
+
+        public Builder withtTaxEntries(final Collection<TaxEntryDto> _taxEntries)
+        {
+            taxEntries = _taxEntries;
             return this;
         }
 
