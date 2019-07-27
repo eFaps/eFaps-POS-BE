@@ -139,4 +139,27 @@ public class PrintContoller
             });
         return ret;
     }
+
+    @PostMapping(path = "ticket", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PrintResponseDto> printTicket(final Authentication _authentication,
+                                           @RequestParam(name = "workspaceOid") final String _workspaceOid,
+                                           @RequestParam(name = "documentId") final String _documentId)
+    {
+        final List<PrintResponseDto> ret = new ArrayList<>();
+        final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
+                        _workspaceOid);
+
+        final AbstractDocument<?> document = documentService.getDocument(_documentId);
+
+        workspace.getPrintCmds().stream()
+            .filter(printCmd -> PrintTarget.TICKET.equals(printCmd.getTarget()))
+            .forEach(printCmd -> {
+                final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd, document);
+                if (responseOpt.isPresent()) {
+                    ret.add(responseOpt.get());
+                }
+            });
+        return ret;
+    }
+
 }
