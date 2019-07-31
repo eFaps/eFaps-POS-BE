@@ -128,7 +128,7 @@ public class PrintService
         return queue(_printCmd.getPrinterOid(), _printCmd.getReportOid(), content);
     }
 
-    private Optional<PrintResponseDto> queue(final String _printerOid, final String _reportOid, final Object _content)
+    public Optional<PrintResponseDto> queue(final String _printerOid, final String _reportOid, final Object _content)
     {
         Optional<PrintResponseDto> ret;
         final Optional<Printer> printerOpt = printerRepository.findById(_printerOid);

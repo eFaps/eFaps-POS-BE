@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.BalanceSummaryDto;
 import org.efaps.pos.dto.PrintResponseDto;
 import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.entity.AbstractDocument;
@@ -30,6 +31,7 @@ import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.service.BalanceService;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.service.JobService;
 import org.efaps.pos.service.PrintService;
@@ -51,16 +53,19 @@ public class PrintContoller
 {
     private final WorkspaceService workspaceService;
     private final DocumentService documentService;
+    private final BalanceService balanceService;
     private final JobService jobService;
     private final PrintService printService;
 
     public PrintContoller(final WorkspaceService _workspaceService,
                           final DocumentService _service,
+                          final BalanceService _balanceService,
                           final JobService _jobService,
                           final PrintService _printService)
     {
         workspaceService = _workspaceService;
         documentService = _service;
+        balanceService = _balanceService;
         jobService = _jobService;
         printService = _printService;
     }
@@ -155,6 +160,29 @@ public class PrintContoller
             .filter(printCmd -> PrintTarget.TICKET.equals(printCmd.getTarget()))
             .forEach(printCmd -> {
                 final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd, document);
+                if (responseOpt.isPresent()) {
+                    ret.add(responseOpt.get());
+                }
+            });
+        return ret;
+    }
+
+    @PostMapping(path = "balance", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PrintResponseDto> printBalance(final Authentication _authentication,
+                                           @RequestParam(name = "workspaceOid") final String _workspaceOid,
+                                           @RequestParam(name = "balanceId") final String _balanceId)
+    {
+        final List<PrintResponseDto> ret = new ArrayList<>();
+        final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
+                        _workspaceOid);
+
+        final BalanceSummaryDto summary = balanceService.getSummary(_balanceId);
+
+        workspace.getPrintCmds().stream()
+            .filter(printCmd -> PrintTarget.BALANCE.equals(printCmd.getTarget()))
+            .forEach(printCmd -> {
+                final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd.getPrinterOid(),
+                                printCmd.getReportOid(), summary);
                 if (responseOpt.isPresent()) {
                     ret.add(responseOpt.get());
                 }
