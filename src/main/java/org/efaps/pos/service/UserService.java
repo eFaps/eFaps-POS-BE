@@ -39,24 +39,29 @@ public class UserService
     public UserService(final UserRepository _userRepository,
                        final PasswordEncoder _passwordEncoder)
     {
-        this.userRepository = _userRepository;
-        this.passwordEncoder = _passwordEncoder;
+        userRepository = _userRepository;
+        passwordEncoder = _passwordEncoder;
     }
 
     @Override
     public UserDetails loadUserByUsername(final String _username)
         throws UsernameNotFoundException
     {
-        return this.userRepository.findById(_username).orElseThrow(() -> new UsernameNotFoundException(_username));
+        return userRepository.findById(_username).orElseThrow(() -> new UsernameNotFoundException(_username));
     }
 
     public PasswordEncoder getPasswordEncoder()
     {
-        return this.passwordEncoder;
+        return passwordEncoder;
     }
 
     public List<User> getUsers()
     {
-        return this.userRepository.findUserByVisibleIsTrue();
+        return userRepository.findUserByVisibleIsTrue();
+    }
+
+    public User getUserByOid(final String userOid)
+    {
+        return userRepository.findOneByOid(userOid).orElse(null);
     }
 }

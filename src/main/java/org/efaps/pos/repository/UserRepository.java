@@ -17,6 +17,7 @@
 package org.efaps.pos.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.efaps.pos.entity.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -25,4 +26,6 @@ public interface UserRepository
     extends MongoRepository<User, String>
 {
     List<User> findUserByVisibleIsTrue();
+
+    Optional<User> findOneByOid(final String _oid);
 }

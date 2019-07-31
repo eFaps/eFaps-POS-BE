@@ -32,6 +32,7 @@ import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.dto.BalanceSummaryDetailDto;
 import org.efaps.pos.dto.BalanceSummaryDto;
 import org.efaps.pos.dto.PaymentInfoDto;
+import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.AbstractPayableDocument;
@@ -52,12 +53,14 @@ public class BalanceService
     private final BalanceRepository repository;
     private final SequenceService sequenceService;
     private final DocumentService documentService;
+    private final UserService userService;
 
     public BalanceService(final BalanceRepository _repository, final SequenceService _sequenceService,
-                          final DocumentService _documentService) {
+                          final DocumentService _documentService, final UserService _userService) {
         repository = _repository;
         sequenceService = _sequenceService;
         documentService = _documentService;
+        userService = _userService;
     }
 
     public Optional<Balance> getCurrent(final User _principal, final boolean _createNew)
@@ -95,6 +98,8 @@ public class BalanceService
     public BalanceSummaryDto getSummary(final String _balanceId) {
         final Balance balance = repository.findById(_balanceId).orElseThrow();
 
+        final PosUserDto user = Converter.toDto(userService.getUserByOid(balance.getUserOid()));
+
         final Collection<Invoice> invoices = documentService.getInvoices4Balance(balance.getOid() == null
                         ? balance.getId() : balance.getOid());
         final Collection<Receipt> receipts = documentService.getReceipts4Balance(balance.getOid() == null
@@ -113,6 +118,7 @@ public class BalanceService
         final BalanceSummaryDetailDto ticketDetail = getDetail(tickets);
 
         return BalanceSummaryDto.builder()
+                        .withUser(user)
                         .withDetail(detail)
                         .withReceiptDetail(receiptDetail)
                         .withInvoiceDetail(invoiceDetail)

@@ -311,7 +311,9 @@ public final class Converter
 
     public static PosUserDto toDto(final User _user)
     {
-        return PosUserDto.builder()
+        return _user == null
+                    ? null
+                    : PosUserDto.builder()
                         .withUsername(_user.getUsername())
                         .withFirstName(_user.getFirstName())
                         .withSurName(_user.getSurName())

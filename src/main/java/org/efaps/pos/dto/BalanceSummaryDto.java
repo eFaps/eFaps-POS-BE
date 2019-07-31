@@ -23,6 +23,7 @@ public class BalanceSummaryDto
 {
 
     private final BalanceDto balance;
+    private final PosUserDto user;
     private final BalanceSummaryDetailDto detail;
     private final BalanceSummaryDetailDto invoiceDetail;
     private final BalanceSummaryDetailDto receiptDetail;
@@ -31,6 +32,7 @@ public class BalanceSummaryDto
     private BalanceSummaryDto(final Builder _builder)
     {
         balance = _builder.balance;
+        user = _builder.user;
         detail = _builder.detail;
         invoiceDetail = _builder.invoiceDetail;
         receiptDetail = _builder.receiptDetail;
@@ -40,6 +42,11 @@ public class BalanceSummaryDto
     public BalanceDto getBalance()
     {
         return balance;
+    }
+
+    public PosUserDto getUser()
+    {
+        return user;
     }
 
     public BalanceSummaryDetailDto getDetail()
@@ -69,8 +76,8 @@ public class BalanceSummaryDto
 
     public static class Builder
     {
-
         private BalanceDto balance;
+        private PosUserDto user;
         private BalanceSummaryDetailDto detail;
         private BalanceSummaryDetailDto invoiceDetail;
         private BalanceSummaryDetailDto receiptDetail;
@@ -79,6 +86,12 @@ public class BalanceSummaryDto
         public Builder withBalance(final BalanceDto _balance)
         {
             balance = _balance;
+            return this;
+        }
+
+        public Builder withUser(final PosUserDto _user)
+        {
+            user = _user;
             return this;
         }
 
