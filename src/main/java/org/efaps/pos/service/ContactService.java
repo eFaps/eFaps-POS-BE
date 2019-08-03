@@ -31,33 +31,33 @@ public class ContactService
 
     public ContactService(final ContactRepository _contactRepository)
     {
-        this.contactRepository = _contactRepository;
+        contactRepository = _contactRepository;
     }
 
     public Contact getContact(final String _oid)
     {
 
-        return this.contactRepository.findOneByOid(_oid).orElse(null);
+        return contactRepository.findOneByOid(_oid).orElse(null);
     }
 
     public Contact findContact(final String _key)
     {
-        return this.contactRepository.findOneByOid(_key).orElse(this.contactRepository.findById(_key).orElse(null));
+        return contactRepository.findOneByOid(_key).orElse(contactRepository.findById(_key).orElse(null));
     }
 
     public List<Contact> getContacts()
     {
-        return this.contactRepository.findAll();
+        return contactRepository.findAll();
     }
 
     public List<Contact> findContacts(final String _term, final boolean _nameSearch)
     {
-        return _nameSearch ? this.contactRepository.findByNameStartingWith(_term)
-                        : this.contactRepository.findByIdNumberStartingWith(_term);
+        return _nameSearch ? contactRepository.findByNameRegex(_term)
+                        : contactRepository.findByIdNumberStartingWith(_term);
     }
 
     public Contact createContact(final Contact _entity)
     {
-        return this.contactRepository.save(_entity);
+        return contactRepository.save(_entity);
     }
 }

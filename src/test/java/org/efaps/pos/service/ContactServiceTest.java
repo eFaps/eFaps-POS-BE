@@ -51,61 +51,61 @@ public class ContactServiceTest
     @BeforeEach
     public void setup()
     {
-        this.mongoTemplate.remove(new Query(), Contact.class);
+        mongoTemplate.remove(new Query(), Contact.class);
     }
 
     @Test
     public void testGetContacts()
     {
-        this.mongoTemplate.save(new Contact().setOid("1.1"));
-        this.mongoTemplate.save(new Contact().setOid("1.2"));
-        this.mongoTemplate.save(new Contact().setOid("1.3"));
+        mongoTemplate.save(new Contact().setOid("1.1"));
+        mongoTemplate.save(new Contact().setOid("1.2"));
+        mongoTemplate.save(new Contact().setOid("1.3"));
 
-        final List<Contact> contacts = this.contactService.getContacts();
+        final List<Contact> contacts = contactService.getContacts();
         assertEquals(3, contacts.size());
     }
 
     @Test
     public void testGetContact()
     {
-        this.mongoTemplate.save(new Contact().setOid("1.1"));
-        this.mongoTemplate.save(new Contact().setOid("1.2"));
-        this.mongoTemplate.save(new Contact().setOid("1.3"));
+        mongoTemplate.save(new Contact().setOid("1.1"));
+        mongoTemplate.save(new Contact().setOid("1.2"));
+        mongoTemplate.save(new Contact().setOid("1.3"));
 
-        final Contact contact = this.contactService.getContact("1.3");
+        final Contact contact = contactService.getContact("1.3");
         assertEquals("1.3", contact.getOid());
     }
 
     @Test
     public void testFindContactByOid()
     {
-        this.mongoTemplate.save(new Contact().setOid("1.1"));
-        this.mongoTemplate.save(new Contact().setOid("1.2"));
-        this.mongoTemplate.save(new Contact().setOid("1.3"));
+        mongoTemplate.save(new Contact().setOid("1.1"));
+        mongoTemplate.save(new Contact().setOid("1.2"));
+        mongoTemplate.save(new Contact().setOid("1.3"));
 
-        final Contact contact = this.contactService.findContact("1.3");
+        final Contact contact = contactService.findContact("1.3");
         assertEquals("1.3", contact.getOid());
     }
 
     @Test
     public void testFindContactById()
     {
-        this.mongoTemplate.save(new Contact().setOid("1.1").setId("FirstId"));
-        this.mongoTemplate.save(new Contact().setOid("1.2").setId("SecondId"));
-        this.mongoTemplate.save(new Contact().setOid("1.3").setId("ThirdId"));
+        mongoTemplate.save(new Contact().setOid("1.1").setId("FirstId"));
+        mongoTemplate.save(new Contact().setOid("1.2").setId("SecondId"));
+        mongoTemplate.save(new Contact().setOid("1.3").setId("ThirdId"));
 
-        final Contact contact = this.contactService.findContact("ThirdId");
+        final Contact contact = contactService.findContact("ThirdId");
         assertEquals("1.3", contact.getOid());
     }
 
     @Test
     public void testFindContactReturnNull()
     {
-        this.mongoTemplate.save(new Contact().setOid("1.1").setId("FirstId"));
-        this.mongoTemplate.save(new Contact().setOid("1.2").setId("SecondId"));
-        this.mongoTemplate.save(new Contact().setOid("1.3").setId("ThirdId"));
+        mongoTemplate.save(new Contact().setOid("1.1").setId("FirstId"));
+        mongoTemplate.save(new Contact().setOid("1.2").setId("SecondId"));
+        mongoTemplate.save(new Contact().setOid("1.3").setId("ThirdId"));
 
-        final Contact contact = this.contactService.findContact("Cannot be found");
+        final Contact contact = contactService.findContact("Cannot be found");
         assertNull(contact);
     }
 
@@ -113,8 +113,8 @@ public class ContactServiceTest
     public void testCreateContact()
     {
         final Contact contact = new Contact().setOid("11.23").setName("A name");
-        this.contactService.createContact(contact);
-        final List<Contact> contacts = this.mongoTemplate.findAll(Contact.class);
+        contactService.createContact(contact);
+        final List<Contact> contacts = mongoTemplate.findAll(Contact.class);
         assertEquals(1, contacts.size());
         assertEquals("11.23", contacts.get(0).getOid());
     }
@@ -122,24 +122,31 @@ public class ContactServiceTest
     @Test
     public void testFindContactByName()
     {
-        this.mongoTemplate.save(new Contact().setOid("1.1").setName("ABC"));
-        this.mongoTemplate.save(new Contact().setOid("1.2").setName("ABCD"));
-        this.mongoTemplate.save(new Contact().setOid("1.3").setName("DEFG"));
-        this.mongoTemplate.save(new Contact().setOid("1.4").setName("ZYX"));
+        mongoTemplate.save(new Contact().setOid("1.1").setName("ABC"));
+        mongoTemplate.save(new Contact().setOid("1.2").setName("ABCD"));
+        mongoTemplate.save(new Contact().setOid("1.3").setName("DEFG"));
+        mongoTemplate.save(new Contact().setOid("1.4").setName("ZYX"));
+        mongoTemplate.save(new Contact().setOid("1.5").setName("ZYXAB"));
+        mongoTemplate.save(new Contact().setOid("1.6").setName("ZABYX"));
+        mongoTemplate.save(new Contact().setOid("1.7").setName("ZAVYX"));
+        mongoTemplate.save(new Contact().setOid("1.8").setName("zAbyX"));
+        mongoTemplate.save(new Contact().setOid("1.9").setName("abZAVYX"));
 
-        final List<Contact> contacts = this.contactService.findContacts("AB", true);
-        assertEquals(2, contacts.size());
+        final List<Contact> contacts = contactService.findContacts("AB", true);
+        assertEquals(6, contacts.size());
+        final List<Contact> contacts2 = contactService.findContacts("ab", true);
+        assertEquals(6, contacts2.size());
     }
 
     @Test
     public void testFindContactByTaxnumber()
     {
-        this.mongoTemplate.save(new Contact().setOid("1.1").setIdNumber("1234"));
-        this.mongoTemplate.save(new Contact().setOid("1.2").setIdNumber("123456"));
-        this.mongoTemplate.save(new Contact().setOid("1.3").setIdNumber("345"));
-        this.mongoTemplate.save(new Contact().setOid("1.4").setIdNumber("124"));
+        mongoTemplate.save(new Contact().setOid("1.1").setIdNumber("1234"));
+        mongoTemplate.save(new Contact().setOid("1.2").setIdNumber("123456"));
+        mongoTemplate.save(new Contact().setOid("1.3").setIdNumber("345"));
+        mongoTemplate.save(new Contact().setOid("1.4").setIdNumber("124"));
 
-        final List<Contact> contacts = this.contactService.findContacts("1234", false);
+        final List<Contact> contacts = contactService.findContacts("1234", false);
         assertEquals(2, contacts.size());
     }
 

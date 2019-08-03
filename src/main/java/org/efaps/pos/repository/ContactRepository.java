@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import org.efaps.pos.entity.Contact;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 public interface ContactRepository
     extends MongoRepository<Contact, String>
@@ -32,7 +33,8 @@ public interface ContactRepository
 
     List<Contact> findByIdNumberStartingWith(String _term);
 
-    List<Contact> findByNameStartingWith(String _term);
+    @Query(value = "{'name': {$regex : '?0', $options: 'i'}}")
+    List<Contact> findByNameRegex(String _term);
 
     Collection<Contact> findByOidIsNull();
 }
