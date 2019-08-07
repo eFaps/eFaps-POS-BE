@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.efaps.pos.dto.TaxType;
 
 public class Tax
 {
@@ -33,7 +34,11 @@ public class Tax
 
     private String name;
 
+    private TaxType type;
+
     private BigDecimal percent;
+
+    private BigDecimal amount;
 
     public String getOid()
     {
@@ -68,6 +73,17 @@ public class Tax
         return this;
     }
 
+    public TaxType getType()
+    {
+        return type;
+    }
+
+    public Tax setType(final TaxType _type)
+    {
+        type = _type;
+        return this;
+    }
+
     public String getName()
     {
         return name;
@@ -87,6 +103,17 @@ public class Tax
     public Tax setPercent(final BigDecimal _percent)
     {
         percent = _percent;
+        return this;
+    }
+
+    public BigDecimal getAmount()
+    {
+        return amount;
+    }
+
+    public Tax setAmount(final BigDecimal _amount)
+    {
+        amount = _amount;
         return this;
     }
 

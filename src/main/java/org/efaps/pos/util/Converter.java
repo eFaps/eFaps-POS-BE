@@ -494,8 +494,10 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withKey(_entity.getKey())
                         .withCatKey(_entity.getCatKey())
+                        .withType(_entity.getType())
                         .withName(_entity.getName())
                         .withPercent(_entity.getPercent())
+                        .withAmount(_entity.getAmount())
                         .build();
     }
 
@@ -505,8 +507,10 @@ public final class Converter
                         .setOid(_dto.getOid())
                         .setKey(_dto.getKey())
                         .setCatKey(_dto.getCatKey())
+                        .setType(_dto.getType())
                         .setName(_dto.getName())
-                        .setPercent(_dto.getPercent());
+                        .setPercent(_dto.getPercent())
+                        .setAmount(_dto.getAmount());
     }
 
     public static Payment toEntity(final PaymentDto _dto)
