@@ -325,7 +325,7 @@ public class SyncService
     {
         LOG.info("Syncing Balance");
         final Collection<BalanceDto> tosync = balanceRepository.findByOidIsNull().stream()
-                        .map(receipt -> Converter.toDto(receipt))
+                        .map(balance -> Converter.toBalanceDto(balance))
                         .collect(Collectors.toList());
         for (final BalanceDto dto : tosync) {
             LOG.debug("Syncing Balance: {}", dto);
@@ -357,7 +357,7 @@ public class SyncService
         }
         final Collection<BalanceDto> tosync2 = balanceRepository.findBySyncedIsFalseAndStatus(BalanceStatus.CLOSED)
                         .stream()
-                        .map(balance -> Converter.toDto(balance))
+                        .map(balance -> Converter.toBalanceDto(balance))
                         .collect(Collectors.toList());
         for (final BalanceDto dto : tosync2) {
             if (eFapsClient.putBalance(dto)) {

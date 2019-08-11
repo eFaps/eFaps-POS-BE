@@ -123,7 +123,7 @@ public class BalanceService
                         .withReceiptDetail(receiptDetail)
                         .withInvoiceDetail(invoiceDetail)
                         .withTicketDetail(ticketDetail)
-                        .withBalance(Converter.toDto(balance))
+                        .withBalance(Converter.toBalanceDto(balance))
                         .build();
     }
 
@@ -212,4 +212,7 @@ public class BalanceService
                         .build();
     }
 
+    public List<Balance> getBalances() {
+        return repository.findAll();
+    }
 }

@@ -31,6 +31,7 @@ import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.JobDto;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PaymentDto;
+import org.efaps.pos.dto.PosBalanceDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosInventoryEntryDto;
@@ -83,6 +84,7 @@ import org.efaps.pos.service.ContactService;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.service.ProductService;
+import org.efaps.pos.service.UserService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -94,17 +96,20 @@ public final class Converter
     private final InventoryService inventoryService;
     private final DocumentService documentService;
     private final ContactService contactService;
+    private final UserService userService;
 
     public Converter(final ProductService _productService,
                      final InventoryService _inventoryService,
                      final DocumentService _documentService,
-                     final ContactService _contactService)
+                     final ContactService _contactService,
+                     final UserService _userService)
     {
         INSTANCE = this;
         productService = _productService;
         inventoryService = _inventoryService;
         documentService = _documentService;
         contactService = _contactService;
+        userService = _userService;
     }
 
     public static Receipt toEntity(final PosReceiptDto _dto)
@@ -990,12 +995,25 @@ public final class Converter
                         .setStatus(_dto.getStatus());
     }
 
-    public static BalanceDto toDto(final Balance _entity) {
+    public static BalanceDto toBalanceDto(final Balance _entity) {
         return BalanceDto.builder()
                         .withOID(_entity.getOid())
                         .withId(_entity.getId())
                         .withNumber(_entity.getNumber())
                         .withUserOid(_entity.getUserOid())
+                        .withStartAt(_entity.getStartAt())
+                        .withEndAt(_entity.getEndAt())
+                        .withStatus(_entity.getStatus())
+                        .build();
+    }
+
+    public static PosBalanceDto toDto(final Balance _entity) {
+        final User user = INSTANCE.userService.getUserByOid(_entity.getUserOid());
+        return PosBalanceDto.builder()
+                        .withOID(_entity.getOid())
+                        .withId(_entity.getId())
+                        .withNumber(_entity.getNumber())
+                        .withUser(toDto(user))
                         .withStartAt(_entity.getStartAt())
                         .withEndAt(_entity.getEndAt())
                         .withStatus(_entity.getStatus())

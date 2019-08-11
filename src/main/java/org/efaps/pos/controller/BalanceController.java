@@ -16,11 +16,14 @@
  */
 package org.efaps.pos.controller;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BalanceSummaryDto;
+import org.efaps.pos.dto.PosBalanceDto;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.service.BalanceService;
@@ -49,7 +52,7 @@ public class BalanceController
         balanceService = _balanceService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "current", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BalanceDto> getCurrentBalance(final Authentication _authentication,
                                 @RequestParam(name = "createNew", required = false) final boolean _createNew)
     {
@@ -57,7 +60,7 @@ public class BalanceController
                         _createNew);
         ResponseEntity<BalanceDto> ret;
         if (balanceOpt.isPresent()) {
-            ret = new ResponseEntity<>(Converter.toDto(balanceOpt.get()), HttpStatus.OK);
+            ret = new ResponseEntity<>(Converter.toBalanceDto(balanceOpt.get()), HttpStatus.OK);
         } else {
             ret = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -68,12 +71,19 @@ public class BalanceController
     public BalanceDto updateBalance(@PathVariable("id") final String _id,
                                    @RequestBody final BalanceDto _balanceDto)
     {
-        return Converter.toDto(balanceService.update(Converter.toEntity(_balanceDto)));
+        return Converter.toBalanceDto(balanceService.update(Converter.toEntity(_balanceDto)));
     }
 
     @GetMapping(path = "{id}/summary", produces = MediaType.APPLICATION_JSON_VALUE)
     public BalanceSummaryDto getSummary(@PathVariable("id") final String _balanceId) {
         return balanceService.getSummary(_balanceId);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PosBalanceDto>getBalances() {
+       return balanceService.getBalances().stream()
+                       .map(balance -> Converter.toDto(balance))
+                       .collect(Collectors.toList());
     }
 
 }

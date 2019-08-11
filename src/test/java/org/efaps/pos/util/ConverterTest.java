@@ -853,7 +853,7 @@ public class ConverterTest
                         .setEndAt(LocalDateTime.now())
                         .setStartAt(LocalDateTime.now())
                         .setStatus(BalanceStatus.CLOSED);
-        final BalanceDto dto = Converter.toDto(entity);
+        final BalanceDto dto = Converter.toBalanceDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getId(), dto.getId());
         assertEquals(entity.getNumber(), dto.getNumber());

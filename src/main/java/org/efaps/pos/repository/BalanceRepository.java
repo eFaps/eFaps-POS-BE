@@ -32,4 +32,6 @@ public interface BalanceRepository
     Collection<Balance> findByOidIsNull();
 
     Collection<Balance> findBySyncedIsFalseAndStatus(BalanceStatus _status);
+
+
 }
