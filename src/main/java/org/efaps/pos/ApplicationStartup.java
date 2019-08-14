@@ -22,6 +22,8 @@ import org.efaps.pos.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.service.DemoService;
 import org.efaps.pos.service.SyncService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -34,6 +36,7 @@ import org.springframework.stereotype.Component;
 public class ApplicationStartup
     implements ApplicationListener<ApplicationReadyEvent>
 {
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationStartup.class);
 
     private final SyncService service;
     private final DemoService demoService;
@@ -71,23 +74,27 @@ public class ApplicationStartup
 
     private void sync()
     {
-        service.syncProducts();
-        service.syncCategories();
-        service.syncPOSs();
-        service.syncWorkspaces();
-        service.syncUsers();
-        service.syncBalance();
-        service.syncReceipts();
-        service.syncInvoices();
-        service.syncTickets();
-        service.syncSequences();
-        service.syncContacts();
-        service.syncWarehouses();
-        service.syncInventory();
-        service.syncPrinters();
-        service.syncProperties();
-        service.syncImages();
-        service.syncReports();
-        service.syncOrders();
+        try {
+            service.syncProducts();
+            service.syncCategories();
+            service.syncPOSs();
+            service.syncWorkspaces();
+            service.syncUsers();
+            service.syncBalance();
+            service.syncReceipts();
+            service.syncInvoices();
+            service.syncTickets();
+            service.syncSequences();
+            service.syncContacts();
+            service.syncWarehouses();
+            service.syncInventory();
+            service.syncPrinters();
+            service.syncProperties();
+            service.syncImages();
+            service.syncReports();
+            service.syncOrders();
+        } catch (final Exception e){
+            LOG.error("Catched error during startup sync", e);
+        }
     }
 }
