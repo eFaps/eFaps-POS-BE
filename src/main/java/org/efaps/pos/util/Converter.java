@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CardDto;
 import org.efaps.pos.dto.CategoryDto;
+import org.efaps.pos.dto.CollectOrderDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DiscountDto;
 import org.efaps.pos.dto.DocItemDto;
@@ -58,6 +59,7 @@ import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Category;
+import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Discount;
 import org.efaps.pos.entity.InventoryEntry;
@@ -1036,5 +1038,12 @@ public final class Converter
     public static ContactDto getContactDto(final String _contactOid)
     {
         return Converter.toDto(INSTANCE.contactService.findContact(_contactOid));
+    }
+
+    public static CollectOrderDto toDto(final CollectOrder _entity) {
+        return CollectOrderDto.builder()
+                        .withId(_entity.getId())
+                        .withAmount(_entity.getAmount())
+                        .build();
     }
 }

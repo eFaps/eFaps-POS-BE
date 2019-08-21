@@ -44,12 +44,15 @@ public class CollectorController
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CollectorDto> getCollecters() {
+    public List<CollectorDto> getCollecters()
+    {
         return collectorService.getCollectors();
     }
 
     @PostMapping(path = "{key}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void collect(@PathVariable("key") final String _key, @RequestBody final CollectOrderDto _collectOrderDto) {
-System.out.println();
+    public CollectOrderDto collect(@PathVariable("key") final String _key,
+                                   @RequestBody final CollectOrderDto _collectOrderDto)
+    {
+        return collectorService.collect(_key, _collectOrderDto);
     }
 }
