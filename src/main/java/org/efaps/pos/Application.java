@@ -16,6 +16,7 @@
  */
 package org.efaps.pos;
 
+import org.efaps.pos.config.TemplateCustomizer;
 import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
@@ -27,6 +28,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -99,5 +101,11 @@ public class Application
         final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
         serviceListFactoryBean.setServiceType(ICollectorListener.class);
         return serviceListFactoryBean;
+    }
+
+    @Bean
+    //@Profile("development")
+    public RestTemplateCustomizer restTemplateCustomizer() {
+      return new TemplateCustomizer();
     }
 }
