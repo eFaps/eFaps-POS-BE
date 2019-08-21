@@ -19,6 +19,7 @@ package org.efaps.pos;
 import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
+import org.efaps.pos.service.ICollectorListener;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
@@ -89,6 +90,14 @@ public class Application
     {
         final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
         serviceListFactoryBean.setServiceType(ITicketListener.class);
+        return serviceListFactoryBean;
+    }
+
+    @Bean(name = "collectorListeners")
+    public ServiceListFactoryBean collectorListeners()
+    {
+        final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
+        serviceListFactoryBean.setServiceType(ICollectorListener.class);
         return serviceListFactoryBean;
     }
 }
