@@ -27,12 +27,10 @@ import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableCaching
@@ -42,11 +40,6 @@ public class Application
 
     public static void main(final String _args[]) {
         SpringApplication.run(Application.class);
-    }
-
-    @Bean
-    public RestTemplate restTemplate(final RestTemplateBuilder _builder) {
-        return _builder.build();
     }
 
     @Bean

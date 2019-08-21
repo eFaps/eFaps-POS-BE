@@ -49,6 +49,7 @@ import org.efaps.pos.util.IdentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
@@ -74,12 +75,12 @@ public class EFapsClient
     @Autowired
     public EFapsClient(final MongoTemplate _mongoTemplate,
                        final ConfigProperties _config,
-                       final RestTemplate _restTemplate,
+                       final RestTemplateBuilder _restTemplateBuilder,
                        final SSOClient _ssoClient)
     {
         mongoTemplate = _mongoTemplate;
         config = _config;
-        restTemplate = _restTemplate;
+        restTemplate = _restTemplateBuilder.build();
         ssoClient = _ssoClient;
     }
 

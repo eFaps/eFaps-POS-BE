@@ -24,9 +24,9 @@ public class TemplateCustomizer
 {
 
     @Override
-    public void customize(final RestTemplate restTemplate)
+    public void customize(final RestTemplate _restTemplate)
     {
-        restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(restTemplate.getRequestFactory()));
-        restTemplate.getInterceptors().add(new RequestResponseLoggingInterceptor());
+        _restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(_restTemplate.getRequestFactory()));
+        _restTemplate.getInterceptors().add(new RequestResponseLoggingInterceptor());
     }
 }

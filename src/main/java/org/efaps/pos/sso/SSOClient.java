@@ -24,6 +24,7 @@ import org.efaps.pos.ConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -47,10 +48,10 @@ public class SSOClient
 
     @Autowired
     public SSOClient(final ConfigProperties _config,
-                     final RestTemplate _restTemplate)
+                     final RestTemplateBuilder _restTemplateBuilder)
     {
-        this.config = _config;
-        this.restTemplate = _restTemplate;
+        config = _config;
+        restTemplate = _restTemplateBuilder.build();
     }
 
     @SuppressWarnings("rawtypes")
@@ -61,40 +62,40 @@ public class SSOClient
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.set("client_id", this.config.getSso().getClientId());
-        if (StringUtils.isNotEmpty(this.config.getSso().getClientSecret())) {
-            map.set("client_secret", this.config.getSso().getClientSecret());
+        map.set("client_id", config.getSso().getClientId());
+        if (StringUtils.isNotEmpty(config.getSso().getClientSecret())) {
+            map.set("client_secret", config.getSso().getClientSecret());
         }
-        if (this.refreshToken == null || !LocalDateTime.now().isBefore(this.refreshTokenExpires)) {
+        if (refreshToken == null || !LocalDateTime.now().isBefore(refreshTokenExpires)) {
             LOG.debug("  Using Username/Password");
             map.set("grant_type", "password");
-            map.set("username", this.config.getSso().getUsername());
-            map.set("password", this.config.getSso().getPassword());
+            map.set("username", config.getSso().getUsername());
+            map.set("password", config.getSso().getPassword());
         } else {
             LOG.debug("  Using RefreshToken");
             map.set("grant_type", "refresh_token");
-            map.set("refresh_token", this.refreshToken);
+            map.set("refresh_token", refreshToken);
         }
 
         final HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        final ResponseEntity<Map> response = this.restTemplate.postForEntity(this.config.getSso().getUrl(), request,
+        final ResponseEntity<Map> response = restTemplate.postForEntity(config.getSso().getUrl(), request,
                         Map.class);
-        this.accessToken = (String) response.getBody().get("access_token");
-        this.refreshToken = (String) response.getBody().get("refresh_token");
+        accessToken = (String) response.getBody().get("access_token");
+        refreshToken = (String) response.getBody().get("refresh_token");
 
         final Integer expiresIn = (Integer) response.getBody().get("expires_in");
         final Integer refreshExpiresIn = (Integer) response.getBody().get("refresh_expires_in");
 
-        this.accessTokenExpires = LocalDateTime.now().plusSeconds(expiresIn - 10);
-        this.refreshTokenExpires = LocalDateTime.now().plusSeconds(refreshExpiresIn - 10);
+        accessTokenExpires = LocalDateTime.now().plusSeconds(expiresIn - 10);
+        refreshTokenExpires = LocalDateTime.now().plusSeconds(refreshExpiresIn - 10);
     }
 
     public String getToken()
     {
-        if (this.accessTokenExpires == null || !LocalDateTime.now().isBefore(this.accessTokenExpires)) {
+        if (accessTokenExpires == null || !LocalDateTime.now().isBefore(accessTokenExpires)) {
             login();
         }
-        return this.accessToken;
+        return accessToken;
     }
 }
