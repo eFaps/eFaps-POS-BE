@@ -9,15 +9,20 @@ public class CollectorDto
     private final String label;
     private final String key;
 
-    public String getName()
-    {
-        return label;
-    }
-
     public CollectorDto(final Builder _builder)
     {
         label = _builder.label;
         key = _builder.key;
+    }
+
+    public String getLabel()
+    {
+        return label;
+    }
+
+    public String getKey()
+    {
+        return key;
     }
 
     public static Builder builder()

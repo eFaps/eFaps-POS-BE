@@ -20,10 +20,14 @@ package org.efaps.pos.controller;
 import java.util.List;
 
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.CollectOrderDto;
 import org.efaps.pos.dto.CollectorDto;
 import org.efaps.pos.service.CollectorService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,5 +46,10 @@ public class CollectorController
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CollectorDto> getCollecters() {
         return collectorService.getCollectors();
+    }
+
+    @PostMapping(path = "{key}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void collect(@PathVariable("key") final String _key, @RequestBody final CollectOrderDto _collectOrderDto) {
+System.out.println();
     }
 }
