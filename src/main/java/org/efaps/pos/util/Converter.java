@@ -1041,10 +1041,13 @@ public final class Converter
     }
 
     public static CollectOrderDto toDto(final CollectOrder _entity) {
-        return CollectOrderDto.builder()
+        return _entity == null
+            ? null
+            : CollectOrderDto.builder()
                         .withId(_entity.getId())
                         .withAmount(_entity.getAmount())
                         .withState(_entity.getState())
+                        .withCollected(_entity.getCollected())
                         .build();
     }
 }

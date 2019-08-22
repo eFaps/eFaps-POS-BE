@@ -108,6 +108,8 @@ public class CollectorService
         return ret;
     }
 
-
-
+    public Optional<CollectOrder> getCollectOrder(final String _collectOrderId)
+    {
+        return collectOrderRepository.findById(_collectOrderId);
+    }
 }

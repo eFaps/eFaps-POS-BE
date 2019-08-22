@@ -33,11 +33,14 @@ public class CollectOrderDto
 
     private final State state;
 
+    private final BigDecimal collected;
+
     private CollectOrderDto(final Builder _builder)
     {
         id = _builder.id;
         amount = _builder.amount;
         state = _builder.state;
+        collected = _builder.collected;
     }
 
     public String getId()
@@ -55,6 +58,11 @@ public class CollectOrderDto
         return state;
     }
 
+    public BigDecimal getCollected()
+    {
+        return collected;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -66,6 +74,7 @@ public class CollectOrderDto
         private String id;
         private BigDecimal amount;
         private State state;
+        private BigDecimal collected;
 
         public Builder withId(final String _id)
         {
@@ -82,6 +91,12 @@ public class CollectOrderDto
         public Builder withState(final State _state)
         {
             state = _state;
+            return this;
+        }
+
+        public Builder withCollected(final BigDecimal _collected)
+        {
+            collected = _collected;
             return this;
         }
 

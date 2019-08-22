@@ -20,9 +20,11 @@ package org.efaps.pos.controller;
 import java.util.List;
 
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.CollectOrderDto;
 import org.efaps.pos.dto.CollectStartOrderDto;
 import org.efaps.pos.dto.CollectorDto;
 import org.efaps.pos.service.CollectorService;
+import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,5 +57,11 @@ public class CollectorController
                                @RequestBody final CollectStartOrderDto _dto)
     {
         return collectorService.startCollect(_key, _dto.getAmount());
+    }
+
+    @GetMapping(path = "orders/{collectOrderId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CollectOrderDto getCollectOrder(@PathVariable(name = "collectOrderId") final String _collectOrderId)
+    {
+        return Converter.toDto(collectorService.getCollectOrder(_collectOrderId).orElse(null));
     }
 }

@@ -36,6 +36,8 @@ public class CollectOrder
 
     private State state;
 
+    private BigDecimal collected;
+
     public String getId()
     {
         return id;
@@ -74,6 +76,16 @@ public class CollectOrder
         return this;
     }
 
+    public BigDecimal getCollected()
+    {
+        return collected;
+    }
+
+    public void setCollected(final BigDecimal collected)
+    {
+        this.collected = collected;
+    }
+
     @Override
     public String toString()
     {
@@ -82,8 +94,6 @@ public class CollectOrder
 
     public enum State
     {
-        INVALID,
-        PENDING,
-        SUCCESS
+        INVALID, PENDING, SUCCESS
     }
 }
