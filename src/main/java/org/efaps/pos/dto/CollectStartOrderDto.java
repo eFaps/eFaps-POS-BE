@@ -21,38 +21,20 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.math.BigDecimal;
 
-import org.efaps.pos.entity.CollectOrder.State;
-
-@JsonDeserialize(builder = CollectOrderDto.Builder.class)
-public class CollectOrderDto
+@JsonDeserialize(builder = CollectStartOrderDto.Builder.class)
+public class CollectStartOrderDto
 {
-
-    private final String id;
 
     private final BigDecimal amount;
 
-    private final State state;
-
-    private CollectOrderDto(final Builder _builder)
+    private CollectStartOrderDto(final Builder _builder)
     {
-        id = _builder.id;
         amount = _builder.amount;
-        state = _builder.state;
-    }
-
-    public String getId()
-    {
-        return id;
     }
 
     public BigDecimal getAmount()
     {
         return amount;
-    }
-
-    public State getState()
-    {
-        return state;
     }
 
     public static Builder builder()
@@ -63,15 +45,7 @@ public class CollectOrderDto
     public static class Builder
     {
 
-        private String id;
         private BigDecimal amount;
-        private State state;
-
-        public Builder withId(final String _id)
-        {
-            id = _id;
-            return this;
-        }
 
         public Builder withAmount(final BigDecimal _amount)
         {
@@ -79,15 +53,9 @@ public class CollectOrderDto
             return this;
         }
 
-        public Builder withState(final State _state)
+        public CollectStartOrderDto build()
         {
-            state = _state;
-            return this;
-        }
-
-        public CollectOrderDto build()
-        {
-            return new CollectOrderDto(this);
+            return new CollectStartOrderDto(this);
         }
     }
 }

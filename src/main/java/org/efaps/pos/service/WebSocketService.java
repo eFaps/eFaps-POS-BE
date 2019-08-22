@@ -20,26 +20,40 @@ package org.efaps.pos.service;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.pos.entity.CollectOrder.State;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class WebSocketService
 {
+    private final SimpMessagingTemplate template;
+
+    public WebSocketService(final SimpMessagingTemplate _template) {
+        template = _template;
+    }
 
     private final Set<String> ordersEdited = new HashSet<>();
 
     public void addOrder(final String _orderId)
     {
-        this.ordersEdited.add(_orderId);
+        ordersEdited.add(_orderId);
     }
 
     public void removeOrder(final String _orderId)
     {
-        this.ordersEdited.remove(_orderId);
+        ordersEdited.remove(_orderId);
     }
 
     public Set<String> getOrdersEdited()
     {
-        return this.ordersEdited;
+        return ordersEdited;
     }
+
+    public void notifyCollectOrderState(final String _collectOrderId,
+                                        final State _state)
+    {
+        template.convertAndSend("/topic/collectOrder/" + _collectOrderId, _state.name());
+    }
+
 }

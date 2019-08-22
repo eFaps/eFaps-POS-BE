@@ -1044,6 +1044,7 @@ public final class Converter
         return CollectOrderDto.builder()
                         .withId(_entity.getId())
                         .withAmount(_entity.getAmount())
+                        .withState(_entity.getState())
                         .build();
     }
 }

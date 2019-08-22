@@ -22,6 +22,7 @@ import java.util.Collection;
 import org.efaps.pos.service.WebSocketService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -39,13 +40,13 @@ public class WebSocketController
 
     public WebSocketController(final SimpMessagingTemplate _messagingTemplate,
                                final WebSocketService _webSocketService) {
-        this.messagingTemplate = _messagingTemplate;
-        this.webSocketService = _webSocketService;
+        messagingTemplate = _messagingTemplate;
+        webSocketService = _webSocketService;
     }
 
     @SubscribeMapping("/orders/start.edit")
     public Collection<String> subscribeOrderStartEdit() {
-        return this.webSocketService.getOrdersEdited();
+        return webSocketService.getOrdersEdited();
     }
 
     @MessageMapping("/orders/start.edit")
@@ -53,7 +54,7 @@ public class WebSocketController
         throws Exception
     {
         LOG.debug("Recieved edit start for : {}", _message);
-        this.webSocketService.addOrder(_message);
+        webSocketService.addOrder(_message);
         return _message;
     }
 
@@ -62,14 +63,20 @@ public class WebSocketController
         throws Exception
     {
         LOG.debug("Recieved edit finish for : {}", _message);
-        this.webSocketService.removeOrder(_message);
+        webSocketService.removeOrder(_message);
         return _message;
     }
+
+    @MessageMapping("/collectors/collect/{id}")
+    public String sendSpecific(@DestinationVariable final String id) {
+        return "Hallo";
+    }
+
 
     @MessageExceptionHandler
     public String handleException(final Throwable _exception)
     {
-        this.messagingTemplate.convertAndSend("/errors", _exception.getMessage());
+        messagingTemplate.convertAndSend("/errors", _exception.getMessage());
         return _exception.getMessage();
     }
 }
