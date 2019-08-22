@@ -97,7 +97,6 @@ public class Application
     }
 
     @Bean
-    //@Profile("development")
     public RestTemplateCustomizer restTemplateCustomizer() {
       return new TemplateCustomizer();
     }

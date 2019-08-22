@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+
 public class WebSocketServiceTest
 {
     @Test
     public void testOrderEdited() {
-        final WebSocketService service = new WebSocketService();
+        final WebSocketService service = new WebSocketService(null);
         service.addOrder("1");
         assertEquals("1", service.getOrdersEdited().iterator().next());
 
