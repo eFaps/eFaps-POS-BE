@@ -38,6 +38,8 @@ public class CollectOrder
 
     private BigDecimal collected;
 
+    private String transactionId;
+
     public String getId()
     {
         return id;
@@ -84,6 +86,17 @@ public class CollectOrder
     public void setCollected(final BigDecimal collected)
     {
         this.collected = collected;
+    }
+
+    public String getTransactionId()
+    {
+        return transactionId;
+    }
+
+    public CollectOrder setTransactionId(final String _transactionId)
+    {
+        transactionId = _transactionId;
+        return this;
     }
 
     @Override
