@@ -307,6 +307,21 @@ public class DocumentService
         return ret;
     }
 
+    public Collection<Invoice> findInvoices(final String _term)
+    {
+        return invoiceRepository.findByNumberLikeIgnoreCase(_term);
+    }
+
+    public Collection<Receipt> findReceipts(final String _term)
+    {
+        return receiptRepository.findByNumberLikeIgnoreCase(_term);
+    }
+
+    public Collection<Ticket> findTickets(final String _term)
+    {
+        return ticketRepository.findByNumberLikeIgnoreCase(_term);
+    }
+
     private void validateContact(final String _workspaceOid,
                                  final AbstractDocument<?> _document)
     {

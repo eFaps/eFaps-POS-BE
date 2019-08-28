@@ -30,4 +30,6 @@ public interface ReceiptRepository
     Collection<Receipt> findByContactOid(String _contactOid);
 
     Collection<Receipt> findByBalanceOid(String _balanceOid);
+
+    Collection<Receipt> findByNumberLikeIgnoreCase(String _term);
 }

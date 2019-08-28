@@ -52,55 +52,55 @@ public class DocumentController
 
     public DocumentController(final DocumentService _service)
     {
-        this.documentService = _service;
+        documentService = _service;
     }
 
     @PostMapping(path = "workspaces/{oid}/documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosReceiptDto createReceipt(@PathVariable("oid") final String _oid,
                                        @RequestBody final PosReceiptDto _receiptDto)
     {
-        return Converter.toDto(this.documentService.createReceipt(_oid, Converter.toEntity(_receiptDto)));
+        return Converter.toDto(documentService.createReceipt(_oid, Converter.toEntity(_receiptDto)));
     }
 
     @PostMapping(path = "workspaces/{oid}/documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosInvoiceDto createInvoice(@PathVariable("oid") final String _oid,
                                        @RequestBody final PosInvoiceDto _invoiceDto)
     {
-        return Converter.toDto(this.documentService.createInvoice(_oid, Converter.toEntity(_invoiceDto)));
+        return Converter.toDto(documentService.createInvoice(_oid, Converter.toEntity(_invoiceDto)));
     }
 
     @PostMapping(path = "workspaces/{oid}/documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosTicketDto createTicket(@PathVariable("oid") final String _oid,
                                      @RequestBody final PosTicketDto _ticketDto)
     {
-        return Converter.toDto(this.documentService.createTicket(_oid, Converter.toEntity(_ticketDto)));
+        return Converter.toDto(documentService.createTicket(_oid, Converter.toEntity(_ticketDto)));
     }
 
     @PostMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosOrderDto createOrder(@RequestBody final PosOrderDto _orderDto)
     {
-        return Converter.toDto(this.documentService.createOrder(Converter.toEntity(_orderDto)));
+        return Converter.toDto(documentService.createOrder(Converter.toEntity(_orderDto)));
     }
 
     @PutMapping(path = "documents/orders/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosOrderDto updateOrder(@PathVariable(name = "orderId") final String _orderId,
                                    @RequestBody final PosOrderDto _orderDto)
     {
-        return Converter.toDto(this.documentService.updateOrder(Converter.toEntity(_orderDto).setId(_orderId)));
+        return Converter.toDto(documentService.updateOrder(Converter.toEntity(_orderDto).setId(_orderId)));
     }
 
     @DeleteMapping(path = "documents/orders/{orderId}")
     public void deleteOrder(@PathVariable(name = "orderId") final String _orderId)
     {
-        this.documentService.deleteOrder(_orderId);
+        documentService.deleteOrder(_orderId);
     }
 
     @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PosOrderDto> getOrders(@RequestParam(name = "spot", required = false) final boolean _spots)
     {
         final Collection<Order> orders = _spots
-                        ? this.documentService.getOrders4Spots()
-                        : this.documentService.getOrders();
+                        ? documentService.getOrders4Spots()
+                        : documentService.getOrders();
         return orders.stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
@@ -109,42 +109,72 @@ public class DocumentController
     @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE, params = { "status" })
     public List<PosOrderDto> getOrders(@RequestParam(name = "status") final DocStatus _status)
     {
-        return this.documentService.getOrders(_status).stream()
+        return documentService.getOrders(_status).stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
     public List<PosOrderDto> findOrders(@RequestParam(name = "term") final String _term) {
-        return this.documentService.findOrders(_term).stream()
+        return documentService.findOrders(_term).stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(path = "documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PosReceiptDto> getReceipts(@RequestParam(name = "balanceOid") final String _balanceOid)
+    public List<PosReceiptDto> getReceipts4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
     {
-        final Collection<Receipt> receipts = this.documentService.getReceipts4Balance(_balanceOid);
+        final Collection<Receipt> receipts = documentService.getReceipts4Balance(_balanceOid);
+        return receipts.stream()
+                        .map(_order -> Converter.toDto(_order))
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
+    public List<PosReceiptDto> findReceipts(@RequestParam(name = "term") final String _term)
+    {
+        final Collection<Receipt> receipts = documentService.findReceipts(_term);
         return receipts.stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PosInvoiceDto> getInvoices(@RequestParam(name = "balanceOid") final String _balanceOid)
+    public List<PosInvoiceDto> getInvoices4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
     {
-        final Collection<Invoice> receipts = this.documentService.getInvoices4Balance(_balanceOid);
+        final Collection<Invoice> receipts = documentService.getInvoices4Balance(_balanceOid);
+        return receipts.stream()
+                        .map(receipt -> Converter.toDto(receipt))
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
+    public List<PosInvoiceDto> findInvoices(@RequestParam(name = "term") final String _term)
+    {
+        final Collection<Invoice> invoices = documentService.findInvoices(_term);
+        return invoices.stream()
+                        .map(invoice -> Converter.toDto(invoice))
+                        .collect(Collectors.toList());
+    }
+
+
+    @GetMapping(path = "documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PosTicketDto> getTickets4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
+    {
+        final Collection<Ticket> receipts = documentService.getTickets4Balance(_balanceOid);
         return receipts.stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
     }
 
-    @GetMapping(path = "documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PosTicketDto> getTickets(@RequestParam(name = "balanceOid") final String _balanceOid)
+
+    @GetMapping(path = "documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
+    public List<PosTicketDto> findTickets(@RequestParam(name = "term") final String _term)
     {
-        final Collection<Ticket> receipts = this.documentService.getTickets4Balance(_balanceOid);
-        return receipts.stream()
-                        .map(_order -> Converter.toDto(_order))
+        final Collection<Ticket> tickets = documentService.findTickets(_term);
+        return tickets.stream()
+                        .map(ticket -> Converter.toDto(ticket))
                         .collect(Collectors.toList());
     }
+
 }

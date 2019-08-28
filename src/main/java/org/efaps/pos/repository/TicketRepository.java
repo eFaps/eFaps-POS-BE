@@ -30,4 +30,6 @@ public interface TicketRepository
     Collection<Ticket> findByContactOid(String _contactOid);
 
     Collection<Ticket> findByBalanceOid(String _balanceOid);
+
+    Collection<Ticket> findByNumberLikeIgnoreCase(String _term);
 }

@@ -30,4 +30,6 @@ public interface InvoiceRepository
     Collection<Invoice> findByContactOid(String _contactOid);
 
     Collection<Invoice> findByBalanceOid(String _balanceOid);
+
+    Collection<Invoice> findByNumberLikeIgnoreCase(String _term);
 }
