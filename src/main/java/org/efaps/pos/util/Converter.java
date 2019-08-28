@@ -1035,9 +1035,9 @@ public final class Converter
                         .setProductOid(_dto.getProductOid());
     }
 
-    public static ContactDto getContactDto(final String _contactOid)
+    public static ContactDto getContactDto(final String _key)
     {
-        return Converter.toDto(INSTANCE.contactService.findContact(_contactOid));
+        return Converter.toDto(INSTANCE.contactService.findContact(_key));
     }
 
     public static CollectOrderDto toDto(final CollectOrder _entity) {
