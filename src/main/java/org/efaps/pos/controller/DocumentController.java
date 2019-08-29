@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.DocStatus;
+import org.efaps.pos.dto.PayableHeadDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
@@ -30,6 +31,7 @@ import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Ticket;
+import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
@@ -131,9 +133,9 @@ public class DocumentController
     }
 
     @GetMapping(path = "documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public List<PosReceiptDto> findReceipts(@RequestParam(name = "term") final String _term)
+    public List<PayableHeadDto> findReceipts(@RequestParam(name = "term") final String _term)
     {
-        final Collection<Receipt> receipts = documentService.findReceipts(_term);
+        final Collection<PayableHead> receipts = documentService.findReceipts(_term);
         return receipts.stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
@@ -149,9 +151,9 @@ public class DocumentController
     }
 
     @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public List<PosInvoiceDto> findInvoices(@RequestParam(name = "term") final String _term)
+    public List<PayableHeadDto> findInvoices(@RequestParam(name = "term") final String _term)
     {
-        final Collection<Invoice> invoices = documentService.findInvoices(_term);
+        final Collection<PayableHead> invoices = documentService.findInvoices(_term);
         return invoices.stream()
                         .map(invoice -> Converter.toDto(invoice))
                         .collect(Collectors.toList());
@@ -169,9 +171,9 @@ public class DocumentController
 
 
     @GetMapping(path = "documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public List<PosTicketDto> findTickets(@RequestParam(name = "term") final String _term)
+    public List<PayableHeadDto> findTickets(@RequestParam(name = "term") final String _term)
     {
-        final Collection<Ticket> tickets = documentService.findTickets(_term);
+        final Collection<PayableHead> tickets = documentService.findTickets(_term);
         return tickets.stream()
                         .map(ticket -> Converter.toDto(ticket))
                         .collect(Collectors.toList());

@@ -44,6 +44,7 @@ import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IPos;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
+import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.InvoiceRepository;
 import org.efaps.pos.repository.OrderRepository;
@@ -55,6 +56,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -307,19 +311,46 @@ public class DocumentService
         return ret;
     }
 
-    public Collection<Invoice> findInvoices(final String _term)
+    public Collection<PayableHead> findInvoices(final String _term)
     {
-        return invoiceRepository.findByNumberLikeIgnoreCase(_term);
+        final LookupOperation lookupOperation = LookupOperation.newLookup()
+                        .from("orders")
+                        .localField("oid")
+                        .foreignField("payableOid")
+                        .as("orders");
+        final Aggregation aggregation = Aggregation.newAggregation(
+                        Aggregation.match(Criteria.where("number").regex(_term, "i")),
+                        lookupOperation
+                        );
+        return mongoTemplate.aggregate(aggregation, "invoices", PayableHead.class).getMappedResults();
     }
 
-    public Collection<Receipt> findReceipts(final String _term)
+    public Collection<PayableHead> findReceipts(final String _term)
     {
-        return receiptRepository.findByNumberLikeIgnoreCase(_term);
+        final LookupOperation lookupOperation = LookupOperation.newLookup()
+                        .from("orders")
+                        .localField("oid")
+                        .foreignField("payableOid")
+                        .as("orders");
+        final Aggregation aggregation = Aggregation.newAggregation(
+                        Aggregation.match(Criteria.where("number").regex(_term, "i")),
+                        lookupOperation
+                        );
+        return mongoTemplate.aggregate(aggregation, "receipts", PayableHead.class).getMappedResults();
     }
 
-    public Collection<Ticket> findTickets(final String _term)
+    public Collection<PayableHead> findTickets(final String _term)
     {
-        return ticketRepository.findByNumberLikeIgnoreCase(_term);
+        final LookupOperation lookupOperation = LookupOperation.newLookup()
+                        .from("orders")
+                        .localField("oid")
+                        .foreignField("payableOid")
+                        .as("orders");
+        final Aggregation aggregation = Aggregation.newAggregation(
+                        Aggregation.match(Criteria.where("number").regex(_term, "i")),
+                        lookupOperation
+                        );
+        return mongoTemplate.aggregate(aggregation, "tickets", PayableHead.class).getMappedResults();
     }
 
     private void validateContact(final String _workspaceOid,

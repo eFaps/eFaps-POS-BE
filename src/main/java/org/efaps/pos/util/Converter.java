@@ -26,11 +26,14 @@ import org.efaps.pos.dto.CollectOrderDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DiscountDto;
 import org.efaps.pos.dto.DocItemDto;
+import org.efaps.pos.dto.DocumentHeadDto;
+import org.efaps.pos.dto.DocumentHeadDto.Builder;
 import org.efaps.pos.dto.FloorDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.JobDto;
 import org.efaps.pos.dto.OrderDto;
+import org.efaps.pos.dto.PayableHeadDto;
 import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosBalanceDto;
 import org.efaps.pos.dto.PosDocItemDto;
@@ -82,6 +85,8 @@ import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.Card;
 import org.efaps.pos.entity.Workspace.Floor;
 import org.efaps.pos.entity.Workspace.PrintCmd;
+import org.efaps.pos.projection.DocumentHead;
+import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.service.InventoryService;
@@ -1048,6 +1053,35 @@ public final class Converter
                         .withAmount(_entity.getAmount())
                         .withState(_entity.getState())
                         .withCollected(_entity.getCollected())
+                        .build();
+    }
+
+    public static PayableHeadDto toDto(final PayableHead _projection)
+    {
+        DocumentHeadDto order = null;
+        if (_projection.getOrders() != null && _projection.getOrders().length > 0) {
+            order = toDto(_projection.getOrders()[0]);
+        }
+        return PayableHeadDto.builder()
+                        .withNumber(_projection.getNumber())
+                        .withCrossTotal(_projection.getCrossTotal())
+                        .withNetTotal(_projection.getNetTotal())
+                        .withCurrency(_projection.getCurrency())
+                        .withDate(_projection.getDate())
+                        .withStatus(_projection.getStatus())
+                        .withOrder(order)
+                        .build();
+    }
+
+    public static DocumentHeadDto toDto(final DocumentHead _projection)
+    {
+        final Builder<?,?> builder = new DocumentHeadDto.Builder<>();
+        return builder.withNumber(_projection.getNumber())
+                        .withCrossTotal(_projection.getCrossTotal())
+                        .withNetTotal(_projection.getNetTotal())
+                        .withCurrency(_projection.getCurrency())
+                        .withDate(_projection.getDate())
+                        .withStatus(_projection.getStatus())
                         .build();
     }
 }
