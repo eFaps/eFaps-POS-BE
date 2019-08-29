@@ -27,6 +27,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class DocumentHead
 {
 
+    private String id;
     private String number;
     private BigDecimal netTotal;
     private BigDecimal crossTotal;
@@ -34,6 +35,15 @@ public class DocumentHead
     private LocalDate date;
     private DocStatus status;
 
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId(final String id)
+    {
+        this.id = id;
+    }
 
     public String getCurrency()
     {
@@ -85,12 +95,10 @@ public class DocumentHead
         this.date = date;
     }
 
-
     public DocStatus getStatus()
     {
         return status;
     }
-
 
     public void setStatus(final DocStatus status)
     {

@@ -1063,6 +1063,7 @@ public final class Converter
             order = toDto(_projection.getOrders()[0]);
         }
         return PayableHeadDto.builder()
+                        .withId(_projection.getId())
                         .withNumber(_projection.getNumber())
                         .withCrossTotal(_projection.getCrossTotal())
                         .withNetTotal(_projection.getNetTotal())
@@ -1076,7 +1077,8 @@ public final class Converter
     public static DocumentHeadDto toDto(final DocumentHead _projection)
     {
         final Builder<?,?> builder = new DocumentHeadDto.Builder<>();
-        return builder.withNumber(_projection.getNumber())
+        return builder.withId(_projection.getId())
+                        .withNumber(_projection.getNumber())
                         .withCrossTotal(_projection.getCrossTotal())
                         .withNetTotal(_projection.getNetTotal())
                         .withCurrency(_projection.getCurrency())

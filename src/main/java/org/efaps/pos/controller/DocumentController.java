@@ -141,6 +141,28 @@ public class DocumentController
                         .collect(Collectors.toList());
     }
 
+    @GetMapping(path = "documents/receipts/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosReceiptDto getReceipt(@PathVariable("id") final String _id)
+    {
+        final Receipt receipt = documentService.getReceipt(_id);
+        return Converter.toDto(receipt);
+    }
+
+    @GetMapping(path = "documents/invoices/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosInvoiceDto getInvoice(@PathVariable("id") final String _id)
+    {
+        final Invoice invoice = documentService.getInvoice(_id);
+        return Converter.toDto(invoice);
+    }
+
+
+    @GetMapping(path = "documents/tickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosTicketDto getTicket(@PathVariable("id") final String _id)
+    {
+        final Ticket ticket = documentService.getTicket(_id);
+        return Converter.toDto(ticket);
+    }
+
     @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PosInvoiceDto> getInvoices4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
     {
@@ -159,7 +181,6 @@ public class DocumentController
                         .collect(Collectors.toList());
     }
 
-
     @GetMapping(path = "documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PosTicketDto> getTickets4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
     {
@@ -168,7 +189,6 @@ public class DocumentController
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
     }
-
 
     @GetMapping(path = "documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
     public List<PayableHeadDto> findTickets(@RequestParam(name = "term") final String _term)

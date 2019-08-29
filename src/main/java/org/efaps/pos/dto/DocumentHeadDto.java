@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public class DocumentHeadDto
 {
-
+    private final String id;
     private final String number;
     private final BigDecimal netTotal;
     private final BigDecimal crossTotal;
@@ -15,12 +15,18 @@ public class DocumentHeadDto
 
     public DocumentHeadDto(final Builder<?, ?> _builder)
     {
+        id = _builder.id;
         number = _builder.number;
         netTotal = _builder.netTotal;
         crossTotal = _builder.crossTotal;
         currency = _builder.currency;
         date = _builder.date;
         status = _builder.status;
+    }
+
+    public String getId()
+    {
+        return id;
     }
 
     public String getNumber()
@@ -55,13 +61,20 @@ public class DocumentHeadDto
 
     public static class Builder<S extends Builder<S, T>, T extends DocumentHeadDto>
     {
-
+        private String id;
         private String number;
         private BigDecimal netTotal;
         private BigDecimal crossTotal;
         private String currency;
         private LocalDate date;
         private DocStatus status;
+
+        @SuppressWarnings("unchecked")
+        public S withId(final String _id)
+        {
+            this.id = _id;
+            return (S) this;
+        }
 
         @SuppressWarnings("unchecked")
         public S withNumber(final String _number)
