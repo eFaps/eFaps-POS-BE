@@ -434,6 +434,7 @@ public class SyncService
                     if (receiptOpt.isPresent()) {
                         final Receipt retReceipt = receiptOpt.get();
                         retReceipt.setOid(recDto.getOid());
+                        retReceipt.setStatus(DocStatus.CLOSED);
                         receiptRepository.save(retReceipt);
                     }
                 }
@@ -484,6 +485,7 @@ public class SyncService
                     if (opt.isPresent()) {
                         final Invoice receipt = opt.get();
                         receipt.setOid(recDto.getOid());
+                        receipt.setStatus(DocStatus.CLOSED);
                         invoiceRepository.save(receipt);
                     }
                 }
@@ -508,6 +510,7 @@ public class SyncService
                     if (opt.isPresent()) {
                         final Ticket receipt = opt.get();
                         receipt.setOid(recDto.getOid());
+                        receipt.setStatus(DocStatus.CLOSED);
                         ticketRepository.save(receipt);
                     }
                 }
