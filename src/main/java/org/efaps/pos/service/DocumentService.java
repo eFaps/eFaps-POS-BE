@@ -249,9 +249,35 @@ public class DocumentService
         return receiptRepository.findByBalanceOid(evalBalanceOid(_key));
     }
 
+    public Collection<PayableHead> getReceiptHeads4Balance(final String _key)
+    {
+        final LookupOperation lookupOperation = LookupOperation.newLookup()
+                        .from("orders")
+                        .localField("oid")
+                        .foreignField("payableOid")
+                        .as("orders");
+        final Aggregation aggregation = Aggregation.newAggregation(
+                        Aggregation.match(Criteria.where("balanceOid").is(evalBalanceOid(_key))),
+                        lookupOperation);
+        return mongoTemplate.aggregate(aggregation, "receipts", PayableHead.class).getMappedResults();
+    }
+
     public Invoice getInvoice(final String _documentId)
     {
         return invoiceRepository.findById(_documentId).orElse(null);
+    }
+
+    public Collection<PayableHead> getInvoiceHeads4Balance(final String _key)
+    {
+        final LookupOperation lookupOperation = LookupOperation.newLookup()
+                        .from("orders")
+                        .localField("oid")
+                        .foreignField("payableOid")
+                        .as("orders");
+        final Aggregation aggregation = Aggregation.newAggregation(
+                        Aggregation.match(Criteria.where("balanceOid").is(evalBalanceOid(_key))),
+                        lookupOperation);
+        return mongoTemplate.aggregate(aggregation, "invoices", PayableHead.class).getMappedResults();
     }
 
     public Collection<Invoice> getInvoices4Balance(final String _key)
@@ -290,6 +316,19 @@ public class DocumentService
         return ticketRepository.findByBalanceOid(evalBalanceOid(_key));
     }
 
+    public Collection<PayableHead> getTicketHeads4Balance(final String _key)
+    {
+        final LookupOperation lookupOperation = LookupOperation.newLookup()
+                        .from("orders")
+                        .localField("oid")
+                        .foreignField("payableOid")
+                        .as("orders");
+        final Aggregation aggregation = Aggregation.newAggregation(
+                        Aggregation.match(Criteria.where("balanceOid").is(evalBalanceOid(_key))),
+                        lookupOperation);
+        return mongoTemplate.aggregate(aggregation, "tickets", PayableHead.class).getMappedResults();
+    }
+
     public AbstractDocument<?> getDocument(final String _documentId)
     {
         AbstractDocument<?> ret = getOrder(_documentId);
@@ -320,8 +359,7 @@ public class DocumentService
                         .as("orders");
         final Aggregation aggregation = Aggregation.newAggregation(
                         Aggregation.match(Criteria.where("number").regex(_term, "i")),
-                        lookupOperation
-                        );
+                        lookupOperation);
         return mongoTemplate.aggregate(aggregation, "invoices", PayableHead.class).getMappedResults();
     }
 
@@ -334,8 +372,7 @@ public class DocumentService
                         .as("orders");
         final Aggregation aggregation = Aggregation.newAggregation(
                         Aggregation.match(Criteria.where("number").regex(_term, "i")),
-                        lookupOperation
-                        );
+                        lookupOperation);
         return mongoTemplate.aggregate(aggregation, "receipts", PayableHead.class).getMappedResults();
     }
 
@@ -348,8 +385,7 @@ public class DocumentService
                         .as("orders");
         final Aggregation aggregation = Aggregation.newAggregation(
                         Aggregation.match(Criteria.where("number").regex(_term, "i")),
-                        lookupOperation
-                        );
+                        lookupOperation);
         return mongoTemplate.aggregate(aggregation, "tickets", PayableHead.class).getMappedResults();
     }
 

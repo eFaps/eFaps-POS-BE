@@ -124,9 +124,9 @@ public class DocumentController
     }
 
     @GetMapping(path = "documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PosReceiptDto> getReceipts4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
+    public List<PayableHeadDto> getReceipts4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
     {
-        final Collection<Receipt> receipts = documentService.getReceipts4Balance(_balanceOid);
+        final Collection<PayableHead> receipts = documentService.getReceiptHeads4Balance(_balanceOid);
         return receipts.stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
@@ -164,9 +164,9 @@ public class DocumentController
     }
 
     @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PosInvoiceDto> getInvoices4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
+    public List<PayableHeadDto> getInvoices4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
     {
-        final Collection<Invoice> receipts = documentService.getInvoices4Balance(_balanceOid);
+        final Collection<PayableHead> receipts = documentService.getInvoiceHeads4Balance(_balanceOid);
         return receipts.stream()
                         .map(receipt -> Converter.toDto(receipt))
                         .collect(Collectors.toList());
@@ -182,9 +182,9 @@ public class DocumentController
     }
 
     @GetMapping(path = "documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PosTicketDto> getTickets4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
+    public List<PayableHeadDto> getTickets4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
     {
-        final Collection<Ticket> receipts = documentService.getTickets4Balance(_balanceOid);
+        final Collection<PayableHead> receipts = documentService.getTicketHeads4Balance(_balanceOid);
         return receipts.stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
