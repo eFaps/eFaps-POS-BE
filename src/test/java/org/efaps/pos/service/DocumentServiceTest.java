@@ -101,9 +101,12 @@ public class DocumentServiceTest
     @Test
     public void testGetOrders4Spots()
     {
-        mongoTemplate.save(new Order().setOid("1.1"));
-        mongoTemplate.save(new Order().setOid("1.2").setSpot(new Spot()));
-        mongoTemplate.save(new Order().setOid("1.3"));
+        mongoTemplate.save(new Order().setOid("1.1").setStatus(DocStatus.OPEN));
+        mongoTemplate.save(new Order().setOid("1.2").setStatus(DocStatus.OPEN).setSpot(new Spot()));
+        mongoTemplate.save(new Order().setOid("1.3").setStatus(DocStatus.CLOSED));
+        mongoTemplate.save(new Order().setOid("1.4").setStatus(DocStatus.CLOSED).setSpot(new Spot()));
+        mongoTemplate.save(new Order().setOid("1.5").setStatus(DocStatus.CANCELED));
+        mongoTemplate.save(new Order().setOid("1.6").setStatus(DocStatus.CANCELED).setSpot(new Spot()));
 
         final Collection<Order> orders = documentService.getOrders4Spots();
         assertEquals(1, orders.size());
