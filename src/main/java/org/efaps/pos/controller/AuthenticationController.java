@@ -18,6 +18,7 @@
 package org.efaps.pos.controller;
 
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.AuthenticationRefreshDto;
 import org.efaps.pos.dto.AuthenticationRequestDto;
 import org.efaps.pos.dto.AuthenticationResponseDto;
 import org.efaps.pos.service.UserService;
@@ -45,22 +46,37 @@ public class AuthenticationController
     public AuthenticationController(final AuthenticationManager _authenticationManager, final UserService _userService,
                                     final JwtTokenUtil _jwtTokenUtil)
     {
-        this.authenticationManager = _authenticationManager;
-        this.userService = _userService;
-        this.jwtTokenUtil = _jwtTokenUtil;
+        authenticationManager = _authenticationManager;
+        userService = _userService;
+        jwtTokenUtil = _jwtTokenUtil;
     }
 
     @PostMapping(path = "authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
     public AuthenticationResponseDto authenticate(@RequestBody final AuthenticationRequestDto _authenticationRequest)
     {
         authenticate(_authenticationRequest.getUserName(), _authenticationRequest.getPassword());
-        final UserDetails userDetails = this.userService.loadUserByUsername(_authenticationRequest.getUserName());
-        final String token = this.jwtTokenUtil.generateToken(userDetails);
-        return AuthenticationResponseDto.builder().withToken(token).build();
+        return getAuthResponse(_authenticationRequest.getUserName());
     }
 
     private void authenticate(final String _userName, final String _password)
     {
-        this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(_userName, _password));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(_userName, _password));
+    }
+
+    private AuthenticationResponseDto getAuthResponse(final String _userName) {
+        final UserDetails userDetails = userService.loadUserByUsername(_userName);
+        final String accessToken = jwtTokenUtil.generateAccessToken(userDetails);
+        final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
+        return AuthenticationResponseDto.builder()
+                        .withAccessToken(accessToken)
+                        .withRefreshToken(refreshToken)
+                        .build();
+    }
+
+    @PostMapping(path = "refreshauth", produces = MediaType.APPLICATION_JSON_VALUE)
+    public AuthenticationResponseDto refresh(@RequestBody final AuthenticationRefreshDto _authenticationRefresh)
+    {
+        final String userName = jwtTokenUtil.getUsernameFromRefreshToken(_authenticationRefresh.getRefreshToken());
+        return getAuthResponse(userName);
     }
 }

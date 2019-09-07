@@ -51,8 +51,8 @@ auth:
 
 jwt:
   secret: ThisIsNotVerySecret
-  expiration: 1000
-
+  expiration: 300  #accessToken expiration in seconds
+  deviation: 60 #devation for the refresh token in seconds => expires in expiration
 
 ---
 

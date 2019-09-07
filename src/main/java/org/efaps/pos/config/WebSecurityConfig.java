@@ -27,15 +27,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-//@EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig
     extends WebSecurityConfigurerAdapter
 {
@@ -45,7 +47,9 @@ public class WebSecurityConfig
     private final JwtTokenUtil jwtTokenUtil;
 
     private final UserService userService;
-    ContextFilter contextFilter;
+
+    private final ContextFilter contextFilter;
+
     @Autowired
     public WebSecurityConfig(final JwtAuthenticationEntryPoint _unauthorizedHandler,
                              final JwtTokenUtil _jwtTokenUtil,
@@ -84,7 +88,8 @@ public class WebSecurityConfig
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/authenticate/**").permitAll().anyRequest().authenticated();
+                .antMatchers("/authenticate/**", "/refreshauth/**")
+                .permitAll().anyRequest().authenticated();
 
         // Custom JWT based security filter
         final JwtAuthorizationTokenFilter authenticationTokenFilter = new JwtAuthorizationTokenFilter(
@@ -94,10 +99,12 @@ public class WebSecurityConfig
     }
 
     @Override
-    public void configure(final WebSecurity web)
+    public void configure(final WebSecurity _web)
         throws Exception
     {
-        web.ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate")
+        _web.ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate")
+            .and()
+            .ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "refreshauth")
             .and()
             .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "users/**")
             .and()

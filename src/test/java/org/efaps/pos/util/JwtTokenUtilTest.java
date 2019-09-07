@@ -20,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,9 +36,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -51,9 +51,9 @@ public class JwtTokenUtilTest
     @Test
     public void testGenerateToken()
     {
-        final String token = this.jwtTokenUtil.generateToken(new User("testUser", "superSecretPassword",
+        final String token = jwtTokenUtil.generateAccessToken(new User("testUser", "superSecretPassword",
                         Collections.singletonList(new SimpleGrantedAuthority("admin"))));
-        final Claims claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
+        final Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         assertEquals("testUser", claims.getSubject());
     }
 
@@ -62,8 +62,8 @@ public class JwtTokenUtilTest
     {
         final User userDetails = new User("testUser", "superSecretPassword",
                         Collections.singletonList(new SimpleGrantedAuthority("admin")));
-        final String token = this.jwtTokenUtil.generateToken(userDetails);
-        assertTrue(this.jwtTokenUtil.validateToken(token, userDetails));
+        final String token = jwtTokenUtil.generateAccessToken(userDetails);
+        assertTrue(jwtTokenUtil.validateToken(token, userDetails));
     }
 
     @Test
@@ -73,15 +73,15 @@ public class JwtTokenUtilTest
                         Collections.singletonList(new SimpleGrantedAuthority("admin")));
         final User userDetails2 = new User("testUser2", "superSecretPassword",
                         Collections.singletonList(new SimpleGrantedAuthority("admin")));
-        final String token = this.jwtTokenUtil.generateToken(userDetails);
-        assertFalse(this.jwtTokenUtil.validateToken(token, userDetails2));
+        final String token = jwtTokenUtil.generateAccessToken(userDetails);
+        assertFalse(jwtTokenUtil.validateToken(token, userDetails2));
     }
 
     @Test
     public void testGetUsernameFromToken()
     {
         final Map<String, Object> claims = new HashMap<>();
-        final String token = this.jwtTokenUtil.generateToken(claims, "testUser");
-        assertEquals("testUser", this.jwtTokenUtil.getUsernameFromToken(token));
+        final String token = jwtTokenUtil.generateToken(claims, "testUser");
+        assertEquals("testUser", jwtTokenUtil.getUsernameFromAccessToken(token));
     }
 }

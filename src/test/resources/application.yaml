@@ -46,3 +46,4 @@ sso:
 jwt:
   secret: ThisIsNotVerySecret
   expiration: 1000
+  deviation: 120

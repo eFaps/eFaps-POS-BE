@@ -22,16 +22,24 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public class AuthenticationResponseDto
 {
 
-    private final String token;
+    private final String accessToken;
+
+    private final String refreshToken;
 
     private AuthenticationResponseDto(final Builder _builder)
     {
-        this.token = _builder.token;
+        accessToken = _builder.accessToken;
+        refreshToken = _builder.refreshToken;
     }
 
-    public String getToken()
+    public String getAccessToken()
     {
-        return this.token;
+        return accessToken;
+    }
+
+    public String getRefreshToken()
+    {
+        return refreshToken;
     }
 
     public static Builder builder()
@@ -45,11 +53,19 @@ public class AuthenticationResponseDto
     public static final class Builder
     {
 
-        private String token;
+        private String accessToken;
 
-        public Builder withToken(final String _token)
+        private String refreshToken;
+
+        public Builder withAccessToken(final String _accessToken)
         {
-            this.token = _token;
+            accessToken = _accessToken;
+            return this;
+        }
+
+        public Builder withRefreshToken(final String _refreshToken)
+        {
+            refreshToken = _refreshToken;
             return this;
         }
 

@@ -46,8 +46,8 @@ public class JwtAuthorizationTokenFilter
     public JwtAuthorizationTokenFilter(final UserDetailsService _userDetailsService,
                                        final JwtTokenUtil _jwtTokenUtil)
     {
-        this.userDetailsService = _userDetailsService;
-        this.jwtTokenUtil = _jwtTokenUtil;
+        userDetailsService = _userDetailsService;
+        jwtTokenUtil = _jwtTokenUtil;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class JwtAuthorizationTokenFilter
         if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
             authToken = requestHeader.substring(7);
             try {
-                username = this.jwtTokenUtil.getUsernameFromToken(authToken);
+                username = jwtTokenUtil.getUsernameFromAccessToken(authToken);
             } catch (final IllegalArgumentException e) {
                 LOG.error("an error occured during getting username from token", e);
             }
@@ -76,9 +76,9 @@ public class JwtAuthorizationTokenFilter
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             LOG.debug("security context was null, so authorizating user");
 
-            final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (this.jwtTokenUtil.validateToken(authToken, userDetails)) {
+            if (jwtTokenUtil.validateToken(authToken, userDetails)) {
                 final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(_request));
