@@ -18,12 +18,14 @@ package org.efaps.pos.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
@@ -57,6 +59,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperationContext;
 import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
@@ -259,17 +263,9 @@ public class DocumentService
         return receiptRepository.findByBalanceOid(evalBalanceOid(_key));
     }
 
-    public Collection<PayableHead> getReceiptHeads4Balance(final String _key)
+    public Collection<PayableHead> getReceiptHeads4Balance(final String _balanceKey)
     {
-        final LookupOperation lookupOperation = LookupOperation.newLookup()
-                        .from("orders")
-                        .localField("oid")
-                        .foreignField("payableOid")
-                        .as("orders");
-        final Aggregation aggregation = Aggregation.newAggregation(
-                        Aggregation.match(Criteria.where("balanceOid").is(evalBalanceOid(_key))),
-                        lookupOperation);
-        return mongoTemplate.aggregate(aggregation, "receipts", PayableHead.class).getMappedResults();
+        return getPayableHeads4Balance(_balanceKey, "receipts");
     }
 
     public Invoice getInvoice(final String _documentId)
@@ -277,22 +273,81 @@ public class DocumentService
         return invoiceRepository.findById(_documentId).orElse(null);
     }
 
-    public Collection<PayableHead> getInvoiceHeads4Balance(final String _key)
+    public Collection<PayableHead> getInvoiceHeads4Balance(final String _balanceKey)
+    {
+        return getPayableHeads4Balance(_balanceKey, "invoices");
+    }
+
+    public Collection<Invoice> getInvoices4Balance(final String _key)
+    {
+        return invoiceRepository.findByBalanceOid(evalBalanceOid(_key));
+    }
+
+    public Ticket getTicket(final String _documentId)
+    {
+        return ticketRepository.findById(_documentId).orElse(null);
+    }
+
+    public Collection<Ticket> getTickets4Balance(final String _key)
+    {
+        return ticketRepository.findByBalanceOid(evalBalanceOid(_key));
+    }
+
+    public Collection<PayableHead> getTicketHeads4Balance(final String _balanceKey)
+    {
+        return getPayableHeads4Balance(_balanceKey, "tickets");
+    }
+
+    private Collection<PayableHead> getPayableHeads4Balance(final String _balanceKey,
+                                                           final String _collection)
+    {
+        final var ret = new ArrayList<PayableHead>();
+        ret.addAll(mongoTemplate.aggregate(getBalanceAggregation4OpenDocs(_balanceKey), _collection, PayableHead.class)
+                        .getMappedResults());
+        ret.addAll(mongoTemplate.aggregate(getBalanceAggregation4ClosedDocs(_balanceKey), _collection,
+                        PayableHead.class).getMappedResults());
+        return ret;
+    }
+
+    private Aggregation getBalanceAggregation4ClosedDocs(final String _balanceKey)
     {
         final LookupOperation lookupOperation = LookupOperation.newLookup()
                         .from("orders")
                         .localField("oid")
                         .foreignField("payableOid")
                         .as("orders");
-        final Aggregation aggregation = Aggregation.newAggregation(
-                        Aggregation.match(Criteria.where("balanceOid").is(evalBalanceOid(_key))),
+        return Aggregation.newAggregation(
+                        Aggregation.match(Criteria.where("status").is(DocStatus.CLOSED)),
+                        Aggregation.match(Criteria.where("balanceOid").is(evalBalanceOid(_balanceKey))),
                         lookupOperation);
-        return mongoTemplate.aggregate(aggregation, "invoices", PayableHead.class).getMappedResults();
     }
 
-    public Collection<Invoice> getInvoices4Balance(final String _key)
-    {
-        return invoiceRepository.findByBalanceOid(evalBalanceOid(_key));
+    private Aggregation getBalanceAggregation4OpenDocs(final String _balanceKey) {
+        final AggregationOperation  addField = new AggregationOperation(){
+            @Override
+            public List<org.bson.Document> toPipelineStages(final AggregationOperationContext aoc) {
+               return Collections.singletonList(new Document("$addFields",
+                               new Document("joinField", new Document("$toString","$_id"))));
+            }
+
+           @Override
+           public Document toDocument(final AggregationOperationContext context)
+           {
+               return null;
+           }
+         };
+
+       final LookupOperation lookupOperation = LookupOperation.newLookup()
+                       .from("orders")
+                       .localField("joinField")
+                       .foreignField("payableOid")
+                       .as("orders");
+
+       return Aggregation.newAggregation(
+                       Aggregation.match(Criteria.where("status").is(DocStatus.OPEN)),
+                       Aggregation.match(Criteria.where("balanceOid").is(evalBalanceOid(_balanceKey))),
+                       addField,
+                       lookupOperation);
     }
 
     /**
@@ -314,29 +369,6 @@ public class DocumentService
             }
         }
         return ret;
-    }
-
-    public Ticket getTicket(final String _documentId)
-    {
-        return ticketRepository.findById(_documentId).orElse(null);
-    }
-
-    public Collection<Ticket> getTickets4Balance(final String _key)
-    {
-        return ticketRepository.findByBalanceOid(evalBalanceOid(_key));
-    }
-
-    public Collection<PayableHead> getTicketHeads4Balance(final String _key)
-    {
-        final LookupOperation lookupOperation = LookupOperation.newLookup()
-                        .from("orders")
-                        .localField("oid")
-                        .foreignField("payableOid")
-                        .as("orders");
-        final Aggregation aggregation = Aggregation.newAggregation(
-                        Aggregation.match(Criteria.where("balanceOid").is(evalBalanceOid(_key))),
-                        lookupOperation);
-        return mongoTemplate.aggregate(aggregation, "tickets", PayableHead.class).getMappedResults();
     }
 
     public AbstractDocument<?> getDocument(final String _documentId)
