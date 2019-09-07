@@ -30,9 +30,11 @@ import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.efaps.pos.dto.PrintPayableDto;
 import org.efaps.pos.dto.PrintResponseDto;
 import org.efaps.pos.dto.PrinterType;
 import org.efaps.pos.entity.AbstractDocument;
+import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
@@ -61,6 +63,8 @@ public class PrintService
 
     private final GridFsService gridFsService;
 
+    private final DocumentService documentService;
+
     public PrintService(final ObjectMapper _jacksonObjectMapper,
                         final GridFsService _gridFsService,
                         final PrinterRepository _printerRepository,
@@ -68,6 +72,7 @@ public class PrintService
         jacksonObjectMapper = _jacksonObjectMapper;
         gridFsService = _gridFsService;
         printerRepository = _printerRepository;
+        documentService = _documentService;
     }
 
     public byte[] print2Image(final Object _object, final String _reportOid, final Map<String, Object> _parameters)
@@ -117,11 +122,23 @@ public class PrintService
         if (_document instanceof Order) {
             content = Converter.toDto((Order) _document);
         } else if (_document instanceof Receipt) {
-            content = Converter.toDto((Receipt) _document);
+            final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
+            content = PrintPayableDto.builder()
+                            .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
+                            .withPayable(Converter.toDto((Receipt) _document))
+                            .build();
         } else if (_document instanceof Invoice) {
-            content = Converter.toDto((Invoice) _document);
+            final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
+            content = PrintPayableDto.builder()
+                            .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
+                            .withPayable(Converter.toDto((Invoice) _document))
+                            .build();
         } else if (_document instanceof Ticket) {
-            content = Converter.toDto((Ticket) _document);
+            final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
+            content = PrintPayableDto.builder()
+                            .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
+                            .withPayable(Converter.toDto((Ticket) _document))
+                            .build();
         } else {
             content = _document;
         }
