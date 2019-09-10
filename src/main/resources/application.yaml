@@ -23,7 +23,9 @@ org:
         interval: 120  #Interval in seconds
       syncContacts:
         interval: 300
-
+      syncInventory:
+        interval: 300
+        
 efaps:
   baseUrl: http://localhost:8888/eFaps
   backendPath: /servlet/rest/pos/backend

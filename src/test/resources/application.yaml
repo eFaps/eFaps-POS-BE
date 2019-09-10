@@ -15,7 +15,9 @@ org:
         interval: 120  #Interval in seconds
       syncContacts:
         interval: 300
-
+      syncInventory:
+        interval: 300
+      
 name: POS-Backend-Test
 
 efaps:
