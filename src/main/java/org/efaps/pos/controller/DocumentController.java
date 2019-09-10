@@ -59,23 +59,26 @@ public class DocumentController
 
     @PostMapping(path = "workspaces/{oid}/documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosReceiptDto createReceipt(@PathVariable("oid") final String _oid,
+                                       @RequestParam(name = "orderId") final String _orderId,
                                        @RequestBody final PosReceiptDto _receiptDto)
     {
-        return Converter.toDto(documentService.createReceipt(_oid, Converter.toEntity(_receiptDto)));
+        return Converter.toDto(documentService.createReceipt(_oid, _orderId, Converter.toEntity(_receiptDto)));
     }
 
     @PostMapping(path = "workspaces/{oid}/documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosInvoiceDto createInvoice(@PathVariable("oid") final String _oid,
+                                       @RequestParam(name = "orderId") final String _orderId,
                                        @RequestBody final PosInvoiceDto _invoiceDto)
     {
-        return Converter.toDto(documentService.createInvoice(_oid, Converter.toEntity(_invoiceDto)));
+        return Converter.toDto(documentService.createInvoice(_oid, _orderId, Converter.toEntity(_invoiceDto)));
     }
 
     @PostMapping(path = "workspaces/{oid}/documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosTicketDto createTicket(@PathVariable("oid") final String _oid,
+                                     @RequestParam(name = "orderId") final String _orderId,
                                      @RequestBody final PosTicketDto _ticketDto)
     {
-        return Converter.toDto(documentService.createTicket(_oid, Converter.toEntity(_ticketDto)));
+        return Converter.toDto(documentService.createTicket(_oid, _orderId, Converter.toEntity(_ticketDto)));
     }
 
     @PostMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)

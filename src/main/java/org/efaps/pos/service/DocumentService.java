@@ -63,7 +63,9 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperationContext;
 import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class DocumentService
@@ -188,8 +190,10 @@ public class DocumentService
     }
 
     public Receipt createReceipt(final String _workspaceOid,
+                                 final String _orderId,
                                  final Receipt _receipt)
     {
+        validateOrder(_orderId);
         validateContact(_workspaceOid, _receipt);
         _receipt.setNumber(sequenceService.getNext(_workspaceOid, DocType.RECEIPT));
         Receipt ret = receiptRepository.insert(_receipt);
@@ -206,12 +210,15 @@ public class DocumentService
         } catch (final Exception e) {
             LOG.error("Wow that should not happen", e);
         }
+        closeOrder(_orderId, ret.getId());
         return ret;
     }
 
     public Invoice createInvoice(final String _workspaceOid,
+                                 final String _orderId,
                                  final Invoice _invoice)
     {
+        validateOrder(_orderId);
         validateContact(_workspaceOid, _invoice);
         _invoice.setNumber(sequenceService.getNext(_workspaceOid, DocType.INVOICE));
         Invoice ret = invoiceRepository.insert(_invoice);
@@ -228,12 +235,15 @@ public class DocumentService
         } catch (final Exception e) {
             LOG.error("Wow that should not happen", e);
         }
+        closeOrder(_orderId, ret.getId());
         return ret;
     }
 
     public Ticket createTicket(final String _workspaceOid,
+                               final String _orderId,
                                final Ticket _ticket)
     {
+        validateOrder(_orderId);
         validateContact(_workspaceOid, _ticket);
         _ticket.setNumber(sequenceService.getNext(_workspaceOid, DocType.TICKET));
         Ticket ret = ticketRepository.insert(_ticket);
@@ -250,7 +260,33 @@ public class DocumentService
         } catch (final Exception e) {
             LOG.error("Wow that should not happen", e);
         }
+        closeOrder(_orderId, ret.getId());
         return ret;
+    }
+
+    private void validateOrder(final String _orderId)
+        throws ResponseStatusException
+    {
+        final Optional<Order> orderOpt = orderRepository.findById(_orderId);
+        if (orderOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "Order cannot be found");
+        } else {
+            if (!DocStatus.OPEN.equals(orderOpt.get().getStatus())) {
+                throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Order must be in state OPEN");
+            }
+        }
+    }
+
+    private void closeOrder(final String _orderId,
+                            final String _payableId)
+    {
+        final Optional<Order> orderOpt = orderRepository.findById(_orderId);
+        if (orderOpt.isPresent()) {
+            final Order order = orderOpt.get();
+            order.setStatus(DocStatus.CLOSED);
+            order.setPayableOid(_payableId);
+            orderRepository.save(order);
+        }
     }
 
     public Receipt getReceipt(final String _documentId)

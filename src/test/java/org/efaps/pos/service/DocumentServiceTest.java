@@ -18,12 +18,15 @@ package org.efaps.pos.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.willReturn;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
@@ -37,9 +40,11 @@ import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Spot;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -48,6 +53,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -62,9 +68,17 @@ public class DocumentServiceTest
     @Autowired
     private DocumentService documentService;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Mock
+    private OrderRepository mockOrderRepository;
+
+
     @BeforeEach
     public void setup()
     {
+        ReflectionTestUtils.setField(documentService, "orderRepository", orderRepository);
         mongoTemplate.remove(new Query(), Order.class);
         mongoTemplate.remove(new Query(), Receipt.class);
         mongoTemplate.remove(new Query(), Ticket.class);
@@ -176,6 +190,7 @@ public class DocumentServiceTest
     @Test
     public void testCreateReceipt()
     {
+        ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
@@ -187,13 +202,16 @@ public class DocumentServiceTest
                                         .setTaxNumber("12345678911")));
         mongoTemplate.save(new Contact().setOid(contactOid));
 
+        final Order order = new Order().setStatus(DocStatus.OPEN);
+        willReturn(Optional.of(order)).given(mockOrderRepository).findById(any());
+
         final Receipt newReceipt = new Receipt()
                         .setContactOid("1123.1")
                         .setNetTotal(new BigDecimal("123.45869"))
                         .setTaxes(Collections.emptySet())
                         .setDate(LocalDate.now());
 
-        final Receipt receipt = documentService.createReceipt(wsOid, newReceipt);
+        final Receipt receipt = documentService.createReceipt(wsOid, "orderid", newReceipt);
         assertNotNull(receipt.getNumber());
         assertNotNull(receipt.getId());
     }
@@ -201,6 +219,7 @@ public class DocumentServiceTest
     @Test
     public void testCreateReceiptCatchesError()
     {
+        ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
@@ -212,12 +231,15 @@ public class DocumentServiceTest
                                         .setTaxNumber("12345678911")));
         mongoTemplate.save(new Contact().setOid(contactOid));
 
+        final Order order = new Order().setStatus(DocStatus.OPEN);
+        willReturn(Optional.of(order)).given(mockOrderRepository).findById(any());
+
         final Receipt newReceipt = new Receipt()
                         .setContactOid("1123.1")
                         .setNetTotal(new BigDecimal("123.45869"))
                         .setTaxes(Collections.emptySet());
 
-        final Receipt receipt = documentService.createReceipt(wsOid, newReceipt);
+        final Receipt receipt = documentService.createReceipt(wsOid, "orderid", newReceipt);
         assertNotNull(receipt.getNumber());
         assertNotNull(receipt.getId());
     }
@@ -225,6 +247,7 @@ public class DocumentServiceTest
     @Test
     public void testCreateInvoice()
     {
+        ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
@@ -236,13 +259,16 @@ public class DocumentServiceTest
                                         .setTaxNumber("12345678911")));
         mongoTemplate.save(new Contact().setOid(contactOid));
 
+        final Order order = new Order().setStatus(DocStatus.OPEN);
+        willReturn(Optional.of(order)).given(mockOrderRepository).findById(any());
+
         final Invoice invoice = new Invoice()
                         .setContactOid("1123.1")
                         .setNetTotal(new BigDecimal("123.45869"))
                         .setTaxes(Collections.emptySet())
                         .setDate(LocalDate.now());
 
-        final Invoice createdInvoice = documentService.createInvoice(wsOid, invoice);
+        final Invoice createdInvoice = documentService.createInvoice(wsOid, "orderid", invoice);
         assertNotNull(createdInvoice.getNumber());
         assertNotNull(createdInvoice.getId());
     }
@@ -250,6 +276,7 @@ public class DocumentServiceTest
     @Test
     public void testCreateInvoiceCatchesError()
     {
+        ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
@@ -261,12 +288,15 @@ public class DocumentServiceTest
                                         .setTaxNumber("12345678911")));
         mongoTemplate.save(new Contact().setOid(contactOid));
 
+        final Order order = new Order().setStatus(DocStatus.OPEN);
+        willReturn(Optional.of(order)).given(mockOrderRepository).findById(any());
+
         final Invoice invoice = new Invoice()
                         .setContactOid("1123.1")
                         .setNetTotal(new BigDecimal("123.45869"))
                         .setTaxes(Collections.emptySet());
 
-        final Invoice createdInvoice = documentService.createInvoice(wsOid, invoice);
+        final Invoice createdInvoice = documentService.createInvoice(wsOid, "orderid", invoice);
         assertNotNull(createdInvoice.getNumber());
         assertNotNull(createdInvoice.getId());
     }
@@ -274,6 +304,7 @@ public class DocumentServiceTest
     @Test
     public void testCreateTicket()
     {
+        ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
@@ -284,6 +315,9 @@ public class DocumentServiceTest
                                         .setName("company")
                                         .setTaxNumber("12345678911")));
         mongoTemplate.save(new Contact().setOid(contactOid));
+
+        final Order order = new Order().setStatus(DocStatus.OPEN);
+        willReturn(Optional.of(order)).given(mockOrderRepository).findById(any());
 
         final Ticket ticket = new Ticket()
                         .setContactOid("1123.1")
@@ -291,7 +325,7 @@ public class DocumentServiceTest
                         .setTaxes(Collections.emptySet())
                         .setDate(LocalDate.now());
 
-        final Ticket createdTicket = documentService.createTicket(wsOid, ticket);
+        final Ticket createdTicket = documentService.createTicket(wsOid, "orderid", ticket);
         assertNotNull(createdTicket.getNumber());
         assertNotNull(createdTicket.getId());
     }
@@ -299,6 +333,7 @@ public class DocumentServiceTest
     @Test
     public void testCreateTicketCatchesError()
     {
+        ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
         final String posOid = "223.4";
         final String contactOid = "323.4";
@@ -310,12 +345,15 @@ public class DocumentServiceTest
                                         .setTaxNumber("12345678911")));
         mongoTemplate.save(new Contact().setOid(contactOid));
 
+        final Order order = new Order().setStatus(DocStatus.OPEN);
+        willReturn(Optional.of(order)).given(mockOrderRepository).findById(any());
+
         final Ticket ticket = new Ticket()
                         .setContactOid("1123.1")
                         .setNetTotal(new BigDecimal("123.45869"))
                         .setTaxes(Collections.emptySet());
 
-        final Ticket createdTicket = documentService.createTicket(wsOid, ticket);
+        final Ticket createdTicket = documentService.createTicket(wsOid, "orderid", ticket);
         assertNotNull(createdTicket.getNumber());
         assertNotNull(createdTicket.getId());
     }
