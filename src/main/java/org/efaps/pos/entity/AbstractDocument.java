@@ -17,6 +17,7 @@
 package org.efaps.pos.entity;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Set;
@@ -25,7 +26,11 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.efaps.pos.dto.DocStatus;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 public abstract class AbstractDocument<T>
 {
@@ -44,6 +49,19 @@ public abstract class AbstractDocument<T>
     private String contactOid;
     private String workspaceOid;
     private Discount discount;
+
+    @CreatedBy
+    private String user;
+
+    @CreatedDate
+    private Instant createdDate;
+
+
+    @LastModifiedBy
+    private String lastModifiedUser;
+
+    @LastModifiedDate
+    private Instant lastModifiedDate;
 
     public String getId()
     {
@@ -200,6 +218,54 @@ public abstract class AbstractDocument<T>
         this.discount = discount;
         return (T) this;
     }
+
+    public String getUser()
+    {
+        return user;
+    }
+
+
+    public void setUser(final String user)
+    {
+        this.user = user;
+    }
+
+
+    public Instant getCreatedDate()
+    {
+        return createdDate;
+    }
+
+
+    public void setCreatedDate(final Instant createdDate)
+    {
+        this.createdDate = createdDate;
+    }
+
+
+    public String getLastModifiedUser()
+    {
+        return lastModifiedUser;
+    }
+
+
+    public void setLastModifiedUser(final String lastModifiedUser)
+    {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+
+    public Instant getLastModifiedDate()
+    {
+        return lastModifiedDate;
+    }
+
+
+    public void setLastModifiedDate(final Instant lastModifiedDate)
+    {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
 
     @Override
     public String toString() {
