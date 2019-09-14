@@ -22,7 +22,6 @@ import java.util.List;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,22 +32,21 @@ public class ProductService
     @Autowired
     public ProductService(final ProductRepository _productRepository)
     {
-        this.productRepository = _productRepository;
+        productRepository = _productRepository;
     }
 
     public List<Product> getProducts()
     {
-        return this.productRepository.findAll();
+        return productRepository.findAll();
     }
 
-    @Cacheable("Product")
     public Product getProduct(final String _oid)
     {
-        return _oid == null ? null : this.productRepository.findById(_oid).orElse(null);
+        return _oid == null ? null : productRepository.findById(_oid).orElse(null);
     }
 
     public List<Product> findProducts(final String _term)
     {
-        return this.productRepository.findByDescriptionLikeIgnoreCase(_term);
+        return productRepository.findByDescriptionLikeIgnoreCase(_term);
     }
 }
