@@ -263,6 +263,7 @@ public final class Converter
                         .setNetPrice(_dto.getNetPrice())
                         .setNetUnitPrice(_dto.getNetUnitPrice())
                         .setQuantity(_dto.getQuantity())
+                        .setRemark(_dto.getRemark())
                         .setProductOid(_dto.getProduct() == null
                             ? _dto.getProductOid()
                             : _dto.getProduct().getOid())
@@ -609,6 +610,7 @@ public final class Converter
                         .withNetUnitPrice(_entity.getNetUnitPrice())
                         .withQuantity(_entity.getQuantity())
                         .withProductOid(_entity.getProductOid())
+                        .withRemark(_entity.getRemark())
                         .withProduct(_entity.getProductOid() == null
                             ? null
                             : Converter.toDto(INSTANCE.productService.getProduct(_entity.getProductOid())))
@@ -861,6 +863,7 @@ public final class Converter
                         .withNetUnitPrice(_entity.getNetUnitPrice())
                         .withQuantity(_entity.getQuantity())
                         .withProductOid(_entity.getProductOid())
+                        .withRemark(_entity.getRemark())
                         .withTaxes(_entity.getTaxes() == null
                             ? null
                             : _entity.getTaxes().stream()

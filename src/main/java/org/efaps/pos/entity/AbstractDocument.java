@@ -284,6 +284,7 @@ public abstract class AbstractDocument<T>
         private BigDecimal netPrice;
         private BigDecimal crossPrice;
         private Set<TaxEntry> taxes;
+        private String remark;
 
         public Integer getIndex()
         {
@@ -381,6 +382,17 @@ public abstract class AbstractDocument<T>
         public Item setTaxes(final Set<TaxEntry> _taxes)
         {
             taxes = _taxes;
+            return this;
+        }
+
+        public String getRemark()
+        {
+            return remark;
+        }
+
+        public Item setRemark(final String remark)
+        {
+            this.remark = remark;
             return this;
         }
 
