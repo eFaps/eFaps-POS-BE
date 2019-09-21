@@ -41,126 +41,138 @@ public class Product
     private String uoM;
     private String uoMCode;
     private Set<ProductRelation> relations;
+    private Set<IndicationSet> indicationSets;
 
     public String getOid()
     {
-        return this.oid;
+        return oid;
     }
 
     public Product setOid(final String _oid)
     {
-        this.oid = _oid;
-        this.id = _oid;
+        oid = _oid;
+        id = _oid;
         return this;
     }
 
     public String getSKU()
     {
-        return this.sku;
+        return sku;
     }
 
     public Product setSKU(final String _sku)
     {
-        this.sku = _sku;
+        sku = _sku;
         return this;
     }
 
     public String getDescription()
     {
-        return this.description;
+        return description;
     }
 
     public Product setDescription(final String _description)
     {
-        this.description = _description;
+        description = _description;
         return this;
     }
 
     public String getImageOid()
     {
-        return this.imageOid;
+        return imageOid;
     }
 
     public Product setImageOid(final String _imageOid)
     {
-        this.imageOid = _imageOid;
+        imageOid = _imageOid;
         return this;
     }
 
     public BigDecimal getNetPrice()
     {
-        return this.netPrice;
+        return netPrice;
     }
 
     public Product setNetPrice(final BigDecimal _netPrice)
     {
-        this.netPrice = _netPrice;
+        netPrice = _netPrice;
         return this;
     }
 
     public BigDecimal getCrossPrice()
     {
-        return this.crossPrice;
+        return crossPrice;
     }
 
     public Product setCrossPrice(final BigDecimal _crossPrice)
     {
-        this.crossPrice = _crossPrice;
+        crossPrice = _crossPrice;
         return this;
     }
 
     public Set<String> getCategoryOids()
     {
-        return this.categoryOids == null ? Collections.emptySet() : this.categoryOids;
+        return categoryOids == null ? Collections.emptySet() : categoryOids;
     }
 
     public Product setCategoryOids(final Set<String> _categoryOids)
     {
-        this.categoryOids = _categoryOids;
+        categoryOids = _categoryOids;
         return this;
     }
 
     public Set<Tax> getTaxes()
     {
-        return this.taxes;
+        return taxes;
     }
 
     public Product setTaxes(final Set<Tax> _taxes)
     {
-        this.taxes = _taxes;
+        taxes = _taxes;
         return this;
     }
 
     public String getUoM()
     {
-        return this.uoM;
+        return uoM;
     }
 
     public Product setUoM(final String _uoM)
     {
-        this.uoM = _uoM;
+        uoM = _uoM;
         return this;
     }
 
     public String getUoMCode()
     {
-        return this.uoMCode;
+        return uoMCode;
     }
 
     public Product setUoMCode(final String _uoMCode)
     {
-        this.uoMCode = _uoMCode;
+        uoMCode = _uoMCode;
         return this;
     }
 
     public Set<ProductRelation> getRelations()
     {
-        return this.relations;
+        return relations;
     }
 
     public Product setRelations(final Set<ProductRelation> _relations)
     {
-        this.relations = _relations;
+        relations = _relations;
+        return this;
+    }
+
+    public Set<IndicationSet> getIndicationSets()
+    {
+        return indicationSets;
+    }
+
+    public Product setIndicationSets(final Set<IndicationSet> _indicationSets)
+    {
+        indicationSets = _indicationSets;
         return this;
     }
 

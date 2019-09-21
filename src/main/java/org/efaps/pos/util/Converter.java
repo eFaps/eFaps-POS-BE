@@ -29,6 +29,8 @@ import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.DocumentHeadDto;
 import org.efaps.pos.dto.DocumentHeadDto.Builder;
 import org.efaps.pos.dto.FloorDto;
+import org.efaps.pos.dto.IndicationDto;
+import org.efaps.pos.dto.IndicationSetDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.JobDto;
@@ -65,6 +67,8 @@ import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Discount;
+import org.efaps.pos.entity.Indication;
+import org.efaps.pos.entity.IndicationSet;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Job;
@@ -291,8 +295,48 @@ public final class Converter
                         .setUoMCode(_dto.getUoMCode())
                         .setRelations(_dto.getRelations().stream()
                                         .map(rel -> toEntity(rel))
+                                        .collect(Collectors.toSet()))
+                        .setIndicationSets(_dto.getIndicationSets().stream()
+                                        .map(rel -> toEntity(rel))
                                         .collect(Collectors.toSet()));
         return ret;
+    }
+
+
+    public static IndicationSet toEntity(final IndicationSetDto _dto)
+    {
+        return new IndicationSet().setId(_dto.getOid())
+                        .setName(_dto.getName())
+                        .setRequired(_dto.isRequired())
+                        .setIndications(_dto.getIndications().stream()
+                                        .map(dto -> toEntity(dto))
+                                        .collect(Collectors.toSet()));
+    }
+
+    public static IndicationSetDto toDto(final IndicationSet _entity)
+    {
+        return IndicationSetDto.builder()
+                        .withOID(_entity.getId())
+                        .withName(_entity.getName())
+                        .withRequired(_entity.isRequired())
+                        .withIndications(_entity.getIndications().stream()
+                                        .map(entity -> toDto(entity))
+                                        .collect(Collectors.toSet()))
+                        .build();
+    }
+
+    public static Indication toEntity(final IndicationDto _dto)
+    {
+        return new Indication().setId(_dto.getOid())
+                        .setValue(_dto.getValue());
+    }
+
+    public static IndicationDto toDto(final Indication _entity)
+    {
+        return IndicationDto.builder()
+                        .withOID(_entity.getId())
+                        .withValue(_entity.getValue())
+                        .build();
     }
 
     public static ProductDto toDto(final Product _entity)
@@ -318,6 +362,11 @@ public final class Converter
                                 ? null
                                 : _entity.getRelations().stream()
                                         .map(rel -> toDto(rel))
+                                        .collect(Collectors.toSet()))
+                        .withIndicationSets(_entity.getIndicationSets() == null
+                                ? null
+                                : _entity.getIndicationSets().stream()
+                                        .map(set -> toDto(set))
                                         .collect(Collectors.toSet()))
                         .build();
     }
