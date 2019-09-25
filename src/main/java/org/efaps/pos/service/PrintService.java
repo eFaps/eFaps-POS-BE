@@ -80,7 +80,8 @@ public class PrintService
         byte[] ret = null;
         try {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Creating report for {}", jacksonObjectMapper.writeValueAsString(_object));
+                LOG.debug("Creating report for {}", jacksonObjectMapper.writerWithDefaultPrettyPrinter()
+                                .writeValueAsString(_object));
             }
             ret = print2Image(new ByteArrayInputStream(jacksonObjectMapper.writeValueAsBytes(_object)),
                             gridFsService.getContent(_reportOid), _parameters);
@@ -147,7 +148,6 @@ public class PrintService
 
     public Optional<PrintResponseDto> queue(final String _printerOid, final String _reportOid, final Object _content)
     {
-        LOG.debug("Recieved object for print queue:\n{}", _content);
         Optional<PrintResponseDto> ret;
         final Optional<Printer> printerOpt = printerRepository.findById(_printerOid);
         if (printerOpt.isPresent()) {
@@ -183,7 +183,8 @@ public class PrintService
     {
         try {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Creating report for {}", jacksonObjectMapper.writeValueAsString(_object));
+                LOG.debug("Creating report for {}", jacksonObjectMapper.writerWithDefaultPrettyPrinter()
+                                .writeValueAsString(_object));
             }
             final Map<String, Object> parameters = new HashMap<>();
             if (MapUtils.isNotEmpty(_parameters)) {
