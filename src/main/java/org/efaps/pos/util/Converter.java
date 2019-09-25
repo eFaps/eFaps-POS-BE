@@ -19,6 +19,7 @@ package org.efaps.pos.util;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CardDto;
 import org.efaps.pos.dto.CategoryDto;
@@ -965,7 +966,11 @@ public final class Converter
         return JobDto.builder()
                         .withDocumentId(_entity.getDocumentId())
                         .withDocumentNumber(order.getNumber())
-                        .withSpotNumber(order.getSpot() == null ? null : order.getSpot().getId())
+                        .withSpotNumber(order.getSpot() == null
+                            ? null
+                            : StringUtils.isEmpty(order.getSpot().getLabel())
+                                            ? order.getSpot().getId()
+                                            : order.getSpot().getLabel())
                         .withId(_entity.getId())
                         .withItems(_entity.getItems() == null
                             ?  Collections.emptySet()

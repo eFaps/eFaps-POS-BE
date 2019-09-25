@@ -1,9 +1,5 @@
 package org.efaps.pos.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-
 import java.awt.Image;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
@@ -18,15 +14,6 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import javax.print.PrintServiceLookup;
 import javax.print.attribute.HashPrintServiceAttributeSet;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperPrintManager;
-import net.sf.jasperreports.engine.data.JsonQLDataSource;
-import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -47,6 +34,19 @@ import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.engine.data.JsonQLDataSource;
+import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 
 @Service
 public class PrintService
@@ -147,6 +147,7 @@ public class PrintService
 
     public Optional<PrintResponseDto> queue(final String _printerOid, final String _reportOid, final Object _content)
     {
+        LOG.debug("Recieved object for print queue:\n{}", _content);
         Optional<PrintResponseDto> ret;
         final Optional<Printer> printerOpt = printerRepository.findById(_printerOid);
         if (printerOpt.isPresent()) {
