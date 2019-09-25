@@ -21,7 +21,9 @@ import java.util.List;
 
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.repository.ContactRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class ContactService
@@ -58,6 +60,10 @@ public class ContactService
 
     public Contact createContact(final Contact _entity)
     {
+        if (!contactRepository.findByIdNumber(_entity.getIdNumber()).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
+                            "Contact with same IdNumber already exists");
+        }
         return contactRepository.save(_entity);
     }
 }

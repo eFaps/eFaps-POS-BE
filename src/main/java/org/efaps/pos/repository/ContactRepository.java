@@ -37,4 +37,6 @@ public interface ContactRepository
     List<Contact> findByNameRegex(String _term);
 
     Collection<Contact> findByOidIsNull();
+
+    List<Contact> findByIdNumber(String _idNumber);
 }
