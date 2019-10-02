@@ -40,24 +40,31 @@ public class ProductController
     private final ProductService service;
 
     public ProductController(final ProductService _service) {
-        this.service = _service;
+        service = _service;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ProductDto> getProducts() {
-        return this.service.getProducts().stream()
+        return service.getProducts().stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "{productOid}")
     public ProductDto getProduct(@PathVariable(name = "productOid") final String _productOid) {
-        return Converter.toDto(this.service.getProduct(_productOid));
+        return Converter.toDto(service.getProduct(_productOid));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
     public List<ProductDto> findProducts(@RequestParam(name = "term") final String _term) {
-        return this.service.findProducts(_term).stream()
+        return service.findProducts(_term).stream()
+                        .map(product -> Converter.toDto(product))
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "category" })
+    public List<ProductDto> getProductsByCategory(@RequestParam(name = "category") final String _categoryOid) {
+        return service.findProductsByCategory(_categoryOid).stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }

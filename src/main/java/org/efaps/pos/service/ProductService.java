@@ -49,4 +49,9 @@ public class ProductService
     {
         return productRepository.findByDescriptionLikeIgnoreCase(_term);
     }
+
+    public List<Product> findProductsByCategory(final String _categoryOid)
+    {
+        return productRepository.findByCategoryOidsContains(_categoryOid);
+    }
 }

@@ -25,4 +25,6 @@ public interface ProductRepository
     extends MongoRepository<Product, String>
 {
     List<Product> findByDescriptionLikeIgnoreCase(String _term);
+
+    List<Product> findByCategoryOidsContains(String _oid);
 }
