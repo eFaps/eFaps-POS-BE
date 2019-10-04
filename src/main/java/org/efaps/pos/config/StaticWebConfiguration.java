@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -30,28 +31,38 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class StaticWebConfiguration
     implements WebMvcConfigurer
 {
+
     @Value("${spring.resources.static-locations}")
-    private String resourcePath;
+    private String resourceLocations;
 
     @Override
     public void addCorsMappings(final CorsRegistry _registry)
     {
         _registry.addMapping("/**")
-            .allowedMethods("GET", "POST", "PUT", "DELETE")
-            .allowedOrigins("*").allowedHeaders("*");
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowedOrigins("*").allowedHeaders("*");
     }
 
     @Override
-    public void addResourceHandlers(final ResourceHandlerRegistry _registry) {
-        _registry.addResourceHandler("/assets/**").addResourceLocations(this.resourcePath + "/assets/");
+    public void addResourceHandlers(final ResourceHandlerRegistry _registry)
+    {
+        final ResourceHandlerRegistration reg = _registry.addResourceHandler("/assets/**");
+        for (final String location : getResourceLocations()) {
+            reg.addResourceLocations(location + "/assets/");
+        }
     }
 
     @Override
-    public void addViewControllers(final ViewControllerRegistry _registry) {
+    public void addViewControllers(final ViewControllerRegistry _registry)
+    {
         _registry.addViewController("/pos").setViewName("redirect:/index.html");
         _registry.addViewController("/login").setViewName("redirect:/index.html");
         _registry.addViewController("/products").setViewName("redirect:/index.html");
         _registry.addViewController("/workspaces").setViewName("redirect:/index.html");
+    }
 
+    private String[] getResourceLocations()
+    {
+        return resourceLocations.split(",");
     }
 }

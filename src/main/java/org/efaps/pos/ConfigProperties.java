@@ -41,6 +41,8 @@ public class ConfigProperties
 
     private List<Company> companies = new ArrayList<>();
 
+    private final List<String> ignore  = new ArrayList<>();
+
     public String getVersion()
     {
         return version;
@@ -94,6 +96,11 @@ public class ConfigProperties
     public void setMongoClientURI(final String mongoClientURI)
     {
         this.mongoClientURI = mongoClientURI;
+    }
+
+    public List<String> getIgnore()
+    {
+        return ignore;
     }
 
     public static class BasicAuth
@@ -433,5 +440,10 @@ public class ConfigProperties
         {
             tenant = _tenant;
         }
+    }
+
+    private static class Static
+    {
+
     }
 }

@@ -25,7 +25,7 @@ org:
         interval: 300
       syncInventory:
         interval: 300
-        
+
 efaps:
   baseUrl: http://localhost:8888/eFaps
   backendPath: /servlet/rest/pos/backend
@@ -50,6 +50,17 @@ efaps:
 auth:
   user: Administrator
   password: Administrator
+
+ignore:
+  - "/"
+  - "/*.html"
+  - "/favicon.ico"
+  - "/**/favicon.png"
+  - "/**/*.html"
+  - "/**/*.css"
+  - "/**/*.js"
+  - "/**/*.json"
+  - "/**/*.svg"
 
 jwt:
   secret: ThisIsNotVerySecret

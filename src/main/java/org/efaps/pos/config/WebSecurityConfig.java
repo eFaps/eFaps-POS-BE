@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.config;
 
+import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.JwtAuthorizationTokenFilter;
 import org.efaps.pos.context.ContextFilter;
 import org.efaps.pos.controller.JwtAuthenticationEntryPoint;
@@ -41,6 +42,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig
     extends WebSecurityConfigurerAdapter
 {
+    private final ConfigProperties configProperties;
 
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
 
@@ -51,11 +53,13 @@ public class WebSecurityConfig
     private final ContextFilter contextFilter;
 
     @Autowired
-    public WebSecurityConfig(final JwtAuthenticationEntryPoint _unauthorizedHandler,
+    public WebSecurityConfig(final ConfigProperties _configProperties,
+                             final JwtAuthenticationEntryPoint _unauthorizedHandler,
                              final JwtTokenUtil _jwtTokenUtil,
                              final UserService _userService,
                              final ContextFilter _contextFilter)
     {
+        configProperties = _configProperties;
         unauthorizedHandler = _unauthorizedHandler;
         jwtTokenUtil = _jwtTokenUtil;
         userService = _userService;
@@ -110,8 +114,8 @@ public class WebSecurityConfig
             .and()
             .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
             .and()
-            .ignoring().antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/favicon.png", "/**/*.html",
-                                        "/**/*.css", "/**/*.js", "/**/*.json", "/**/*.svg")
+            .ignoring().antMatchers(HttpMethod.GET,
+                            configProperties.getIgnore().toArray(new String[ configProperties.getIgnore().size()]))
             .and()
             .ignoring().antMatchers(HttpMethod.OPTIONS)
             .and()
