@@ -16,13 +16,6 @@
  */
 package org.efaps.pos.service;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -42,6 +35,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
 @Service
 public class DemoService
 {
@@ -57,9 +57,9 @@ public class DemoService
                        final GridFsTemplate _gridFsTemplate,
                        final ObjectMapper _objectMapper)
     {
-        this.mongoTemplate = _mongoTemplate;
-        this.gridFsTemplate = _gridFsTemplate;
-        this.objectMapper = _objectMapper;
+        mongoTemplate = _mongoTemplate;
+        gridFsTemplate = _gridFsTemplate;
+        objectMapper = _objectMapper;
     }
 
     public void init()
@@ -83,22 +83,22 @@ public class DemoService
         throws IOException
     {
         final ClassPathResource resource = new ClassPathResource("images.json");
-        final List<Image> images = this.objectMapper.readValue(resource.getInputStream(),
+        final List<Image> images = objectMapper.readValue(resource.getInputStream(),
                         new TypeReference<List<Image>>(){});
         for (final Image image : images) {
             final ClassPathResource imgResource = new ClassPathResource("images/" + image.getFileName());
             final DBObject metaData = new BasicDBObject();
             metaData.put("oid", image.getOid());
             metaData.put("contentType", "image/jpeg");
-            this.gridFsTemplate.store(imgResource.getInputStream(), image.getFileName(), metaData);
+            gridFsTemplate.store(imgResource.getInputStream(), image.getFileName(), metaData);
         }
     }
 
     private void clean(final Class<?>... _classes)
     {
-        this.gridFsTemplate.delete(new Query());
+        gridFsTemplate.delete(new Query());
         for (final Class<?> clazz : _classes) {
-            this.mongoTemplate.remove(new Query(), clazz);
+            mongoTemplate.remove(new Query(), clazz);
         }
     }
 
@@ -106,8 +106,8 @@ public class DemoService
         throws JsonParseException, JsonMappingException, IOException
     {
         final ClassPathResource resource = new ClassPathResource(_fileName);
-        final List<?> values = this.objectMapper.readValue(resource.getInputStream(), _valueTypeRef);
-        values.forEach(value -> this.mongoTemplate.save(value));
+        final List<?> values = objectMapper.<List<?>>readValue(resource.getInputStream(), _valueTypeRef);
+        values.forEach(value -> mongoTemplate.save(value));
     }
 
     public static class Image {
@@ -116,22 +116,22 @@ public class DemoService
 
         public String getOid()
         {
-            return this.oid;
+            return oid;
         }
 
         public void setOid(final String _oid)
         {
-            this.oid = _oid;
+            oid = _oid;
         }
 
         public String getFileName()
         {
-            return this.fileName;
+            return fileName;
         }
 
         public void setFileName(final String _fileName)
         {
-            this.fileName = _fileName;
+            fileName = _fileName;
         }
     }
 }

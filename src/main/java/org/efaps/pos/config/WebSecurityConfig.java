@@ -104,7 +104,6 @@ public class WebSecurityConfig
 
     @Override
     public void configure(final WebSecurity _web)
-        throws Exception
     {
         _web.ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate")
             .and()
