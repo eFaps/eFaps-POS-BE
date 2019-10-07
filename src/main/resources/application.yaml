@@ -51,16 +51,19 @@ auth:
   user: Administrator
   password: Administrator
 
-ignore:
-  - "/"
-  - "/*.html"
-  - "/favicon.ico"
-  - "/**/favicon.png"
-  - "/**/*.html"
-  - "/**/*.css"
-  - "/**/*.js"
-  - "/**/*.json"
-  - "/**/*.svg"
+staticWeb:
+  ignore:
+    - "/"
+    - "/*.html"
+    - "/favicon.ico"
+    - "/**/favicon.png"
+    - "/**/*.html"
+    - "/**/*.css"
+    - "/**/*.js"
+    - "/**/*.json"
+    - "/**/*.svg"
+  redirect:
+    "[/config]": "redirect:/static/index.html"
 
 jwt:
   secret: ThisIsNotVerySecret

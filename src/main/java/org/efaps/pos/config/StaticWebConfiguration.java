@@ -17,6 +17,11 @@
 
 package org.efaps.pos.config;
 
+import java.util.Map.Entry;
+
+import org.efaps.pos.ConfigProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -31,9 +36,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class StaticWebConfiguration
     implements WebMvcConfigurer
 {
+    private final ConfigProperties configProperties;
+
+    private static final Logger LOG = LoggerFactory.getLogger(StaticWebConfiguration.class);
 
     @Value("${spring.resources.static-locations}")
     private String resourceLocations;
+
+    public StaticWebConfiguration(final ConfigProperties _configProperties) {
+        configProperties = _configProperties;
+    }
 
     @Override
     public void addCorsMappings(final CorsRegistry _registry)
@@ -48,6 +60,7 @@ public class StaticWebConfiguration
     {
         final ResourceHandlerRegistration reg = _registry.addResourceHandler("/assets/**");
         for (final String location : getResourceLocations()) {
+            LOG.info("Registering assets for {}", location);
             reg.addResourceLocations(location + "/assets/");
         }
     }
@@ -59,6 +72,11 @@ public class StaticWebConfiguration
         _registry.addViewController("/login").setViewName("redirect:/index.html");
         _registry.addViewController("/products").setViewName("redirect:/index.html");
         _registry.addViewController("/workspaces").setViewName("redirect:/index.html");
+
+        for (final Entry<String, String> redirect : configProperties.getStaticWeb().getRedirect().entrySet()) {
+            LOG.info("Adding redirect '{}' : '{}'", redirect.getKey(), redirect.getValue());
+            _registry.addViewController(redirect.getKey()).setViewName(redirect.getValue());
+        }
     }
 
     private String[] getResourceLocations()

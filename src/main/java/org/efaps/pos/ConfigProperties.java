@@ -19,7 +19,9 @@ package org.efaps.pos;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -41,7 +43,7 @@ public class ConfigProperties
 
     private List<Company> companies = new ArrayList<>();
 
-    private final List<String> ignore  = new ArrayList<>();
+    private final StaticWeb staticWeb = new StaticWeb();
 
     public String getVersion()
     {
@@ -98,9 +100,9 @@ public class ConfigProperties
         this.mongoClientURI = mongoClientURI;
     }
 
-    public List<String> getIgnore()
+    public StaticWeb getStaticWeb()
     {
-        return ignore;
+        return staticWeb;
     }
 
     public static class BasicAuth
@@ -442,8 +444,19 @@ public class ConfigProperties
         }
     }
 
-    private static class Static
+    public static class StaticWeb
     {
+        private final List<String> ignore  = new ArrayList<>();
+        private final Map<String,String> redirect  = new HashMap<>();
 
+        public Map<String,String> getRedirect()
+        {
+            return redirect;
+        }
+
+        public List<String> getIgnore()
+        {
+            return ignore;
+        }
     }
 }

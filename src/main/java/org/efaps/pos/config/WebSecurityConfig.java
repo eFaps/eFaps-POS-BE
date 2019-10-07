@@ -114,7 +114,8 @@ public class WebSecurityConfig
             .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
             .and()
             .ignoring().antMatchers(HttpMethod.GET,
-                            configProperties.getIgnore().toArray(new String[ configProperties.getIgnore().size()]))
+                            configProperties.getStaticWeb().getIgnore().toArray(
+                                            new String[ configProperties.getStaticWeb().getIgnore().size()]))
             .and()
             .ignoring().antMatchers(HttpMethod.OPTIONS)
             .and()
