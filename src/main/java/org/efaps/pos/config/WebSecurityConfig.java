@@ -28,17 +28,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig
     extends WebSecurityConfigurerAdapter
 {
@@ -85,15 +81,23 @@ public class WebSecurityConfig
     protected void configure(final HttpSecurity _httpSecurity)
         throws Exception
     {
-        _httpSecurity.csrf().disable()
-                .exceptionHandling()
+        _httpSecurity
+            .csrf()
+                .disable()
+            .httpBasic()
+                .disable()
+            .exceptionHandling()
                 .authenticationEntryPoint(unauthorizedHandler)
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests()
-                .antMatchers("/authenticate/**", "/refreshauth/**")
-                .permitAll().anyRequest().authenticated();
+            .authorizeRequests()
+                .antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate", IApi.BASEPATH + "refreshauth")
+                .permitAll()
+                .antMatchers(configProperties.getStaticWeb().getResource().keySet().stream().toArray(String[]::new))
+                .permitAll()
+                .anyRequest()
+                .authenticated();
 
         // Custom JWT based security filter
         final JwtAuthorizationTokenFilter authenticationTokenFilter = new JwtAuthorizationTokenFilter(
@@ -121,4 +125,5 @@ public class WebSecurityConfig
             .and()
             .ignoring().antMatchers("/socket/**");
     }
+
 }

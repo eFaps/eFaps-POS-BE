@@ -447,7 +447,13 @@ public class ConfigProperties
     public static class StaticWeb
     {
         private final List<String> ignore  = new ArrayList<>();
-        private final Map<String,String> redirect  = new HashMap<>();
+        private final Map<String, String> redirect  = new HashMap<>();
+        private final Map<String, String> resource  = new HashMap<>();
+
+        public Map<String, String> getResource()
+        {
+            return resource;
+        }
 
         public Map<String,String> getRedirect()
         {

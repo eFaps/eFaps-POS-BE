@@ -22,11 +22,9 @@ import java.util.Map.Entry;
 import org.efaps.pos.ConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -36,14 +34,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class StaticWebConfiguration
     implements WebMvcConfigurer
 {
+
     private final ConfigProperties configProperties;
 
     private static final Logger LOG = LoggerFactory.getLogger(StaticWebConfiguration.class);
 
-    @Value("${spring.resources.static-locations}")
-    private String resourceLocations;
-
-    public StaticWebConfiguration(final ConfigProperties _configProperties) {
+    public StaticWebConfiguration(final ConfigProperties _configProperties)
+    {
         configProperties = _configProperties;
     }
 
@@ -58,10 +55,10 @@ public class StaticWebConfiguration
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry _registry)
     {
-        final ResourceHandlerRegistration reg = _registry.addResourceHandler("/assets/**");
-        for (final String location : getResourceLocations()) {
-            LOG.info("Registering assets for {}", location);
-            reg.addResourceLocations(location + "/assets/");
+        for (final Entry<String, String> resource : configProperties.getStaticWeb().getResource().entrySet()) {
+            LOG.info("Adding resource '{}' : '{}'", resource.getKey(), resource.getValue());
+            _registry.addResourceHandler(resource.getKey())
+                .addResourceLocations(resource.getValue());
         }
     }
 
@@ -77,10 +74,5 @@ public class StaticWebConfiguration
             LOG.info("Adding redirect '{}' : '{}'", redirect.getKey(), redirect.getValue());
             _registry.addViewController(redirect.getKey()).setViewName(redirect.getValue());
         }
-    }
-
-    private String[] getResourceLocations()
-    {
-        return resourceLocations.split(",");
     }
 }
