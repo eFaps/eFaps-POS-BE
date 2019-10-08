@@ -54,7 +54,9 @@ auth:
 staticWeb:
   ignore:
     - "/"
-    - "/*.html"
+    - "/kiosk/**"
+    - "/pos/**"
+    - "/**/*.html"
     - "/favicon.ico"
     - "/**/favicon.png"
     - "/**/*.html"
@@ -62,8 +64,16 @@ staticWeb:
     - "/**/*.js"
     - "/**/*.json"
     - "/**/*.svg"
-  redirect:
-    "[/config]": "redirect:/static/index.html"
+  views:
+    "[/kiosk]": "forward:/kiosk/index.html"
+    "[/kiosk/config]": "forward:/kiosk/index.html"
+    "[/kiosk/categories]": "forward:/kiosk/index.html"
+    "[/kiosk/login]": "forward:/kiosk/index.html"
+    "[/pos]": "forward:/pos/index.html"
+    "[/pos/login]": "forward:/pos/index.html"
+  resources:
+    "[/kiosk/**]": "file:/home/jan-moxter/Development/git/nodejs/synerkiosk-cashcontrol/dist/kiosk/"
+    "[/pos/**]": "file:/home/jan-moxter/Development/git/nodejs/eFaps-POS-FE/dist/"
 
 jwt:
   secret: ThisIsNotVerySecret

@@ -55,7 +55,7 @@ public class StaticWebConfiguration
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry _registry)
     {
-        for (final Entry<String, String> resource : configProperties.getStaticWeb().getResource().entrySet()) {
+        for (final Entry<String, String> resource : configProperties.getStaticWeb().getResources().entrySet()) {
             LOG.info("Adding resource '{}' : '{}'", resource.getKey(), resource.getValue());
             _registry.addResourceHandler(resource.getKey())
                 .addResourceLocations(resource.getValue());
@@ -70,9 +70,9 @@ public class StaticWebConfiguration
         _registry.addViewController("/products").setViewName("redirect:/index.html");
         _registry.addViewController("/workspaces").setViewName("redirect:/index.html");
 
-        for (final Entry<String, String> redirect : configProperties.getStaticWeb().getRedirect().entrySet()) {
-            LOG.info("Adding redirect '{}' : '{}'", redirect.getKey(), redirect.getValue());
-            _registry.addViewController(redirect.getKey()).setViewName(redirect.getValue());
+        for (final Entry<String, String> view : configProperties.getStaticWeb().getViews().entrySet()) {
+            LOG.info("Adding view '{}' : '{}'", view.getKey(), view.getValue());
+            _registry.addViewController(view.getKey()).setViewName(view.getValue());
         }
     }
 }

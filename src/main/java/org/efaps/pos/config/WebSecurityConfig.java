@@ -94,7 +94,7 @@ public class WebSecurityConfig
             .authorizeRequests()
                 .antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate", IApi.BASEPATH + "refreshauth")
                 .permitAll()
-                .antMatchers(configProperties.getStaticWeb().getResource().keySet().stream().toArray(String[]::new))
+                .antMatchers(getIgnore())
                 .permitAll()
                 .anyRequest()
                 .authenticated();
@@ -117,13 +117,14 @@ public class WebSecurityConfig
             .and()
             .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
             .and()
-            .ignoring().antMatchers(HttpMethod.GET,
-                            configProperties.getStaticWeb().getIgnore().toArray(
-                                            new String[ configProperties.getStaticWeb().getIgnore().size()]))
+            .ignoring().antMatchers(HttpMethod.GET, getIgnore())
             .and()
             .ignoring().antMatchers(HttpMethod.OPTIONS)
             .and()
             .ignoring().antMatchers("/socket/**");
     }
 
+    private String[] getIgnore() {
+        return configProperties.getStaticWeb().getIgnore().stream().toArray(String[]::new);
+    }
 }
