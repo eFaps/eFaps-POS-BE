@@ -70,6 +70,7 @@ staticWeb:
     "[/kiosk/categories]": "forward:/kiosk/index.html"
     "[/kiosk/categories/*]": "forward:/kiosk/index.html"
     "[/kiosk/login]": "forward:/kiosk/index.html"
+    "[/kiosk/end]": "forward:/kiosk/index.html"
     "[/pos]": "forward:/pos/index.html"
     "[/pos/login]": "forward:/pos/index.html"
   resources:
