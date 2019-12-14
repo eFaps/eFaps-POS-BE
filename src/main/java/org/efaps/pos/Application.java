@@ -26,6 +26,7 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
@@ -36,6 +37,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @SpringBootApplication
 @EnableCaching
 @EnableConfigurationProperties
+@ConfigurationPropertiesScan
 @EnableMongoAuditing
 public class Application
 {
