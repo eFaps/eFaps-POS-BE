@@ -30,7 +30,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <spring.boot.version>2.2.0.RELEASE</spring.boot.version>
+        <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
         <junit.jupiter.version>5.5.0</junit.jupiter.version>
         <junit.platform.version>1.5.0</junit.platform.version>
     </properties>
@@ -219,7 +219,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.9</version>
+            <version>4.5.10</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -227,6 +227,5 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
     </dependencies>
 </project>
