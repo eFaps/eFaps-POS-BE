@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,5 +63,11 @@ public class CollectorController
     public CollectOrderDto getCollectOrder(@PathVariable(name = "collectOrderId") final String _collectOrderId)
     {
         return Converter.toDto(collectorService.getCollectOrder(_collectOrderId).orElse(null));
+    }
+
+    @PostMapping(path = "orders/{collectOrderId}/cancel", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CollectOrderDto cancelCollectOrder(@PathVariable(name = "collectOrderId") final String _collectOrderId)
+    {
+        return Converter.toDto(collectorService.cancelCollectOrder(_collectOrderId).orElse(null));
     }
 }

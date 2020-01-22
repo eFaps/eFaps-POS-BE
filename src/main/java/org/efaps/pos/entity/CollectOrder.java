@@ -107,6 +107,6 @@ public class CollectOrder
 
     public enum State
     {
-        INVALID, PENDING, SUCCESS
+        INVALID, PENDING, SUCCESS, CANCELED
     }
 }

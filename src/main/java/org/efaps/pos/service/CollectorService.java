@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,6 @@ public class CollectorService
         return collectors;
     }
 
-
     public String startCollect(final String _key,
                                final BigDecimal _amount) {
         String ret = null;
@@ -111,5 +110,14 @@ public class CollectorService
     public Optional<CollectOrder> getCollectOrder(final String _collectOrderId)
     {
         return collectOrderRepository.findById(_collectOrderId);
+    }
+
+    public Optional<CollectOrder> cancelCollectOrder(final String _collectOrderId)
+    {
+        final var collectOrderOpt = getCollectOrder(_collectOrderId);
+        if (collectOrderOpt.isPresent()) {
+            collectOrderOpt.get().setState(State.CANCELED);
+        }
+        return collectOrderOpt;
     }
 }
