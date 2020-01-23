@@ -114,9 +114,11 @@ public class CollectorService
 
     public Optional<CollectOrder> cancelCollectOrder(final String _collectOrderId)
     {
-        final var collectOrderOpt = getCollectOrder(_collectOrderId);
+        var collectOrderOpt = getCollectOrder(_collectOrderId);
         if (collectOrderOpt.isPresent()) {
-            collectOrderOpt.get().setState(State.CANCELED);
+            final var collectOrder = collectOrderOpt.get();
+            collectOrder.setState(State.CANCELED);
+            collectOrderOpt =  Optional.of(collectOrderRepository.save(collectOrder));
         }
         return collectOrderOpt;
     }
