@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
  */
 package org.efaps.pos.config;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.context.MultiTenantMongoDbFactory;
 import org.springframework.context.annotation.Bean;
@@ -26,14 +23,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
+import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 
 @Configuration
 @Profile({ "!test" })
 public class MongoConfig
-    extends AbstractMongoConfiguration
+    extends AbstractMongoClientConfiguration
 {
 
     private final ConfigProperties configProperties;
@@ -75,8 +76,7 @@ public class MongoConfig
     @Override
     public MongoClient mongoClient()
     {
-        final MongoClientURI uri = new MongoClientURI(configProperties.getMongoClientURI());
-        return new MongoClient(uri);
+        return MongoClients.create(configProperties.getMongoClientURI());
     }
 
     @Override
