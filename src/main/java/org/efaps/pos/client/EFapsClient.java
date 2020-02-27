@@ -404,7 +404,7 @@ public class EFapsClient
                         .buildAndExpand(map);
     }
 
-    private RequestEntity<?> get(final URI _uri)
+    public RequestEntity<?> get(final URI _uri)
     {
       return addHeader(RequestEntity.get(_uri)).build();
     }
