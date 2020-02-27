@@ -35,6 +35,8 @@ public class ConfigProperties
 
     private String mongoClientURI;
 
+    private boolean syncOnStartup;
+
     private final SSO sso = new SSO();
 
     private final EFaps efaps = new EFaps();
@@ -103,6 +105,16 @@ public class ConfigProperties
     public StaticWeb getStaticWeb()
     {
         return staticWeb;
+    }
+
+    public boolean isSyncOnStartup()
+    {
+        return syncOnStartup;
+    }
+
+    public void setSyncOnStartup(final boolean syncOnStartup)
+    {
+        this.syncOnStartup = syncOnStartup;
     }
 
     public static class BasicAuth

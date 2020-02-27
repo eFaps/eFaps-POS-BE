@@ -59,7 +59,7 @@ public class ApplicationStartup
     {
         if (ArrayUtils.contains(env.getActiveProfiles(), "demo")) {
             demoService.init();
-        } else {
+        } else if (configProperties.isSyncOnStartup()){
             if (configProperties.getCompanies().size() > 0) {
                 for (final Company company : configProperties.getCompanies()) {
                     Context.get().setCompany(company);
