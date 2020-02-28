@@ -1,8 +1,10 @@
 package org.efaps.pos.config;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import org.efaps.pos.service.SyncService;
+import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +60,7 @@ public class QuartzConfig
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncPayablesJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(180 * 1000);
-        stFactory.setRepeatInterval(syncPayablesInterval * 1000);
+        stFactory.setRepeatInterval(Math.abs(syncPayablesInterval) * 1000);
         return stFactory;
     }
 
@@ -78,7 +80,7 @@ public class QuartzConfig
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncContactsJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(180 * 1000);
-        stFactory.setRepeatInterval(syncContactsInterval * 1000);
+        stFactory.setRepeatInterval(Math.abs(syncContactsInterval) * 1000);
         return stFactory;
     }
 
@@ -98,7 +100,7 @@ public class QuartzConfig
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncInventoryJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(180 * 1000);
-        stFactory.setRepeatInterval(syncInventoryInterval * 1000);
+        stFactory.setRepeatInterval(Math.abs(syncInventoryInterval) * 1000);
         return stFactory;
     }
 
@@ -106,9 +108,18 @@ public class QuartzConfig
     public SchedulerFactoryBean schedulerFactoryBean()
     {
         final SchedulerFactoryBean scheduler = new SchedulerFactoryBean();
-        scheduler.setTriggers(syncPayablesTriggerFactoryBean().getObject(),
-                        syncContactsTriggerFactoryBean().getObject(),
-                        syncInventoryTriggerFactoryBean().getObject());
+        final var triggers = new ArrayList<Trigger>();
+
+        if (!(syncPayablesInterval < 0)) {
+            triggers.add(syncPayablesTriggerFactoryBean().getObject());
+        }
+        if (!(syncContactsInterval < 0)) {
+            triggers.add(syncContactsTriggerFactoryBean().getObject());
+        }
+        if (!(syncInventoryInterval < 0)) {
+            triggers.add(syncInventoryTriggerFactoryBean().getObject());
+        }
+        scheduler.setTriggers(triggers.stream().toArray(Trigger[]::new));
         final Properties quartzProperties = new Properties();
         quartzProperties.put("org.quartz.threadPool.threadCount", threatCount.toString());
         scheduler.setQuartzProperties(quartzProperties);
