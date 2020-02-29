@@ -16,12 +16,6 @@
  */
 package org.efaps.pos.util;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Clock;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.DefaultClock;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +30,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Component;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Clock;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.DefaultClock;
 
 @Component
 public class JwtTokenUtil
@@ -96,7 +96,7 @@ public class JwtTokenUtil
         return generateToken(claims, _userDetails.getUsername());
     }
 
-    protected String generateToken(final Map<String, Object> claims, final String subject)
+    public String generateToken(final Map<String, Object> claims, final String subject)
     {
         final Date createdDate = clock.now();
         final Date expirationDate = calculateExpirationDate(createdDate);

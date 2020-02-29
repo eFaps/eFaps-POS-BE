@@ -409,6 +409,13 @@ public class EFapsClient
       return addHeader(RequestEntity.get(_uri)).build();
     }
 
+    public <T> RequestEntity<T> post(final URI _uri, final T _body)
+    {
+      return addHeader(RequestEntity.post(_uri))
+                      .accept(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN)
+                      .body(_body);
+    }
+
     private RequestEntity<?> get(final String _path)
         throws IdentException
     {
