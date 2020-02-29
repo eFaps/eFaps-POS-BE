@@ -82,6 +82,12 @@ public class JwtTokenUtil
         return claimsResolver.apply(claims);
     }
 
+    public <T> T getClaimFromToken(final String _token, final String _claimName, final Class<T> _requiredType)
+    {
+        final Claims claims = getAllClaimsFromToken(_token);
+        return claims.get(_claimName, _requiredType);
+    }
+
     private Claims getAllClaimsFromToken(final String token)
     {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
