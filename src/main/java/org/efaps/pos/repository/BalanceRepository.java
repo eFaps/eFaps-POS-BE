@@ -29,9 +29,11 @@ public interface BalanceRepository
 {
     Optional<Balance> findOneByUserOidAndStatus(String _userOid, BalanceStatus _status);
 
+    Optional<Balance> findOneByKeyAndStatus(String _key, BalanceStatus _status);
+
     Collection<Balance> findByOidIsNull();
 
     Collection<Balance> findBySyncedIsFalseAndStatus(BalanceStatus _status);
 
-
+    Collection<Balance> findByStatus(BalanceStatus _status);
 }

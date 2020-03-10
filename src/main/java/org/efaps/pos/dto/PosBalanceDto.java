@@ -9,6 +9,7 @@ public class PosBalanceDto
     private final String id;
     private final String number;
     private final PosUserDto user;
+    private final String key;
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
     private final BalanceStatus status;
@@ -18,6 +19,7 @@ public class PosBalanceDto
         super(_builder);
         id = _builder.id;
         number = _builder.number;
+        key = _builder.key;
         user = _builder.user;
         startAt = _builder.startAt;
         endAt = _builder.endAt;
@@ -32,6 +34,11 @@ public class PosBalanceDto
     public String getNumber()
     {
         return number;
+    }
+
+    public String getKey()
+    {
+        return key;
     }
 
     public PosUserDto getUser()
@@ -66,6 +73,7 @@ public class PosBalanceDto
         private String id;
         private String number;
         private PosUserDto user;
+        private String key;
         private LocalDateTime startAt;
         private LocalDateTime endAt;
         private BalanceStatus status;
@@ -87,6 +95,13 @@ public class PosBalanceDto
             user = _user;
             return this;
         }
+
+        public Builder withKey(final String _key)
+        {
+            key = _key;
+            return this;
+        }
+
 
         public Builder withStartAt(final LocalDateTime _startAt)
         {

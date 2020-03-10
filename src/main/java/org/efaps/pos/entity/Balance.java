@@ -32,6 +32,7 @@ public class Balance
     private String id;
     private String oid;
     private String number;
+    private String key;
     private String userOid;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
@@ -40,89 +41,100 @@ public class Balance
 
     public String getId()
     {
-        return this.id;
+        return id;
     }
 
     public Balance setId(final String _id)
     {
-        this.id = _id;
+        id = _id;
         return this;
     }
 
     public String getOid()
     {
-        return this.oid;
+        return oid;
     }
 
     public Balance setOid(final String _oid)
     {
-        this.oid = _oid;
+        oid = _oid;
         return this;
     }
 
     public String getNumber()
     {
-        return this.number;
+        return number;
     }
 
     public Balance setNumber(final String _number)
     {
-        this.number = _number;
+        number = _number;
+        return this;
+    }
+
+    public String getKey()
+    {
+        return key;
+    }
+
+    public Balance setKey(final String _key)
+    {
+        key = _key;
         return this;
     }
 
     public LocalDateTime getStartAt()
     {
-        return this.startAt;
+        return startAt;
     }
 
     public Balance setStartAt(final LocalDateTime _startAt)
     {
-        this.startAt = _startAt;
+        startAt = _startAt;
         return this;
     }
 
     public LocalDateTime getEndAt()
     {
-        return this.endAt;
+        return endAt;
     }
 
     public Balance setEndAt(final LocalDateTime _endAt)
     {
-        this.endAt = _endAt;
+        endAt = _endAt;
         return this;
     }
 
     public String getUserOid()
     {
-        return this.userOid;
+        return userOid;
     }
 
     public Balance setUserOid(final String _userOid)
     {
-        this.userOid = _userOid;
+        userOid = _userOid;
         return this;
     }
 
     public BalanceStatus getStatus()
     {
-        return this.status;
+        return status;
     }
 
     public Balance setStatus(final BalanceStatus _status)
     {
-        this.status = _status;
+        status = _status;
         return this;
     }
 
     public boolean isSynced()
     {
-        return this.synced;
+        return synced;
     }
 
     public Balance setSynced(final boolean _synced)
     {
-        this.synced = _synced;
+        synced = _synced;
         return this;
     }
 
