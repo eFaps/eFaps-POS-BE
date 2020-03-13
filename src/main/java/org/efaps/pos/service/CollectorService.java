@@ -88,7 +88,7 @@ public class CollectorService
             ret = collectOrder.getId();
             final var collectorState = new CollectorState(ret);
             collectorState.setState(State.PENDING);
-
+            CACHE.put(ret, collectorState);
             final Company company = Context.get().getCompany();
             for (final ICollectorListener listener : collectorListener) {
                 executer.execute(() -> {
