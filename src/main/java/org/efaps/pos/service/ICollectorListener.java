@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,13 @@ package org.efaps.pos.service;
 import java.util.List;
 
 import org.efaps.pos.dto.CollectorDto;
+import org.efaps.pos.pojo.CollectorState;
 
 public interface ICollectorListener
 {
 
     List<CollectorDto> getCollectors();
 
-    void collect(String _collectOrderId);
+    void collect(CollectorState _collectorState);
 
 }

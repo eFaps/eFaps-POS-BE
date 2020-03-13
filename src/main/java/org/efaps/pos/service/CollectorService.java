@@ -20,27 +20,37 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.efaps.pos.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.CollectorDto;
 import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.CollectOrder.State;
 import org.efaps.pos.entity.Collector;
+import org.efaps.pos.pojo.CollectorState;
 import org.efaps.pos.repository.CollectOrderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CollectorService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(CollectorService.class);
+
     private final Executor executer = Executors.newFixedThreadPool(5);
 
     private final List<ICollectorListener> collectorListener;
     private final CollectOrderRepository collectOrderRepository;
     private final WebSocketService webSocketService;
+
+    public static Map<String,CollectorState> CACHE = Collections.synchronizedMap(new PassiveExpiringMap<>(10, TimeUnit.MINUTES));
 
     public CollectorService(final Optional<List<ICollectorListener>> _collectorListener,
                             final CollectOrderRepository _collectOrderRepository,
@@ -76,28 +86,36 @@ public class CollectorService
                                             .setLabel(collector.getLabel()));
             collectOrder = collectOrderRepository.save(collectOrder);
             ret = collectOrder.getId();
-            final String collectOrderId = ret;
+            final var collectorState = new CollectorState(ret);
+            collectorState.setState(State.PENDING);
+
             final Company company = Context.get().getCompany();
             for (final ICollectorListener listener : collectorListener) {
                 executer.execute(() -> {
                     Context.get().setCompany(company);
-                    listener.collect(collectOrderId);
+                    listener.collect(collectorState);
                 });
             }
             executer.execute(() -> {
                 Context.get().setCompany(company);
-                int max = 0;
-                int overhang = 0;
+                var max = 0;
+                var overhang = 0;
+                var collecting = true;
                 while (max < 1000 && overhang < 5) {
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                     } catch (final InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        LOG.error("Catched", e);
                     }
-                    final State state = collectOrderRepository.findById(collectOrderId).get().getState();
-                    webSocketService.notifyCollectOrderState(collectOrderId, state);
-                    if (!State.PENDING.equals(state)) {
+                    webSocketService.notifyCollectOrderState(collectorState);
+                    if (collecting == true && !State.PENDING.equals(collectorState.getState())) {
+                        collecting = false;
+                        final var storedState = collectOrderRepository.findById(collectorState.getCollectOrderId()).get().getState();
+                        if (storedState != collectorState.getState()) {
+                            LOG.debug("Different states for collectOrder {}", collectorState.getCollectOrderId());
+                        }
+                    }
+                    if (!collecting) {
                         overhang++;
                     }
                     max++;
@@ -118,8 +136,14 @@ public class CollectorService
         if (collectOrderOpt.isPresent()) {
             final var collectOrder = collectOrderOpt.get();
             collectOrder.setState(State.CANCELED);
-            collectOrderOpt =  Optional.of(collectOrderRepository.save(collectOrder));
+            collectOrderOpt = Optional.of(collectOrderRepository.save(collectOrder));
         }
+        getCollectorState(_collectOrderId).ifPresent(collectorState -> collectorState.setState(State.CANCELED));
         return collectOrderOpt;
+    }
+
+    public Optional<CollectorState> getCollectorState(final String _collectOrderId)
+    {
+        return Optional.ofNullable(CACHE.get(_collectOrderId));
     }
 }

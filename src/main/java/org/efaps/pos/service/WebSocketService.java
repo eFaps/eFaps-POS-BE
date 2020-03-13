@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ package org.efaps.pos.service;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.efaps.pos.entity.CollectOrder.State;
+import org.efaps.pos.pojo.CollectorState;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -50,10 +50,10 @@ public class WebSocketService
         return ordersEdited;
     }
 
-    public void notifyCollectOrderState(final String _collectOrderId,
-                                        final State _state)
+    public void notifyCollectOrderState(final CollectorState _collectorState)
     {
-        template.convertAndSend("/topic/collectOrder/" + _collectOrderId, _state.name());
+        template.convertAndSend("/topic/collectOrder/" + _collectorState.getCollectOrderId(),
+                        _collectorState.getState().name());
     }
 
 }
