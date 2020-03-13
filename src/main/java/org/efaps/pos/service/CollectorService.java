@@ -57,6 +57,7 @@ public class CollectorService
                             final WebSocketService _webSocketService)
     {
         collectorListener = _collectorListener.isPresent() ? _collectorListener.get() : Collections.emptyList();
+        LOG.info("Discovered {} ICollectorListener", collectorListener.size());
         collectOrderRepository = _collectOrderRepository;
         webSocketService = _webSocketService;
     }
