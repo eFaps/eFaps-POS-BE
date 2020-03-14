@@ -17,9 +17,10 @@
 
 package org.efaps.pos.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import java.math.BigDecimal;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = CollectStartOrderDto.Builder.class)
 public class CollectStartOrderDto
@@ -27,14 +28,22 @@ public class CollectStartOrderDto
 
     private final BigDecimal amount;
 
+    private final Map<String, Object> details;
+
     private CollectStartOrderDto(final Builder _builder)
     {
         amount = _builder.amount;
+        details = _builder.details;
     }
 
     public BigDecimal getAmount()
     {
         return amount;
+    }
+
+    public Map<String, Object> getDetails()
+    {
+        return details;
     }
 
     public static Builder builder()
@@ -47,9 +56,17 @@ public class CollectStartOrderDto
 
         private BigDecimal amount;
 
+        private Map<String, Object> details;
+
         public Builder withAmount(final BigDecimal _amount)
         {
             amount = _amount;
+            return this;
+        }
+
+        public Builder withDetails(final Map<String, Object> _details)
+        {
+            details = _details;
             return this;
         }
 

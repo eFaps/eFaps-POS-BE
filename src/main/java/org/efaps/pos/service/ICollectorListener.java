@@ -17,6 +17,7 @@
 package org.efaps.pos.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.efaps.pos.dto.CollectorDto;
 import org.efaps.pos.pojo.CollectorState;
@@ -26,6 +27,6 @@ public interface ICollectorListener
 
     List<CollectorDto> getCollectors();
 
-    void collect(CollectorState _collectorState);
+    void collect(CollectorState _collectorState, Map<String, Object> _details);
 
 }

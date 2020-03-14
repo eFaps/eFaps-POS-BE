@@ -17,7 +17,6 @@
 package org.efaps.pos.config;
 
 import org.efaps.pos.ConfigProperties;
-import org.efaps.pos.JwtAuthorizationTokenFilter;
 import org.efaps.pos.context.ContextFilter;
 import org.efaps.pos.controller.JwtAuthenticationEntryPoint;
 import org.efaps.pos.service.UserService;
@@ -31,8 +30,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class WebSecurityConfig
@@ -81,7 +78,7 @@ public class WebSecurityConfig
     protected void configure(final HttpSecurity _httpSecurity)
         throws Exception
     {
-        _httpSecurity
+   /*     _httpSecurity
             .csrf()
                 .disable()
             .httpBasic()
@@ -104,12 +101,13 @@ public class WebSecurityConfig
                         userDetailsService(), jwtTokenUtil);
         _httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
         _httpSecurity.addFilterBefore(contextFilter, JwtAuthorizationTokenFilter.class);
+        */
     }
 
     @Override
     public void configure(final WebSecurity _web)
     {
-        _web.ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate")
+        _web.ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "**")
             .and()
             .ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "refreshauth")
             .and()

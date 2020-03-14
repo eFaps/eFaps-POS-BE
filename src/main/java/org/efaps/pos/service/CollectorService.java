@@ -16,7 +16,6 @@
  */
 package org.efaps.pos.service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.efaps.pos.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
+import org.efaps.pos.dto.CollectStartOrderDto;
 import org.efaps.pos.dto.CollectorDto;
 import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.CollectOrder.State;
@@ -72,7 +72,7 @@ public class CollectorService
     }
 
     public String startCollect(final String _key,
-                               final BigDecimal _amount) {
+                               final CollectStartOrderDto _dto) {
         String ret = null;
         final Optional<CollectorDto> collectorOpt = getCollectors().stream()
                         .filter(collectorDto -> _key.equals(collectorDto.getKey()))
@@ -81,7 +81,7 @@ public class CollectorService
             final CollectorDto collector = collectorOpt.get();
             CollectOrder collectOrder = new CollectOrder()
                             .setState(State.PENDING)
-                            .setAmount(_amount)
+                            .setAmount(_dto.getAmount())
                             .setCollector(new Collector()
                                             .setKey(collector.getKey())
                                             .setLabel(collector.getLabel()));
@@ -94,7 +94,7 @@ public class CollectorService
             for (final ICollectorListener listener : collectorListener) {
                 executer.execute(() -> {
                     Context.get().setCompany(company);
-                    listener.collect(collectorState);
+                    listener.collect(collectorState, _dto.getDetails());
                 });
             }
             executer.execute(() -> {

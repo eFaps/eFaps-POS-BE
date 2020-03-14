@@ -56,7 +56,7 @@ public class CollectorController
     public String startCollect(@PathVariable("key") final String _key,
                                @RequestBody final CollectStartOrderDto _dto)
     {
-        return collectorService.startCollect(_key, _dto.getAmount());
+        return collectorService.startCollect(_key, _dto);
     }
 
     @GetMapping(path = "orders/{collectOrderId}", produces = MediaType.APPLICATION_JSON_VALUE)
