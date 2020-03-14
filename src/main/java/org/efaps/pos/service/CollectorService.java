@@ -37,6 +37,7 @@ import org.efaps.pos.pojo.CollectorState;
 import org.efaps.pos.repository.CollectOrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -91,13 +92,16 @@ public class CollectorService
             collectorState.setState(State.PENDING);
             CACHE.put(ret, collectorState);
             final Company company = Context.get().getCompany();
+            final var authentication = SecurityContextHolder.getContext().getAuthentication();
             for (final ICollectorListener listener : collectorListener) {
                 executer.execute(() -> {
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                     Context.get().setCompany(company);
                     listener.collect(collectorState, _dto.getDetails());
                 });
             }
             executer.execute(() -> {
+                SecurityContextHolder.getContext().setAuthentication(authentication);
                 Context.get().setCompany(company);
                 var max = 0;
                 var overhang = 0;

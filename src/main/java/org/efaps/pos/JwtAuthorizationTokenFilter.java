@@ -80,7 +80,7 @@ public class JwtAuthorizationTokenFilter
 
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {
                 final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
+                                userDetails, authToken, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(_request));
                 LOG.info("authorizated user '{}', setting security context", username);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
