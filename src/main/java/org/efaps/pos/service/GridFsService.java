@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
  */
 package org.efaps.pos.service;
 
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.gridfs.GridFSBucket;
-import com.mongodb.client.gridfs.GridFSBuckets;
-import com.mongodb.client.gridfs.model.GridFSFile;
+import static org.springframework.data.mongodb.core.query.Query.query;
+import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilename;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +31,11 @@ import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.gridfs.GridFSBucket;
+import com.mongodb.client.gridfs.GridFSBuckets;
+import com.mongodb.client.gridfs.model.GridFSFile;
+
 @Service
 public class GridFsService
 {
@@ -44,14 +47,14 @@ public class GridFsService
     public GridFsService(final GridFsTemplate _gridFsTemplate,
                         final MongoDbFactory _dbFactory)
     {
-        this.gridFsTemplate = _gridFsTemplate;
-        this.dbFactory = _dbFactory;
+        gridFsTemplate = _gridFsTemplate;
+        dbFactory = _dbFactory;
     }
 
     public InputStream getContent(final String _oid)
-                    throws IllegalStateException, IOException
+        throws IllegalStateException, IOException
     {
-        final GridFSFile imageFile = this.gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(_oid)));
+        final GridFSFile imageFile = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(_oid)));
         return new GridFsResource(imageFile, getGridFs().openDownloadStream(imageFile.getId()))
                                 .getInputStream();
     }
@@ -59,15 +62,20 @@ public class GridFsService
     public Object[] getBlob(final String _oid)
         throws IllegalStateException, IOException
     {
-        final GridFSFile imageFile = this.gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(_oid)));
+        final GridFSFile imageFile = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(_oid)));
         final InputStream resource = new GridFsResource(imageFile, getGridFs().openDownloadStream(imageFile.getId()))
                         .getInputStream();
         return new Object[] { imageFile.getMetadata().getString("contentType"), IOUtils.toByteArray(resource) };
     }
 
+    public GridFSFile getGridFSFileByName(final String _fileName)
+    {
+        return gridFsTemplate.findOne(query(whereFilename().is(_fileName)));
+    }
+
     private GridFSBucket getGridFs()
     {
-        final MongoDatabase db = this.dbFactory.getDb();
+        final MongoDatabase db = dbFactory.getDb();
         return GridFSBuckets.create(db);
     }
 }
