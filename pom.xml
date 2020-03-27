@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-  Copyright 2003 - 2019 The eFaps Team
+  Copyright 2003 - 2020 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@
     <packaging>jar</packaging>
 
     <properties>
-        <spring.boot.version>2.2.5.RELEASE</spring.boot.version>
-        <junit.jupiter.version>5.6.0</junit.jupiter.version>
-        <junit.platform.version>1.6.0</junit.platform.version>
+        <spring.boot.version>2.2.6.RELEASE</spring.boot.version>
+        <junit.jupiter.version>5.6.1</junit.jupiter.version>
+        <junit.platform.version>1.6.1</junit.platform.version>
     </properties>
     <build>
         <plugins>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.8.1</version>
+            <version>6.12.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
