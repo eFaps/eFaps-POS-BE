@@ -47,6 +47,8 @@ public class ConfigProperties
 
     private final StaticWeb staticWeb = new StaticWeb();
 
+    private final TaxpayerRegistry taxpayerRegistry = new TaxpayerRegistry();
+
     public String getVersion()
     {
         return version;
@@ -105,6 +107,11 @@ public class ConfigProperties
     public StaticWeb getStaticWeb()
     {
         return staticWeb;
+    }
+
+    public TaxpayerRegistry getTaxpayerRegistry()
+    {
+        return taxpayerRegistry;
     }
 
     public boolean isSyncOnStartup()
@@ -458,16 +465,17 @@ public class ConfigProperties
 
     public static class StaticWeb
     {
-        private final List<String> ignore  = new ArrayList<>();
-        private final Map<String, String> views  = new HashMap<>();
-        private final Map<String, String> resources  = new HashMap<>();
+
+        private final List<String> ignore = new ArrayList<>();
+        private final Map<String, String> views = new HashMap<>();
+        private final Map<String, String> resources = new HashMap<>();
 
         public Map<String, String> getResources()
         {
             return resources;
         }
 
-        public Map<String,String> getViews()
+        public Map<String, String> getViews()
         {
             return views;
         }
@@ -475,6 +483,33 @@ public class ConfigProperties
         public List<String> getIgnore()
         {
             return ignore;
+        }
+    }
+
+    public static class TaxpayerRegistry
+    {
+
+        private URI baseUrl;
+        private String queryPath;
+
+        public URI getBaseUrl()
+        {
+            return baseUrl;
+        }
+
+        public void setBaseUrl(final URI _baseUrl)
+        {
+            baseUrl = _baseUrl;
+        }
+
+        public String getQueryPath()
+        {
+            return queryPath;
+        }
+
+        public void setQueryPath(final String _queryPath)
+        {
+            queryPath = _queryPath;
         }
     }
 }

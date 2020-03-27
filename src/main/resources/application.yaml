@@ -52,6 +52,10 @@ auth:
   user: Administrator
   password: Administrator
 
+taxpayerRegistry:
+  baseUrl: https://consulta-ruc.synercom.pe
+  queryPath: query
+
 staticWeb:
   ignore:
     - "/"
