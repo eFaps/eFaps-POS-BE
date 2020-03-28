@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,27 @@
 
 package org.efaps.pos.context;
 
-import com.mongodb.MongoClientURI;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
+
 import com.mongodb.client.MongoDatabase;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+public class MultiTenantMongoDbFactory
+    extends SimpleMongoClientDbFactory
+{
 
-public class MultiTenantMongoDbFactory extends SimpleMongoDbFactory {
-
-  public MultiTenantMongoDbFactory(final MongoClientURI _uri) {
-    super(_uri);
-  }
-
-  @Override
-  public MongoDatabase getDb() throws DataAccessException {
-    if (Context.get().getCompany() != null) {
-      return getDb(Context.get().getCompany().getTenant());
+    public MultiTenantMongoDbFactory(final String _connectionString)
+    {
+        super(_connectionString);
     }
-    return super.getDb();
-  }
+
+    @Override
+    public MongoDatabase getDb()
+        throws DataAccessException
+    {
+        if (Context.get().getCompany() != null) {
+            return getDb(Context.get().getCompany().getTenant());
+        }
+        return super.getDb();
+    }
 }

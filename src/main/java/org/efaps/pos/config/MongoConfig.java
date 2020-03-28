@@ -27,7 +27,6 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 
-import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 
@@ -59,8 +58,7 @@ public class MongoConfig
     @Primary
     public MongoDbFactory mongoDbFactory()
     {
-        final MongoClientURI mongoClientURI = new MongoClientURI(configProperties.getMongoClientURI());
-        return new MultiTenantMongoDbFactory(mongoClientURI);
+        return new MultiTenantMongoDbFactory(configProperties.getMongoClientURI());
     }
 
     @Override
