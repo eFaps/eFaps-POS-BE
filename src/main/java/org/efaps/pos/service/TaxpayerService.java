@@ -18,6 +18,8 @@ package org.efaps.pos.service;
 
 import org.efaps.pos.client.TaxpayerRegistryClient;
 import org.efaps.pos.dto.TaxpayerDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,9 +33,14 @@ public class TaxpayerService
         taxpayerRegistryClient = _taxpayerRegistryClient;
     }
 
-    public TaxpayerDto query(final String _id)
+    public TaxpayerDto get(final String _id)
     {
         return taxpayerRegistryClient.getTaxpayer(_id);
+    }
+
+    public Page<TaxpayerDto> find(final Pageable _pageable, final String _term)
+    {
+        return taxpayerRegistryClient.findTaxpayer(_pageable, _term);
     }
 
 }

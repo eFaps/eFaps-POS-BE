@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class TaxpayerRegistryClient
     extends AbstractRestClient
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(TaxpayerRegistryClient.class);
 
     public TaxpayerRegistryClient(final RestTemplateBuilder _restTemplateBuilder,
@@ -47,15 +50,42 @@ public class TaxpayerRegistryClient
         TaxpayerDto ret = null;
         try {
             final var uri = UriComponentsBuilder.fromUri(getConfig().getTaxpayerRegistry().getBaseUrl())
-                .path(getConfig().getTaxpayerRegistry().getQueryPath())
-                .queryParam("id", _id)
-                .build()
-                .toUri();
+                            .path(getConfig().getTaxpayerRegistry().getQueryPath())
+                            .queryParam("id", _id)
+                            .build()
+                            .toUri();
 
             final var requestEntity = addHeader(RequestEntity.get(uri)).build();
 
             final ResponseEntity<TaxpayerDto> response = getRestTemplate()
-                            .exchange(requestEntity, new ParameterizedTypeReference<TaxpayerDto>() {});
+                            .exchange(requestEntity, new ParameterizedTypeReference<TaxpayerDto>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of taxpayer", e);
+        }
+        return ret;
+    }
+
+    public Page<TaxpayerDto> findTaxpayer(final Pageable _pageable, final String _term)
+    {
+        Page<TaxpayerDto> ret = null;
+        try {
+            final var uri = UriComponentsBuilder.fromUri(getConfig().getTaxpayerRegistry().getBaseUrl())
+                            .path(getConfig().getTaxpayerRegistry().getQueryPath())
+                            .queryParam("term", _term)
+                            .queryParam("size", _pageable.getPageSize())
+                            .queryParam("page", _pageable.getPageNumber())
+                            .build()
+                            .toUri();
+
+            final var requestEntity = addHeader(RequestEntity.get(uri)).build();
+
+            final ResponseEntity<ClientPage<TaxpayerDto>> response = getRestTemplate()
+                            .exchange(requestEntity, new ParameterizedTypeReference<ClientPage<TaxpayerDto>>()
+                            {
+                            });
             ret = response.getBody();
         } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of taxpayer", e);

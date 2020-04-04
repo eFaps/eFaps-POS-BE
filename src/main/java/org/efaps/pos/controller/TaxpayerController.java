@@ -19,6 +19,8 @@ package org.efaps.pos.controller;
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.TaxpayerDto;
 import org.efaps.pos.service.TaxpayerService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(IApi.BASEPATH + "taxpayer")
 public class TaxpayerController
 {
+
     private final TaxpayerService taxpayerService;
 
     public TaxpayerController(final TaxpayerService _taxpayerService)
@@ -36,9 +39,15 @@ public class TaxpayerController
         taxpayerService = _taxpayerService;
     }
 
-    @GetMapping(path = "query", produces = MediaType.APPLICATION_JSON_VALUE)
-    public TaxpayerDto query(@RequestParam(name = "id") final String _id)
+    @GetMapping(path = "query", produces = MediaType.APPLICATION_JSON_VALUE, params = { "id" })
+    public TaxpayerDto get(@RequestParam(name = "id") final String _id)
     {
-        return taxpayerService.query(_id);
+        return taxpayerService.get(_id);
+    }
+
+    @GetMapping(path = "query", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
+    public Page<TaxpayerDto> find(final Pageable _pageable, @RequestParam(name = "term") final String _term)
+    {
+        return taxpayerService.find(_pageable, _term);
     }
 }
