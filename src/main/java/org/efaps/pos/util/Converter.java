@@ -284,6 +284,7 @@ public final class Converter
         final Product ret = new Product()
                         .setOid(_dto.getOid())
                         .setSKU(_dto.getSku())
+                        .setType(_dto.getType())
                         .setImageOid(_dto.getImageOid())
                         .setDescription(_dto.getDescription())
                         .setNetPrice(_dto.getNetPrice())
@@ -346,6 +347,7 @@ public final class Converter
                     ? null
                     : ProductDto.builder()
                         .withSKU(_entity.getSKU())
+                        .withType(_entity.getType())
                         .withDescription(_entity.getDescription())
                         .withImageOid(_entity.getImageOid())
                         .withOID(_entity.getOid())

@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.efaps.pos.dto.ProductType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -32,6 +33,7 @@ public class Product
     private String id;
     private String oid;
     private String sku;
+    private ProductType type;
     private String description;
     private String imageOid;
     private BigDecimal netPrice;
@@ -63,6 +65,17 @@ public class Product
     public Product setSKU(final String _sku)
     {
         sku = _sku;
+        return this;
+    }
+
+    public ProductType getType()
+    {
+        return type;
+    }
+
+    public Product setType(final ProductType _type)
+    {
+        type = _type;
         return this;
     }
 
