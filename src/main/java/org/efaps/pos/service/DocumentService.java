@@ -76,6 +76,7 @@ public class DocumentService
     private final PosService posService;
     private final SequenceService sequenceService;
     private final ContactService contactService;
+    private final InventoryService inventoryService;
     private final OrderRepository orderRepository;
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
@@ -92,6 +93,7 @@ public class DocumentService
                            final PosService _posService,
                            final SequenceService _sequenceService,
                            final ContactService _contactService,
+                           final InventoryService _inventoryService,
                            final OrderRepository _orderRepository,
                            final ReceiptRepository _receiptRepository,
                            final InvoiceRepository _invoiceRepository,
@@ -105,6 +107,7 @@ public class DocumentService
         posService = _posService;
         sequenceService = _sequenceService;
         orderRepository = _orderRepository;
+        inventoryService = _inventoryService;
         receiptRepository = _receiptRepository;
         contactService = _contactService;
         invoiceRepository = _invoiceRepository;
@@ -211,6 +214,7 @@ public class DocumentService
             LOG.error("Wow that should not happen", e);
         }
         closeOrder(_orderId, ret.getId());
+        inventoryService.removeFromInventory(_workspaceOid, ret);
         return ret;
     }
 
@@ -236,6 +240,7 @@ public class DocumentService
             LOG.error("Wow that should not happen", e);
         }
         closeOrder(_orderId, ret.getId());
+        inventoryService.removeFromInventory(_workspaceOid, ret);
         return ret;
     }
 
@@ -261,6 +266,7 @@ public class DocumentService
             LOG.error("Wow that should not happen", e);
         }
         closeOrder(_orderId, ret.getId());
+        inventoryService.removeFromInventory(_workspaceOid, ret);
         return ret;
     }
 

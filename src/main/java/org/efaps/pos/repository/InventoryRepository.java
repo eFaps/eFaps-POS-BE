@@ -17,6 +17,7 @@
 package org.efaps.pos.repository;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.efaps.pos.entity.InventoryEntry;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -27,4 +28,6 @@ public interface InventoryRepository
     Collection<InventoryEntry> findByWarehouseOid(String _warehouseOid);
 
     Collection<InventoryEntry> findByProductOid(String _productOid);
+
+    Optional<InventoryEntry> findByWarehouseOidAndProductOid(String _warehouseOid, String _productOid);
 }

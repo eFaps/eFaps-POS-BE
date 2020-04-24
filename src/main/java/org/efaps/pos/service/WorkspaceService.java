@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 package org.efaps.pos.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.entity.User;
@@ -35,25 +36,31 @@ public class WorkspaceService
     @Autowired
     public WorkspaceService(final WorkspaceRepository _workspaceRepository)
     {
-        this.workspaceRepository = _workspaceRepository;
+        workspaceRepository = _workspaceRepository;
     }
 
     public List<Workspace> getWorkspaces(final User _user)
     {
-        return this.workspaceRepository.findAll().stream()
+        return workspaceRepository.findAll().stream()
                         .filter(ws -> _user.getWorkspaceOids().contains(ws.getOid()))
                         .collect(Collectors.toList());
     }
 
     public Workspace getWorkspace(final User _user, final String _oid)
     {
-        return this.workspaceRepository.findById(_oid)
+        return workspaceRepository.findById(_oid)
                         .filter(ws -> _user.getWorkspaceOids().contains(ws.getOid()))
                         .orElse(null);
     }
 
     protected Workspace getWorkspace(final String _oid)
     {
-        return this.workspaceRepository.findById(_oid).orElse(null);
+        return workspaceRepository.findById(_oid).orElse(null);
+    }
+
+    public Optional<String> getWarehouseOid4Workspace(final String _oid)
+    {
+        final var workspace = getWorkspace(_oid);
+        return workspace == null ? Optional.empty() : Optional.ofNullable(workspace.getWarehouseOid());
     }
 }
