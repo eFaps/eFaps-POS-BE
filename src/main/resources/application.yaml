@@ -96,6 +96,16 @@ spring:
     mongodb:
       database: efapsDemoPOS
 
+demo:
+  users: "classpath:users.json"
+  products: "classpath:products.json"
+  workspaces: "classpath:workspaces.json"
+  poss: "classpath:poss.json"
+  categories: "classpath:categories.json"
+  sequences: "classpath:sequences.json"
+  contacts: "classpath:contacts.json"
+  files: "classpath:images.json"
+
 name: POS-Demo-Backend
 
 

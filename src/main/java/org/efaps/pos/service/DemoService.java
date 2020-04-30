@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
  */
 package org.efaps.pos.service;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.util.List;
 
+import org.efaps.pos.config.DemoConfig;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Pos;
@@ -29,11 +32,12 @@ import org.efaps.pos.entity.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -43,54 +47,82 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 @Service
+@Profile(value = { "demo" })
 public class DemoService
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(DemoService.class);
-
+    private final DemoConfig config;
     private final MongoTemplate mongoTemplate;
     private final GridFsTemplate gridFsTemplate;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public DemoService(final MongoTemplate _mongoTemplate,
+    public DemoService(final DemoConfig _config,
+                       final MongoTemplate _mongoTemplate,
                        final GridFsTemplate _gridFsTemplate,
                        final ObjectMapper _objectMapper)
     {
+        config = _config;
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
         objectMapper = _objectMapper;
     }
 
+    @SuppressWarnings("unchecked")
     public void init()
     {
         try {
-            clean(User.class, Product.class, Workspace.class, Pos.class, Category.class, Sequence.class);
-            init("users.json", new TypeReference<List<User>>(){});
-            init("products.json", new TypeReference<List<Product>>(){});
-            init("workspaces.json", new TypeReference<List<Workspace>>(){});
-            init("poss.json", new TypeReference<List<Pos>>(){});
-            init("categories.json", new TypeReference<List<Category>>(){});
-            init("sequences.json", new TypeReference<List<Sequence>>(){});
-            init("contacts.json", new TypeReference<List<Contact>>(){});
-            loadImages();
+            clean(User.class, Product.class, Workspace.class, Pos.class, Category.class, Sequence.class, Contact.class);
+            save(loadDocuments(config.getUsers(), new TypeReference<List<User>>(){}));
+            save(loadDocuments(config.getProducts(), new TypeReference<List<Product>>(){}));
+            save(loadDocuments(config.getWorkspaces(), new TypeReference<List<Workspace>>(){}));
+            save(loadDocuments(config.getPoss(), new TypeReference<List<Pos>>(){}));
+            save(loadDocuments(config.getCategories(), new TypeReference<List<Category>>(){}));
+            save(loadDocuments(config.getSequences(), new TypeReference<List<Sequence>>(){}));
+            save(loadDocuments(config.getContacts(), new TypeReference<List<Contact>>(){}));
+            final var files = loadDocuments(config.getFiles(), new TypeReference<List<File>>(){});
+            loadFiles(config.getFiles(), (List<File>) files);
         } catch (final IOException e) {
             LOG.error("Errors during init", e);
         }
     }
 
-    private void loadImages()
+    @SuppressWarnings("unchecked")
+    private List<?> loadDocuments(final String _resourceLocation,
+                               @SuppressWarnings("rawtypes") final TypeReference _valueTypeRef)
+        throws JsonParseException, JsonMappingException, IOException
+    {
+        List<?> ret = null;
+        if (_resourceLocation != null) {
+            final var file = ResourceUtils.getFile(_resourceLocation);
+            if (file.exists()) {
+                ret = objectMapper.<List<?>>readValue(new FileInputStream(file), _valueTypeRef);
+            } else {
+                LOG.error("Cannot find: {}", _resourceLocation);
+            }
+        }
+        return ret;
+    }
+
+    private void save(final List<?> _values)
+    {
+        if (_values != null) {
+            _values.forEach(value -> mongoTemplate.save(value));
+        }
+    }
+
+    private void loadFiles(final String _resourceLocation ,final List<File> _files)
         throws IOException
     {
-        final ClassPathResource resource = new ClassPathResource("images.json");
-        final List<Image> images = objectMapper.readValue(resource.getInputStream(),
-                        new TypeReference<List<Image>>(){});
-        for (final Image image : images) {
-            final ClassPathResource imgResource = new ClassPathResource("images/" + image.getFileName());
+        final var resourceFile = ResourceUtils.getFile(_resourceLocation);
+        for (final File fileDoc : _files) {
+            final var file  =  ResourceUtils.getFile(resourceFile.getParent() + "/" + fileDoc.getPath());
             final DBObject metaData = new BasicDBObject();
-            metaData.put("oid", image.getOid());
-            metaData.put("contentType", "image/jpeg");
-            gridFsTemplate.store(imgResource.getInputStream(), image.getFileName(), metaData);
+            metaData.put("oid", fileDoc.getOid());
+            final String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+            metaData.put("contentType", mimeType);
+            gridFsTemplate.store(new FileInputStream(file), file.getName(), metaData);
         }
     }
 
@@ -102,17 +134,11 @@ public class DemoService
         }
     }
 
-    private void init(final String _fileName, @SuppressWarnings("rawtypes") final TypeReference _valueTypeRef)
-        throws JsonParseException, JsonMappingException, IOException
+    public static class File
     {
-        final ClassPathResource resource = new ClassPathResource(_fileName);
-        final List<?> values = objectMapper.<List<?>>readValue(resource.getInputStream(), _valueTypeRef);
-        values.forEach(value -> mongoTemplate.save(value));
-    }
 
-    public static class Image {
         private String oid;
-        private String fileName;
+        private String path;
 
         public String getOid()
         {
@@ -124,14 +150,15 @@ public class DemoService
             oid = _oid;
         }
 
-        public String getFileName()
+        public String getPath()
         {
-            return fileName;
+            return path;
         }
 
-        public void setFileName(final String _fileName)
+        public void setPath(final String path)
         {
-            fileName = _fileName;
+            this.path = path;
         }
+
     }
 }

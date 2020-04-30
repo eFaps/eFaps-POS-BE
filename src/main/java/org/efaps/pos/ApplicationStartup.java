@@ -25,6 +25,7 @@ import org.efaps.pos.service.SyncService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -38,20 +39,18 @@ public class ApplicationStartup
 {
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationStartup.class);
 
-    private final SyncService service;
-    private final DemoService demoService;
     private final Environment env;
     private final ConfigProperties configProperties;
+    private final SyncService service;
+    private DemoService demoService;
 
     public ApplicationStartup(final Environment _env,
                               final ConfigProperties _configProperties,
-                              final SyncService _service,
-                              final DemoService _demoService)
+                              final SyncService _service)
     {
         env = _env;
         configProperties = _configProperties;
         service = _service;
-        demoService = _demoService;
     }
 
     @Override
@@ -96,5 +95,11 @@ public class ApplicationStartup
         } catch (final Exception e){
             LOG.error("Catched error during startup sync", e);
         }
+    }
+
+    @Autowired(required = false)
+    public void setDemoService(final DemoService _demoService)
+    {
+        demoService = _demoService;
     }
 }

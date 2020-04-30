@@ -1,18 +1,18 @@
 [
     {
         "oid": "1234.1",
-        "fileName": "apple.jpeg"
+        "path": "./images/apple.jpeg"
     },
     {
         "oid": "1234.2",
-        "fileName": "orange.jpeg"
+        "path": "./images/orange.jpeg"
     },
     {
         "oid": "1234.3",
-        "fileName": "desktoppc.jpeg"
+        "path": "./images/desktoppc.jpeg"
     },
     {
         "oid": "1234.4",
-        "fileName": "laptop.jpg"
+        "path": "./images/laptop.jpg"
     }
 ]
