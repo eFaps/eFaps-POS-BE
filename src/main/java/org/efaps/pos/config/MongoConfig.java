@@ -31,7 +31,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 
 @Configuration
-@Profile({ "!test" })
+@Profile({ "!test & !embedded" })
 public class MongoConfig
     extends AbstractMongoClientConfiguration
 {

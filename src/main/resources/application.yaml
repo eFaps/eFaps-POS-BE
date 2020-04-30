@@ -91,10 +91,17 @@ jwt:
 
 spring:
   profiles: demo
-  autoconfigure:
-    exclude:
+
   data:
     mongodb:
       database: efapsDemoPOS
 
 name: POS-Demo-Backend
+
+
+---
+
+spring:
+  profiles: embedded
+  autoconfigure:
+    exclude:
