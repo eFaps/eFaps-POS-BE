@@ -1,26 +1,35 @@
 [
-    {
-        "id": "admin",
-        "oid": "1234.1",
-        "username": "admin",
-        "firstName": "Juan",
-        "surName": "Perez",
-        "password": "r0f2haGklaVd/jrOdWL+CRG22zBCUplNh9qjeGgsSl89nwYc7PYtcmSpu7ciZEeA",
-        "roles": [
-            "ADMIN", "USER"
-        ],
-        "_class": "org.efaps.pos.entity.User"
-    },
-     {
-        "id": "user",
-        "oid": "1234.2",
-        "username": "user",
-        "firstName": "Diego",
-        "surName": "Martinez",
-        "roles": [
-            "USER"
-        ],
-        "password": "r0f2haGklaVd/jrOdWL+CRG22zBCUplNh9qjeGgsSl89nwYc7PYtcmSpu7ciZEeA",
-        "_class": "org.efaps.pos.entity.User"
-    }
+  {
+    "id": "admin",
+    "oid": "1234.1",
+    "username": "admin",
+    "firstName": "Juan",
+    "surName": "Perez",
+    "visible": true,
+    "password": "UtUHRfuhjpiSd462AIleaAOrsCjCAHQZy3A2YTiS9lbpOu9fVSk2vgoIIQmyT45K",
+    "roles": [
+      "ADMIN",
+      "USER"
+    ],
+    "workspaceOids": [
+      "4183.1"
+    ],
+    "_class": "org.efaps.pos.entity.User"
+  },
+  {
+    "id": "user",
+    "oid": "1234.2",
+    "username": "user",
+    "firstName": "Diego",
+    "surName": "Martinez",
+    "visible": true,
+    "roles": [
+      "USER"
+    ],
+    "workspaceOids": [
+      "4183.1"
+    ],
+    "password": "UtUHRfuhjpiSd462AIleaAOrsCjCAHQZy3A2YTiS9lbpOu9fVSk2vgoIIQmyT45K",
+    "_class": "org.efaps.pos.entity.User"
+  }
 ]

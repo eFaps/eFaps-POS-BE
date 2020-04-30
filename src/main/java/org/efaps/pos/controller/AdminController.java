@@ -21,6 +21,7 @@ import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PosVersionsDto;
 import org.efaps.pos.entity.Config;
 import org.efaps.pos.service.SyncService;
+import org.efaps.pos.util.SyncServiceDeactivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,19 +52,22 @@ public class AdminController
 
     @GetMapping(path = "/sync")
     public void sync()
+        throws SyncServiceDeactivatedException
     {
-        syncService.syncProducts();
-        syncService.syncCategories();
-        syncService.syncPOSs();
-        syncService.syncWorkspaces();
-        syncService.syncUsers();
-        syncService.syncSequences();
-        syncService.syncContacts();
-        syncService.syncWarehouses();
-        syncService.syncInventory();
-        syncService.syncPrinters();
-        syncService.syncImages();
-        syncService.syncReports();
+        if (!syncService.isDeactivated()) {
+            syncService.syncProducts();
+            syncService.syncCategories();
+            syncService.syncPOSs();
+            syncService.syncWorkspaces();
+            syncService.syncUsers();
+            syncService.syncSequences();
+            syncService.syncContacts();
+            syncService.syncWarehouses();
+            syncService.syncInventory();
+            syncService.syncPrinters();
+            syncService.syncImages();
+            syncService.syncReports();
+        }
     }
 
     @GetMapping(path = "/versions")

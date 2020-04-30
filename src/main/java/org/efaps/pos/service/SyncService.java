@@ -17,9 +17,6 @@
 
 package org.efaps.pos.service;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -80,6 +77,7 @@ import org.efaps.pos.repository.UserRepository;
 import org.efaps.pos.repository.WarehouseRepository;
 import org.efaps.pos.repository.WorkspaceRepository;
 import org.efaps.pos.util.Converter;
+import org.efaps.pos.util.SyncServiceDeactivatedException;
 import org.efaps.pos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +88,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
 @Service
 public class SyncService
@@ -116,6 +117,9 @@ public class SyncService
     private final OrderRepository orderRepository;
     private final ConfigProperties configProperties;
     private final DocumentService documentService;
+
+    private boolean deactivated;
+
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
                        final GridFsTemplate _gridFsTemplate,
@@ -173,7 +177,11 @@ public class SyncService
     }
 
     public void syncProperties()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Properties");
         final Map<String, String> properties = eFapsClient.getProperties();
         final Config config = new Config().setId(Config.KEY).setProperties(properties);
@@ -181,7 +189,11 @@ public class SyncService
     }
 
     public void syncProducts()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Products");
         final List<Product> products = eFapsClient.getProducts().stream()
                         .map(dto -> Converter.toEntity(dto))
@@ -200,7 +212,11 @@ public class SyncService
     }
 
     public void syncCategories()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Categories");
         final List<Category> categories = eFapsClient.getCategories().stream()
                         .map(dto -> Converter.toEntity(dto))
@@ -220,7 +236,12 @@ public class SyncService
     }
 
     public void syncWorkspaces()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
+
         LOG.info("Syncing Workspaces");
         final List<Workspace> workspaces = eFapsClient.getWorkspaces().stream()
                         .map(dto -> Converter.toEntity(dto))
@@ -240,7 +261,11 @@ public class SyncService
     }
 
     public void syncWarehouses()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Warehouses");
         final List<Warehouse> warehouses = eFapsClient.getWarehouses().stream()
                         .map(dto -> Converter.toEntity(dto))
@@ -253,7 +278,11 @@ public class SyncService
     }
 
     public void syncInventory()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Inventory");
         final List<InventoryEntry> entries = eFapsClient.getInventory().stream()
                         .map(dto -> Converter.toEntity(dto))
@@ -266,7 +295,11 @@ public class SyncService
     }
 
     public void syncPrinters()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Printers");
         final List<Printer> printers = eFapsClient.getPrinters().stream()
                         .map(dto -> Converter.toEntity(dto))
@@ -279,7 +312,11 @@ public class SyncService
     }
 
     public void syncPOSs()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing POSs");
         final List<Pos> poss = eFapsClient.getPOSs().stream()
                         .map(dto -> Converter.toEntity(dto))
@@ -299,7 +336,12 @@ public class SyncService
     }
 
     public void syncUsers()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
+
         LOG.info("Syncing Users");
         final List<User> users = eFapsClient.getUsers().stream()
                         .map(dto -> Converter.toEntity(dto))
@@ -312,6 +354,7 @@ public class SyncService
     }
 
     public void syncPayables()
+        throws SyncServiceDeactivatedException
     {
         syncContactsUp();
         syncBalance();
@@ -322,7 +365,11 @@ public class SyncService
     }
 
     public void syncBalance()
+         throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Balance");
         final Collection<BalanceDto> tosync = balanceRepository.findByOidIsNull().stream()
                         .map(balance -> Converter.toBalanceDto(balance))
@@ -373,7 +420,11 @@ public class SyncService
     }
 
     public void syncOrders()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Canceled Orders");
         final Collection<Order> tosync = orderRepository.findByOidIsNullAndStatus(DocStatus.CANCELED);
         for (final Order order : tosync) {
@@ -421,7 +472,11 @@ public class SyncService
     }
 
     public void syncReceipts()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Receipts");
         final Collection<Receipt> tosync = receiptRepository.findByOidIsNull();
         for (final Receipt receipt : tosync) {
@@ -472,7 +527,11 @@ public class SyncService
     }
 
     public void syncInvoices()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Invoices");
         final Collection<Invoice> tosync = invoiceRepository.findByOidIsNull();
         for (final Invoice invoice : tosync) {
@@ -497,7 +556,11 @@ public class SyncService
     }
 
     public void syncTickets()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Tickets");
         final Collection<Ticket> tosync = ticketRepository.findByOidIsNull();
         for (final Ticket dto : tosync) {
@@ -541,7 +604,11 @@ public class SyncService
     }
 
     public void syncImages()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Images");
         final List<Product> products = productRepository.findAll();
         for (final Product product : products) {
@@ -574,7 +641,11 @@ public class SyncService
     }
 
     public void syncReports()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Reports");
         final List<Workspace> workspaces = workspaceRepository.findAll();
         final Set<String> reportOids = workspaces.stream()
@@ -598,7 +669,12 @@ public class SyncService
         registerSync(StashId.REPORTSYNC);
     }
 
-    public void syncSequences() {
+    public void syncSequences()
+        throws SyncServiceDeactivatedException
+    {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Sequences");
         final List<Sequence> sequences = eFapsClient.getSequences().stream()
                         .map(dto -> Converter.toEntity(dto))
@@ -624,7 +700,11 @@ public class SyncService
     }
 
     public void syncContacts()
+        throws SyncServiceDeactivatedException
     {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
         LOG.info("Syncing Contacts");
         syncContactsUp();
         syncContactsDown();
@@ -698,4 +778,13 @@ public class SyncService
         mongoTemplate.save(syncInfo);
     }
 
+    public boolean isDeactivated()
+    {
+        return deactivated;
+    }
+
+    public void setDeactivated(final boolean deactivated)
+    {
+        this.deactivated = deactivated;
+    }
 }

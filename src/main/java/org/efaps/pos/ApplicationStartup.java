@@ -57,6 +57,7 @@ public class ApplicationStartup
     public void onApplicationEvent(final ApplicationReadyEvent _event)
     {
         if (ArrayUtils.contains(env.getActiveProfiles(), "demo")) {
+            service.setDeactivated(true);
             demoService.init();
         } else if (configProperties.isSyncOnStartup()){
             if (configProperties.getCompanies().size() > 0) {

@@ -22,9 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -51,6 +48,7 @@ import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.util.SyncServiceDeactivatedException;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
@@ -58,6 +56,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
 //@SpringBootTest
@@ -100,7 +101,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncProductsFirstTime()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Product.class).isEmpty());
 
@@ -122,7 +123,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncProductsUpdate()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Product.class).isEmpty());
 
@@ -151,7 +152,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncProductsRemoveObsolete()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Product.class).isEmpty());
 
@@ -180,7 +181,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncCategoriesFirstTime()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Category.class).isEmpty());
 
@@ -202,7 +203,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncCategoriesRemoveObsolete()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Category.class).isEmpty());
 
@@ -231,7 +232,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncWorkspacesFirstTime()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Workspace.class).isEmpty());
 
@@ -253,7 +254,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncWorkspacesRemoveObsolete()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Workspace.class).isEmpty());
 
@@ -282,7 +283,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncWarehousesFirstTime()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Warehouse.class).isEmpty());
 
@@ -304,7 +305,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncWarehousesRemoveObsolete()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Warehouse.class).isEmpty());
 
@@ -333,7 +334,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncPrintersFirstTime()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Printer.class).isEmpty());
 
@@ -355,7 +356,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncPrintersRemoveObsolete()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Printer.class).isEmpty());
 
@@ -384,7 +385,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncPossFirstTime()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Pos.class).isEmpty());
 
@@ -406,7 +407,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncPossRemoveObsolete()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Pos.class).isEmpty());
 
@@ -435,7 +436,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncUsersFirstTime()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(User.class).isEmpty());
 
@@ -457,7 +458,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncUsersRemoveObsolete()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(User.class).isEmpty());
 
@@ -485,7 +486,7 @@ public class SyncServiceTest
     }
 
     ////@Test
-    public void testSyncReceiptsNoContact()
+    public void testSyncReceiptsNoContact() throws SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Receipt.class).isEmpty());
         final Receipt receipt1 = new Receipt()
@@ -502,7 +503,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncReceipts()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Receipt.class).isEmpty());
         final Contact contact = new Contact().setOid("123.456");
@@ -530,7 +531,7 @@ public class SyncServiceTest
     }
 
     //@Test
-    public void testSyncInvoicesNoContact()
+    public void testSyncInvoicesNoContact() throws SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Invoice.class).isEmpty());
         final Invoice invoice1 = new Invoice()
@@ -548,7 +549,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncInvoices()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Invoice.class).isEmpty());
         final Contact contact = new Contact().setOid("123.456");
@@ -576,7 +577,7 @@ public class SyncServiceTest
     }
 
     //@Test
-    public void testSyncTicketsNoContact()
+    public void testSyncTicketsNoContact() throws SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Ticket.class).isEmpty());
         final Ticket ticket1 = new Ticket()
@@ -593,7 +594,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncTickets()
-        throws JsonProcessingException
+        throws JsonProcessingException, SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Ticket.class).isEmpty());
         final Contact contact = new Contact().setOid("123.456");
