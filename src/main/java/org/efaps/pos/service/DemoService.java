@@ -24,10 +24,13 @@ import java.util.List;
 import org.efaps.pos.config.DemoConfig;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Pos;
+import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +76,8 @@ public class DemoService
     public void init()
     {
         try {
-            clean(User.class, Product.class, Workspace.class, Pos.class, Category.class, Sequence.class, Contact.class);
+            clean(User.class, Product.class, Workspace.class, Pos.class, Category.class, Sequence.class, Contact.class,
+                            InventoryEntry.class, Printer.class, Warehouse.class);
             save(loadDocuments(config.getUsers(), new TypeReference<List<User>>(){}));
             save(loadDocuments(config.getProducts(), new TypeReference<List<Product>>(){}));
             save(loadDocuments(config.getWorkspaces(), new TypeReference<List<Workspace>>(){}));
@@ -81,6 +85,10 @@ public class DemoService
             save(loadDocuments(config.getCategories(), new TypeReference<List<Category>>(){}));
             save(loadDocuments(config.getSequences(), new TypeReference<List<Sequence>>(){}));
             save(loadDocuments(config.getContacts(), new TypeReference<List<Contact>>(){}));
+            save(loadDocuments(config.getInventory(), new TypeReference<List<InventoryEntry>>(){}));
+            save(loadDocuments(config.getPrinters(), new TypeReference<List<Printer>>(){}));
+            save(loadDocuments(config.getWarehouses(), new TypeReference<List<Warehouse>>(){}));
+
             final var files = loadDocuments(config.getFiles(), new TypeReference<List<File>>(){});
             loadFiles(config.getFiles(), (List<File>) files);
         } catch (final IOException e) {

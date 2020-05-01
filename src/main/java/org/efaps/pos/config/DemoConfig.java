@@ -32,6 +32,9 @@ public class DemoConfig
     private String sequences;
     private String contacts;
     private String files;
+    private String inventory;
+    private String printers;
+    private String warehouses;
 
     public String getUsers()
     {
@@ -108,9 +111,39 @@ public class DemoConfig
         return files;
     }
 
-    public void setFiles(String files)
+    public void setFiles(final String files)
     {
         this.files = files;
+    }
+
+    public String getInventory()
+    {
+        return inventory;
+    }
+
+    public void setInventory(final String inventory)
+    {
+        this.inventory = inventory;
+    }
+
+    public String getPrinters()
+    {
+        return printers;
+    }
+
+    public void setPrinters(final String printers)
+    {
+        this.printers = printers;
+    }
+
+    public String getWarehouses()
+    {
+        return warehouses;
+    }
+
+    public void setWarehouses(final String warehouses)
+    {
+        this.warehouses = warehouses;
     }
 
 }
