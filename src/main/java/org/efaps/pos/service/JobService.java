@@ -56,10 +56,10 @@ public class JobService
                       final PrinterRepository _printerRepository,
                       final ProductService _productService)
     {
-        this.jobRepository = _jobRepository;
-        this.categoryRepository = _categoryRepository;
-        this.printerRepository = _printerRepository;
-        this.productService = _productService;
+        jobRepository = _jobRepository;
+        categoryRepository = _categoryRepository;
+        printerRepository = _printerRepository;
+        productService = _productService;
     }
 
     /**
@@ -74,17 +74,17 @@ public class JobService
         final Map<String, Set<Item>> map = new HashMap<>();
         final Map<String, String> reportmap = new HashMap<>();
         for (final Item item : getNewItems(_order)) {
-            final Product product = this.productService.getProduct(item.getProductOid());
+            final Product product = productService.getProduct(item.getProductOid());
             if (product != null) {
                 for (final String catOid : product.getCategoryOids()) {
-                    final Optional<Category> catOpt = this.categoryRepository.findById(catOid);
+                    final Optional<Category> catOpt = categoryRepository.findById(catOid);
                     if (catOpt.isPresent()) {
                         final Set<PrintCmd> cmds = _workspace.getPrintCmds().stream()
                             .filter(printCmd -> PrintTarget.JOB.equals(printCmd.getTarget())
                                             && catOid.equals(printCmd.getTargetOid()))
                             .collect(Collectors.toSet());
                         for (final PrintCmd cmd : cmds) {
-                            final Optional<Printer> printerOpt = this.printerRepository.findById(cmd.getPrinterOid());
+                            final Optional<Printer> printerOpt = printerRepository.findById(cmd.getPrinterOid());
                             if (printerOpt.isPresent()) {
                                 final Printer printer = printerOpt.get();
                                 Set<Item> items;
@@ -103,8 +103,9 @@ public class JobService
             }
         }
         for (final Entry<String, Set<Item>> entry : map.entrySet()) {
-            ret.add(this.jobRepository.save(new Job()
+            ret.add(jobRepository.save(new Job()
                             .setDocumentId(_order.getId())
+                            .setShoutout(_order.getShoutout())
                             .setPrinterOid(entry.getKey())
                             .setReportOid(reportmap.get(entry.getKey()))
                             .setItems(entry.getValue())));
@@ -119,7 +120,7 @@ public class JobService
      * @return the new items
      */
     protected Collection<Item> getNewItems(final Order _order) {
-        final List<Job> jobs = this.jobRepository.findByDocumentId(_order.getId());
+        final List<Job> jobs = jobRepository.findByDocumentId(_order.getId());
         final Set<Integer> indexes = jobs.stream()
                         .flatMap(job -> job.getItems().stream()
                                         .map(item -> item.getIndex()))

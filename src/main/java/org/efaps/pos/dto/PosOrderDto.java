@@ -17,9 +17,9 @@
 
 package org.efaps.pos.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import java.util.Set;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosOrderDto.Builder.class)
 public class PosOrderDto
@@ -32,12 +32,15 @@ public class PosOrderDto
 
     private final String payableOid;
 
+    private final String shoutout;
+
     public PosOrderDto(final Builder _builder)
     {
         super(_builder);
         spot = _builder.spot;
         discount = _builder.discount;
         payableOid = _builder.payableOid;
+        shoutout = _builder.shoutout;
     }
 
     public PosSpotDto getSpot()
@@ -55,6 +58,11 @@ public class PosOrderDto
         return payableOid;
     }
 
+    public String getShoutout()
+    {
+        return shoutout;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -67,6 +75,7 @@ public class PosOrderDto
         private PosSpotDto spot;
         private DiscountDto discount;
         private String payableOid;
+        private String shoutout;
 
         public Builder withSpot(final PosSpotDto _spot)
         {
@@ -89,6 +98,12 @@ public class PosOrderDto
         public Builder withItems(final Set<PosDocItemDto> _items)
         {
             setItems(_items);
+            return this;
+        }
+
+        public Builder withShoutout(final String _shoutout)
+        {
+            shoutout = _shoutout;
             return this;
         }
 

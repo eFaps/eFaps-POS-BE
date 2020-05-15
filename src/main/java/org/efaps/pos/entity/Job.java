@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,58 +37,71 @@ public class Job
 
     private Set<Item> items;
 
+    private String shoutout;
+
     public String getId()
     {
-        return this.id;
+        return id;
     }
 
     public Job setId(final String _id)
     {
-        this.id = _id;
+        id = _id;
         return this;
     }
 
     public String getPrinterOid()
     {
-        return this.printerOid;
+        return printerOid;
     }
 
     public Job setPrinterOid(final String _printerOid)
     {
-        this.printerOid = _printerOid;
+        printerOid = _printerOid;
         return this;
     }
 
     public Set<Item> getItems()
     {
-        return this.items;
+        return items;
     }
 
     public Job setItems(final Set<Item> _items)
     {
-        this.items = _items;
+        items = _items;
         return this;
     }
 
     public String getDocumentId()
     {
-        return this.documentId;
+        return documentId;
     }
 
     public Job setDocumentId(final String _documentId)
     {
-        this.documentId = _documentId;
+        documentId = _documentId;
         return this;
     }
 
     public String getReportOid()
     {
-        return this.reportOid;
+        return reportOid;
     }
 
     public Job setReportOid(final String _reportOid)
     {
-        this.reportOid = _reportOid;
+        reportOid = _reportOid;
+        return this;
+    }
+
+    public String getShoutout()
+    {
+        return shoutout;
+    }
+
+    public Job setShoutout(final String shoutout)
+    {
+        this.shoutout = shoutout;
         return this;
     }
 }

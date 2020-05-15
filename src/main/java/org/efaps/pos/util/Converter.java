@@ -236,7 +236,8 @@ public final class Converter
                                 .collect(Collectors.toSet()))
                         .setSpot(_dto.getSpot() == null ? null : toEntity(_dto.getSpot()))
                         .setPayableOid(_dto.getPayableOid())
-                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()));
+                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
+                        .setShoutout(_dto.getShoutout());
     }
 
     public static Spot toEntity(final PosSpotDto _dto)
@@ -641,6 +642,7 @@ public final class Converter
                         .withSpot(toSpotDto(_entity.getSpot()))
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .withPayableOid(_entity.getPayableOid())
+                        .withShoutout(_entity.getShoutout())
                         .build();
     }
 

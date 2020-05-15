@@ -25,6 +25,7 @@ public class Order
 
     private Spot spot;
     private String payableOid;
+    private String shoutout;
 
     public Spot getSpot()
     {
@@ -45,6 +46,17 @@ public class Order
     public Order setPayableOid(final String payableOid)
     {
         this.payableOid = payableOid;
+        return this;
+    }
+
+    public String getShoutout()
+    {
+        return shoutout;
+    }
+
+    public Order setShoutout(final String shoutout)
+    {
+        this.shoutout = shoutout;
         return this;
     }
 }
