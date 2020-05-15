@@ -22,6 +22,7 @@ import java.util.List;
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.CollectOrderDto;
 import org.efaps.pos.dto.CollectStartOrderDto;
+import org.efaps.pos.dto.CollectStartResponseDto;
 import org.efaps.pos.dto.CollectorDto;
 import org.efaps.pos.service.CollectorService;
 import org.efaps.pos.util.Converter;
@@ -51,10 +52,10 @@ public class CollectorController
         return collectorService.getCollectors();
     }
 
-    @PostMapping(path = "{key}/start", produces = MediaType.TEXT_PLAIN_VALUE,
+    @PostMapping(path = "{key}/start", produces = MediaType.APPLICATION_JSON_VALUE,
                     consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String startCollect(@PathVariable("key") final String _key,
-                               @RequestBody final CollectStartOrderDto _dto)
+    public CollectStartResponseDto startCollect(@PathVariable("key") final String _key,
+                                                @RequestBody final CollectStartOrderDto _dto)
     {
         return collectorService.startCollect(_key, _dto);
     }

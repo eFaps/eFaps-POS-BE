@@ -29,4 +29,9 @@ public interface ICollectorListener
 
     void collect(CollectorState _collectorState, Map<String, Object> _details);
 
+    default Object init(final Map<String, Object> _details)
+    {
+        return null;
+    }
+
 }

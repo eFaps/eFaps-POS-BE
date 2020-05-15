@@ -18,6 +18,7 @@ package org.efaps.pos.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +30,7 @@ import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.efaps.pos.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.CollectStartOrderDto;
+import org.efaps.pos.dto.CollectStartResponseDto;
 import org.efaps.pos.dto.CollectorDto;
 import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.CollectOrder.State;
@@ -72,9 +74,10 @@ public class CollectorService
         return collectors;
     }
 
-    public String startCollect(final String _key,
-                               final CollectStartOrderDto _dto) {
+    public CollectStartResponseDto startCollect(final String _key,
+                                                final CollectStartOrderDto _dto) {
         String ret = null;
+        final var responseDetails = new HashMap<String,Object>();
         final Optional<CollectorDto> collectorOpt = getCollectors().stream()
                         .filter(collectorDto -> _key.equals(collectorDto.getKey()))
                         .findFirst();
@@ -88,6 +91,14 @@ public class CollectorService
                                             .setLabel(collector.getLabel()));
             collectOrder = collectOrderRepository.save(collectOrder);
             ret = collectOrder.getId();
+
+            for (final ICollectorListener listener : collectorListener) {
+                final var value = listener.init(_dto.getDetails());
+                if (value != null) {
+                    responseDetails.put(collector.getKey(), value);
+                }
+            }
+
             final var collectorState = new CollectorState(ret);
             collectorState.setState(State.PENDING);
             CACHE.put(ret, collectorState);
@@ -127,7 +138,10 @@ public class CollectorService
                 }
             });
         }
-        return ret;
+        return CollectStartResponseDto.builder()
+                        .withCollectOrderId(ret)
+                        .withDetails(responseDetails)
+                        .build();
     }
 
     public Optional<CollectOrder> getCollectOrder(final String _collectOrderId)
