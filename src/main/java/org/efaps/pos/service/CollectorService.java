@@ -76,7 +76,7 @@ public class CollectorService
 
     public CollectStartResponseDto startCollect(final String _key,
                                                 final CollectStartOrderDto _dto) {
-        String ret = null;
+        String collectOrderId = null;
         final var responseDetails = new HashMap<String,Object>();
         final Optional<CollectorDto> collectorOpt = getCollectors().stream()
                         .filter(collectorDto -> _key.equals(collectorDto.getKey()))
@@ -90,18 +90,18 @@ public class CollectorService
                                             .setKey(collector.getKey())
                                             .setLabel(collector.getLabel()));
             collectOrder = collectOrderRepository.save(collectOrder);
-            ret = collectOrder.getId();
+            collectOrderId = collectOrder.getId();
 
             for (final ICollectorListener listener : collectorListener) {
-                final var value = listener.init(_dto.getDetails());
+                final var value = listener.init(_dto, collectOrderId);
                 if (value != null) {
                     responseDetails.put(collector.getKey(), value);
                 }
             }
 
-            final var collectorState = new CollectorState(ret);
+            final var collectorState = new CollectorState(collectOrderId);
             collectorState.setState(State.PENDING);
-            CACHE.put(ret, collectorState);
+            CACHE.put(collectOrderId, collectorState);
             final Company company = Context.get().getCompany();
             final var authentication = SecurityContextHolder.getContext().getAuthentication();
             for (final ICollectorListener listener : collectorListener) {
@@ -139,7 +139,7 @@ public class CollectorService
             });
         }
         return CollectStartResponseDto.builder()
-                        .withCollectOrderId(ret)
+                        .withCollectOrderId(collectOrderId)
                         .withDetails(responseDetails)
                         .build();
     }

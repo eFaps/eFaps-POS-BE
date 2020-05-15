@@ -19,6 +19,7 @@ package org.efaps.pos.service;
 import java.util.List;
 import java.util.Map;
 
+import org.efaps.pos.dto.CollectStartOrderDto;
 import org.efaps.pos.dto.CollectorDto;
 import org.efaps.pos.pojo.CollectorState;
 
@@ -29,7 +30,7 @@ public interface ICollectorListener
 
     void collect(CollectorState _collectorState, Map<String, Object> _details);
 
-    default Object init(final Map<String, Object> _details)
+    default Object init(final CollectStartOrderDto _dto, final String _collectOrderId)
     {
         return null;
     }
