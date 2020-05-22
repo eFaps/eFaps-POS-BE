@@ -24,7 +24,7 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
@@ -40,12 +40,12 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 public class GridFsService
 {
 
-    private final MongoDbFactory dbFactory;
+    private final MongoDatabaseFactory dbFactory;
     private final GridFsTemplate gridFsTemplate;
 
     @Autowired
     public GridFsService(final GridFsTemplate _gridFsTemplate,
-                        final MongoDbFactory _dbFactory)
+                        final MongoDatabaseFactory _dbFactory)
     {
         gridFsTemplate = _gridFsTemplate;
         dbFactory = _dbFactory;
@@ -75,7 +75,7 @@ public class GridFsService
 
     private GridFSBucket getGridFs()
     {
-        final MongoDatabase db = dbFactory.getDb();
+        final MongoDatabase db = dbFactory.getMongoDatabase();
         return GridFSBuckets.create(db);
     }
 }

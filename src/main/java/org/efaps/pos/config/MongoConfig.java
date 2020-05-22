@@ -22,10 +22,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -45,10 +47,12 @@ public class MongoConfig
 
     @Override
     @Bean
-    public MappingMongoConverter mappingMongoConverter()
-        throws Exception
+    public MappingMongoConverter mappingMongoConverter(final MongoDatabaseFactory _databaseFactory,
+                                                       final MongoCustomConversions _customConversions,
+                                                       final MongoMappingContext _mappingContext)
     {
-        final MappingMongoConverter ret = super.mappingMongoConverter();
+        final MappingMongoConverter ret = super.mappingMongoConverter(_databaseFactory, _customConversions,
+                        _mappingContext);
         ret.setMapKeyDotReplacement("_xYz4P_");
         return ret;
     }
@@ -56,25 +60,25 @@ public class MongoConfig
     @Override
     @Bean
     @Primary
-    public MongoDbFactory mongoDbFactory()
+    public MongoDatabaseFactory mongoDbFactory()
     {
         return new MultiTenantMongoDbFactory(configProperties.getMongoClientURI());
     }
 
-    @Override
     @Bean
+    @Override
     @Primary
-    public MongoTemplate mongoTemplate()
-        throws Exception
-    {
-        return new MongoTemplate(mongoDbFactory(), mappingMongoConverter());
-    }
-
-    @Bean
-    @Override
     public MongoClient mongoClient()
     {
         return MongoClients.create(configProperties.getMongoClientURI());
+    }
+
+    @Bean
+    public GridFsTemplate gridFsTemplate()
+        throws ClassNotFoundException
+    {
+        return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter(mongoDbFactory(), customConversions(),
+                        mongoMappingContext(customConversions())));
     }
 
     @Override

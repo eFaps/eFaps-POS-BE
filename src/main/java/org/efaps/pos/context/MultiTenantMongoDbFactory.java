@@ -18,12 +18,12 @@
 package org.efaps.pos.context;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 
 import com.mongodb.client.MongoDatabase;
 
 public class MultiTenantMongoDbFactory
-    extends SimpleMongoClientDbFactory
+    extends SimpleMongoClientDatabaseFactory
 {
 
     public MultiTenantMongoDbFactory(final String _connectionString)
@@ -32,12 +32,12 @@ public class MultiTenantMongoDbFactory
     }
 
     @Override
-    public MongoDatabase getDb()
+    public MongoDatabase getMongoDatabase()
         throws DataAccessException
     {
         if (Context.get().getCompany() != null) {
-            return getDb(Context.get().getCompany().getTenant());
+            return doGetMongoDatabase(Context.get().getCompany().getTenant());
         }
-        return super.getDb();
+        return super.getMongoDatabase();
     }
 }
