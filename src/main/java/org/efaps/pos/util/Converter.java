@@ -970,6 +970,7 @@ public final class Converter
         return JobDto.builder()
                         .withDocumentId(_entity.getDocumentId())
                         .withDocumentNumber(order.getNumber())
+                        .withShoutout(_entity.getShoutout())
                         .withSpotNumber(order.getSpot() == null
                             ? null
                             : StringUtils.isEmpty(order.getSpot().getLabel())

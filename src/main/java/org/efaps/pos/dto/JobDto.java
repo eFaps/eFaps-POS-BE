@@ -16,9 +16,10 @@
  */
 package org.efaps.pos.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
+import java.util.Collections;
 import java.util.Set;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = JobDto.Builder.class)
 public class JobDto
@@ -28,84 +29,110 @@ public class JobDto
     private final String documentId;
     private final String documentNumber;
     private final String spotNumber;
+    private final String shoutout;
 
     private final Set<PosDocItemDto> items;
 
-    private JobDto(final Builder _builder)
+    private JobDto(final Builder builder)
     {
-        this.id = _builder.id;
-        this.documentId = _builder.documentId;
-        this.items = _builder.items;
-        this.documentNumber = _builder.documentNumber;
-        this.spotNumber = _builder.spotNumber;
+        id = builder.id;
+        documentId = builder.documentId;
+        documentNumber = builder.documentNumber;
+        spotNumber = builder.spotNumber;
+        shoutout = builder.shoutout;
+        items = builder.items;
     }
 
     public String getId()
     {
-        return this.id;
+        return id;
     }
 
     public String getDocumentId()
     {
-        return this.documentId;
+        return documentId;
     }
 
     public Set<PosDocItemDto> getItems()
     {
-        return this.items;
+        return items;
     }
 
     public String getDocumentNumber()
     {
-        return this.documentNumber;
+        return documentNumber;
     }
 
     public String getSpotNumber()
     {
-        return this.spotNumber;
+        return spotNumber;
     }
 
+    public String getShoutout()
+    {
+        return shoutout;
+    }
+
+    /**
+     * Creates builder to build {@link JobDto}.
+     *
+     * @return created builder
+     */
     public static Builder builder()
     {
         return new Builder();
     }
 
-    public static class Builder
+    /**
+     * Builder to build {@link JobDto}.
+     */
+    public static final class Builder
     {
 
         private String id;
         private String documentId;
         private String documentNumber;
         private String spotNumber;
-        private Set<PosDocItemDto> items;
+        private String shoutout;
+        private Set<PosDocItemDto> items = Collections.emptySet();
 
-        public Builder withId(final String _id)
+        private Builder()
         {
-            this.id = _id;
+        }
+
+        public Builder withId(final String id)
+        {
+            this.id = id;
             return this;
         }
 
-        public Builder withDocumentId(final String _documentId)
+        public Builder withDocumentId(final String documentId)
         {
-            this.documentId = _documentId;
+            this.documentId = documentId;
             return this;
         }
 
-        public Builder withDocumentNumber(final String _documentNumber)
+        public Builder withDocumentNumber(final String documentNumber)
         {
-            this.documentNumber = _documentNumber;
+            this.documentNumber = documentNumber;
             return this;
         }
 
-        public Builder withSpotNumber(final String _spotNumber)
+        public Builder withSpotNumber(final String spotNumber)
         {
-            this.spotNumber = _spotNumber;
+            this.spotNumber = spotNumber;
             return this;
         }
 
-        public Builder withItems(final Set<PosDocItemDto> _items)
+        public Builder withShoutout(final String shoutout)
         {
-            this.items = _items;
+            this.shoutout = shoutout;
+            return this;
+        }
+
+        public Builder withItems(final Set<PosDocItemDto> items)
+        {
+            this.items = items;
             return this;
         }
 
