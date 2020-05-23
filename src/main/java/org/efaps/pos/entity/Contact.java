@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,58 +37,71 @@ public class Contact
 
     private String idNumber;
 
+    private String email;
+
     public String getId()
     {
-        return this.id;
+        return id;
     }
 
     public Contact setId(final String _id)
     {
-        this.id = _id;
+        id = _id;
         return this;
     }
 
     public String getOid()
     {
-        return this.oid;
+        return oid;
     }
 
     public Contact setOid(final String _oid)
     {
-        this.oid = _oid;
+        oid = _oid;
         return this;
     }
 
     public String getName()
     {
-        return this.name;
+        return name;
     }
 
     public Contact setName(final String _name)
     {
-        this.name = _name;
+        name = _name;
         return this;
     }
 
     public IdentificationType getIdType()
     {
-        return this.idType;
+        return idType;
     }
 
     public Contact setIdType(final IdentificationType _idType)
     {
-        this.idType = _idType;
+        idType = _idType;
         return this;
     }
 
     public String getIdNumber()
     {
-        return this.idNumber;
+        return idNumber;
     }
 
     public Contact setIdNumber(final String _idNumber)
     {
-        this.idNumber = _idNumber;
+        idNumber = _idNumber;
+        return this;
+    }
+
+    public String getEmail()
+    {
+        return email;
+    }
+
+    public Contact setEmail(final String _email)
+    {
+        email = _email;
         return this;
     }
 
