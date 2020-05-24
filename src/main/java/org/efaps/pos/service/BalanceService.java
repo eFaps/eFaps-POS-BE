@@ -74,6 +74,7 @@ public class BalanceService
                             .setStartAt(LocalDateTime.now())
                             .setUserOid(_principal.getOid())
                             .setStatus(BalanceStatus.OPEN)
+                            .setKey("TODO")
                             .setNumber(number);
             ret = Optional.of(repository.save(balance));
         } else {
