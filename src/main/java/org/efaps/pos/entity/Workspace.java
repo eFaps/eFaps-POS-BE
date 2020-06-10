@@ -65,6 +65,7 @@ public class Workspace
 
     private List<Floor> floors;
 
+    private List<String> categoryOids;
 
     public String getOid()
     {
@@ -218,6 +219,17 @@ public class Workspace
     public Workspace setFloors(final List<Floor> _floors)
     {
         floors = _floors;
+        return this;
+    }
+
+    public List<String> getCategoryOids()
+    {
+        return categoryOids;
+    }
+
+    public Workspace setCategoryOids(final List<String> _categoryOids)
+    {
+        categoryOids = _categoryOids;
         return this;
     }
 

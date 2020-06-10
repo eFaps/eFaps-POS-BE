@@ -438,6 +438,9 @@ public final class Converter
                                 : _entity.getFloors().stream()
                                         .map(floor -> Converter.toDto(floor))
                                         .collect(Collectors.toList()))
+                        .withCategoryOids(_entity.getCategoryOids() == null
+                                ? Collections.emptyList()
+                                : _entity.getCategoryOids())
                         .build();
     }
 
@@ -473,7 +476,8 @@ public final class Converter
                             ? null
                             : _dto.getFloors().stream()
                                     .map(floor -> Converter.toEntity(floor))
-                                    .collect(Collectors.toList()));
+                                    .collect(Collectors.toList()))
+                        .setCategoryOids(_dto.getCategoryOids());
     }
 
     public static Floor toEntity(final FloorDto _dto) {
