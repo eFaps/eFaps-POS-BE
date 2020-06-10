@@ -34,6 +34,8 @@ public class Category
 
     private int weight;
 
+    private String imageOid;
+
     public String getOid()
     {
         return oid;
@@ -65,6 +67,17 @@ public class Category
     public Category setWeight(final int weight)
     {
         this.weight = weight;
+        return this;
+    }
+
+    public String getImageOid()
+    {
+        return imageOid;
+    }
+
+    public Category setImageOid(final String imageOid)
+    {
+        this.imageOid = imageOid;
         return this;
     }
 

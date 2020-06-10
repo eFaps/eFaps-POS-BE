@@ -537,6 +537,7 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withName(_entity.getName())
                         .withWeight(_entity.getWeight())
+                        .withImageOid(_entity.getImageOid())
                         .build();
     }
 
@@ -545,7 +546,8 @@ public final class Converter
         return new Category()
                         .setName(_dto.getName())
                         .setOid(_dto.getOid())
-                        .setWeight(_dto.getWeight());
+                        .setWeight(_dto.getWeight())
+                        .setImageOid(_dto.getImageOid());
     }
 
     public static Contact toEntity(final ContactDto _dto)
