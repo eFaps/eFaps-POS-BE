@@ -198,11 +198,13 @@ public class ConverterTest
     public void testCategoryToDto() {
         final Category entity = new Category()
                         .setName("Caja 1")
-                        .setOid("165165.14651");
+                        .setOid("165165.14651")
+                        .setImageOid("image.OID");
 
         final CategoryDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getName(), dto.getName());
+        assertEquals(entity.getImageOid(), dto.getImageOid());
     }
 
     @Test
@@ -210,11 +212,13 @@ public class ConverterTest
         final CategoryDto dto = CategoryDto.builder()
                         .withOID("165165.14651")
                         .withName("Caja 1")
+                        .withImageOid("image.OId")
                         .build();
 
         final Category entity = Converter.toEntity(dto);
         assertEquals(entity.getOid(), dto.getOid());
         assertEquals(entity.getName(), dto.getName());
+        assertEquals(entity.getImageOid(), dto.getImageOid());
     }
 
     @Test
