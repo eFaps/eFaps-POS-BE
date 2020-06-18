@@ -17,8 +17,6 @@ server:
 
 org:
   quartz:
-    threadPool:
-      threadCount: 2
     jobs:
       syncPayables: # syncs Receipts, Invoices and Tickets with related Balances
         interval: 120  #Interval in seconds

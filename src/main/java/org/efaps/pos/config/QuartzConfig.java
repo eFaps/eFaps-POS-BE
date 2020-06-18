@@ -37,10 +37,6 @@ public class QuartzConfig
 
     private final SyncService syncService;
 
-    /** The threat count. */
-    @Value("${org.quartz.threadPool.threadCount}")
-    private Integer threatCount;
-
     /** The sync interval for receipts. */
     @Value("${org.quartz.jobs.syncPayables.interval}")
     private Integer syncPayablesInterval;
@@ -137,7 +133,7 @@ public class QuartzConfig
         }
         scheduler.setTriggers(triggers.stream().toArray(Trigger[]::new));
         final Properties quartzProperties = new Properties();
-        quartzProperties.put("org.quartz.threadPool.threadCount", threatCount.toString());
+        quartzProperties.put("org.quartz.threadPool.threadCount", "1");
         scheduler.setQuartzProperties(quartzProperties);
         return scheduler;
     }
