@@ -593,7 +593,8 @@ public final class Converter
                         .setType(_dto.getType())
                         .setAmount(_dto.getAmount())
                         .setCardTypeId(_dto.getCardTypeId())
-                        .setCardLabel(_dto.getCardLabel());
+                        .setCardLabel(_dto.getCardLabel())
+                        .setMappingKey(_dto.getMappingKey());
     }
 
     public static PaymentDto toDto(final Payment _entity)
@@ -604,6 +605,7 @@ public final class Converter
                         .withAmount(_entity.getAmount())
                         .withCardTypeId(_entity.getCardTypeId())
                         .withCardLabel(_entity.getCardLabel())
+                        .withMappingKey(_entity.getMappingKey())
                         .build();
     }
 

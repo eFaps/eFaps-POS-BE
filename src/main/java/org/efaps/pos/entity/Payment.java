@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ public class Payment
     private BigDecimal amount;
     private Long cardTypeId;
     private String cardLabel;
+    private String mappingKey;
 
     public String getOid()
     {
@@ -82,6 +83,17 @@ public class Payment
     public Payment setCardLabel(final String _cardLabel)
     {
         cardLabel = _cardLabel;
+        return this;
+    }
+
+    public String getMappingKey()
+    {
+        return mappingKey;
+    }
+
+    public Payment setMappingKey(final String _mappingKey)
+    {
+        mappingKey = _mappingKey;
         return this;
     }
 }
