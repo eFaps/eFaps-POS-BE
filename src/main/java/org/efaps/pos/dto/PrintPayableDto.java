@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 
 package org.efaps.pos.dto;
 
+import java.util.Collections;
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PrintPayableDto.Builder.class)
@@ -27,10 +30,16 @@ public class PrintPayableDto
 
     private final PosOrderDto order;
 
-    public PrintPayableDto(final Builder _builder)
+    private final Map<String, Object> additionalInfo;
+
+    private final String amountInWords;
+
+    private PrintPayableDto(final Builder builder)
     {
-        payable = _builder.payable;
-        order = _builder.order;
+        payable = builder.payable;
+        order = builder.order;
+        additionalInfo = builder.additionalInfo;
+        amountInWords = builder.amountInWords;
     }
 
     public AbstractPayableDocumentDto getPayable()
@@ -43,27 +52,61 @@ public class PrintPayableDto
         return order;
     }
 
+    public Map<String, Object> getAdditionalInfo()
+    {
+        return additionalInfo;
+    }
+
+    public String getAmountInWords()
+    {
+        return amountInWords;
+    }
+
+    /**
+     * Creates builder to build {@link PrintPayableDto}.
+     * @return created builder
+     */
     public static Builder builder()
     {
         return new Builder();
     }
 
-    public static class Builder
+    /**
+     * Builder to build {@link PrintPayableDto}.
+     */
+    public static final class Builder
     {
 
         private AbstractPayableDocumentDto payable;
-
         private PosOrderDto order;
+        private Map<String, Object> additionalInfo = Collections.emptyMap();
+        private String amountInWords;
 
-        public Builder withPayable(final AbstractPayableDocumentDto _payable)
+        private Builder()
         {
-            payable = _payable;
+        }
+
+        public Builder withPayable(final AbstractPayableDocumentDto payable)
+        {
+            this.payable = payable;
             return this;
         }
 
-        public Builder withOrder(final PosOrderDto _order)
+        public Builder withOrder(final PosOrderDto order)
         {
-            order = _order;
+            this.order = order;
+            return this;
+        }
+
+        public Builder withAdditionalInfo(final Map<String, Object> additionalInfo)
+        {
+            this.additionalInfo = additionalInfo;
+            return this;
+        }
+
+        public Builder withAmountInWords(final String amountInWords)
+        {
+            this.amountInWords = amountInWords;
             return this;
         }
 

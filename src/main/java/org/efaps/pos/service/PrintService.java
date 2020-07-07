@@ -6,7 +6,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -124,27 +126,38 @@ public class PrintService
             content = Converter.toDto((Order) _document);
         } else if (_document instanceof Receipt) {
             final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
+
             content = PrintPayableDto.builder()
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Receipt) _document))
+                            .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
                             .build();
         } else if (_document instanceof Invoice) {
             final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
             content = PrintPayableDto.builder()
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Invoice) _document))
+                            .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
                             .build();
         } else if (_document instanceof Ticket) {
             final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
             content = PrintPayableDto.builder()
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Ticket) _document))
+                            .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
                             .build();
         } else {
             content = _document;
         }
         return queue(_printCmd.getPrinterOid(), _printCmd.getReportOid(), content);
     }
+
+    protected String getWordsForAmount(final BigDecimal amount)
+    {
+        final var num2wrdCvtr = org.efaps.number2words.Converter.getMaleConverter(new Locale("es"));
+        return num2wrdCvtr.convert(amount.longValue());
+    }
+
 
     public Optional<PrintResponseDto> queue(final String _printerOid, final String _reportOid, final Object _content)
     {
