@@ -20,6 +20,7 @@ import org.efaps.pos.config.TemplateCustomizer;
 import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
+import org.efaps.pos.listener.IPrintListener;
 import org.efaps.pos.service.ICollectorListener;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
