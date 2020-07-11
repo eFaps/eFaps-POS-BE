@@ -18,6 +18,7 @@ package org.efaps.pos;
 
 import org.efaps.pos.config.TemplateCustomizer;
 import org.efaps.pos.interfaces.IInvoiceListener;
+import org.efaps.pos.interfaces.IPrintListener;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
 import org.efaps.pos.service.ICollectorListener;
@@ -99,6 +100,14 @@ public class Application
     {
         final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
         serviceListFactoryBean.setServiceType(ICollectorListener.class);
+        return serviceListFactoryBean;
+    }
+
+    @Bean(name = "printListeners")
+    public ServiceListFactoryBean printListeners()
+    {
+        final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
+        serviceListFactoryBean.setServiceType(IPrintListener.class);
         return serviceListFactoryBean;
     }
 

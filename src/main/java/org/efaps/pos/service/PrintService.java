@@ -7,7 +7,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +33,7 @@ import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.Workspace.PrintCmd;
+import org.efaps.pos.listener.IPrintListener;
 import org.efaps.pos.repository.PrinterRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
@@ -53,6 +56,7 @@ import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 @Service
 public class PrintService
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(PrintService.class);
 
     private static Cache<String, byte[]> CACHE = Caffeine.newBuilder()
@@ -67,14 +71,19 @@ public class PrintService
 
     private final DocumentService documentService;
 
+    private final List<IPrintListener> printListeners;
+
     public PrintService(final ObjectMapper _jacksonObjectMapper,
                         final GridFsService _gridFsService,
                         final PrinterRepository _printerRepository,
-                        final DocumentService _documentService) {
+                        final DocumentService _documentService,
+                        final Optional<List<IPrintListener>> _printListeners)
+    {
         jacksonObjectMapper = _jacksonObjectMapper;
         gridFsService = _gridFsService;
         printerRepository = _printerRepository;
         documentService = _documentService;
+        printListeners = _printListeners.isPresent() ? _printListeners.get() : Collections.emptyList();
     }
 
     public byte[] print2Image(final Object _object, final String _reportOid, final Map<String, Object> _parameters)
@@ -126,25 +135,39 @@ public class PrintService
             content = Converter.toDto((Order) _document);
         } else if (_document instanceof Receipt) {
             final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
-
+            final Map<String, Object> additionalInfo = new HashMap<>();
+            for (final IPrintListener listener : printListeners) {
+                additionalInfo.putAll(listener.getAdditionalInfo(_document));
+            }
             content = PrintPayableDto.builder()
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Receipt) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
+                            .withAdditionalInfo(additionalInfo)
                             .build();
         } else if (_document instanceof Invoice) {
             final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
+            final Map<String, Object> additionalInfo = new HashMap<>();
+            for (final IPrintListener listener : printListeners) {
+                additionalInfo.putAll(listener.getAdditionalInfo(_document));
+            }
             content = PrintPayableDto.builder()
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Invoice) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
+                            .withAdditionalInfo(additionalInfo)
                             .build();
         } else if (_document instanceof Ticket) {
             final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
+            final Map<String, Object> additionalInfo = new HashMap<>();
+            for (final IPrintListener listener : printListeners) {
+                additionalInfo.putAll(listener.getAdditionalInfo(_document));
+            }
             content = PrintPayableDto.builder()
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Ticket) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
+                            .withAdditionalInfo(additionalInfo)
                             .build();
         } else {
             content = _document;
@@ -157,7 +180,6 @@ public class PrintService
         final var num2wrdCvtr = org.efaps.number2words.Converter.getMaleConverter(new Locale("es"));
         return num2wrdCvtr.convert(amount.longValue());
     }
-
 
     public Optional<PrintResponseDto> queue(final String _printerOid, final String _reportOid, final Object _content)
     {
