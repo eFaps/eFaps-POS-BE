@@ -117,6 +117,8 @@ public class WebSecurityConfig
             .and()
             .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
             .and()
+            .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "health")
+            .and()
             .ignoring().antMatchers(HttpMethod.GET, getIgnore())
             .and()
             .ignoring().antMatchers(HttpMethod.OPTIONS)
