@@ -16,25 +16,24 @@
  */
 package org.efaps.pos.service;
 
-import java.util.List;
-import java.util.Map;
-
-import org.efaps.pos.dto.CollectStartOrderDto;
-import org.efaps.pos.dto.CollectorDto;
-import org.efaps.pos.pojo.CollectorState;
-
-public interface ICollectorListener
+public class CollectorException
+    extends Exception
 {
 
-    List<CollectorDto> getCollectors();
+    private static final long serialVersionUID = 1L;
 
-    void collect(CollectorState _collectorState, Map<String, Object> _details)
-        throws CollectorException;
-
-    default Object init(final CollectStartOrderDto _dto, final String _collectOrderId)
-        throws CollectorException
+    public CollectorException()
     {
-        return null;
+        super();
     }
 
+    public CollectorException(final String msg)
+    {
+        super(msg);
+    }
+
+    public CollectorException(final String msg, final Throwable e)
+    {
+        super(msg, e);
+    }
 }

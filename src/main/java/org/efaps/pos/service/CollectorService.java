@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CollectorService
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(CollectorService.class);
 
     private final Executor executer = Executors.newFixedThreadPool(5);
@@ -53,7 +54,8 @@ public class CollectorService
     private final CollectOrderRepository collectOrderRepository;
     private final WebSocketService webSocketService;
 
-    public static Map<String,CollectorState> CACHE = Collections.synchronizedMap(new PassiveExpiringMap<>(10, TimeUnit.MINUTES));
+    public static Map<String, CollectorState> CACHE = Collections
+                    .synchronizedMap(new PassiveExpiringMap<>(10, TimeUnit.MINUTES));
 
     public CollectorService(final Optional<List<ICollectorListener>> _collectorListener,
                             final CollectOrderRepository _collectOrderRepository,
@@ -75,9 +77,10 @@ public class CollectorService
     }
 
     public CollectStartResponseDto startCollect(final String _key,
-                                                final CollectStartOrderDto _dto) {
+                                                final CollectStartOrderDto _dto)
+    {
         String collectOrderId = null;
-        final var responseDetails = new HashMap<String,Object>();
+        final var responseDetails = new HashMap<String, Object>();
         final Optional<CollectorDto> collectorOpt = getCollectors().stream()
                         .filter(collectorDto -> _key.equals(collectorDto.getKey()))
                         .findFirst();
@@ -92,51 +95,67 @@ public class CollectorService
             collectOrder = collectOrderRepository.save(collectOrder);
             collectOrderId = collectOrder.getId();
 
-            for (final ICollectorListener listener : collectorListener) {
-                final var value = listener.init(_dto, collectOrderId);
-                if (value != null) {
-                    responseDetails.put(collector.getKey(), value);
+            try {
+                for (final ICollectorListener listener : collectorListener) {
+                    final var value = listener.init(_dto, collectOrderId);
+                    if (value != null) {
+                        responseDetails.put(collector.getKey(), value);
+                    }
                 }
-            }
-
-            final var collectorState = new CollectorState(collectOrderId);
-            collectorState.setState(State.PENDING);
-            CACHE.put(collectOrderId, collectorState);
-            final Company company = Context.get().getCompany();
-            final var authentication = SecurityContextHolder.getContext().getAuthentication();
-            for (final ICollectorListener listener : collectorListener) {
+                final var collectorState = new CollectorState(collectOrderId);
+                collectorState.setState(State.PENDING);
+                CACHE.put(collectOrderId, collectorState);
+                final Company company = Context.get().getCompany();
+                final var authentication = SecurityContextHolder.getContext().getAuthentication();
+                for (final ICollectorListener listener : collectorListener) {
+                    executer.execute(() -> {
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        Context.get().setCompany(company);
+                        try {
+                            listener.collect(collectorState, _dto.getDetails());
+                        } catch (final CollectorException e) {
+                            LOG.error("Catched CollectorException during collection of order with id: "
+                                            + collectorState.getCollectOrderId(), e);
+                            collectorState.setState(State.INVALID);
+                            final var collectOrderOpt = getCollectOrder(collectorState.getCollectOrderId());
+                            if (collectOrderOpt.isPresent()) {
+                                final var intCollectOrder = collectOrderOpt.get();
+                                intCollectOrder.setState(State.INVALID);
+                                collectOrderRepository.save(intCollectOrder);
+                            }
+                        }
+                    });
+                }
                 executer.execute(() -> {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     Context.get().setCompany(company);
-                    listener.collect(collectorState, _dto.getDetails());
-                });
-            }
-            executer.execute(() -> {
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                Context.get().setCompany(company);
-                var max = 0;
-                var overhang = 0;
-                var collecting = true;
-                while (max < 1000 && overhang < 5) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (final InterruptedException e) {
-                        LOG.error("Catched", e);
-                    }
-                    webSocketService.notifyCollectOrderState(collectorState);
-                    if (collecting == true && !State.PENDING.equals(collectorState.getState())) {
-                        collecting = false;
-                        final var storedState = collectOrderRepository.findById(collectorState.getCollectOrderId()).get().getState();
-                        if (storedState != collectorState.getState()) {
-                            LOG.debug("Different states for collectOrder {}", collectorState.getCollectOrderId());
+                    var max = 0;
+                    var overhang = 0;
+                    var collecting = true;
+                    while (max < 1000 && overhang < 5) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (final InterruptedException e) {
+                            LOG.error("Catched", e);
                         }
+                        webSocketService.notifyCollectOrderState(collectorState);
+                        if (collecting == true && !State.PENDING.equals(collectorState.getState())) {
+                            collecting = false;
+                            final var storedState = collectOrderRepository.findById(collectorState.getCollectOrderId())
+                                            .get().getState();
+                            if (storedState != collectorState.getState()) {
+                                LOG.debug("Different states for collectOrder {}", collectorState.getCollectOrderId());
+                            }
+                        }
+                        if (!collecting) {
+                            overhang++;
+                        }
+                        max++;
                     }
-                    if (!collecting) {
-                        overhang++;
-                    }
-                    max++;
-                }
-            });
+                });
+            } catch (final CollectorException e) {
+                LOG.error("Catched CollectorException on init of order with id: " + collectOrderId, e);
+            }
         }
         return CollectStartResponseDto.builder()
                         .withCollectOrderId(collectOrderId)
