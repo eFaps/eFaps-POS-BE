@@ -389,20 +389,20 @@ public class EFapsClient
                         .body(_body);
     }
 
-    private RequestEntity<?> get(final String _path)
+    public RequestEntity<?> get(final String _path)
         throws IdentException
     {
         return get(getUriComponent(_path).toUri());
     }
 
-    private <T> RequestEntity<T> post(final String _path, final T _body)
+    public <T> RequestEntity<T> post(final String _path, final T _body)
         throws IdentException
     {
         return addHeader(RequestEntity.post(getUriComponent(_path).toUri()))
                         .accept(MediaType.APPLICATION_JSON).body(_body);
     }
 
-    private <T> RequestEntity<T> put(final String _path, final T _body)
+    public <T> RequestEntity<T> put(final String _path, final T _body)
         throws IdentException
     {
         return addHeader(RequestEntity.put(getUriComponent(_path).toUri()))
