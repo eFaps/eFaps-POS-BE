@@ -766,11 +766,12 @@ public class SyncService
                contactRepository.save(contact);
            }
         }
-
-        for (final Contact contact : contactRepository.findAll()) {
-            if (contact.getOid() != null && !recievedContacts.stream().filter(recieved -> recieved.getOid().equals(
-                            contact.getOid())).findFirst().isPresent()) {
-                contactRepository.delete(contact);
+        if (!recievedContacts.isEmpty()) {
+            for (final Contact contact : contactRepository.findAll()) {
+                if (contact.getOid() != null && !recievedContacts.stream().filter(recieved -> recieved.getOid().equals(
+                                contact.getOid())).findFirst().isPresent()) {
+                    contactRepository.delete(contact);
+                }
             }
         }
     }
