@@ -16,18 +16,14 @@
  */
 package org.efaps.pos.config;
 
-import java.util.ArrayList;
-import java.util.Properties;
-
 import org.efaps.pos.service.SyncService;
-import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 @Configuration
@@ -49,7 +45,6 @@ public class QuartzConfig
     @Value("${org.quartz.jobs.syncInventory.interval}")
     private Integer syncInventoryInterval;
 
-
     @Autowired
     public QuartzConfig(final SyncService _syncService)
     {
@@ -57,6 +52,7 @@ public class QuartzConfig
     }
 
     @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncPayables.interval} > 0}")
     public MethodInvokingJobDetailFactoryBean syncPayablesJobDetailFactoryBean()
     {
         final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
@@ -67,6 +63,7 @@ public class QuartzConfig
     }
 
     @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncPayables.interval} > 0}")
     public SimpleTriggerFactoryBean syncPayablesTriggerFactoryBean()
     {
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
@@ -77,6 +74,7 @@ public class QuartzConfig
     }
 
     @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncContacts.interval} > 0}")
     public MethodInvokingJobDetailFactoryBean syncContactsJobDetailFactoryBean()
     {
         final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
@@ -87,6 +85,7 @@ public class QuartzConfig
     }
 
     @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncContacts.interval} > 0}")
     public SimpleTriggerFactoryBean syncContactsTriggerFactoryBean()
     {
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
@@ -97,6 +96,7 @@ public class QuartzConfig
     }
 
     @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncInventory.interval} > 0}")
     public MethodInvokingJobDetailFactoryBean syncInventoryJobDetailFactoryBean()
     {
         final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
@@ -107,6 +107,7 @@ public class QuartzConfig
     }
 
     @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncInventory.interval} > 0}")
     public SimpleTriggerFactoryBean syncInventoryTriggerFactoryBean()
     {
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
@@ -114,27 +115,5 @@ public class QuartzConfig
         stFactory.setStartDelay(180 * 1000);
         stFactory.setRepeatInterval(Math.abs(syncInventoryInterval) * 1000);
         return stFactory;
-    }
-
-    @Bean
-    public SchedulerFactoryBean schedulerFactoryBean()
-    {
-        final SchedulerFactoryBean scheduler = new SchedulerFactoryBean();
-        final var triggers = new ArrayList<Trigger>();
-
-        if (!(syncPayablesInterval < 0)) {
-            triggers.add(syncPayablesTriggerFactoryBean().getObject());
-        }
-        if (!(syncContactsInterval < 0)) {
-            triggers.add(syncContactsTriggerFactoryBean().getObject());
-        }
-        if (!(syncInventoryInterval < 0)) {
-            triggers.add(syncInventoryTriggerFactoryBean().getObject());
-        }
-        scheduler.setTriggers(triggers.stream().toArray(Trigger[]::new));
-        final Properties quartzProperties = new Properties();
-        quartzProperties.put("org.quartz.threadPool.threadCount", "1");
-        scheduler.setQuartzProperties(quartzProperties);
-        return scheduler;
     }
 }

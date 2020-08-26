@@ -6,6 +6,10 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
+  quartz:
+    scheduler-name: Quartz-Scheduler
+    properties:
+      org.quartz.threadPool.threadCount: 1
 
 mongoClientURI: mongodb://localhost:27017/efapsPOS
 
