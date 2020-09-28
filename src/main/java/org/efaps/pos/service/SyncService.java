@@ -189,8 +189,10 @@ public class SyncService
         }
         LOG.info("Syncing Properties");
         final Map<String, String> properties = eFapsClient.getProperties();
-        final Config config = new Config().setId(Config.KEY).setProperties(properties);
-        mongoTemplate.save(config);
+        if (!properties.isEmpty()) {
+            final Config config = new Config().setId(Config.KEY).setProperties(properties);
+            mongoTemplate.save(config);
+        }
     }
 
     public void syncProducts()
