@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -78,17 +79,28 @@ public class SSOClient
         }
 
         final HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+        ResponseEntity<Map> response = null;
+        try {
+            response = restTemplate.postForEntity(config.getSso().getUrl(), request, Map.class);
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of properties", e);
+        } finally {
+            if (response == null) {
+                accessToken = null;
+                refreshToken = null;
+                accessTokenExpires = null;
+                refreshTokenExpires = null;
+            } else {
+                accessToken = (String) response.getBody().get("access_token");
+                refreshToken = (String) response.getBody().get("refresh_token");
 
-        final ResponseEntity<Map> response = restTemplate.postForEntity(config.getSso().getUrl(), request,
-                        Map.class);
-        accessToken = (String) response.getBody().get("access_token");
-        refreshToken = (String) response.getBody().get("refresh_token");
+                final Integer expiresIn = (Integer) response.getBody().get("expires_in");
+                final Integer refreshExpiresIn = (Integer) response.getBody().get("refresh_expires_in");
 
-        final Integer expiresIn = (Integer) response.getBody().get("expires_in");
-        final Integer refreshExpiresIn = (Integer) response.getBody().get("refresh_expires_in");
-
-        accessTokenExpires = LocalDateTime.now().plusSeconds(expiresIn - 10);
-        refreshTokenExpires = LocalDateTime.now().plusSeconds(refreshExpiresIn - 10);
+                accessTokenExpires = LocalDateTime.now().plusSeconds(expiresIn - 10);
+                refreshTokenExpires = LocalDateTime.now().plusSeconds(refreshExpiresIn - 10);
+            }
+        }
     }
 
     public String getToken()
