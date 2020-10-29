@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 package org.efaps.pos.dto;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -28,12 +29,20 @@ public class CollectStartOrderDto
 
     private final BigDecimal amount;
 
+    private final String orderId;
+
     private final Map<String, Object> details;
 
-    private CollectStartOrderDto(final Builder _builder)
+    private CollectStartOrderDto(final Builder builder)
     {
-        amount = _builder.amount;
-        details = _builder.details;
+        amount = builder.amount;
+        orderId = builder.orderId;
+        details = builder.details;
+    }
+
+    public String getOrderId()
+    {
+        return orderId;
     }
 
     public BigDecimal getAmount()
@@ -46,27 +55,45 @@ public class CollectStartOrderDto
         return details;
     }
 
+    /**
+     * Creates builder to build {@link CollectStartOrderDto}.
+     *
+     * @return created builder
+     */
     public static Builder builder()
     {
         return new Builder();
     }
 
-    public static class Builder
+    /**
+     * Builder to build {@link CollectStartOrderDto}.
+     */
+    public static final class Builder
     {
 
         private BigDecimal amount;
+        private String orderId;
+        private Map<String, Object> details = Collections.emptyMap();
 
-        private Map<String, Object> details;
-
-        public Builder withAmount(final BigDecimal _amount)
+        private Builder()
         {
-            amount = _amount;
+        }
+
+        public Builder withAmount(final BigDecimal amount)
+        {
+            this.amount = amount;
             return this;
         }
 
-        public Builder withDetails(final Map<String, Object> _details)
+        public Builder withOrderId(final String orderId)
         {
-            details = _details;
+            this.orderId = orderId;
+            return this;
+        }
+
+        public Builder withDetails(final Map<String, Object> details)
+        {
+            this.details = details;
             return this;
         }
 

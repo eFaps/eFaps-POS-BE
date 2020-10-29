@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 
 package org.efaps.pos.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import java.math.BigDecimal;
 
 import org.efaps.pos.entity.CollectOrder.State;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = CollectOrderDto.Builder.class)
 public class CollectOrderDto
@@ -35,12 +35,15 @@ public class CollectOrderDto
 
     private final BigDecimal collected;
 
-    private CollectOrderDto(final Builder _builder)
+    private final String orderId;
+
+    private CollectOrderDto(final Builder builder)
     {
-        id = _builder.id;
-        amount = _builder.amount;
-        state = _builder.state;
-        collected = _builder.collected;
+        id = builder.id;
+        amount = builder.amount;
+        state = builder.state;
+        collected = builder.collected;
+        orderId = builder.orderId;
     }
 
     public String getId()
@@ -63,40 +66,64 @@ public class CollectOrderDto
         return collected;
     }
 
+    public String getOrderId()
+    {
+        return orderId;
+    }
+
+    /**
+     * Creates builder to build {@link CollectOrderDto}.
+     *
+     * @return created builder
+     */
     public static Builder builder()
     {
         return new Builder();
     }
 
-    public static class Builder
+    /**
+     * Builder to build {@link CollectOrderDto}.
+     */
+    public static final class Builder
     {
 
         private String id;
         private BigDecimal amount;
         private State state;
         private BigDecimal collected;
+        private String orderId;
 
-        public Builder withId(final String _id)
+        private Builder()
         {
-            id = _id;
+        }
+
+        public Builder withId(final String id)
+        {
+            this.id = id;
             return this;
         }
 
-        public Builder withAmount(final BigDecimal _amount)
+        public Builder withAmount(final BigDecimal amount)
         {
-            amount = _amount;
+            this.amount = amount;
             return this;
         }
 
-        public Builder withState(final State _state)
+        public Builder withState(final State state)
         {
-            state = _state;
+            this.state = state;
             return this;
         }
 
-        public Builder withCollected(final BigDecimal _collected)
+        public Builder withCollected(final BigDecimal collected)
         {
-            collected = _collected;
+            this.collected = collected;
+            return this;
+        }
+
+        public Builder withOrderId(final String orderId)
+        {
+            this.orderId = orderId;
             return this;
         }
 

@@ -40,6 +40,8 @@ public class CollectOrder
 
     private String transactionId;
 
+    private String orderId;
+
     public String getId()
     {
         return id;
@@ -96,6 +98,17 @@ public class CollectOrder
     public CollectOrder setTransactionId(final String _transactionId)
     {
         transactionId = _transactionId;
+        return this;
+    }
+
+    public String getOrderId()
+    {
+        return orderId;
+    }
+
+    public CollectOrder setOrderId(final String orderId)
+    {
+        this.orderId = orderId;
         return this;
     }
 

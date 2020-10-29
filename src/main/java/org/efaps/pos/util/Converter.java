@@ -1125,6 +1125,7 @@ public final class Converter
             ? null
             : CollectOrderDto.builder()
                         .withId(_entity.getId())
+                        .withOrderId(_entity.getOrderId())
                         .withAmount(_entity.getAmount())
                         .withState(_entity.getState())
                         .withCollected(_entity.getCollected())
