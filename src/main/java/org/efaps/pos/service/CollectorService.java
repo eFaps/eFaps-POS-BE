@@ -35,6 +35,7 @@ import org.efaps.pos.dto.CollectorDto;
 import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.CollectOrder.State;
 import org.efaps.pos.entity.Collector;
+import org.efaps.pos.entity.Order;
 import org.efaps.pos.pojo.CollectorState;
 import org.efaps.pos.repository.CollectOrderRepository;
 import org.slf4j.Logger;
@@ -168,6 +169,12 @@ public class CollectorService
     {
         return collectOrderRepository.findById(_collectOrderId);
     }
+
+    public List<CollectOrder> getCollectOrderByOrder(final Order _order)
+    {
+        return collectOrderRepository.findByOrderId(_order.getId());
+    }
+
 
     public Optional<CollectOrder> cancelCollectOrder(final String _collectOrderId)
     {
