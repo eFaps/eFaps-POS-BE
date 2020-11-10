@@ -409,7 +409,7 @@ public class EFapsClient
                         .accept(MediaType.APPLICATION_JSON).body(_body);
     }
 
-    private String getIdentifier()
+    public String getIdentifier()
     {
         String ret = null;
         final Identifier identifier = mongoTemplate.findById(Identifier.KEY, Identifier.class);
