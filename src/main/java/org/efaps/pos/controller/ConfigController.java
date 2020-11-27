@@ -16,6 +16,10 @@
  */
 package org.efaps.pos.controller;
 
+import java.util.List;
+
+import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.ConfigProperties.Extension;
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.entity.Config;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +35,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConfigController
 {
     private final MongoTemplate mongoTemplate;
+    private final ConfigProperties configProperties;
 
     @Autowired
-    public ConfigController(final MongoTemplate _mongoTemplate)
+    public ConfigController(final MongoTemplate _mongoTemplate, final ConfigProperties _configProperties)
     {
         mongoTemplate = _mongoTemplate;
+        configProperties = _configProperties;
     }
 
     @GetMapping(produces = MediaType.TEXT_PLAIN_VALUE, path = "/system/{key}")
@@ -43,5 +49,11 @@ public class ConfigController
     {
         final Config config = mongoTemplate.findById(Config.KEY, Config.class);
         return config.getProperties().get(_key);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/extensions")
+    public List<Extension> getExtensions()
+    {
+        return configProperties.getExtensions();
     }
 }

@@ -49,6 +49,8 @@ public class ConfigProperties
 
     private final TaxpayerRegistry taxpayerRegistry = new TaxpayerRegistry();
 
+    private final List<Extension> extensions = new ArrayList<>();
+
     public String getVersion()
     {
         return version;
@@ -122,6 +124,11 @@ public class ConfigProperties
     public void setSyncOnStartup(final boolean syncOnStartup)
     {
         this.syncOnStartup = syncOnStartup;
+    }
+
+    public List<Extension> getExtensions()
+    {
+        return extensions;
     }
 
     public static class BasicAuth
@@ -510,6 +517,44 @@ public class ConfigProperties
         public void setQueryPath(final String _queryPath)
         {
             queryPath = _queryPath;
+        }
+    }
+
+    public static class Extension
+    {
+
+        private String key;
+        private String tag;
+        private String url;
+
+        public String getKey()
+        {
+            return key;
+        }
+
+        public void setKey(final String key)
+        {
+            this.key = key;
+        }
+
+        public String getTag()
+        {
+            return tag;
+        }
+
+        public void setTag(final String tag)
+        {
+            this.tag = tag;
+        }
+
+        public String getUrl()
+        {
+            return url;
+        }
+
+        public void setUrl(final String url)
+        {
+            this.url = url;
         }
     }
 }
