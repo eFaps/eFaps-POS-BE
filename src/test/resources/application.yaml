@@ -1,5 +1,8 @@
+#---
 spring:
-  profiles: test
+  config:
+    activate:
+      on-profile: test
   data:
     mongodb:
       host: localhost
@@ -17,7 +20,7 @@ org:
         interval: 300
       syncInventory:
         interval: 300
-      
+
 name: POS-Backend-Test
 
 efaps:
