@@ -58,9 +58,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperationContext;
 import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpStatus;
@@ -371,7 +370,7 @@ public class DocumentService
     }
 
     private Collection<PayableHead> getPayableHeads4Balance(final String _balanceKey,
-                                                           final String _collection)
+                                                            final String _collection)
     {
         final var ret = new ArrayList<PayableHead>();
         ret.addAll(mongoTemplate.aggregate(getBalanceAggregation4OpenDocs(_balanceKey), _collection, PayableHead.class)
@@ -394,37 +393,28 @@ public class DocumentService
                         lookupOperation);
     }
 
-    private Aggregation getBalanceAggregation4OpenDocs(final String _balanceKey) {
-        final AggregationOperation  addField = new AggregationOperation(){
-            @Override
-            public List<org.bson.Document> toPipelineStages(final AggregationOperationContext aoc) {
-               return Collections.singletonList(new Document("$addFields",
-                               new Document("joinField", new Document("$toString","$_id"))));
-            }
+    private Aggregation getBalanceAggregation4OpenDocs(final String _balanceKey)
+    {
+        final var addField = AddFieldsOperation.addField("joinField").withValue(new Document("$toString","$_id"))
+                        .build();
 
-           @Override
-           public Document toDocument(final AggregationOperationContext context)
-           {
-               return null;
-           }
-         };
+        final LookupOperation lookupOperation = LookupOperation.newLookup()
+                        .from("orders")
+                        .localField("joinField")
+                        .foreignField("payableOid")
+                        .as("orders");
 
-       final LookupOperation lookupOperation = LookupOperation.newLookup()
-                       .from("orders")
-                       .localField("joinField")
-                       .foreignField("payableOid")
-                       .as("orders");
-
-       return Aggregation.newAggregation(
-                       Aggregation.match(Criteria.where("status").is(DocStatus.OPEN)),
-                       Aggregation.match(Criteria.where("balanceOid").is(evalBalanceOid(_balanceKey))),
-                       addField,
-                       lookupOperation);
+        return Aggregation.newAggregation(
+                        Aggregation.match(Criteria.where("status").is(DocStatus.OPEN)),
+                        Aggregation.match(Criteria.where("balanceOid").is(evalBalanceOid(_balanceKey))),
+                        addField,
+                        lookupOperation);
     }
 
     /**
      * Newly created Balances use the id as key. The UI might ask still with the
      * id instead of the OID.
+     *
      * @param _key key to be check if it has to be converted
      * @return oid or id
      */
