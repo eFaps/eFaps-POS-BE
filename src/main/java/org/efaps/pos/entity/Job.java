@@ -16,9 +16,13 @@
  */
 package org.efaps.pos.entity;
 
+import java.time.Instant;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.entity.AbstractDocument.Item;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -38,6 +42,12 @@ public class Job
     private Set<Item> items;
 
     private String shoutout;
+
+    @CreatedBy
+    private String user;
+
+    @CreatedDate
+    private Instant createdDate;
 
     public String getId()
     {
@@ -103,5 +113,31 @@ public class Job
     {
         this.shoutout = shoutout;
         return this;
+    }
+
+    public String getUser()
+    {
+        return user;
+    }
+
+    public void setUser(final String user)
+    {
+        this.user = user;
+    }
+
+    public Instant getCreatedDate()
+    {
+        return createdDate;
+    }
+
+    public void setCreatedDate(final Instant createdDate)
+    {
+        this.createdDate = createdDate;
+    }
+
+    @Override
+    public String toString()
+    {
+        return ReflectionToStringBuilder.toString(this);
     }
 }

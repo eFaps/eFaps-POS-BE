@@ -56,7 +56,6 @@ public abstract class AbstractDocument<T>
     @CreatedDate
     private Instant createdDate;
 
-
     @LastModifiedBy
     private String lastModifiedUser;
 
@@ -224,52 +223,45 @@ public abstract class AbstractDocument<T>
         return user;
     }
 
-
     public void setUser(final String user)
     {
         this.user = user;
     }
-
 
     public Instant getCreatedDate()
     {
         return createdDate;
     }
 
-
     public void setCreatedDate(final Instant createdDate)
     {
         this.createdDate = createdDate;
     }
-
 
     public String getLastModifiedUser()
     {
         return lastModifiedUser;
     }
 
-
     public void setLastModifiedUser(final String lastModifiedUser)
     {
         this.lastModifiedUser = lastModifiedUser;
     }
-
 
     public Instant getLastModifiedDate()
     {
         return lastModifiedDate;
     }
 
-
     public void setLastModifiedDate(final Instant lastModifiedDate)
     {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-
     @Override
-    public String toString() {
-       return ToStringBuilder.reflectionToString(this);
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
     }
 
     public static class Item

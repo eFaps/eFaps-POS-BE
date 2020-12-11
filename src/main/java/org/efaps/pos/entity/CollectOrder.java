@@ -18,8 +18,11 @@
 package org.efaps.pos.entity;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -41,6 +44,12 @@ public class CollectOrder
     private String transactionId;
 
     private String orderId;
+
+    @CreatedBy
+    private String user;
+
+    @CreatedDate
+    private Instant createdDate;
 
     public String getId()
     {
@@ -110,6 +119,26 @@ public class CollectOrder
     {
         this.orderId = orderId;
         return this;
+    }
+
+    public String getUser()
+    {
+        return user;
+    }
+
+    public void setUser(final String user)
+    {
+        this.user = user;
+    }
+
+    public Instant getCreatedDate()
+    {
+        return createdDate;
+    }
+
+    public void setCreatedDate(final Instant createdDate)
+    {
+        this.createdDate = createdDate;
     }
 
     @Override
