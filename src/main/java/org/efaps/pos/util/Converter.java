@@ -151,7 +151,8 @@ public final class Converter
                                 .map(_payment -> Converter.toEntity(_payment))
                                 .collect(Collectors.toSet()))
                         .setBalanceOid(_dto.getBalanceOid())
-                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()));
+                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
+                        .setNote(_dto.getNote());
     }
 
     public static Invoice toEntity(final PosInvoiceDto _dto)
@@ -181,7 +182,8 @@ public final class Converter
                                 .map(_payment -> Converter.toEntity(_payment))
                                 .collect(Collectors.toSet()))
                         .setBalanceOid(_dto.getBalanceOid())
-                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()));
+                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
+                        .setNote(_dto.getNote());
     }
 
     public static Ticket toEntity(final PosTicketDto _dto)
@@ -211,7 +213,8 @@ public final class Converter
                                 .map(_payment -> Converter.toEntity(_payment))
                                 .collect(Collectors.toSet()))
                         .setBalanceOid(_dto.getBalanceOid())
-                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()));
+                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
+                        .setNote(_dto.getNote());
     }
 
     public static Order toEntity(final PosOrderDto _dto)
@@ -237,6 +240,7 @@ public final class Converter
                         .setSpot(_dto.getSpot() == null ? null : toEntity(_dto.getSpot()))
                         .setPayableOid(_dto.getPayableOid())
                         .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
+                        .setNote(_dto.getNote())
                         .setShoutout(_dto.getShoutout());
     }
 
@@ -650,6 +654,7 @@ public final class Converter
                                 .collect(Collectors.toSet()))
                         .withSpot(toSpotDto(_entity.getSpot()))
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
+                        .withNote(_entity.getNote())
                         .withPayableOid(_entity.getPayableOid())
                         .withShoutout(_entity.getShoutout())
                         .build();
@@ -715,6 +720,7 @@ public final class Converter
                                  .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
+                        .withNote(_entity.getNote())
                         .build();
     }
 
@@ -748,6 +754,7 @@ public final class Converter
                                 .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
+                        .withNote(_entity.getNote())
                         .build();
     }
 
@@ -781,6 +788,7 @@ public final class Converter
                                 .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
+                        .withNote(_entity.getNote())
                         .build();
     }
 

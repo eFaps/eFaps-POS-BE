@@ -49,6 +49,7 @@ public abstract class AbstractDocument<T>
     private String contactOid;
     private String workspaceOid;
     private Discount discount;
+    private String note;
 
     @CreatedBy
     private String user;
@@ -215,6 +216,18 @@ public abstract class AbstractDocument<T>
     public T setDiscount(final Discount discount)
     {
         this.discount = discount;
+        return (T) this;
+    }
+
+    public String getNote()
+    {
+        return note;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setNote(final String note)
+    {
+        this.note = note;
         return (T) this;
     }
 

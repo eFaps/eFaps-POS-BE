@@ -16,7 +16,6 @@
  */
 package org.efaps.pos.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -81,7 +80,7 @@ public class CollectorService
     public CollectStartResponseDto startCollect(final String _key,
                                                 final CollectStartOrderDto _dto)
     {
-        final String collectOrderId = null;
+        String collectOrderId = null;
         final var responseDetails = new HashMap<String, Object>();
         final Optional<CollectorDto> collectorOpt = getCollectors().stream()
                         .filter(collectorDto -> _key.equals(collectorDto.getKey()))
@@ -89,7 +88,6 @@ public class CollectorService
         if (collectorOpt.isPresent()) {
             final CollectorDto collector = collectorOpt.get();
             CollectOrder collectOrder = new CollectOrder()
-                            .setCreated(LocalDateTime.now());
                             .setState(State.PENDING)
                             .setAmount(_dto.getAmount())
                             .setOrderId(_dto.getOrderId())
