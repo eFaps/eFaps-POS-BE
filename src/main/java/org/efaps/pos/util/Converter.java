@@ -829,6 +829,7 @@ public final class Converter
                                     .map(_tax -> Converter.toDto(_tax))
                                     .collect(Collectors.toSet()))
                         .withPayableOid(_entity.getPayableOid())
+                        .withNote(_entity.getNote())
                         .build();
     }
 
@@ -860,6 +861,7 @@ public final class Converter
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
+                        .withNote(_entity.getNote())
                         .build();
     }
 
@@ -891,6 +893,7 @@ public final class Converter
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
+                        .withNote(_entity.getNote())
                         .build();
     }
 
@@ -922,6 +925,7 @@ public final class Converter
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
+                        .withNote(_entity.getNote())
                         .build();
     }
 
