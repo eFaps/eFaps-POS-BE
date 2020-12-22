@@ -68,4 +68,12 @@ public class ProductController
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "barcode" })
+    public List<ProductDto> getProductsByBarcode(@RequestParam(name = "barcode") final String barcode) {
+        return service.findProductsByBarcode(barcode).stream()
+                        .map(product -> Converter.toDto(product))
+                        .collect(Collectors.toList());
+    }
+
 }

@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductService
 {
+
     private final ProductRepository productRepository;
 
     @Autowired
@@ -53,5 +54,10 @@ public class ProductService
     public List<Product> findProductsByCategory(final String _categoryOid)
     {
         return productRepository.findByCategoryOidsContains(_categoryOid);
+    }
+
+    public List<Product> findProductsByBarcode(final String _barcode)
+    {
+        return productRepository.findByBarcodesContains(_barcode);
     }
 }

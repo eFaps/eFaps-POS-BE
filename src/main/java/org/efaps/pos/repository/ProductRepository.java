@@ -27,4 +27,6 @@ public interface ProductRepository
     List<Product> findByDescriptionLikeIgnoreCase(String _term);
 
     List<Product> findByCategoryOidsContains(String _oid);
+
+    List<Product> findByBarcodesContains(String _barcode);
 }
