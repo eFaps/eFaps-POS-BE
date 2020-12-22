@@ -305,7 +305,8 @@ public final class Converter
                                         .collect(Collectors.toSet()))
                         .setIndicationSets(_dto.getIndicationSets().stream()
                                         .map(rel -> toEntity(rel))
-                                        .collect(Collectors.toSet()));
+                                        .collect(Collectors.toSet()))
+                        .setBarcodes(_dto.getBarcodes());
         return ret;
     }
 
@@ -376,6 +377,7 @@ public final class Converter
                                 : _entity.getIndicationSets().stream()
                                         .map(set -> toDto(set))
                                         .collect(Collectors.toSet()))
+                        .withBarcodes(_entity.getBarcodes())
                         .build();
     }
 

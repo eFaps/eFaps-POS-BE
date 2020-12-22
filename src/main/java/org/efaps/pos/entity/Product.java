@@ -44,6 +44,7 @@ public class Product
     private String uoMCode;
     private Set<ProductRelation> relations;
     private Set<IndicationSet> indicationSets;
+    private Set<String> barcodes;
 
     public String getOid()
     {
@@ -186,6 +187,17 @@ public class Product
     public Product setIndicationSets(final Set<IndicationSet> _indicationSets)
     {
         indicationSets = _indicationSets;
+        return this;
+    }
+
+    public Set<String> getBarcodes()
+    {
+        return barcodes;
+    }
+
+    public Product setBarcodes(final Set<String> barcodes)
+    {
+        this.barcodes = barcodes;
         return this;
     }
 
