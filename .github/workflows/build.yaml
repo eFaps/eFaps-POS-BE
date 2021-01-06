@@ -31,10 +31,11 @@ jobs:
           mvn install -s mySettings.xml -DskipTests=true -B -U
       - name: Run Tests
         run: mvn test -s mySettings.xml -B
+      - name: Deploy
+        run: mvn deploy -DskipTests -s mySettings.xml
       - name: Run coverage
         run: mvn clover:setup test clover:aggregate clover:clover -s mySettings.xml -B
       - name: CodeCov
         uses: codecov/codecov-action@v1
-      - name: Deploy
-        run: mvn deploy -DskipTests -s mySettings.xml
+
 
