@@ -17,6 +17,11 @@
 
 package org.efaps.pos.util;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 public final class Utils
 {
 
@@ -27,5 +32,21 @@ public final class Utils
     public static boolean isOid(final String _value)
     {
         return _value != null && _value.matches("^\\d+\\.\\d+$");
+    }
+
+    public static LocalDateTime toLocal(final OffsetDateTime _offsetDateTime) {
+        LocalDateTime ret = null;
+        if (_offsetDateTime != null) {
+            ret = _offsetDateTime.withOffsetSameInstant(ZonedDateTime.now().getOffset()).toLocalDateTime();
+        }
+        return ret;
+    }
+
+    public static OffsetDateTime toOffset(final LocalDateTime _localDateTime) {
+        OffsetDateTime ret = null;
+        if (_localDateTime != null) {
+            ret = _localDateTime.atOffset(ZonedDateTime.now().getOffset()).withOffsetSameInstant(ZoneOffset.UTC);
+        }
+        return ret;
     }
 }

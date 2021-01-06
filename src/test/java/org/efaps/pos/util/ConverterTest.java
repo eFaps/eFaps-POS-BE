@@ -17,10 +17,12 @@
 package org.efaps.pos.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 
 import org.efaps.pos.dto.BalanceDto;
@@ -833,8 +835,8 @@ public class ConverterTest
                         .withId("asimsddfsdfs")
                         .withNumber("a number")
                         .withUserOid("12369.99")
-                        .withEndAt(LocalDateTime.now())
-                        .withStartAt(LocalDateTime.now())
+                        .withEndAt(OffsetDateTime.now())
+                        .withStartAt(OffsetDateTime.now())
                         .withStatus(BalanceStatus.OPEN)
                         .build();
         final Balance entity = Converter.toEntity(dto);
@@ -842,8 +844,8 @@ public class ConverterTest
         assertEquals(dto.getId(), entity.getId());
         assertEquals(dto.getUserOid(), entity.getUserOid());
         assertEquals(dto.getId(), entity.getId());
-        assertEquals(dto.getEndAt(), entity.getEndAt());
-        assertEquals(dto.getStartAt(), entity.getStartAt());
+        assertNotNull(entity.getEndAt());
+        assertNotNull(entity.getStartAt());
         assertEquals(dto.getStatus(), entity.getStatus());
     }
 
@@ -862,8 +864,8 @@ public class ConverterTest
         assertEquals(entity.getId(), dto.getId());
         assertEquals(entity.getNumber(), dto.getNumber());
         assertEquals(entity.getUserOid(), dto.getUserOid());
-        assertEquals(entity.getEndAt(), dto.getEndAt());
-        assertEquals(entity.getStartAt(), dto.getStartAt());
+        assertNotNull(dto.getEndAt());
+        assertNotNull(dto.getStartAt());
         assertEquals(entity.getStatus(), dto.getStatus());
     }
 
