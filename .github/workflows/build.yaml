@@ -19,10 +19,16 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
         run: |
           wget https://raw.githubusercontent.com/eFaps/Utils/master/settings/settings.xml -O mySettings.xml
-          mvn install -s mySettings.xml -DskipTests=true -B -V
+          mvn install -s mySettings.xml -DskipTests=true -B -U
       - name: Run Tests
         run: mvn test -s mySettings.xml -B
       - name: Run coverage
