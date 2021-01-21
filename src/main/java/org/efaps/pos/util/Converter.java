@@ -315,7 +315,10 @@ public final class Converter
     {
         return new IndicationSet().setId(_dto.getOid())
                         .setName(_dto.getName())
+                        .setDescription(_dto.getDescription())
                         .setRequired(_dto.isRequired())
+                        .setMultiple(_dto.isMultiple())
+                        .setImageOid(_dto.getImageOid())
                         .setIndications(_dto.getIndications().stream()
                                         .map(dto -> toEntity(dto))
                                         .collect(Collectors.toSet()));
@@ -326,7 +329,9 @@ public final class Converter
         return IndicationSetDto.builder()
                         .withOID(_entity.getId())
                         .withName(_entity.getName())
+                        .withDescription(_entity.getDescription())
                         .withRequired(_entity.isRequired())
+                        .withMultiple(_entity.isMultiple())
                         .withIndications(_entity.getIndications().stream()
                                         .map(entity -> toDto(entity))
                                         .collect(Collectors.toSet()))
@@ -335,8 +340,11 @@ public final class Converter
 
     public static Indication toEntity(final IndicationDto _dto)
     {
-        return new Indication().setId(_dto.getOid())
-                        .setValue(_dto.getValue());
+        return new Indication()
+                        .setId(_dto.getOid())
+                        .setValue(_dto.getValue())
+                        .setDescription(_dto.getDescription())
+                        .setImageOid(_dto.getImageOid());
     }
 
     public static IndicationDto toDto(final Indication _entity)
@@ -344,6 +352,8 @@ public final class Converter
         return IndicationDto.builder()
                         .withOID(_entity.getId())
                         .withValue(_entity.getValue())
+                        .withDescription(_entity.getDescription())
+                        .withImageOid(_entity.getImageOid())
                         .build();
     }
 

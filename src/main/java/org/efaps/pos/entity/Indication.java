@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,32 @@ public class Indication
     private String id;
 
     private String value;
+
+    private String description;
+
+    private String imageOid;
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public Indication setDescription(final String description)
+    {
+        this.description = description;
+        return this;
+    }
+
+    public String getImageOid()
+    {
+        return imageOid;
+    }
+
+    public Indication setImageOid(final String imageOid)
+    {
+        this.imageOid = imageOid;
+        return this;
+    }
 
     public String getId()
     {

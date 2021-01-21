@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,54 @@ public class IndicationSet
 
     private String name;
 
+    private String description;
+
     private boolean required;
 
+    private boolean multiple;
+
+    private String imageOid;
 
     private Set<Indication> indications;
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public IndicationSet setDescription(final String description)
+    {
+        this.description = description;
+        return this;
+    }
+
+    public boolean isMultiple()
+    {
+        return multiple;
+    }
+
+    public IndicationSet setMultiple(final boolean multiple)
+    {
+        this.multiple = multiple;
+        return this;
+    }
+
+    public String getImageOid()
+    {
+        return imageOid;
+    }
+
+    public IndicationSet setImageOid(final String imageOid)
+    {
+        this.imageOid = imageOid;
+        return this;
+    }
+
+    public IndicationSet setRequired(final boolean required)
+    {
+        this.required = required;
+        return this;
+    }
 
     public String getId()
     {
