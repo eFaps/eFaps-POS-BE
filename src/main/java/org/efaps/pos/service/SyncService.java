@@ -623,6 +623,18 @@ public class SyncService
                 LOG.debug("Syncing Product-Image {}", product.getImageOid());
                 storeImage(product.getImageOid());
             }
+            for (final var indicationSet: product.getIndicationSets()) {
+                if (indicationSet.getImageOid() != null) {
+                    LOG.debug("Syncing IndicationSet-Image {}", indicationSet.getImageOid());
+                    storeImage(indicationSet.getImageOid());
+                }
+                for (final var indication : indicationSet.getIndications()) {
+                    if (indication.getImageOid() != null) {
+                        LOG.debug("Syncing Indication-Image {}", indication.getImageOid());
+                        storeImage(indication.getImageOid());
+                    }
+                }
+            }
         }
 
         final List<Workspace> workspaces = workspaceRepository.findAll();
