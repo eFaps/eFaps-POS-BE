@@ -332,6 +332,7 @@ public final class Converter
                         .withDescription(_entity.getDescription())
                         .withRequired(_entity.isRequired())
                         .withMultiple(_entity.isMultiple())
+                        .withImageOid(_entity.getImageOid())
                         .withIndications(_entity.getIndications().stream()
                                         .map(entity -> toDto(entity))
                                         .collect(Collectors.toSet()))
