@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-  Copyright 2003 - 2020 The eFaps Team
+  Copyright 2003 - 2021 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@
     <packaging>jar</packaging>
 
     <properties>
-        <spring.boot.version>2.4.1</spring.boot.version>
-        <junit.jupiter.version>5.7.0</junit.jupiter.version>
-        <junit.platform.version>1.7.0</junit.platform.version>
+        <spring.boot.version>2.4.5</spring.boot.version>
+        <junit.jupiter.version>5.7.1</junit.jupiter.version>
+        <junit.platform.version>1.7.1</junit.platform.version>
     </properties>
     <build>
         <plugins>
@@ -181,12 +181,12 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>
