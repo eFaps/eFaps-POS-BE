@@ -41,7 +41,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableConfigurationProperties
 @ConfigurationPropertiesScan
 @EnableMongoAuditing
-@EnableMongoRepositories("org.efaps.pos")
+@EnableMongoRepositories("org.efaps.pos.repository")
 public class Application
 {
 

@@ -102,8 +102,9 @@ public class WebSecurityConfig
         // Custom JWT based security filter
         final JwtAuthorizationTokenFilter authenticationTokenFilter = new JwtAuthorizationTokenFilter(
                         userDetailsService(), jwtTokenUtil);
+        _httpSecurity.addFilterBefore(contextFilter, UsernamePasswordAuthenticationFilter.class);
         _httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
-        _httpSecurity.addFilterBefore(contextFilter, JwtAuthorizationTokenFilter.class);
+      //  _httpSecurity.addFilterBefore(contextFilter, JwtAuthorizationTokenFilter.class);
     }
 
     @Override
