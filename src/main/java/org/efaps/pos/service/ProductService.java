@@ -58,6 +58,6 @@ public class ProductService
 
     public List<Product> findProductsByBarcode(final String _barcode)
     {
-        return productRepository.findByBarcodesContains(_barcode);
+        return productRepository.findByBarcode(_barcode);
     }
 }

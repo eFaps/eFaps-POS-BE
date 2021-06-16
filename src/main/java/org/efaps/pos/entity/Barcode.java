@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,34 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.repository;
+package org.efaps.pos.entity;
 
-import java.util.List;
-
-import org.efaps.pos.entity.Product;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
-
-public interface ProductRepository
-    extends MongoRepository<Product, String>
+public class Barcode
 {
-    List<Product> findByDescriptionLikeIgnoreCase(String _term);
 
-    List<Product> findByCategoryOidsContains(String _oid);
+    private String type;
 
-    @Query("{'barcodes.code':'?0'}")
-    List<Product> findByBarcode(String _barcode);
+    private String code;
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public Barcode setType(final String type)
+    {
+        this.type = type;
+        return this;
+    }
+
+    public String getCode()
+    {
+        return code;
+    }
+
+    public Barcode setCode(final String code)
+    {
+        this.code = code;
+        return this;
+    }
 }

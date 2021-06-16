@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.dto.BalanceDto;
+import org.efaps.pos.dto.BarcodeDto;
 import org.efaps.pos.dto.CardDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.CollectOrderDto;
@@ -64,6 +65,7 @@ import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Balance;
+import org.efaps.pos.entity.Barcode;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.Contact;
@@ -306,10 +308,21 @@ public final class Converter
                         .setIndicationSets(_dto.getIndicationSets().stream()
                                         .map(rel -> toEntity(rel))
                                         .collect(Collectors.toSet()))
-                        .setBarcodes(_dto.getBarcodes());
+                        .setBarcodes(_dto.getBarcodes().stream()
+                            .map(rel -> toEntity(rel))
+                            .collect(Collectors.toSet()));
         return ret;
     }
 
+    public static Barcode toEntity(final BarcodeDto _dto)
+    {
+        return new Barcode().setType(_dto.getType()).setCode(_dto.getCode());
+    }
+
+    public static BarcodeDto toDto(final Barcode _entity)
+    {
+        return BarcodeDto.builder().withType(_entity.getType()).withCode(_entity.getCode()).build();
+    }
 
     public static IndicationSet toEntity(final IndicationSetDto _dto)
     {
@@ -388,7 +401,11 @@ public final class Converter
                                 : _entity.getIndicationSets().stream()
                                         .map(set -> toDto(set))
                                         .collect(Collectors.toSet()))
-                        .withBarcodes(_entity.getBarcodes())
+                        .withBarcodes(_entity.getBarcodes() == null
+                                        ? null
+                                        : _entity.getBarcodes().stream()
+                                            .map(set -> toDto(set))
+                                        .collect(Collectors.toSet()))
                         .build();
     }
 
