@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ public class CollectOrder
     private String transactionId;
 
     private String orderId;
+
+    private String collectorKey;
 
     @CreatedBy
     private String user;
@@ -139,6 +141,16 @@ public class CollectOrder
     public void setCreatedDate(final Instant createdDate)
     {
         this.createdDate = createdDate;
+    }
+
+    public String getCollectorKey()
+    {
+        return collectorKey;
+    }
+
+    public void setCollectorKey(final String collectorKey)
+    {
+        this.collectorKey = collectorKey;
     }
 
     @Override

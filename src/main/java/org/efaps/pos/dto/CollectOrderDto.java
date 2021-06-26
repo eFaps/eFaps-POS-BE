@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2020 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ public class CollectOrderDto
 
     private final String orderId;
 
+    private final String collectorKey;
+
     private CollectOrderDto(final Builder builder)
     {
         id = builder.id;
@@ -44,6 +46,7 @@ public class CollectOrderDto
         state = builder.state;
         collected = builder.collected;
         orderId = builder.orderId;
+        collectorKey = builder.collectorKey;
     }
 
     public String getId()
@@ -71,6 +74,11 @@ public class CollectOrderDto
         return orderId;
     }
 
+    public String getCollectorKey()
+    {
+        return collectorKey;
+    }
+
     /**
      * Creates builder to build {@link CollectOrderDto}.
      *
@@ -92,6 +100,7 @@ public class CollectOrderDto
         private State state;
         private BigDecimal collected;
         private String orderId;
+        private String collectorKey;
 
         private Builder()
         {
@@ -124,6 +133,12 @@ public class CollectOrderDto
         public Builder withOrderId(final String orderId)
         {
             this.orderId = orderId;
+            return this;
+        }
+
+        public Builder withCollectorKey(final String collectorKey)
+        {
+            this.collectorKey = collectorKey;
             return this;
         }
 

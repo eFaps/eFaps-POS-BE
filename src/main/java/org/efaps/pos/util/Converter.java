@@ -1171,6 +1171,7 @@ public final class Converter
                         .withAmount(_entity.getAmount())
                         .withState(_entity.getState())
                         .withCollected(_entity.getCollected())
+                        .withCollectorKey(_entity.getCollectorKey())
                         .build();
     }
 
