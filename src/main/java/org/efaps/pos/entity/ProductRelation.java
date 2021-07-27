@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,45 @@
  */
 package org.efaps.pos.entity;
 
+import org.efaps.pos.dto.ProductRelationType;
+
 public class ProductRelation
 {
+
     private String label;
     private String productOid;
+    private ProductRelationType type;
 
     public String getLabel()
     {
-        return this.label;
+        return label;
     }
 
     public ProductRelation setLabel(final String _label)
     {
-        this.label = _label;
+        label = _label;
         return this;
     }
 
     public String getProductOid()
     {
-        return this.productOid;
+        return productOid;
     }
 
     public ProductRelation setProductOid(final String _productOid)
     {
-        this.productOid = _productOid;
+        productOid = _productOid;
+        return this;
+    }
+
+    public ProductRelationType getType()
+    {
+        return type;
+    }
+
+    public ProductRelation setType(final ProductRelationType type)
+    {
+        this.type = type;
         return this;
     }
 }

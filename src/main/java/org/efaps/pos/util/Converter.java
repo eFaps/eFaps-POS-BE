@@ -1148,13 +1148,15 @@ public final class Converter
         return ProductRelationDto.builder()
                         .withLabel(_entity.getLabel())
                         .withProductOid(_entity.getProductOid())
+                        .withType(_entity.getType())
                         .build();
     }
 
     public static ProductRelation toEntity(final ProductRelationDto _dto) {
         return new ProductRelation()
                         .setLabel(_dto.getLabel())
-                        .setProductOid(_dto.getProductOid());
+                        .setProductOid(_dto.getProductOid())
+                        .setType(_dto.getType());
     }
 
     public static ContactDto getContactDto(final String _key)
