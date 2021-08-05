@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,8 @@ public class ConfigProperties
     private String mongoClientURI;
 
     private boolean syncOnStartup;
+
+    private int maxSearchResult;
 
     private final SSO sso = new SSO();
 
@@ -124,6 +126,16 @@ public class ConfigProperties
     public void setSyncOnStartup(final boolean syncOnStartup)
     {
         this.syncOnStartup = syncOnStartup;
+    }
+
+    public int getMaxSearchResult()
+    {
+        return maxSearchResult;
+    }
+
+    public void setMaxSearchResult(final int maxResult)
+    {
+        maxSearchResult = maxResult;
     }
 
     public List<Extension> getExtensions()

@@ -1148,6 +1148,7 @@ public final class Converter
         return ProductRelationDto.builder()
                         .withLabel(_entity.getLabel())
                         .withProductOid(_entity.getProductOid())
+                        .withQuantity(_entity.getQuantity())
                         .withType(_entity.getType())
                         .build();
     }
@@ -1156,6 +1157,7 @@ public final class Converter
         return new ProductRelation()
                         .setLabel(_dto.getLabel())
                         .setProductOid(_dto.getProductOid())
+                        .setQuantity(_dto.getQuantity())
                         .setType(_dto.getType());
     }
 

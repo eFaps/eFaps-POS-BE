@@ -18,17 +18,22 @@ package org.efaps.pos.repository;
 
 import java.util.List;
 
+import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 public interface ProductRepository
     extends MongoRepository<Product, String>
 {
-    List<Product> findByDescriptionLikeIgnoreCase(String _term);
+    Page<Product> findByDescriptionLikeOrSkuLikeAllIgnoreCase(String _term1, String _term2, Pageable pageable);
 
     List<Product> findByCategoryOidsContains(String _oid);
 
     @Query("{'barcodes.code':'?0'}")
     List<Product> findByBarcode(String _barcode);
+
+    List<Product> findByType( ProductType type);
 }

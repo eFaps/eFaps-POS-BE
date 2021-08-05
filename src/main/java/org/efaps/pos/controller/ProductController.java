@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.service.ProductService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
@@ -72,6 +73,13 @@ public class ProductController
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "barcode" })
     public List<ProductDto> getProductsByBarcode(@RequestParam(name = "barcode") final String barcode) {
         return service.findProductsByBarcode(barcode).stream()
+                        .map(product -> Converter.toDto(product))
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "type" })
+    public List<ProductDto> getProductsByType(@RequestParam(name = "type") final ProductType type) {
+        return service.findProductsByType(type).stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }

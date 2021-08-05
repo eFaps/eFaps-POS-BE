@@ -19,9 +19,12 @@ package org.efaps.pos.service;
 
 import java.util.List;
 
+import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,11 +32,14 @@ public class ProductService
 {
 
     private final ProductRepository productRepository;
+    private final ConfigProperties configProperties;
 
     @Autowired
-    public ProductService(final ProductRepository _productRepository)
+    public ProductService(final ConfigProperties _configProperties,
+                          final ProductRepository _productRepository)
     {
         productRepository = _productRepository;
+        configProperties = _configProperties;
     }
 
     public List<Product> getProducts()
@@ -48,7 +54,8 @@ public class ProductService
 
     public List<Product> findProducts(final String _term)
     {
-        return productRepository.findByDescriptionLikeIgnoreCase(_term);
+        return productRepository.findByDescriptionLikeOrSkuLikeAllIgnoreCase(_term, _term,
+                        PageRequest.of(0, configProperties.getMaxSearchResult())).toList();
     }
 
     public List<Product> findProductsByCategory(final String _categoryOid)
@@ -59,5 +66,10 @@ public class ProductService
     public List<Product> findProductsByBarcode(final String _barcode)
     {
         return productRepository.findByBarcode(_barcode);
+    }
+
+    public List<Product> findProductsByType(final ProductType _type)
+    {
+        return productRepository.findByType(_type);
     }
 }

@@ -16,6 +16,8 @@
  */
 package org.efaps.pos.entity;
 
+import java.math.BigDecimal;
+
 import org.efaps.pos.dto.ProductRelationType;
 
 public class ProductRelation
@@ -23,6 +25,8 @@ public class ProductRelation
 
     private String label;
     private String productOid;
+    private BigDecimal quantity;
+
     private ProductRelationType type;
 
     public String getLabel()
@@ -44,6 +48,17 @@ public class ProductRelation
     public ProductRelation setProductOid(final String _productOid)
     {
         productOid = _productOid;
+        return this;
+    }
+
+    public BigDecimal getQuantity()
+    {
+        return quantity;
+    }
+
+    public ProductRelation setQuantity(final BigDecimal quantity)
+    {
+        this.quantity = quantity;
         return this;
     }
 
