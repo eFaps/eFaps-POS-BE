@@ -16,13 +16,17 @@
  */
 package org.efaps.pos.service;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
+import org.efaps.pos.dto.ProductRelationType;
+import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.repository.InventoryRepository;
+import org.efaps.pos.repository.ProductRepository;
 import org.efaps.pos.repository.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,15 +37,18 @@ public class InventoryService
     private final WorkspaceService workspaceService;
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
     public InventoryService(final WorkspaceService _workspaceService,
                             final WarehouseRepository _warehouseRepository,
-                            final InventoryRepository _inventoryRepository)
+                            final InventoryRepository _inventoryRepository,
+                            final ProductRepository _productRepository)
     {
         workspaceService = _workspaceService;
         warehouseRepository = _warehouseRepository;
         inventoryRepository = _inventoryRepository;
+        productRepository = _productRepository;
     }
 
     public List<Warehouse> getWarehouses()
@@ -70,14 +77,34 @@ public class InventoryService
         if (warehouseOidOpt.isPresent()) {
             final var warehouseOid = warehouseOidOpt.get();
             _document.getItems().forEach(item -> {
-                final var entryOpt = inventoryRepository.findByWarehouseOidAndProductOid(warehouseOid,
-                                item.getProductOid());
-                if (entryOpt.isPresent()) {
-                    final var entry = entryOpt.get();
-                    entry.setQuantity(entry.getQuantity().subtract(item.getQuantity()));
-                    inventoryRepository.save(entry);
-                }
+                removeFromInventory(warehouseOid, item.getProductOid(), item.getQuantity());
             });
         }
     }
+
+    private void removeFromInventory(final String warehouseOid, final String productOid, final BigDecimal quantity)
+    {
+        final var entryOpt = inventoryRepository.findByWarehouseOidAndProductOid(warehouseOid, productOid);
+        if (entryOpt.isPresent()) {
+            final var entry = entryOpt.get();
+            final var productOpt = productRepository.findById(productOid);
+            if (productOpt.isPresent()) {
+                final var product = productOpt.get();
+                if (ProductType.PARTLIST.equals(product.getType())) {
+                    product.getRelations().forEach(relation -> {
+                        if (ProductRelationType.SALESBOM.equals(relation.getType())) {
+                            removeFromInventory(warehouseOid, relation.getProductOid(),
+                                            quantity.multiply(relation.getQuantity()));
+                        }
+                    });
+                } else if (ProductType.STANDART.equals(product.getType())) {
+                    entry.setQuantity(entry.getQuantity().subtract(quantity));
+                    inventoryRepository.save(entry);
+                }
+            } else {
+                inventoryRepository.delete(entry);
+            }
+        }
+    }
+
 }
