@@ -18,6 +18,7 @@
 package org.efaps.pos.controller;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,11 +69,15 @@ public class CollectorController
     @GetMapping(path = "orders/{collectOrderId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollectOrderDto getCollectOrder(@PathVariable(name = "collectOrderId") final String _collectOrderId)
     {
-        final var dto = Converter.toDto(collectorService.getCollectOrder(_collectOrderId).orElse(null));
-        if (dto != null) {
+        CollectOrderDto dto = null;
+        final var collectOrderOpt = collectorService.getCollectOrder(_collectOrderId);
+        if (collectOrderOpt.isPresent()) {
+            final var collectOrder = collectOrderOpt.get();
+            final var map = new HashMap<String, Object>();
             for (final ICollectorListener listener : collectorListener) {
-                listener.add2CollectOrderDto(dto);
+                listener.addDetails2CollectOrderDto(collectOrder, map);
             }
+            dto = Converter.toDto(collectOrder, map);
         }
         return dto;
     }

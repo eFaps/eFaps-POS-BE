@@ -17,6 +17,7 @@
 package org.efaps.pos.util;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -1166,17 +1167,24 @@ public final class Converter
         return Converter.toDto(INSTANCE.contactService.findContact(_key));
     }
 
-    public static CollectOrderDto toDto(final CollectOrder _entity) {
+    public static CollectOrderDto toDto(final CollectOrder _entity)
+    {
+        return toDto(_entity, null);
+    }
+
+    public static CollectOrderDto toDto(final CollectOrder _entity, final Map<String, Object> details)
+    {
         return _entity == null
-            ? null
-            : CollectOrderDto.builder()
-                        .withId(_entity.getId())
-                        .withOrderId(_entity.getOrderId())
-                        .withAmount(_entity.getAmount())
-                        .withState(_entity.getState())
-                        .withCollected(_entity.getCollected())
-                        .withCollectorKey(_entity.getCollectorKey())
-                        .build();
+                        ? null
+                        : CollectOrderDto.builder()
+                                        .withId(_entity.getId())
+                                        .withOrderId(_entity.getOrderId())
+                                        .withAmount(_entity.getAmount())
+                                        .withState(_entity.getState())
+                                        .withCollected(_entity.getCollected())
+                                        .withCollectorKey(_entity.getCollectorKey())
+                                        .withDetails(details == null ? Collections.emptyMap() : details)
+                                        .build();
     }
 
     public static PayableHeadDto toDto(final PayableHead _projection)

@@ -83,6 +83,11 @@ public class CollectOrderDto
         return collectorKey;
     }
 
+    public Map<String, Object> getDetails()
+    {
+        return details;
+    }
+
     /**
      * Creates builder to build {@link CollectOrderDto}.
      *
