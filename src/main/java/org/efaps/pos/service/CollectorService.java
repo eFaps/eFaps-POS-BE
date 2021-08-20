@@ -36,6 +36,7 @@ import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.CollectOrder.State;
 import org.efaps.pos.entity.Collector;
 import org.efaps.pos.entity.Order;
+import org.efaps.pos.listener.ICollectorListener;
 import org.efaps.pos.pojo.CollectorState;
 import org.efaps.pos.repository.CollectOrderRepository;
 import org.slf4j.Logger;

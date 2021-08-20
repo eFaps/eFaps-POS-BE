@@ -17,13 +17,16 @@
 
 package org.efaps.pos.controller;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.CollectOrderDto;
 import org.efaps.pos.dto.CollectStartOrderDto;
 import org.efaps.pos.dto.CollectStartResponseDto;
 import org.efaps.pos.dto.CollectorDto;
+import org.efaps.pos.listener.ICollectorListener;
 import org.efaps.pos.service.CollectorService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
@@ -39,10 +42,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class CollectorController
 {
 
+    private final List<ICollectorListener> collectorListener;
     private final CollectorService collectorService;
 
-    public CollectorController(final CollectorService _collectorService)
+    public CollectorController(final Optional<List<ICollectorListener>> _collectorListener,
+                               final CollectorService _collectorService)
     {
+        collectorListener = _collectorListener.isPresent() ? _collectorListener.get() : Collections.emptyList();
         collectorService = _collectorService;
     }
 
@@ -52,8 +58,7 @@ public class CollectorController
         return collectorService.getCollectors();
     }
 
-    @PostMapping(path = "{key}/start", produces = MediaType.APPLICATION_JSON_VALUE,
-                    consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "{key}/start", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public CollectStartResponseDto startCollect(@PathVariable("key") final String _key,
                                                 @RequestBody final CollectStartOrderDto _dto)
     {
@@ -63,7 +68,13 @@ public class CollectorController
     @GetMapping(path = "orders/{collectOrderId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollectOrderDto getCollectOrder(@PathVariable(name = "collectOrderId") final String _collectOrderId)
     {
-        return Converter.toDto(collectorService.getCollectOrder(_collectOrderId).orElse(null));
+        final var dto = Converter.toDto(collectorService.getCollectOrder(_collectOrderId).orElse(null));
+        if (dto != null) {
+            for (final ICollectorListener listener : collectorListener) {
+                listener.add2CollectOrderDto(dto);
+            }
+        }
+        return dto;
     }
 
     @PostMapping(path = "orders/{collectOrderId}/cancel", produces = MediaType.APPLICATION_JSON_VALUE)

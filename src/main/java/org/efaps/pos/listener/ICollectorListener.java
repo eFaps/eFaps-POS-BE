@@ -14,14 +14,16 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.service;
+package org.efaps.pos.listener;
 
 import java.util.List;
 import java.util.Map;
 
+import org.efaps.pos.dto.CollectOrderDto;
 import org.efaps.pos.dto.CollectStartOrderDto;
 import org.efaps.pos.dto.CollectorDto;
 import org.efaps.pos.pojo.CollectorState;
+import org.efaps.pos.service.CollectorException;
 
 public interface ICollectorListener
 {
@@ -35,6 +37,11 @@ public interface ICollectorListener
         throws CollectorException
     {
         return null;
+    }
+
+    default void add2CollectOrderDto(final CollectOrderDto collectOrderDto)
+    {
+
     }
 
 }

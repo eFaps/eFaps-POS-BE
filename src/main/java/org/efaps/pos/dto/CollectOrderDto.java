@@ -18,6 +18,7 @@
 package org.efaps.pos.dto;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import org.efaps.pos.entity.CollectOrder.State;
 
@@ -39,6 +40,8 @@ public class CollectOrderDto
 
     private final String collectorKey;
 
+    private final Map<String, Object> details;
+
     private CollectOrderDto(final Builder builder)
     {
         id = builder.id;
@@ -47,6 +50,7 @@ public class CollectOrderDto
         collected = builder.collected;
         orderId = builder.orderId;
         collectorKey = builder.collectorKey;
+        details = builder.details;
     }
 
     public String getId()
@@ -101,6 +105,7 @@ public class CollectOrderDto
         private BigDecimal collected;
         private String orderId;
         private String collectorKey;
+        private Map<String, Object> details;
 
         private Builder()
         {
@@ -139,6 +144,12 @@ public class CollectOrderDto
         public Builder withCollectorKey(final String collectorKey)
         {
             this.collectorKey = collectorKey;
+            return this;
+        }
+
+        public Builder withDetails(final Map<String, Object> details)
+        {
+            this.details = details;
             return this;
         }
 
