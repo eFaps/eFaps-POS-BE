@@ -398,7 +398,7 @@ public class EFapsClient
         throws IdentException
     {
         return addHeader(RequestEntity.post(_uri))
-                        .accept(MediaType.APPLICATION_JSON, , MediaType.TEXT_PLAIN).body(_body);
+                        .accept(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN).body(_body);
     }
 
     public <T> RequestEntity<T> put(final String _path, final T _body)
