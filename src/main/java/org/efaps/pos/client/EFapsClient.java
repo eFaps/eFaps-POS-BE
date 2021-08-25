@@ -382,13 +382,6 @@ public class EFapsClient
         return addHeader(RequestEntity.get(_uri)).build();
     }
 
-    public <T> RequestEntity<T> post(final URI _uri, final T _body)
-    {
-        return addHeader(RequestEntity.post(_uri))
-                        .accept(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN)
-                        .body(_body);
-    }
-
     public RequestEntity<?> get(final String _path)
         throws IdentException
     {
@@ -398,14 +391,26 @@ public class EFapsClient
     public <T> RequestEntity<T> post(final String _path, final T _body)
         throws IdentException
     {
-        return addHeader(RequestEntity.post(getUriComponent(_path).toUri()))
-                        .accept(MediaType.APPLICATION_JSON).body(_body);
+        return post(getUriComponent(_path).toUri(), _body);
+    }
+
+    public <T> RequestEntity<T> post(final URI _uri, final T _body)
+        throws IdentException
+    {
+        return addHeader(RequestEntity.post(_uri))
+                        .accept(MediaType.APPLICATION_JSON, , MediaType.TEXT_PLAIN).body(_body);
     }
 
     public <T> RequestEntity<T> put(final String _path, final T _body)
         throws IdentException
     {
-        return addHeader(RequestEntity.put(getUriComponent(_path).toUri()))
+        return put(getUriComponent(_path).toUri(), _body);
+    }
+
+    public <T> RequestEntity<T> put(final URI _uri, final T _body)
+        throws IdentException
+    {
+        return addHeader(RequestEntity.put(_uri))
                         .accept(MediaType.APPLICATION_JSON).body(_body);
     }
 
@@ -442,7 +447,8 @@ public class EFapsClient
         return ret;
     }
 
-    protected EFaps getEFapsConfig() {
+    protected EFaps getEFapsConfig()
+    {
         return getConfig().getEFaps();
     }
 }
