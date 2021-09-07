@@ -84,6 +84,7 @@ public class PrintService
         printerRepository = _printerRepository;
         documentService = _documentService;
         printListeners = _printListeners.isPresent() ? _printListeners.get() : Collections.emptyList();
+        LOG.info("Discovered {} IPrintListener", printListeners.size());
     }
 
     public byte[] print2Image(final Object _object, final String _reportOid, final Map<String, Object> _parameters)
