@@ -137,7 +137,7 @@ public class PrintService
             final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
             final Map<String, Object> additionalInfo = new HashMap<>();
             for (final IPrintListener listener : printListeners) {
-                additionalInfo.putAll(listener.getAdditionalInfo(_document));
+                listener.addAdditionalInfo2Document(_document, additionalInfo);
             }
             content = PrintPayableDto.builder()
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
@@ -149,7 +149,7 @@ public class PrintService
             final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
             final Map<String, Object> additionalInfo = new HashMap<>();
             for (final IPrintListener listener : printListeners) {
-                additionalInfo.putAll(listener.getAdditionalInfo(_document));
+                listener.addAdditionalInfo2Document(_document, additionalInfo);
             }
             content = PrintPayableDto.builder()
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
@@ -161,7 +161,7 @@ public class PrintService
             final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
             final Map<String, Object> additionalInfo = new HashMap<>();
             for (final IPrintListener listener : printListeners) {
-                additionalInfo.putAll(listener.getAdditionalInfo(_document));
+                listener.addAdditionalInfo2Document(_document, additionalInfo);
             }
             content = PrintPayableDto.builder()
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))

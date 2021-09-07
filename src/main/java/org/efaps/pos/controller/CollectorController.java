@@ -75,7 +75,7 @@ public class CollectorController
             final var collectOrder = collectOrderOpt.get();
             final var map = new HashMap<String, Object>();
             for (final ICollectorListener listener : collectorListener) {
-                listener.addDetails2CollectOrderDto(collectOrder, map);
+                listener.addAdditionalInfo2CollectOrderDto(collectOrder, map);
             }
             dto = Converter.toDto(collectOrder, map);
         }

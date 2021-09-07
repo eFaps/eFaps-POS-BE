@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2020 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,5 +22,10 @@ import org.efaps.pos.entity.AbstractDocument;
 
 public interface IPrintListener
 {
-    Map<String, Object> getAdditionalInfo(AbstractDocument<?> _document2print);
+
+    default void addAdditionalInfo2Document(final AbstractDocument<?> _document2print,
+                                            final Map<String, Object> additionalInfo)
+    {
+
+    }
 }

@@ -39,7 +39,8 @@ public interface ICollectorListener
         return null;
     }
 
-    default void addDetails2CollectOrderDto(final CollectOrder collectOrder, final Map<String, Object> details)
+    default void addAdditionalInfo2CollectOrderDto(final CollectOrder collectOrder,
+                                                   final Map<String, Object> additionalInfo)
     {
 
     }

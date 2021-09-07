@@ -40,7 +40,7 @@ public class CollectOrderDto
 
     private final String collectorKey;
 
-    private final Map<String, Object> details;
+    private final Map<String, Object> additionalInfo;
 
     private CollectOrderDto(final Builder builder)
     {
@@ -50,7 +50,7 @@ public class CollectOrderDto
         collected = builder.collected;
         orderId = builder.orderId;
         collectorKey = builder.collectorKey;
-        details = builder.details;
+        additionalInfo = builder.additionalInfo;
     }
 
     public String getId()
@@ -83,9 +83,9 @@ public class CollectOrderDto
         return collectorKey;
     }
 
-    public Map<String, Object> getDetails()
+    public Map<String, Object> getAdditionalInfo()
     {
-        return details;
+        return additionalInfo;
     }
 
     /**
@@ -110,7 +110,7 @@ public class CollectOrderDto
         private BigDecimal collected;
         private String orderId;
         private String collectorKey;
-        private Map<String, Object> details;
+        private Map<String, Object> additionalInfo;
 
         private Builder()
         {
@@ -152,9 +152,9 @@ public class CollectOrderDto
             return this;
         }
 
-        public Builder withDetails(final Map<String, Object> details)
+        public Builder withAdditionalInfo(final Map<String, Object> additionalInfo)
         {
-            this.details = details;
+            this.additionalInfo = additionalInfo;
             return this;
         }
 

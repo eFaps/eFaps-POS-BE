@@ -1172,7 +1172,7 @@ public final class Converter
         return toDto(_entity, null);
     }
 
-    public static CollectOrderDto toDto(final CollectOrder _entity, final Map<String, Object> details)
+    public static CollectOrderDto toDto(final CollectOrder _entity, final Map<String, Object> additionalInfo)
     {
         return _entity == null
                         ? null
@@ -1183,7 +1183,8 @@ public final class Converter
                                         .withState(_entity.getState())
                                         .withCollected(_entity.getCollected())
                                         .withCollectorKey(_entity.getCollectorKey())
-                                        .withDetails(details == null ? Collections.emptyMap() : details)
+                                        .withAdditionalInfo(additionalInfo == null ? Collections.emptyMap()
+                                                        : additionalInfo)
                                         .build();
     }
 
