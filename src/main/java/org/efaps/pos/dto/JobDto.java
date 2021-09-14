@@ -30,6 +30,7 @@ public class JobDto
     private final String documentNumber;
     private final String spotNumber;
     private final String shoutout;
+    private final String note;
 
     private final Set<PosDocItemDto> items;
 
@@ -41,6 +42,7 @@ public class JobDto
         spotNumber = builder.spotNumber;
         shoutout = builder.shoutout;
         items = builder.items;
+        note = builder.note;
     }
 
     public String getId()
@@ -73,6 +75,11 @@ public class JobDto
         return shoutout;
     }
 
+    public String getNote()
+    {
+        return note;
+    }
+
     /**
      * Creates builder to build {@link JobDto}.
      *
@@ -94,6 +101,7 @@ public class JobDto
         private String documentNumber;
         private String spotNumber;
         private String shoutout;
+        private String note;
         private Set<PosDocItemDto> items = Collections.emptySet();
 
         private Builder()
@@ -127,6 +135,12 @@ public class JobDto
         public Builder withShoutout(final String shoutout)
         {
             this.shoutout = shoutout;
+            return this;
+        }
+
+        public Builder withNote(final String note)
+        {
+            this.note = note;
             return this;
         }
 

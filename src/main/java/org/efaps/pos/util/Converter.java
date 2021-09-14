@@ -1030,6 +1030,7 @@ public final class Converter
                                             ? order.getSpot().getId()
                                             : order.getSpot().getLabel())
                         .withId(_entity.getId())
+                        .withNote(order.getNote())
                         .withItems(_entity.getItems() == null
                             ?  Collections.emptySet()
                             : _entity.getItems().stream()
