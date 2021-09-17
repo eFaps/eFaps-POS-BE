@@ -33,18 +33,19 @@ public enum StashId
     REPORTSYNC("org.efaps.pos.sync.Report"),
     WAREHOUSESYNC("org.efaps.pos.sync.Warehouse"),
     WORKSPACESYNC("org.efaps.pos.sync.Workspace"),
-    BALANCESYNC("org.efaps.pos.sync.Balance");;
+    BALANCESYNC("org.efaps.pos.sync.Balance"),
+    EXCHANGERATES("org.efaps.pos.ExchangeRates");
 
     private final String key;
 
-    private StashId(final String _key)
+    StashId(final String _key)
     {
-        this.key = _key;
+        key = _key;
     }
 
     public String getKey()
     {
-        return this.key;
+        return key;
     }
 
 }

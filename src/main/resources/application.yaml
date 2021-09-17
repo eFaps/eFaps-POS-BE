@@ -50,6 +50,7 @@ efaps:
   printerPath: /servlet/rest/pos/{identifier}/printers
   configPath: /servlet/rest/pos/{identifier}/config
   balancePath: /servlet/rest/pos/{identifier}/balance
+  exchangeRatePath: /servlet/rest/pos/{identifier}/exchangerates
 
 auth:
   user: Administrator

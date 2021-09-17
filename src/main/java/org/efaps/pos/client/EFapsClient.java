@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.efaps.pos.ConfigProperties.EFaps;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.ExchangeRateDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.OrderDto;
@@ -247,6 +248,23 @@ public class EFapsClient
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
+    public List<ExchangeRateDto> getExchangeRates()
+    {
+        List<ExchangeRateDto> ret = null;
+        try {
+            final var requestEntity = get(getEFapsConfig().getExchangeRatePath());
+
+            final var response = getRestTemplate().exchange(requestEntity,
+                            new ParameterizedTypeReference<List<ExchangeRateDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final IdentException e) {
+            LOG.error("Catched error during get for ExchangeRateDto", e);
         }
         return ret;
     }
