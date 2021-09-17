@@ -25,6 +25,7 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.DocStatus;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -42,9 +43,10 @@ public abstract class AbstractDocument<T>
     private Set<Item> items;
     private DocStatus status;
     private LocalDate date;
-    private String currency;
+    private Currency currency;
     private BigDecimal netTotal;
     private BigDecimal crossTotal;
+    private BigDecimal exchangeRate;
     private Set<TaxEntry> taxes;
     private String contactOid;
     private String workspaceOid;
@@ -135,13 +137,13 @@ public abstract class AbstractDocument<T>
         return (T) this;
     }
 
-    public String getCurrency()
+    public Currency getCurrency()
     {
         return this.currency;
     }
 
     @SuppressWarnings("unchecked")
-    public T setCurrency(final String _currency)
+    public T setCurrency(final Currency _currency)
     {
         this.currency = _currency;
         return (T) this;
@@ -168,6 +170,17 @@ public abstract class AbstractDocument<T>
     public T setCrossTotal(final BigDecimal _crossTotal)
     {
         this.crossTotal = _crossTotal;
+        return (T) this;
+    }
+
+    public BigDecimal getExchangeRate()
+    {
+        return exchangeRate;
+    }
+
+    public T setExchangeRate(final BigDecimal exchangeRate)
+    {
+        this.exchangeRate = exchangeRate;
         return (T) this;
     }
 

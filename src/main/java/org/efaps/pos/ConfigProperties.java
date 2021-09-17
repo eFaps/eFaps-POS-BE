@@ -192,6 +192,7 @@ public class ConfigProperties
         private String printerPath;
         private String configPath;
         private String balancePath;
+        private String exchangeRatePath;
 
         public URI getBaseUrl()
         {
@@ -381,6 +382,18 @@ public class ConfigProperties
         public void setBackendPath(final String _backendPath)
         {
             backendPath = _backendPath;
+        }
+
+
+        public String getExchangeRatePath()
+        {
+            return exchangeRatePath;
+        }
+
+
+        public void setExchangeRatePath(final String exchangeRatePath)
+        {
+            this.exchangeRatePath = exchangeRatePath;
         }
     }
 

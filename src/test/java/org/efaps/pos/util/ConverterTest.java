@@ -29,6 +29,7 @@ import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
@@ -658,7 +659,7 @@ public class ConverterTest
                         .setOid("OID")
                         .setNumber("Number")
                         .setDate(LocalDate.now())
-                        .setCurrency("PEN")
+                        .setCurrency(Currency.PEN)
                         .setStatus(DocStatus.OPEN)
                         .setCrossTotal(BigDecimal.TEN)
                         .setNetTotal(BigDecimal.ONE)
@@ -684,7 +685,7 @@ public class ConverterTest
                         .setOid("OID")
                         .setNumber("Number")
                         .setDate(LocalDate.now())
-                        .setCurrency("PEN")
+                        .setCurrency(Currency.PEN)
                         .setStatus(DocStatus.OPEN)
                         .setCrossTotal(BigDecimal.TEN)
                         .setNetTotal(BigDecimal.ONE)
@@ -710,7 +711,7 @@ public class ConverterTest
                         .setOid("OID")
                         .setNumber("Number")
                         .setDate(LocalDate.now())
-                        .setCurrency("PEN")
+                        .setCurrency(Currency.PEN)
                         .setStatus(DocStatus.OPEN)
                         .setCrossTotal(BigDecimal.TEN)
                         .setNetTotal(BigDecimal.ONE)
@@ -736,7 +737,7 @@ public class ConverterTest
                         .setOid("OID")
                         .setNumber("Number")
                         .setDate(LocalDate.now())
-                        .setCurrency("PEN")
+                        .setCurrency(Currency.PEN)
                         .setStatus(DocStatus.OPEN)
                         .setCrossTotal(BigDecimal.TEN)
                         .setNetTotal(BigDecimal.ONE)
@@ -762,7 +763,7 @@ public class ConverterTest
                         .setOid("OID")
                         .setNumber("Number")
                         .setDate(LocalDate.now())
-                        .setCurrency("PEN")
+                        .setCurrency(Currency.PEN)
                         .setStatus(DocStatus.OPEN)
                         .setCrossTotal(BigDecimal.TEN)
                         .setNetTotal(BigDecimal.ONE)
@@ -788,7 +789,7 @@ public class ConverterTest
                         .setOid("OID")
                         .setNumber("Number")
                         .setDate(LocalDate.now())
-                        .setCurrency("PEN")
+                        .setCurrency(Currency.PEN)
                         .setStatus(DocStatus.OPEN)
                         .setCrossTotal(BigDecimal.TEN)
                         .setNetTotal(BigDecimal.ONE)
