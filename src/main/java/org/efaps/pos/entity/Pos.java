@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 package org.efaps.pos.entity;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.efaps.pos.dto.Currency;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -32,7 +33,7 @@ public class Pos
 
     private String name;
 
-    private String currency;
+    private Currency currency;
 
     private Company company;
 
@@ -44,90 +45,90 @@ public class Pos
 
     public String getOid()
     {
-        return this.oid;
+        return oid;
     }
 
     public Pos setOid(final String _oid)
     {
-        this.oid = _oid;
-        this.id = _oid;
+        oid = _oid;
+        id = _oid;
         return this;
     }
 
     public String getName()
     {
-        return this.name;
+        return name;
     }
 
     public Pos setName(final String _name)
     {
-        this.name = _name;
+        name = _name;
         return this;
     }
 
-    public String getCurrency()
+    public Currency getCurrency()
     {
-        return this.currency;
+        return currency;
     }
 
-    public Pos setCurrency(final String _currency)
+    public Pos setCurrency(final Currency _currency)
     {
-        this.currency = _currency;
+        currency = _currency;
         return this;
     }
 
     public Company getCompany()
     {
-        return this.company;
+        return company;
     }
 
     public Pos setCompany(final Company _company)
     {
-        this.company = _company;
+        company = _company;
         return this;
     }
 
     public String getDefaultContactOid()
     {
-        return this.defaultContactOid;
+        return defaultContactOid;
     }
 
     public Pos setDefaultContactOid(final String _defaultContactOid)
     {
-        this.defaultContactOid = _defaultContactOid;
+        defaultContactOid = _defaultContactOid;
         return this;
     }
 
     public String getReceiptSeqOid()
     {
-        return this.receiptSeqOid;
+        return receiptSeqOid;
     }
 
     public Pos setReceiptSeqOid(final String _receiptSeqOid)
     {
-        this.receiptSeqOid = _receiptSeqOid;
+        receiptSeqOid = _receiptSeqOid;
         return this;
     }
 
     public String getInvoiceSeqOid()
     {
-        return this.invoiceSeqOid;
+        return invoiceSeqOid;
     }
 
     public Pos setInvoiceSeqOid(final String _invoiceSeqOid)
     {
-        this.invoiceSeqOid = _invoiceSeqOid;
+        invoiceSeqOid = _invoiceSeqOid;
         return this;
     }
 
     public String getTicketSeqOid()
     {
-        return this.ticketSeqOid;
+        return ticketSeqOid;
     }
 
     public Pos setTicketSeqOid(final String _ticketSeqOid)
     {
-        this.ticketSeqOid = _ticketSeqOid;
+        ticketSeqOid = _ticketSeqOid;
         return this;
     }
 
@@ -145,23 +146,23 @@ public class Pos
 
         public String getName()
         {
-            return this.name;
+            return name;
         }
 
         public Company setName(final String _name)
         {
-            this.name = _name;
+            name = _name;
             return this;
         }
 
         public String getTaxNumber()
         {
-            return this.taxNumber;
+            return taxNumber;
         }
 
         public Company setTaxNumber(final String _taxNumber)
         {
-            this.taxNumber = _taxNumber;
+            taxNumber = _taxNumber;
             return this;
         }
     }

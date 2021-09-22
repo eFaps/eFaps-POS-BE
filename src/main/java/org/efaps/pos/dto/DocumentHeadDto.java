@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2020 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ public class DocumentHeadDto
     private final String number;
     private final BigDecimal netTotal;
     private final BigDecimal crossTotal;
-    private final String currency;
+    private final Currency currency;
+    private final BigDecimal exchangeRate;
     private final LocalDate date;
     private final DocStatus status;
 
@@ -36,6 +37,7 @@ public class DocumentHeadDto
         netTotal = _builder.netTotal;
         crossTotal = _builder.crossTotal;
         currency = _builder.currency;
+        exchangeRate = _builder.exchangeRate;
         date = _builder.date;
         status = _builder.status;
     }
@@ -60,9 +62,14 @@ public class DocumentHeadDto
         return crossTotal;
     }
 
-    public String getCurrency()
+    public Currency getCurrency()
     {
         return currency;
+    }
+
+    public BigDecimal getExchangeRate()
+    {
+        return exchangeRate;
     }
 
     public LocalDate getDate()
@@ -81,7 +88,8 @@ public class DocumentHeadDto
         private String number;
         private BigDecimal netTotal;
         private BigDecimal crossTotal;
-        private String currency;
+        private Currency currency;
+        private BigDecimal exchangeRate;
         private LocalDate date;
         private DocStatus status;
 
@@ -114,9 +122,16 @@ public class DocumentHeadDto
         }
 
         @SuppressWarnings("unchecked")
-        public S withCurrency(final String _currency)
+        public S withCurrency(final Currency _currency)
         {
             currency = _currency;
+            return (S) this;
+        }
+
+        @SuppressWarnings("unchecked")
+        public S withExchangeRate(final BigDecimal _exchangeRate)
+        {
+            exchangeRate = _exchangeRate;
             return (S) this;
         }
 

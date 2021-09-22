@@ -178,6 +178,7 @@ public abstract class AbstractDocument<T>
         return exchangeRate;
     }
 
+    @SuppressWarnings("unchecked")
     public T setExchangeRate(final BigDecimal exchangeRate)
     {
         this.exchangeRate = exchangeRate;
@@ -301,6 +302,8 @@ public abstract class AbstractDocument<T>
         private BigDecimal crossUnitPrice;
         private BigDecimal netPrice;
         private BigDecimal crossPrice;
+        private Currency currency;
+        private BigDecimal exchangeRate;
         private Set<TaxEntry> taxes;
         private String remark;
 
@@ -392,6 +395,28 @@ public abstract class AbstractDocument<T>
             return this;
         }
 
+        public Currency getCurrency()
+        {
+            return currency;
+        }
+
+        public Item setCurrency(final Currency currency)
+        {
+            this.currency = currency;
+            return this;
+        }
+
+        public BigDecimal getExchangeRate()
+        {
+            return exchangeRate;
+        }
+
+        public Item setExchangeRate(final BigDecimal exchangeRate)
+        {
+            this.exchangeRate = exchangeRate;
+            return this;
+        }
+
         public Set<TaxEntry> getTaxes()
         {
             return taxes;
@@ -427,6 +452,8 @@ public abstract class AbstractDocument<T>
         private Tax tax;
         private BigDecimal base;
         private BigDecimal amount;
+        private Currency currency;
+        private BigDecimal exchangeRate;
 
         public Tax getTax()
         {
@@ -458,6 +485,28 @@ public abstract class AbstractDocument<T>
         public TaxEntry setAmount(final BigDecimal _amount)
         {
             amount = _amount;
+            return this;
+        }
+
+        public Currency getCurrency()
+        {
+            return currency;
+        }
+
+        public TaxEntry setCurrency(final Currency currency)
+        {
+            this.currency = currency;
+            return this;
+        }
+
+        public BigDecimal getExchangeRate()
+        {
+            return exchangeRate;
+        }
+
+        public TaxEntry setExchangeRate(final BigDecimal exchangeRate)
+        {
+            this.exchangeRate = exchangeRate;
             return this;
         }
 

@@ -141,6 +141,7 @@ public final class Converter
                                         .collect(Collectors.toSet()))
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
+                        .setExchangeRate(_dto.getExchangeRate())
                         .setContactOid(_dto.getContactOid())
                         .setWorkspaceOid(_dto.getWorkspaceOid())
                         .setTaxes(_dto.getTaxes() ==  null
@@ -172,6 +173,7 @@ public final class Converter
                                         .collect(Collectors.toSet()))
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
+                        .setExchangeRate(_dto.getExchangeRate())
                         .setContactOid(_dto.getContactOid())
                         .setWorkspaceOid(_dto.getWorkspaceOid())
                         .setTaxes(_dto.getTaxes() ==  null
@@ -203,6 +205,7 @@ public final class Converter
                                         .collect(Collectors.toSet()))
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
+                        .setExchangeRate(_dto.getExchangeRate())
                         .setContactOid(_dto.getContactOid())
                         .setWorkspaceOid(_dto.getWorkspaceOid())
                         .setTaxes(_dto.getTaxes() ==  null
@@ -234,6 +237,7 @@ public final class Converter
                                         .collect(Collectors.toSet()))
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
+                        .setExchangeRate(_dto.getExchangeRate())
                         .setStatus(_dto.getStatus())
                         .setTaxes(_dto.getTaxes() ==  null
                             ? null
@@ -275,6 +279,8 @@ public final class Converter
                         .setCrossUnitPrice(_dto.getCrossUnitPrice())
                         .setNetPrice(_dto.getNetPrice())
                         .setNetUnitPrice(_dto.getNetUnitPrice())
+                        .setExchangeRate(_dto.getExchangeRate())
+                        .setCurrency(_dto.getCurrency())
                         .setQuantity(_dto.getQuantity())
                         .setRemark(_dto.getRemark())
                         .setProductOid(_dto.getProduct() == null
@@ -297,6 +303,7 @@ public final class Converter
                         .setDescription(_dto.getDescription())
                         .setNetPrice(_dto.getNetPrice())
                         .setCrossPrice(_dto.getCrossPrice())
+                        .setCurrency(_dto.getCurrency())
                         .setCategoryOids(_dto.getCategoryOids())
                         .setTaxes(_dto.getTaxes().stream()
                                         .map(_tax -> _tax == null ? null : toEntity(_tax))
@@ -384,6 +391,7 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withNetPrice(_entity.getNetPrice())
                         .withCrossPrice(_entity.getCrossPrice())
+                        .withCurrency(_entity.getCurrency())
                         .withCategoryOids(_entity.getCategoryOids())
                         .withTaxes(_entity.getTaxes() == null
                                 ? null
@@ -649,7 +657,9 @@ public final class Converter
         final TaxEntry ret = new TaxEntry()
                         .setTax(_dto.getTax() == null ? null : Converter.toEntity(_dto.getTax()))
                         .setBase(_dto.getBase())
-                        .setAmount(_dto.getAmount());
+                        .setAmount(_dto.getAmount())
+                        .setCurrency(_dto.getCurrency())
+                        .setExchangeRate(_dto.getExchangeRate());
         return ret;
     }
 
@@ -659,6 +669,8 @@ public final class Converter
                         .withTax(Converter.toDto(_entity.getTax()))
                         .withBase(_entity.getBase())
                         .withAmount(_entity.getAmount())
+                        .withCurrency(_entity.getCurrency())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .build();
     }
 
@@ -669,6 +681,7 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())
                         .withCurrency(_entity.getCurrency())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .withDate(_entity.getDate())
                         .withItems(_entity.getItems() == null
                             ? Collections.emptySet()
@@ -707,6 +720,8 @@ public final class Converter
                         .withCrossUnitPrice(_entity.getCrossUnitPrice())
                         .withNetPrice(_entity.getNetPrice())
                         .withNetUnitPrice(_entity.getNetUnitPrice())
+                        .withCurrency(_entity.getCurrency())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .withQuantity(_entity.getQuantity())
                         .withProductOid(_entity.getProductOid())
                         .withRemark(_entity.getRemark())
@@ -732,6 +747,7 @@ public final class Converter
                         .withStatus(_entity.getStatus())
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
@@ -765,6 +781,7 @@ public final class Converter
                         .withCurrency(_entity.getCurrency())
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .withStatus(_entity.getStatus())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
@@ -799,6 +816,7 @@ public final class Converter
                         .withCurrency(_entity.getCurrency())
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .withStatus(_entity.getStatus())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
@@ -847,6 +865,7 @@ public final class Converter
                         .withStatus(_entity.getStatus())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
@@ -873,6 +892,7 @@ public final class Converter
                         .withCurrency(_entity.getCurrency())
                         .withStatus(_entity.getStatus())
                         .withCrossTotal(_entity.getCrossTotal())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .withNetTotal(_entity.getNetTotal())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
@@ -906,6 +926,7 @@ public final class Converter
                         .withStatus(_entity.getStatus())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
@@ -938,6 +959,7 @@ public final class Converter
                         .withStatus(_entity.getStatus())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
@@ -968,6 +990,8 @@ public final class Converter
                         .withCrossUnitPrice(_entity.getCrossUnitPrice())
                         .withNetPrice(_entity.getNetPrice())
                         .withNetUnitPrice(_entity.getNetUnitPrice())
+                        .withCurrency(_entity.getCurrency())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .withQuantity(_entity.getQuantity())
                         .withProductOid(_entity.getProductOid())
                         .withRemark(_entity.getRemark())
@@ -1201,6 +1225,7 @@ public final class Converter
                         .withCrossTotal(_projection.getCrossTotal())
                         .withNetTotal(_projection.getNetTotal())
                         .withCurrency(_projection.getCurrency())
+                        .withExchangeRate(_projection.getExchangeRate())
                         .withDate(_projection.getDate())
                         .withStatus(_projection.getStatus())
                         .withOrder(order)
@@ -1215,6 +1240,7 @@ public final class Converter
                         .withCrossTotal(_projection.getCrossTotal())
                         .withNetTotal(_projection.getNetTotal())
                         .withCurrency(_projection.getCurrency())
+                        .withExchangeRate(_projection.getExchangeRate())
                         .withDate(_projection.getDate())
                         .withStatus(_projection.getStatus())
                         .build();
