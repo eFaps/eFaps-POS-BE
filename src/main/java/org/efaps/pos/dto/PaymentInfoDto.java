@@ -1,8 +1,8 @@
 package org.efaps.pos.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import java.math.BigDecimal;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PaymentInfoDto.Builder.class)
 public class PaymentInfoDto
@@ -13,6 +13,7 @@ public class PaymentInfoDto
     private final String cardLabel;
     private final int count;
     private final BigDecimal amount;
+    private final Currency currency;
 
     private PaymentInfoDto(final Builder _builder)
     {
@@ -21,6 +22,7 @@ public class PaymentInfoDto
         cardLabel = _builder.cardLabel == null ? "" : _builder.cardLabel;
         count = _builder.count;
         amount = _builder.amount;
+        currency = _builder.currency;
     }
 
     public PaymentType getType()
@@ -48,6 +50,11 @@ public class PaymentInfoDto
         return amount;
     }
 
+    public Currency getCurrency()
+    {
+        return currency;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -61,6 +68,7 @@ public class PaymentInfoDto
         private String cardLabel;
         private int count;
         private BigDecimal amount;
+        private Currency currency;
 
         public Builder withType(final PaymentType _type)
         {
@@ -89,6 +97,12 @@ public class PaymentInfoDto
         public Builder withAmount(final BigDecimal _amount)
         {
             amount = _amount;
+            return this;
+        }
+
+        public Builder withCurrency(final Currency _currency)
+        {
+            currency = _currency;
             return this;
         }
 

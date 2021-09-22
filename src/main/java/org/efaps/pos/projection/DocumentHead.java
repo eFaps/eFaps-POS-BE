@@ -20,6 +20,7 @@ package org.efaps.pos.projection;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.DocStatus;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -31,7 +32,8 @@ public class DocumentHead
     private String number;
     private BigDecimal netTotal;
     private BigDecimal crossTotal;
-    private String currency;
+    private Currency currency;
+    private BigDecimal exchangeRate;
     private LocalDate date;
     private DocStatus status;
 
@@ -45,12 +47,12 @@ public class DocumentHead
         this.id = id;
     }
 
-    public String getCurrency()
+    public Currency getCurrency()
     {
         return currency;
     }
 
-    public void setCurrency(final String currency)
+    public void setCurrency(final Currency currency)
     {
         this.currency = currency;
     }
@@ -103,6 +105,18 @@ public class DocumentHead
     public void setStatus(final DocStatus status)
     {
         this.status = status;
+    }
+
+
+    public BigDecimal getExchangeRate()
+    {
+        return exchangeRate;
+    }
+
+
+    public void setExchangeRate(final BigDecimal exchangeRate)
+    {
+        this.exchangeRate = exchangeRate;
     }
 
 }

@@ -32,6 +32,8 @@ public class CollectOrderDto
 
     private final BigDecimal amount;
 
+    private final Currency currency;
+
     private final State state;
 
     private final BigDecimal collected;
@@ -46,6 +48,7 @@ public class CollectOrderDto
     {
         id = builder.id;
         amount = builder.amount;
+        currency = builder.currency;
         state = builder.state;
         collected = builder.collected;
         orderId = builder.orderId;
@@ -61,6 +64,11 @@ public class CollectOrderDto
     public BigDecimal getAmount()
     {
         return amount;
+    }
+
+    public Currency getCurrency()
+    {
+        return currency;
     }
 
     public State getState()
@@ -106,6 +114,7 @@ public class CollectOrderDto
 
         private String id;
         private BigDecimal amount;
+        private Currency currency;
         private State state;
         private BigDecimal collected;
         private String orderId;
@@ -125,6 +134,12 @@ public class CollectOrderDto
         public Builder withAmount(final BigDecimal amount)
         {
             this.amount = amount;
+            return this;
+        }
+
+        public Builder withCurrency(final Currency currency)
+        {
+            this.currency = currency;
             return this;
         }
 

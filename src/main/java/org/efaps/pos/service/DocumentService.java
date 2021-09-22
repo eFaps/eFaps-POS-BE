@@ -27,6 +27,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PosInvoiceDto;
@@ -507,7 +508,7 @@ public class DocumentService
     private IPos getPos(final Pos _pos)
     {
         final String name = _pos.getName();
-        final String currency = _pos.getCurrency();
+        final Currency currency = _pos.getCurrency();
         final ContactDto contactDto = Converter.toDto(contactService.getContact(_pos.getDefaultContactOid()));
 
         return new IPos()
@@ -520,7 +521,7 @@ public class DocumentService
             }
 
             @Override
-            public String getCurrency()
+            public Currency getCurrency()
             {
                 return currency;
             }

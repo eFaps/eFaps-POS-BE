@@ -813,7 +813,7 @@ public class ConverterTest
         final PosDto dto = PosDto.builder()
                         .withOID("1651.1651")
                         .withName("A name")
-                        .withCurrency("PEN")
+                        .withCurrency(Currency.PEN)
                         .withDefaultContactOid("998.15")
                         .withReceiptSeqOid("3998.15")
                         .withInvoiceSeqOid("29d98.15")

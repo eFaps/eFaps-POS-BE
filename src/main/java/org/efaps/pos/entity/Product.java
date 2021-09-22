@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.ProductType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -38,6 +39,7 @@ public class Product
     private String imageOid;
     private BigDecimal netPrice;
     private BigDecimal crossPrice;
+    private Currency currency;
     private Set<String> categoryOids;
     private Set<Tax> taxes;
     private String uoM;
@@ -121,6 +123,17 @@ public class Product
     public Product setCrossPrice(final BigDecimal _crossPrice)
     {
         crossPrice = _crossPrice;
+        return this;
+    }
+
+    public Currency getCurrency()
+    {
+        return currency;
+    }
+
+    public Product setCurrency(final Currency currency)
+    {
+        this.currency = currency;
         return this;
     }
 
