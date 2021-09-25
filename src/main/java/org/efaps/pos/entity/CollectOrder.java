@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.efaps.pos.dto.Currency;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -34,6 +35,8 @@ public class CollectOrder
     private String id;
 
     private BigDecimal amount;
+
+    private Currency currency;
 
     private Collector collector;
 
@@ -66,6 +69,17 @@ public class CollectOrder
     public CollectOrder setAmount(final BigDecimal _amount)
     {
         amount = _amount;
+        return this;
+    }
+
+    public Currency getCurrency()
+    {
+        return currency;
+    }
+
+    public CollectOrder setCurrency(final Currency currency)
+    {
+        this.currency = currency;
         return this;
     }
 
