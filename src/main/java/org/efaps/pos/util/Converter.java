@@ -635,6 +635,8 @@ public final class Converter
                         .setOid(_dto.getOid())
                         .setType(_dto.getType())
                         .setAmount(_dto.getAmount())
+                        .setCurrency(_dto.getCurrency())
+                        .setExchangeRate(_dto.getExchangeRate())
                         .setCardTypeId(_dto.getCardTypeId())
                         .setCardLabel(_dto.getCardLabel())
                         .setMappingKey(_dto.getMappingKey());
@@ -646,6 +648,8 @@ public final class Converter
                         .withOID(_entity.getOid())
                         .withType(_entity.getType())
                         .withAmount(_entity.getAmount())
+                        .withCurrency(_entity.getCurrency())
+                        .withExchangeRate(_entity.getExchangeRate())
                         .withCardTypeId(_entity.getCardTypeId())
                         .withCardLabel(_entity.getCardLabel())
                         .withMappingKey(_entity.getMappingKey())
