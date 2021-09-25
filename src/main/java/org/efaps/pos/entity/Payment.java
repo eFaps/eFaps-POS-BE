@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2020 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.efaps.pos.entity;
 
 import java.math.BigDecimal;
 
+import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.PaymentType;
 
 public class Payment
@@ -30,6 +31,8 @@ public class Payment
     private Long cardTypeId;
     private String cardLabel;
     private String mappingKey;
+    private Currency currency;
+    private BigDecimal exchangeRate;
 
     public String getOid()
     {
@@ -94,6 +97,28 @@ public class Payment
     public Payment setMappingKey(final String _mappingKey)
     {
         mappingKey = _mappingKey;
+        return this;
+    }
+
+    public Currency getCurrency()
+    {
+        return currency;
+    }
+
+    public Payment setCurrency(final Currency currency)
+    {
+        this.currency = currency;
+        return this;
+    }
+
+    public BigDecimal getExchangeRate()
+    {
+        return exchangeRate;
+    }
+
+    public Payment setExchangeRate(final BigDecimal exchangeRate)
+    {
+        this.exchangeRate = exchangeRate;
         return this;
     }
 }
