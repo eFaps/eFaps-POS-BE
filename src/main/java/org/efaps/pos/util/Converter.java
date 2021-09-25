@@ -1209,6 +1209,7 @@ public final class Converter
                                         .withId(_entity.getId())
                                         .withOrderId(_entity.getOrderId())
                                         .withAmount(_entity.getAmount())
+                                        .withCurrency(_entity.getCurrency())
                                         .withState(_entity.getState())
                                         .withCollected(_entity.getCollected())
                                         .withCollectorKey(_entity.getCollectorKey())
