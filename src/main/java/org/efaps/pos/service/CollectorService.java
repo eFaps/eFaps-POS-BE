@@ -91,6 +91,7 @@ public class CollectorService
             CollectOrder collectOrder = new CollectOrder()
                             .setState(State.PENDING)
                             .setAmount(_dto.getAmount())
+                            .setCurrency(_dto.getCurrency())
                             .setOrderId(_dto.getOrderId())
                             .setCollector(new Collector()
                                             .setKey(collector.getKey())
