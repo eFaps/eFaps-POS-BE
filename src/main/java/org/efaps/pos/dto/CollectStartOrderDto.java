@@ -28,6 +28,7 @@ public class CollectStartOrderDto
 {
 
     private final BigDecimal amount;
+    private final Currency currency;
 
     private final String orderId;
 
@@ -38,6 +39,7 @@ public class CollectStartOrderDto
         amount = builder.amount;
         orderId = builder.orderId;
         details = builder.details;
+        currency = builder.currency;
     }
 
     public String getOrderId()
@@ -53,6 +55,11 @@ public class CollectStartOrderDto
     public Map<String, Object> getDetails()
     {
         return details;
+    }
+
+    public Currency getCurrency()
+    {
+        return currency;
     }
 
     /**
@@ -72,6 +79,7 @@ public class CollectStartOrderDto
     {
 
         private BigDecimal amount;
+        private Currency currency;
         private String orderId;
         private Map<String, Object> details = Collections.emptyMap();
 
@@ -82,6 +90,12 @@ public class CollectStartOrderDto
         public Builder withAmount(final BigDecimal amount)
         {
             this.amount = amount;
+            return this;
+        }
+
+        public Builder withCurrency(final Currency currency)
+        {
+            this.currency = currency;
             return this;
         }
 
