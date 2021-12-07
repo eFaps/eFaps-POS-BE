@@ -53,6 +53,8 @@ public class ConfigProperties
 
     private final List<Extension> extensions = new ArrayList<>();
 
+    private final List<LogToken> logTokens = new ArrayList<>();
+
     public String getVersion()
     {
         return version;
@@ -141,6 +143,11 @@ public class ConfigProperties
     public List<Extension> getExtensions()
     {
         return extensions;
+    }
+
+    public List<LogToken> getLogTokens()
+    {
+        return logTokens;
     }
 
     public static class BasicAuth
@@ -384,12 +391,10 @@ public class ConfigProperties
             backendPath = _backendPath;
         }
 
-
         public String getExchangeRatePath()
         {
             return exchangeRatePath;
         }
-
 
         public void setExchangeRatePath(final String exchangeRatePath)
         {
@@ -581,5 +586,33 @@ public class ConfigProperties
         {
             this.url = url;
         }
+    }
+
+    public static class LogToken
+    {
+
+        private String ident;
+        private String token;
+
+        public String getIdent()
+        {
+            return ident;
+        }
+
+        public void setIdent(final String ident)
+        {
+            this.ident = ident;
+        }
+
+        public String getToken()
+        {
+            return token;
+        }
+
+        public void setToken(final String token)
+        {
+            this.token = token;
+        }
+
     }
 }
