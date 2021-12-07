@@ -15,7 +15,7 @@
  *
  */
 
-package org.efaps.pos;
+package org.efaps.pos.filters;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
+import org.efaps.pos.filters.JwtAuthorizationTokenFilter;
 import org.efaps.pos.util.JwtTokenUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

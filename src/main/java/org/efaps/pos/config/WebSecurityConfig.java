@@ -17,9 +17,9 @@
 package org.efaps.pos.config;
 
 import org.efaps.pos.ConfigProperties;
-import org.efaps.pos.JwtAuthorizationTokenFilter;
 import org.efaps.pos.context.ContextFilter;
 import org.efaps.pos.controller.JwtAuthenticationEntryPoint;
+import org.efaps.pos.filters.JwtAuthorizationTokenFilter;
 import org.efaps.pos.service.UserService;
 import org.efaps.pos.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig
     extends WebSecurityConfigurerAdapter
 {
+
     private final ConfigProperties configProperties;
 
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
@@ -82,52 +83,55 @@ public class WebSecurityConfig
         throws Exception
     {
         _httpSecurity
-            .csrf()
-                .disable()
-            .httpBasic()
-                .disable()
-            .exceptionHandling()
-                .authenticationEntryPoint(unauthorizedHandler)
-                .and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-            .authorizeRequests()
-                .antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate", IApi.BASEPATH + "refreshauth")
-                .permitAll()
-                .antMatchers(getIgnore())
-                .permitAll()
-                .anyRequest()
-                .authenticated();
+                        .csrf()
+                        .disable()
+                        .httpBasic()
+                        .disable()
+                        .exceptionHandling()
+                        .authenticationEntryPoint(unauthorizedHandler)
+                        .and()
+                        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .and()
+                        .authorizeRequests()
+                        .antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate", IApi.BASEPATH + "refreshauth",
+                                        IApi.BASEPATH + "logs")
+                        .permitAll()
+                        .antMatchers(getIgnore())
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated();
 
         // Custom JWT based security filter
         final JwtAuthorizationTokenFilter authenticationTokenFilter = new JwtAuthorizationTokenFilter(
                         userDetailsService(), jwtTokenUtil);
         _httpSecurity.addFilterBefore(contextFilter, UsernamePasswordAuthenticationFilter.class);
         _httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
-      //  _httpSecurity.addFilterBefore(contextFilter, JwtAuthorizationTokenFilter.class);
     }
 
     @Override
     public void configure(final WebSecurity _web)
     {
         _web.ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate")
-            .and()
-            .ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "refreshauth")
-            .and()
-            .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "users/**")
-            .and()
-            .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
-            .and()
-            .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "health")
-            .and()
-            .ignoring().antMatchers(HttpMethod.GET, getIgnore())
-            .and()
-            .ignoring().antMatchers(HttpMethod.OPTIONS)
-            .and()
-            .ignoring().antMatchers("/socket/**");
+                        .and()
+                        .ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "refreshauth")
+                        .and()
+                        .ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "logs")
+                        .and()
+                        .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "users/**")
+                        .and()
+                        .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
+                        .and()
+                        .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "health")
+                        .and()
+                        .ignoring().antMatchers(HttpMethod.GET, getIgnore())
+                        .and()
+                        .ignoring().antMatchers(HttpMethod.OPTIONS)
+                        .and()
+                        .ignoring().antMatchers("/socket/**");
     }
 
-    private String[] getIgnore() {
+    private String[] getIgnore()
+    {
         return configProperties.getStaticWeb().getIgnore().stream().toArray(String[]::new);
     }
 }
