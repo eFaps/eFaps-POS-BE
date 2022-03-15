@@ -30,6 +30,7 @@ import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
@@ -38,17 +39,20 @@ import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Config;
+import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Ticket;
+import org.efaps.pos.interfaces.ICreditNoteListener;
 import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IPos;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
 import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.repository.BalanceRepository;
+import org.efaps.pos.repository.CreditNoteRepository;
 import org.efaps.pos.repository.InvoiceRepository;
 import org.efaps.pos.repository.OrderRepository;
 import org.efaps.pos.repository.ReceiptRepository;
@@ -81,10 +85,12 @@ public class DocumentService
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
     private final TicketRepository ticketRepository;
+    private final CreditNoteRepository creditNoteRepository;
     private final BalanceRepository balanceRepository;
     private final List<IReceiptListener> receiptListeners;
     private final List<IInvoiceListener> invoiceListeners;
     private final List<ITicketListener> ticketListeners;
+    private final List<ICreditNoteListener> creditNoteListeners;
 
     private final MongoTemplate mongoTemplate;
 
@@ -98,10 +104,12 @@ public class DocumentService
                            final ReceiptRepository _receiptRepository,
                            final InvoiceRepository _invoiceRepository,
                            final TicketRepository _ticketRepository,
+                           final CreditNoteRepository _creditNoteRepository,
                            final BalanceRepository _balanceRepository,
                            final Optional<List<IReceiptListener>> _receiptListeners,
                            final Optional<List<IInvoiceListener>> _invoiceListeners,
-                           final Optional<List<ITicketListener>> _ticketListeners)
+                           final Optional<List<ITicketListener>> _ticketListeners,
+                           final Optional<List<ICreditNoteListener>> _creditNoteListener)
     {
         mongoTemplate = _mongoTemplate;
         posService = _posService;
@@ -112,10 +120,12 @@ public class DocumentService
         contactService = _contactService;
         invoiceRepository = _invoiceRepository;
         ticketRepository = _ticketRepository;
+        creditNoteRepository = _creditNoteRepository;
         balanceRepository = _balanceRepository;
         receiptListeners = _receiptListeners.isPresent() ? _receiptListeners.get() : Collections.emptyList();
         invoiceListeners = _invoiceListeners.isPresent() ? _invoiceListeners.get() : Collections.emptyList();
         ticketListeners = _ticketListeners.isPresent() ? _ticketListeners.get() : Collections.emptyList();
+        creditNoteListeners = _creditNoteListener.isPresent() ? _creditNoteListener.get() : Collections.emptyList();
     }
 
     public Order getOrder(final String _orderid)
@@ -273,6 +283,29 @@ public class DocumentService
         return ret;
     }
 
+    public CreditNote createCreditNote(final String _workspaceOid,
+                                       final CreditNote _creditNote)
+    {
+        validateContact(_workspaceOid, _creditNote);
+        sanitizeDecimals(_creditNote);
+        _creditNote.setNumber(sequenceService.getNext(_workspaceOid, DocType.CREDITNOTE));
+        CreditNote ret = creditNoteRepository.insert(_creditNote);
+        try {
+            if (!ticketListeners.isEmpty()) {
+                final Config config = mongoTemplate.findById(Config.KEY, Config.class);
+                PosCreditNoteDto dto = Converter.toDto(ret);
+                for (final ICreditNoteListener listener : creditNoteListeners) {
+                    dto = (PosCreditNoteDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
+                                    config.getProperties());
+                }
+                ret = creditNoteRepository.save(Converter.toEntity(dto));
+            }
+        } catch (final Exception e) {
+            LOG.error("Wow that should not happen", e);
+        }
+        return ret;
+    }
+
     private void sanitizeDecimals(final AbstractPayableDocument<?> _payable)
     {
         _payable.setNetTotal(round(_payable.getNetTotal()));
@@ -365,9 +398,19 @@ public class DocumentService
         return ticketRepository.findByBalanceOid(evalBalanceOid(_key));
     }
 
+    public CreditNote getCreditNote(final String _documentId)
+    {
+        return creditNoteRepository.findById(_documentId).orElse(null);
+    }
+
     public Collection<PayableHead> getTicketHeads4Balance(final String _balanceKey)
     {
         return getPayableHeads4Balance(_balanceKey, "tickets");
+    }
+
+    public Collection<PayableHead> getCreditNoteHeads4Balance(final String _balanceKey)
+    {
+        return getPayableHeads4Balance(_balanceKey, "creditnotes");
     }
 
     private Collection<PayableHead> getPayableHeads4Balance(final String _balanceKey,
@@ -396,7 +439,7 @@ public class DocumentService
 
     private Aggregation getBalanceAggregation4OpenDocs(final String _balanceKey)
     {
-        final var addField = AddFieldsOperation.addField("joinField").withValue(new Document("$toString","$_id"))
+        final var addField = AddFieldsOperation.addField("joinField").withValue(new Document("$toString", "$_id"))
                         .build();
 
         final LookupOperation lookupOperation = LookupOperation.newLookup()
@@ -492,6 +535,19 @@ public class DocumentService
                         Aggregation.match(Criteria.where("number").regex(_term, "i")),
                         lookupOperation);
         return mongoTemplate.aggregate(aggregation, "tickets", PayableHead.class).getMappedResults();
+    }
+
+    public Collection<PayableHead> findCreditNotes(final String _term)
+    {
+        final LookupOperation lookupOperation = LookupOperation.newLookup()
+                        .from("orders")
+                        .localField("oid")
+                        .foreignField("payableOid")
+                        .as("orders");
+        final Aggregation aggregation = Aggregation.newAggregation(
+                        Aggregation.match(Criteria.where("number").regex(_term, "i")),
+                        lookupOperation);
+        return mongoTemplate.aggregate(aggregation, "creditnotes", PayableHead.class).getMappedResults();
     }
 
     private void validateContact(final String _workspaceOid,

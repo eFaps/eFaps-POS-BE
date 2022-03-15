@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.PayableHeadDto;
+import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
@@ -79,6 +80,14 @@ public class DocumentController
                                      @RequestBody final PosTicketDto _ticketDto)
     {
         return Converter.toDto(documentService.createTicket(_oid, _orderId, Converter.toEntity(_ticketDto)));
+    }
+
+
+    @PostMapping(path = "workspaces/{oid}/documents/creditnotes", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosCreditNoteDto createCreditNote(@PathVariable("oid") final String _oid,
+                                         @RequestBody final PosCreditNoteDto _ticketDto)
+    {
+        return Converter.toDto(documentService.createCreditNote(_oid, Converter.toEntity(_ticketDto)));
     }
 
     @PostMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -166,6 +175,13 @@ public class DocumentController
         return Converter.toDto(ticket);
     }
 
+    @GetMapping(path = "documents/creditnotes/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosCreditNoteDto getCreditNote(@PathVariable("id") final String _id)
+    {
+        final var creditNote = documentService.getCreditNote(_id);
+        return Converter.toDto(creditNote);
+    }
+
     @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PayableHeadDto> getInvoices4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
     {
@@ -202,4 +218,22 @@ public class DocumentController
                         .collect(Collectors.toList());
     }
 
+    @GetMapping(path = "documents/creditnotes", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
+    public List<PayableHeadDto> findCreditNotes(@RequestParam(name = "term") final String _term)
+    {
+        final var creditNotes = documentService.findCreditNotes(_term);
+        return creditNotes.stream()
+                        .map(creditNote -> Converter.toDto(creditNote))
+                        .collect(Collectors.toList());
+    }
+
+
+    @GetMapping(path = "documents/creditnotes", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PayableHeadDto> getCreditNotes4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
+    {
+        final Collection<PayableHead> receipts = documentService.getCreditNoteHeads4Balance(_balanceOid);
+        return receipts.stream()
+                        .map(_order -> Converter.toDto(_order))
+                        .collect(Collectors.toList());
+    }
 }

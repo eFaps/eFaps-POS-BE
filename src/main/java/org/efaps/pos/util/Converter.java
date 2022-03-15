@@ -41,6 +41,7 @@ import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PayableHeadDto;
 import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosBalanceDto;
+import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosInventoryEntryDto;
@@ -70,6 +71,7 @@ import org.efaps.pos.entity.Barcode;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Discount;
 import org.efaps.pos.entity.Indication;
 import org.efaps.pos.entity.IndicationSet;
@@ -218,6 +220,38 @@ public final class Converter
                             : _dto.getPayments().stream()
                                 .map(_payment -> Converter.toEntity(_payment))
                                 .collect(Collectors.toSet()))
+                        .setBalanceOid(_dto.getBalanceOid())
+                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
+                        .setNote(_dto.getNote());
+    }
+
+    public static CreditNote toEntity(final PosCreditNoteDto _dto)
+    {
+        return new CreditNote()
+                        .setId(_dto.getId())
+                        .setOid(_dto.getOid())
+                        .setNumber(_dto.getNumber())
+                        .setCurrency(_dto.getCurrency())
+                        .setStatus(_dto.getStatus())
+                        .setDate(_dto.getDate())
+                        .setItems(_dto.getItems().stream()
+                                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
+                                        .collect(Collectors.toSet()))
+                        .setNetTotal(_dto.getNetTotal())
+                        .setCrossTotal(_dto.getCrossTotal())
+                        .setExchangeRate(_dto.getExchangeRate())
+                        .setContactOid(_dto.getContactOid())
+                        .setWorkspaceOid(_dto.getWorkspaceOid())
+                        .setTaxes(_dto.getTaxes() == null
+                                        ? null
+                                        : _dto.getTaxes().stream()
+                                                        .map(_tax -> Converter.toEntity(_tax))
+                                                        .collect(Collectors.toSet()))
+                        .setPayments(_dto.getPayments() == null
+                                        ? null
+                                        : _dto.getPayments().stream()
+                                                        .map(_payment -> Converter.toEntity(_payment))
+                                                        .collect(Collectors.toSet()))
                         .setBalanceOid(_dto.getBalanceOid())
                         .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
                         .setNote(_dto.getNote());
@@ -839,6 +873,41 @@ public final class Converter
                             : _entity.getPayments().stream()
                                 .map(_item -> toDto(_item))
                                 .collect(Collectors.toSet()))
+                        .withBalanceOid(_entity.getBalanceOid())
+                        .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
+                        .withNote(_entity.getNote())
+                        .build();
+    }
+
+    public static PosCreditNoteDto toDto(final CreditNote _entity)
+    {
+        return PosCreditNoteDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withNumber(_entity.getNumber())
+                        .withDate(_entity.getDate())
+                        .withCurrency(_entity.getCurrency())
+                        .withStatus(_entity.getStatus())
+                        .withNetTotal(_entity.getNetTotal())
+                        .withCrossTotal(_entity.getCrossTotal())
+                        .withExchangeRate(_entity.getExchangeRate())
+                        .withContactOid(_entity.getContactOid())
+                        .withWorkspaceOid(_entity.getWorkspaceOid())
+                        .withItems(_entity.getItems() == null
+                                        ? null
+                                        : _entity.getItems().stream()
+                                                        .map(_item -> toDto(_item))
+                                                        .collect(Collectors.toSet()))
+                        .withTaxes(_entity.getTaxes() == null
+                                        ? null
+                                        : _entity.getTaxes().stream()
+                                                        .map(_tax -> Converter.toDto(_tax))
+                                                        .collect(Collectors.toSet()))
+                        .withPayments(_entity.getPayments() == null
+                                        ? null
+                                        : _entity.getPayments().stream()
+                                                        .map(_item -> toDto(_item))
+                                                        .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .withNote(_entity.getNote())
