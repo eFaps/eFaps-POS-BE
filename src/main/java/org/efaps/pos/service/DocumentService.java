@@ -62,6 +62,8 @@ import org.efaps.pos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -363,6 +365,12 @@ public class DocumentService
         return receiptRepository.findById(_documentId).orElse(null);
     }
 
+    public Optional<Receipt> findReceipt(final String _identifier)
+    {
+        return receiptRepository.findOne(
+                        Example.of(new Receipt().setId(_identifier).setOid(_identifier), ExampleMatcher.matchingAny()));
+    }
+
     public Collection<Receipt> getReceipts4Balance(final String _key)
     {
         return receiptRepository.findByBalanceOid(evalBalanceOid(_key));
@@ -376,6 +384,12 @@ public class DocumentService
     public Invoice getInvoice(final String _documentId)
     {
         return invoiceRepository.findById(_documentId).orElse(null);
+    }
+
+    public Optional<Invoice> findInvoice(final String _identifier)
+    {
+        return invoiceRepository.findOne(
+                        Example.of(new Invoice().setId(_identifier).setOid(_identifier), ExampleMatcher.matchingAny()));
     }
 
     public Collection<PayableHead> getInvoiceHeads4Balance(final String _balanceKey)
@@ -495,6 +509,9 @@ public class DocumentService
         if (ret == null) {
             ret = getTicket(_documentId);
         }
+        if (ret == null) {
+            ret = getCreditNote(_documentId);
+        }
         return ret;
     }
 
@@ -548,6 +565,11 @@ public class DocumentService
                         Aggregation.match(Criteria.where("number").regex(_term, "i")),
                         lookupOperation);
         return mongoTemplate.aggregate(aggregation, "creditnotes", PayableHead.class).getMappedResults();
+    }
+
+    public Collection<CreditNote> getCreditNotes4SourceDocument(final String sourceDocOid)
+    {
+        return creditNoteRepository.findBySourceDocOid(sourceDocOid);
     }
 
     private void validateContact(final String _workspaceOid,

@@ -30,17 +30,25 @@ public class PosCreditNoteDto
     extends AbstractPayableDocumentDto
     implements ICreditNote
 {
+
     private final DiscountDto discount;
+    private final String sourceDocOid;
 
     public PosCreditNoteDto(final Builder _builder)
     {
         super(_builder);
         discount = _builder.discount;
+        sourceDocOid = _builder.sourceDocOid;
     }
 
     public DiscountDto getDiscount()
     {
         return discount;
+    }
+
+    public String getSourceDocOid()
+    {
+        return sourceDocOid;
     }
 
     @Override
@@ -63,11 +71,19 @@ public class PosCreditNoteDto
     public static final class Builder
         extends AbstractPayableDocumentDto.Builder<Builder, PosCreditNoteDto>
     {
+
         private DiscountDto discount;
+        private String sourceDocOid;
 
         public Builder withDiscount(final DiscountDto _discount)
         {
             discount = _discount;
+            return this;
+        }
+
+        public Builder withSourceDocOid(final String _sourceDocOid)
+        {
+            sourceDocOid = _sourceDocOid;
             return this;
         }
 

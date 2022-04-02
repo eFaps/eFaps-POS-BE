@@ -28,13 +28,14 @@ import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
-import org.efaps.pos.entity.Invoice;
+import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Order;
-import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.util.Converter;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(IApi.BASEPATH)
@@ -82,10 +84,9 @@ public class DocumentController
         return Converter.toDto(documentService.createTicket(_oid, _orderId, Converter.toEntity(_ticketDto)));
     }
 
-
     @PostMapping(path = "workspaces/{oid}/documents/creditnotes", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosCreditNoteDto createCreditNote(@PathVariable("oid") final String _oid,
-                                         @RequestBody final PosCreditNoteDto _ticketDto)
+                                             @RequestBody final PosCreditNoteDto _ticketDto)
     {
         return Converter.toDto(documentService.createCreditNote(_oid, Converter.toEntity(_ticketDto)));
     }
@@ -129,7 +130,8 @@ public class DocumentController
     }
 
     @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public List<PosOrderDto> findOrders(@RequestParam(name = "term") final String _term) {
+    public List<PosOrderDto> findOrders(@RequestParam(name = "term") final String _term)
+    {
         return documentService.findOrders(_term).stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
@@ -153,25 +155,50 @@ public class DocumentController
                         .collect(Collectors.toList());
     }
 
+    @GetMapping(path = "documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE, params = { "ident" })
+    public PosReceiptDto getReceiptByIdent(@RequestParam(name = "ident") final String ident)
+    {
+        final var receipt = documentService.findReceipt(ident)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Receipt not found"));
+        return Converter.toDto(receipt);
+    }
+
     @GetMapping(path = "documents/receipts/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosReceiptDto getReceipt(@PathVariable("id") final String _id)
+        throws NotFoundException
     {
-        final Receipt receipt = documentService.getReceipt(_id);
+        final var receipt = documentService.getReceipt(_id);
+        if (receipt == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receipt not found");
+        }
         return Converter.toDto(receipt);
     }
 
     @GetMapping(path = "documents/invoices/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosInvoiceDto getInvoice(@PathVariable("id") final String _id)
     {
-        final Invoice invoice = documentService.getInvoice(_id);
+        final var invoice = documentService.getInvoice(_id);
+        if (invoice == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found");
+        }
         return Converter.toDto(invoice);
     }
 
+    @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE, params = { "ident" })
+    public PosInvoiceDto getInvoiceByIdent(@RequestParam(name = "ident") final String ident)
+    {
+        final var invoice = documentService.findInvoice(ident)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Receipt not found"));
+        return Converter.toDto(invoice);
+    }
 
     @GetMapping(path = "documents/tickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosTicketDto getTicket(@PathVariable("id") final String _id)
     {
         final Ticket ticket = documentService.getTicket(_id);
+        if (ticket == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found");
+        }
         return Converter.toDto(ticket);
     }
 
@@ -179,6 +206,9 @@ public class DocumentController
     public PosCreditNoteDto getCreditNote(@PathVariable("id") final String _id)
     {
         final var creditNote = documentService.getCreditNote(_id);
+        if (creditNote == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "CreditNote not found");
+        }
         return Converter.toDto(creditNote);
     }
 
@@ -227,12 +257,21 @@ public class DocumentController
                         .collect(Collectors.toList());
     }
 
-
-    @GetMapping(path = "documents/creditnotes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "documents/creditnotes", produces = MediaType.APPLICATION_JSON_VALUE, params = { "balanceOid" })
     public List<PayableHeadDto> getCreditNotes4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
     {
         final Collection<PayableHead> receipts = documentService.getCreditNoteHeads4Balance(_balanceOid);
         return receipts.stream()
+                        .map(_order -> Converter.toDto(_order))
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "documents/creditnotes", produces = MediaType.APPLICATION_JSON_VALUE, params = {
+                    "sourceDocOid" })
+    public List<PosCreditNoteDto> getCreditNotes4SourceDocument(@RequestParam(name = "sourceDocOid") final String _sourceDocOid)
+    {
+        final Collection<CreditNote> creditnotes = documentService.getCreditNotes4SourceDocument(_sourceDocOid);
+        return creditnotes.stream()
                         .map(_order -> Converter.toDto(_order))
                         .collect(Collectors.toList());
     }

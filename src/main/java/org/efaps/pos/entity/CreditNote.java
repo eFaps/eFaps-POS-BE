@@ -24,4 +24,16 @@ public class CreditNote
     extends AbstractPayableDocument<CreditNote>
 {
 
+    private String sourceDocOid;
+
+    public String getSourceDocOid()
+    {
+        return sourceDocOid;
+    }
+
+    public CreditNote setSourceDocOid(final String sourceDocOid)
+    {
+        this.sourceDocOid = sourceDocOid;
+        return this;
+    }
 }

@@ -17,16 +17,17 @@
 
 package org.efaps.pos.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
+import org.efaps.pos.interfaces.ICreditNoteItem;
 import org.efaps.pos.interfaces.IInvoiceItem;
 import org.efaps.pos.interfaces.IReceiptItem;
 import org.efaps.pos.interfaces.ITicketItem;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 @JsonDeserialize(builder = PosDocItemDto.Builder.class)
 public class PosDocItemDto
     extends AbstractDocItemDto
-    implements IReceiptItem, IInvoiceItem, ITicketItem
+    implements IReceiptItem, IInvoiceItem, ITicketItem, ICreditNoteItem
 {
 
     private final ProductDto product;
@@ -34,12 +35,12 @@ public class PosDocItemDto
     public PosDocItemDto(final Builder _builder)
     {
         super(_builder);
-        this.product = _builder.product;
+        product = _builder.product;
     }
 
     public ProductDto getProduct()
     {
-        return this.product;
+        return product;
     }
 
     @Override
@@ -72,7 +73,7 @@ public class PosDocItemDto
         private ProductDto product;
 
         public Builder withProduct(final ProductDto _productDto) {
-            this.product =_productDto;
+            product =_productDto;
             return this;
         }
 

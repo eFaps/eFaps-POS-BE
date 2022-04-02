@@ -254,7 +254,8 @@ public final class Converter
                                                         .collect(Collectors.toSet()))
                         .setBalanceOid(_dto.getBalanceOid())
                         .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
-                        .setNote(_dto.getNote());
+                        .setNote(_dto.getNote())
+                        .setSourceDocOid(_dto.getSourceDocOid());
     }
 
     public static Order toEntity(final PosOrderDto _dto)
@@ -911,6 +912,7 @@ public final class Converter
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .withNote(_entity.getNote())
+                        .withSourceDocOid(_entity.getSourceDocOid())
                         .build();
     }
 
