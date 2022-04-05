@@ -42,6 +42,7 @@ efaps:
   receiptPath: /servlet/rest/pos/{identifier}/receipts
   invoicePath: /servlet/rest/pos/{identifier}/invoices
   ticketPath: /servlet/rest/pos/{identifier}/tickets
+  creditnotePath: /servlet/rest/pos/{identifier}/creditnotes
   checkoutPath: /servlet/checkout
   sequencePath: /servlet/rest/pos/{identifier}/sequences
   contactPath: /servlet/rest/pos/{identifier}/contacts

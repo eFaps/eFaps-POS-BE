@@ -191,6 +191,7 @@ public class ConfigProperties
         private String receiptPath;
         private String invoicePath;
         private String ticketPath;
+        private String creditnotePath;
         private String checkoutPath;
         private String sequencePath;
         private String contactPath;
@@ -399,6 +400,18 @@ public class ConfigProperties
         public void setExchangeRatePath(final String exchangeRatePath)
         {
             this.exchangeRatePath = exchangeRatePath;
+        }
+
+
+        public String getCreditnotePath()
+        {
+            return creditnotePath;
+        }
+
+
+        public void setCreditnotePath(final String creditnotePath)
+        {
+            this.creditnotePath = creditnotePath;
         }
     }
 

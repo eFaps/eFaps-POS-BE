@@ -48,6 +48,7 @@ import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Config;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
@@ -67,6 +68,7 @@ import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.CategoryRepository;
 import org.efaps.pos.repository.ContactRepository;
+import org.efaps.pos.repository.CreditNoteRepository;
 import org.efaps.pos.repository.InventoryRepository;
 import org.efaps.pos.repository.InvoiceRepository;
 import org.efaps.pos.repository.OrderRepository;
@@ -107,6 +109,7 @@ public class SyncService
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
     private final TicketRepository ticketRepository;
+    private final CreditNoteRepository creditNoteRepository;
     private final ProductRepository productRepository;
     private final SequenceRepository sequenceRepository;
     private final ContactRepository contactRepository;
@@ -129,6 +132,7 @@ public class SyncService
                        final ReceiptRepository _receiptRepository,
                        final InvoiceRepository _invoiceRepository,
                        final TicketRepository _ticketRepository,
+                       final CreditNoteRepository _creditNoteRepository,
                        final ProductRepository _productRepository,
                        final SequenceRepository _sequenceRepository,
                        final ContactRepository _contactRepository,
@@ -149,6 +153,7 @@ public class SyncService
         receiptRepository = _receiptRepository;
         invoiceRepository = _invoiceRepository;
         ticketRepository = _ticketRepository;
+        creditNoteRepository = _creditNoteRepository;
         productRepository = _productRepository;
         sequenceRepository = _sequenceRepository;
         contactRepository = _contactRepository;
@@ -369,10 +374,11 @@ public class SyncService
         syncInvoices();
         syncTickets();
         syncOrders();
+        syncCreditNotes();
     }
 
     public void syncBalance()
-         throws SyncServiceDeactivatedException
+        throws SyncServiceDeactivatedException
     {
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
@@ -500,7 +506,7 @@ public class SyncService
                         receiptRepository.save(retReceipt);
                     }
                 }
-            }  else {
+            } else {
                 LOG.debug("skipped Receipt: {}", receipt);
             }
         }
@@ -591,12 +597,58 @@ public class SyncService
         registerSync(StashId.TICKETSYNC);
     }
 
+    public void syncCreditNotes()
+        throws SyncServiceDeactivatedException
+    {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
+        LOG.info("Syncing CreditNotes");
+        final Collection<CreditNote> tosync = creditNoteRepository.findByOidIsNull();
+        for (final CreditNote creditNote : tosync) {
+            LOG.debug("Syncing CreditNote: {}", creditNote);
+            if (validateContact(creditNote) && verifyBalance(creditNote) && verifySourceDoc(creditNote)) {
+                final var recDto = eFapsClient.postCreditNote(Converter.toCreditNoteDto(creditNote));
+                LOG.debug("received CreditNote: {}", recDto);
+                if (recDto.getOid() != null) {
+                    final Optional<CreditNote> opt = creditNoteRepository.findById(recDto.getId());
+                    if (opt.isPresent()) {
+                        final CreditNote receipt = opt.get();
+                        receipt.setOid(recDto.getOid());
+                        receipt.setStatus(DocStatus.CLOSED);
+                        creditNoteRepository.save(receipt);
+                    }
+                }
+            } else {
+                LOG.debug("skipped CreditNote: {}", creditNote);
+            }
+        }
+        registerSync(StashId.INVOICESYNC);
+    }
+
+    private boolean verifySourceDoc(final CreditNote creditNote)
+    {
+        boolean ret = false;
+        if (Utils.isOid(creditNote.getSourceDocOid())) {
+            ret = true;
+        } else {
+            final var payable = documentService.getPayable(creditNote.getSourceDocOid());
+            if (payable != null && Utils.isOid(payable.getOid())) {
+                creditNote.setSourceDocOid(payable.getOid());
+                creditNoteRepository.save(creditNote);
+                ret = true;
+            }
+        }
+        return ret;
+    }
+
+
     private boolean validateContact(final AbstractPayableDocument<?> _entity)
     {
         boolean ret = false;
         if (Utils.isOid(_entity.getContactOid())) {
             ret = contactRepository.findOneByOid(_entity.getContactOid()).isPresent();
-        } else if (_entity.getContactOid() != null){
+        } else if (_entity.getContactOid() != null) {
             final Optional<Contact> optContact = contactRepository.findById(_entity.getContactOid());
             if (optContact.isPresent()) {
                 final String contactOid = optContact.get().getOid();
@@ -623,7 +675,7 @@ public class SyncService
                 LOG.debug("Syncing Product-Image {}", product.getImageOid());
                 storeImage(product.getImageOid());
             }
-            for (final var indicationSet: product.getIndicationSets()) {
+            for (final var indicationSet : product.getIndicationSets()) {
                 if (indicationSet.getImageOid() != null) {
                     LOG.debug("Syncing IndicationSet-Image {}", indicationSet.getImageOid());
                     storeImage(indicationSet.getImageOid());
@@ -655,7 +707,8 @@ public class SyncService
         registerSync(StashId.IMAGESYNC);
     }
 
-    protected void storeImage(final String imageOid) {
+    protected void storeImage(final String imageOid)
+    {
         final Checkout checkout = eFapsClient.checkout(imageOid);
         if (checkout != null) {
             gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(imageOid)));
@@ -663,7 +716,7 @@ public class SyncService
             metaData.put("oid", imageOid);
             metaData.put("contentType", checkout.getContentType().toString());
             gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
-                        metaData);
+                            metaData);
         }
     }
 
@@ -676,10 +729,10 @@ public class SyncService
         LOG.info("Syncing Reports");
         final List<Workspace> workspaces = workspaceRepository.findAll();
         final Set<String> reportOids = workspaces.stream()
-            .map(Workspace::getPrintCmds)
-            .flatMap(Set::stream)
-            .map(PrintCmd::getReportOid)
-            .collect(Collectors.toSet());
+                        .map(Workspace::getPrintCmds)
+                        .flatMap(Set::stream)
+                        .map(PrintCmd::getReportOid)
+                        .collect(Collectors.toSet());
 
         for (final String reportOid : reportOids) {
             LOG.debug("Syncing Report {}", reportOid);
@@ -690,7 +743,7 @@ public class SyncService
                 metaData.put("oid", reportOid);
                 metaData.put("contentType", checkout.getContentType().toString());
                 gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
-                                    metaData);
+                                metaData);
             }
         }
         registerSync(StashId.REPORTSYNC);
@@ -764,21 +817,22 @@ public class SyncService
         }
     }
 
-    private void syncContactsDown() {
+    private void syncContactsDown()
+    {
         final List<Contact> recievedContacts = eFapsClient.getContacts().stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
         for (final Contact contact : recievedContacts) {
-           final List<Contact> contacts = contactRepository.findByOid(contact.getOid());
-           if (CollectionUtils.isEmpty(contacts)) {
-               contactRepository.save(contact);
-           } else if (contacts.size() > 1) {
-               contacts.forEach(entity -> contactRepository.delete(entity));
-               contactRepository.save(contact);
-           } else {
-               contact.setId(contacts.get(0).getId());
-               contactRepository.save(contact);
-           }
+            final List<Contact> contacts = contactRepository.findByOid(contact.getOid());
+            if (CollectionUtils.isEmpty(contacts)) {
+                contactRepository.save(contact);
+            } else if (contacts.size() > 1) {
+                contacts.forEach(entity -> contactRepository.delete(entity));
+                contactRepository.save(contact);
+            } else {
+                contact.setId(contacts.get(0).getId());
+                contactRepository.save(contact);
+            }
         }
         if (!recievedContacts.isEmpty()) {
             for (final Contact contact : contactRepository.findAll()) {

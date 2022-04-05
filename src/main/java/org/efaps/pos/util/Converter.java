@@ -27,6 +27,7 @@ import org.efaps.pos.dto.CardDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.CollectOrderDto;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.CreditNoteDto;
 import org.efaps.pos.dto.DiscountDto;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.DocumentHeadDto;
@@ -1054,6 +1055,40 @@ public final class Converter
                                 .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withNote(_entity.getNote())
+                        .build();
+    }
+
+    public static CreditNoteDto toCreditNoteDto(final CreditNote _entity) {
+        return CreditNoteDto.builder()
+                        .withId(_entity.getId())
+                        .withOID(_entity.getOid())
+                        .withNumber(_entity.getNumber())
+                        .withDate(_entity.getDate())
+                        .withCurrency(_entity.getCurrency())
+                        .withStatus(_entity.getStatus())
+                        .withCrossTotal(_entity.getCrossTotal())
+                        .withNetTotal(_entity.getNetTotal())
+                        .withExchangeRate(_entity.getExchangeRate())
+                        .withContactOid(_entity.getContactOid())
+                        .withWorkspaceOid(_entity.getWorkspaceOid())
+                        .withItems(_entity.getItems() == null
+                            ? null
+                            : _entity.getItems().stream()
+                                    .map(_item -> toItemDto(_item))
+                                    .collect(Collectors.toSet()))
+                        .withTaxes(_entity.getTaxes() == null
+                            ? null
+                            : _entity.getTaxes().stream()
+                                .map(_tax -> Converter.toDto(_tax))
+                                .collect(Collectors.toSet()))
+                        .withPayments(_entity.getPayments() == null
+                            ? null
+                            : _entity.getPayments().stream()
+                                .map(_item -> toDto(_item))
+                                .collect(Collectors.toSet()))
+                        .withBalanceOid(_entity.getBalanceOid())
+                        .withNote(_entity.getNote())
+                        .withSourceDocOid(_entity.getSourceDocOid())
                         .build();
     }
 

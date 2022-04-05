@@ -27,6 +27,7 @@ public enum StashId
     TICKETSYNC("org.efaps.pos.sync.Ticket"),
     INVOICESYNC("org.efaps.pos.sync.Invoice"),
     RECEIPTSYNC("org.efaps.pos.sync.Receipt"),
+    CREDITNOTESYNC("org.efaps.pos.sync.CreditNote"),
     USERSYNC("org.efaps.pos.sync.User"),
     POSSYNC("org.efaps.pos.sync.POS"),
     PRINTERSYNC("org.efaps.pos.sync.Printer"),

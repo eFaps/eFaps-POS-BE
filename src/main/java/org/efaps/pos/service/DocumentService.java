@@ -18,6 +18,7 @@ package org.efaps.pos.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -291,6 +292,7 @@ public class DocumentService
         validateContact(_workspaceOid, _creditNote);
         sanitizeDecimals(_creditNote);
         _creditNote.setNumber(sequenceService.getNext(_workspaceOid, DocType.CREDITNOTE));
+        _creditNote.setDate(LocalDate.now());
         CreditNote ret = creditNoteRepository.insert(_creditNote);
         try {
             if (!ticketListeners.isEmpty()) {

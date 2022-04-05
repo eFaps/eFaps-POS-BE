@@ -28,6 +28,7 @@ import org.efaps.pos.ConfigProperties.EFaps;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.CreditNoteDto;
 import org.efaps.pos.dto.ExchangeRateDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
@@ -331,6 +332,20 @@ public class EFapsClient
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Tickets", e);
+        }
+        return ret;
+    }
+
+    public CreditNoteDto postCreditNote(final CreditNoteDto creditNote)
+    {
+        CreditNoteDto ret = creditNote;
+        try {
+            final RequestEntity<CreditNoteDto> requestEntity = post(getEFapsConfig().getCreditnotePath(), creditNote);
+            final ResponseEntity<CreditNoteDto> response = getRestTemplate().exchange(requestEntity,
+                            CreditNoteDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during post for CreditNotes", e);
         }
         return ret;
     }
