@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.interfaces.ICreditNote;
 import org.efaps.pos.interfaces.ICreditNoteItem;
+import org.efaps.pos.interfaces.IReference;
+import org.efaps.pos.service.ReferenceService;
 import org.efaps.pos.util.Converter;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -49,6 +51,12 @@ public class PosCreditNoteDto
     public String getSourceDocOid()
     {
         return sourceDocOid;
+    }
+
+    @Override
+    public IReference getReference()
+    {
+        return ReferenceService.getReferenceByIdent(sourceDocOid);
     }
 
     @Override
