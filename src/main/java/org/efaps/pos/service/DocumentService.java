@@ -295,7 +295,7 @@ public class DocumentService
         _creditNote.setDate(LocalDate.now());
         CreditNote ret = creditNoteRepository.insert(_creditNote);
         try {
-            if (!ticketListeners.isEmpty()) {
+            if (!creditNoteListeners.isEmpty()) {
                 final Config config = mongoTemplate.findById(Config.KEY, Config.class);
                 PosCreditNoteDto dto = Converter.toDto(ret);
                 for (final ICreditNoteListener listener : creditNoteListeners) {
