@@ -594,6 +594,7 @@ public final class Converter
                         .withReceiptSeqOid(_entity.getReceiptSeqOid())
                         .withInvoiceSeqOid(_entity.getInvoiceSeqOid())
                         .withTicketSeqOid(_entity.getTicketSeqOid())
+                        .withCreditNoteSeqOid(_entity.getCreditNoteSeqOid())
                         .build();
     }
 
@@ -606,7 +607,8 @@ public final class Converter
                         .setDefaultContactOid(_dto.getDefaultContactOid())
                         .setReceiptSeqOid(_dto.getReceiptSeqOid())
                         .setInvoiceSeqOid(_dto.getInvoiceSeqOid())
-                        .setTicketSeqOid(_dto.getTicketSeqOid());
+                        .setTicketSeqOid(_dto.getTicketSeqOid())
+                        .setCreditNoteSeqOid(_dto.getCreditNoteSeqOid());
         return ret;
     }
 

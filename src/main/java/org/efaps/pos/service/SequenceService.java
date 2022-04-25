@@ -35,8 +35,8 @@ public class SequenceService
 
     @Autowired
     public SequenceService(final MongoTemplate _mongoTemplate, final PosService _posService) {
-        this.mongoTemplate = _mongoTemplate;
-        this.posService = _posService;
+        mongoTemplate = _mongoTemplate;
+        posService = _posService;
     }
 
     public String getNextOrder() {
@@ -45,7 +45,7 @@ public class SequenceService
 
     public String getNext(final String _workspaceOid, final DocType _docType)
     {
-        final Pos pos = this.posService.getPos4Workspace(_workspaceOid);
+        final Pos pos = posService.getPos4Workspace(_workspaceOid);
         final String next;
         switch (_docType) {
             case RECEIPT:
@@ -69,6 +69,13 @@ public class SequenceService
                     next = getNextNumber("Ticket", false);
                 }
                 break;
+            case CREDITNOTE:
+                if (pos.getCreditNoteSeqOid()!= null) {
+                    next = getNextNumber(pos.getCreditNoteSeqOid(), true);
+                } else {
+                    next = getNextNumber("CreditNote", false);
+                }
+                break;
             default:
                 next = getNextNumber("UNKNOWN", false);
                 break;
@@ -77,16 +84,16 @@ public class SequenceService
     }
 
     public String getNextNumber(final String _key, final boolean _isOid) {
-        final Sequence sequence = this.mongoTemplate.findAndModify(
+        final Sequence sequence = mongoTemplate.findAndModify(
                         new Query(Criteria.where(_isOid ? "oid" : "_id").is(_key)),
                         new Update().inc("seq", 1),
                         FindAndModifyOptions.options().returnNew(true),
                         Sequence.class);
         if (sequence == null) {
             if (_isOid) {
-                this.mongoTemplate.insert(new Sequence().setOid(_key).setSeq(0));
+                mongoTemplate.insert(new Sequence().setOid(_key).setSeq(0));
             } else {
-                this.mongoTemplate.insert(new Sequence().setId(_key).setSeq(0));
+                mongoTemplate.insert(new Sequence().setId(_key).setSeq(0));
             }
             return getNextNumber(_key, _isOid);
         }
