@@ -123,6 +123,7 @@ public class SyncService
     private final CategoryRepository categoryRepository;
     private final ConfigProperties configProperties;
     private final DocumentService documentService;
+    private final ExchangeRateService exchangeRateService;
 
     private boolean deactivated;
 
@@ -146,7 +147,8 @@ public class SyncService
                        final CategoryRepository _categoryRepository,
                        final EFapsClient _eFapsClient,
                        final ConfigProperties _configProperties,
-                       final DocumentService _documentService)
+                       final DocumentService _documentService,
+                       final ExchangeRateService _exchangeRateService)
     {
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
@@ -168,6 +170,7 @@ public class SyncService
         eFapsClient = _eFapsClient;
         configProperties = _configProperties;
         documentService = _documentService;
+        exchangeRateService = _exchangeRateService;
     }
 
     public void runSyncJob(final String _methodName)
@@ -287,6 +290,17 @@ public class SyncService
             warehouses.forEach(workspace -> warehouseRepository.save(workspace));
         }
         registerSync(StashId.WAREHOUSESYNC);
+    }
+
+    public void syncExchangeRates()
+        throws SyncServiceDeactivatedException
+    {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
+        LOG.info("Syncing ExchangeRates");
+        exchangeRateService.loadExchangeRate();
+        registerSync(StashId.EXCHANGERATESSYNC);
     }
 
     public void syncInventory()

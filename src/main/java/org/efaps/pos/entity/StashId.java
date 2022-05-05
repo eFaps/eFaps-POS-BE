@@ -35,7 +35,8 @@ public enum StashId
     WAREHOUSESYNC("org.efaps.pos.sync.Warehouse"),
     WORKSPACESYNC("org.efaps.pos.sync.Workspace"),
     BALANCESYNC("org.efaps.pos.sync.Balance"),
-    EXCHANGERATES("org.efaps.pos.ExchangeRates");
+    EXCHANGERATES("org.efaps.pos.ExchangeRates"),
+    EXCHANGERATESSYNC("org.efaps.pos.sync.ExchangeRates");
 
     private final String key;
 

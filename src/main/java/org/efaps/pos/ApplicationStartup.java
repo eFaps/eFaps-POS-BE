@@ -75,6 +75,7 @@ public class ApplicationStartup
     private void sync()
     {
         try {
+            service.syncExchangeRates();
             service.syncProducts();
             service.syncCategories();
             service.syncPOSs();

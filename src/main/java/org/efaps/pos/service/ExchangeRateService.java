@@ -75,6 +75,7 @@ public class ExchangeRateService
             exchangeRates2.getRates().put(rateDto.getCurrency(), rateDto.getExchangeRate());
         });
         mongoTemplate.save(exchangeRates2);
+        LOG.info("Loaded ExchangeRates from Remote: {}", rates);
     }
 
 }

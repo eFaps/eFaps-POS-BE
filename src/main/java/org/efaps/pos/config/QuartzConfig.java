@@ -45,6 +45,9 @@ public class QuartzConfig
     @Value("${org.quartz.jobs.syncInventory.interval}")
     private Integer syncInventoryInterval;
 
+    @Value("${org.quartz.jobs.syncExchangeRates.interval:0}")
+    private Integer syncExchangeRatesInterval;
+
     @Autowired
     public QuartzConfig(final SyncService _syncService)
     {
@@ -114,6 +117,28 @@ public class QuartzConfig
         stFactory.setJobDetail(syncInventoryJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(180 * 1000);
         stFactory.setRepeatInterval(Math.abs(syncInventoryInterval) * 1000);
+        return stFactory;
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncExchangeRates.interval:0} > 0}")
+    public MethodInvokingJobDetailFactoryBean syncExchangeRatesJobDetailFactoryBean()
+    {
+        final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
+        obj.setTargetObject(syncService);
+        obj.setTargetMethod("runSyncJob");
+        obj.setArguments("syncExchangeRates");
+        return obj;
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncExchangeRates.interval:0} > 0}")
+    public SimpleTriggerFactoryBean syncExchangeRatesTriggerFactoryBean()
+    {
+        final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
+        stFactory.setJobDetail(syncInventoryJobDetailFactoryBean().getObject());
+        stFactory.setStartDelay(180 * 1000);
+        stFactory.setRepeatInterval(Math.abs(syncExchangeRatesInterval) * 1000);
         return stFactory;
     }
 }
