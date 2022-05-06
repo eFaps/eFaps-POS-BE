@@ -136,7 +136,7 @@ public class QuartzConfig
     public SimpleTriggerFactoryBean syncExchangeRatesTriggerFactoryBean()
     {
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncInventoryJobDetailFactoryBean().getObject());
+        stFactory.setJobDetail(syncExchangeRatesJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(180 * 1000);
         stFactory.setRepeatInterval(Math.abs(syncExchangeRatesInterval) * 1000);
         return stFactory;
