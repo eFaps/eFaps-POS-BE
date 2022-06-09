@@ -25,16 +25,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@DataMongoTest
 @AutoConfigureMockMvc
 @AutoConfigureMockRestServiceServer
 @ActiveProfiles(profiles = "test")
@@ -48,7 +48,7 @@ public class ProductServiceTest
 
     @BeforeEach
     public void setup() {
-        this.mongoTemplate.remove(new Query(), Product.class);
+        mongoTemplate.remove(new Query(), Product.class);
     }
 
     @Test
@@ -56,9 +56,9 @@ public class ProductServiceTest
         final Product product = new Product()
                         .setOid("1234.652")
                         .setDescription("This is a description");
-        this.mongoTemplate.save(product);
+        mongoTemplate.save(product);
 
-        final List<Product> products = this.productcService.getProducts();
+        final List<Product> products = productcService.getProducts();
         assertEquals(1, products.size());
         assertEquals("1234.652", products.get(0).getOid());
         assertEquals("This is a description", products.get(0).getDescription());

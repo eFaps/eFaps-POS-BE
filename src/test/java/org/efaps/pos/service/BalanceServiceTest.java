@@ -30,16 +30,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@DataMongoTest
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureMockRestServiceServer
 @ActiveProfiles(profiles = "test")
@@ -55,14 +55,14 @@ public class BalanceServiceTest
     @BeforeEach
     public void setup()
     {
-        this.mongoTemplate.remove(new Query(), Balance.class);
+        mongoTemplate.remove(new Query(), Balance.class);
     }
 
     @Test
     public void testGetCurrentNone()
     {
         final User user = new User();
-        final Optional<Balance> balanceOpt = this.balanceService.getCurrent(user, false);
+        final Optional<Balance> balanceOpt = balanceService.getCurrent(user, false);
         assertFalse(balanceOpt.isPresent());
     }
 
@@ -71,7 +71,7 @@ public class BalanceServiceTest
     {
         final User user = new User();
         user.setOid("123.45");
-        final Optional<Balance> balanceOpt = this.balanceService.getCurrent(user, true);
+        final Optional<Balance> balanceOpt = balanceService.getCurrent(user, true);
         assertTrue(balanceOpt.isPresent());
         final Balance balance = balanceOpt.get();
         assertEquals(BalanceStatus.OPEN, balance.getStatus());
@@ -84,7 +84,7 @@ public class BalanceServiceTest
     {
         final Balance balance = new Balance();
         balance.setId("1234");
-        final Balance ret = this.balanceService.update(balance);
+        final Balance ret = balanceService.update(balance);
         assertEquals(balance, ret);
     }
 
@@ -92,9 +92,9 @@ public class BalanceServiceTest
     public void testUpdate()
     {
         final Balance balance = new Balance();
-        this.mongoTemplate.save(balance);
+        mongoTemplate.save(balance);
 
-        final Balance ret = this.balanceService.update(balance);
+        final Balance ret = balanceService.update(balance);
         assertEquals(balance.getId(), ret.getId());
         assertEquals(BalanceStatus.CLOSED, ret.getStatus());
         assertFalse(ret.isSynced());

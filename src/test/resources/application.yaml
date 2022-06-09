@@ -3,8 +3,13 @@ spring:
   config:
     activate:
       on-profile: test
+  mongodb:
+    embedded:
+      version: 4.4.13
+
   data:
     mongodb:
+      database: test
       host: localhost
 
 mongoClientURI: mongodb://localhost:27017/efapsPOS

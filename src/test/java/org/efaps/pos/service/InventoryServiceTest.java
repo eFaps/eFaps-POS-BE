@@ -27,16 +27,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@DataMongoTest
 @AutoConfigureMockMvc
 @AutoConfigureMockRestServiceServer
 @ActiveProfiles(profiles = "test")
@@ -52,51 +52,51 @@ public class InventoryServiceTest
     @BeforeEach
     public void setup()
     {
-        this.mongoTemplate.remove(new Query(), Warehouse.class);
-        this.mongoTemplate.remove(new Query(), InventoryEntry.class);
+        mongoTemplate.remove(new Query(), Warehouse.class);
+        mongoTemplate.remove(new Query(), InventoryEntry.class);
     }
 
     @Test
     public void testGetWarehouses()
     {
-        this.mongoTemplate.save(new Warehouse().setOid("1.1"));
-        this.mongoTemplate.save(new Warehouse().setOid("1.2"));
-        this.mongoTemplate.save(new Warehouse().setOid("1.3"));
+        mongoTemplate.save(new Warehouse().setOid("1.1"));
+        mongoTemplate.save(new Warehouse().setOid("1.2"));
+        mongoTemplate.save(new Warehouse().setOid("1.3"));
 
-        final List<Warehouse> warehouses = this.inventoryService.getWarehouses();
+        final List<Warehouse> warehouses = inventoryService.getWarehouses();
         assertEquals(3, warehouses.size());
     }
 
     @Test
     public void testGetWarehouse()
     {
-        this.mongoTemplate.save(new Warehouse().setOid("1.1"));
-        this.mongoTemplate.save(new Warehouse().setOid("1.2"));
-        this.mongoTemplate.save(new Warehouse().setOid("1.3"));
+        mongoTemplate.save(new Warehouse().setOid("1.1"));
+        mongoTemplate.save(new Warehouse().setOid("1.2"));
+        mongoTemplate.save(new Warehouse().setOid("1.3"));
 
-        final Warehouse warehouse = this.inventoryService.getWarehouse("1.3");
+        final Warehouse warehouse = inventoryService.getWarehouse("1.3");
         assertEquals("1.3", warehouse.getOid());
     }
 
     @Test
     public void testGetInventory4Warehouse()
     {
-        this.mongoTemplate.save(new InventoryEntry().setOid("1.1").setWarehouseOid("55.44"));
-        this.mongoTemplate.save(new InventoryEntry().setOid("1.2").setWarehouseOid("55.45"));
-        this.mongoTemplate.save(new InventoryEntry().setOid("1.3").setWarehouseOid("55.44"));
+        mongoTemplate.save(new InventoryEntry().setOid("1.1").setWarehouseOid("55.44"));
+        mongoTemplate.save(new InventoryEntry().setOid("1.2").setWarehouseOid("55.45"));
+        mongoTemplate.save(new InventoryEntry().setOid("1.3").setWarehouseOid("55.44"));
 
-        final Collection<InventoryEntry> entries = this.inventoryService.getInventory4Warehouse("55.44");
+        final Collection<InventoryEntry> entries = inventoryService.getInventory4Warehouse("55.44");
         assertEquals(2, entries.size());
     }
 
     @Test
     public void testGetInventory4Product()
     {
-        this.mongoTemplate.save(new InventoryEntry().setOid("1.1").setProductOid("25.44"));
-        this.mongoTemplate.save(new InventoryEntry().setOid("1.2").setProductOid("25.45"));
-        this.mongoTemplate.save(new InventoryEntry().setOid("1.3").setProductOid("25.44"));
+        mongoTemplate.save(new InventoryEntry().setOid("1.1").setProductOid("25.44"));
+        mongoTemplate.save(new InventoryEntry().setOid("1.2").setProductOid("25.45"));
+        mongoTemplate.save(new InventoryEntry().setOid("1.3").setProductOid("25.44"));
 
-        final Collection<InventoryEntry> entries = this.inventoryService.getInventory4Product("25.44");
+        final Collection<InventoryEntry> entries = inventoryService.getInventory4Product("25.44");
         assertEquals(2, entries.size());
     }
 }

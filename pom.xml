@@ -30,7 +30,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <spring.boot.version>2.6.6</spring.boot.version>
+        <spring.boot.version>2.7.0</spring.boot.version>
         <junit.jupiter.version>5.8.2</junit.jupiter.version>
         <junit.platform.version>1.8.2</junit.platform.version>
     </properties>
@@ -240,7 +240,8 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <version>3.0.0</version>
+            <version>3.4.6</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
