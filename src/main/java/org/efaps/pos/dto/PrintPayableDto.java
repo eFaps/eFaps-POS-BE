@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public class PrintPayableDto
 {
 
+    private final DocType payableType;
     private final AbstractPayableDocumentDto payable;
 
     private final PosOrderDto order;
@@ -36,10 +37,16 @@ public class PrintPayableDto
 
     private PrintPayableDto(final Builder builder)
     {
+        payableType = builder.payableType;
         payable = builder.payable;
         order = builder.order;
         additionalInfo = builder.additionalInfo;
         amountInWords = builder.amountInWords;
+    }
+
+    public DocType getPayableType()
+    {
+        return payableType;
     }
 
     public AbstractPayableDocumentDto getPayable()
@@ -76,7 +83,7 @@ public class PrintPayableDto
      */
     public static final class Builder
     {
-
+        private DocType payableType;
         private AbstractPayableDocumentDto payable;
         private PosOrderDto order;
         private Map<String, Object> additionalInfo = Collections.emptyMap();
@@ -85,6 +92,13 @@ public class PrintPayableDto
         private Builder()
         {
         }
+
+        public Builder withPayableType(final DocType payableType)
+        {
+            this.payableType = payableType;
+            return this;
+        }
+
 
         public Builder withPayable(final AbstractPayableDocumentDto payable)
         {

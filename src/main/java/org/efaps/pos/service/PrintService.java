@@ -21,11 +21,13 @@ import javax.print.attribute.HashPrintServiceAttributeSet;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PrintPayableDto;
 import org.efaps.pos.dto.PrintResponseDto;
 import org.efaps.pos.dto.PrinterType;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractPayableDocument;
+import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
@@ -141,6 +143,7 @@ public class PrintService
                 listener.addAdditionalInfo2Document(_document, additionalInfo);
             }
             content = PrintPayableDto.builder()
+                            .withPayableType(DocType.RECEIPT)
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Receipt) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
@@ -153,6 +156,7 @@ public class PrintService
                 listener.addAdditionalInfo2Document(_document, additionalInfo);
             }
             content = PrintPayableDto.builder()
+                            .withPayableType(DocType.INVOICE)
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Invoice) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
@@ -165,8 +169,20 @@ public class PrintService
                 listener.addAdditionalInfo2Document(_document, additionalInfo);
             }
             content = PrintPayableDto.builder()
+                            .withPayableType(DocType.TICKET)
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Ticket) _document))
+                            .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
+                            .withAdditionalInfo(additionalInfo)
+                            .build();
+        } else if (_document instanceof CreditNote) {
+            final Map<String, Object> additionalInfo = new HashMap<>();
+            for (final IPrintListener listener : printListeners) {
+                listener.addAdditionalInfo2Document(_document, additionalInfo);
+            }
+            content = PrintPayableDto.builder()
+                            .withPayableType(DocType.CREDITNOTE)
+                            .withPayable(Converter.toDto((CreditNote) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
                             .withAdditionalInfo(additionalInfo)
                             .build();
