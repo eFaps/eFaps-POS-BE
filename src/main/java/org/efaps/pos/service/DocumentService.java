@@ -212,7 +212,7 @@ public class DocumentService
         validateOrder(_orderId);
         validateContact(_workspaceOid, _receipt);
         sanitizeDecimals(_receipt);
-        _receipt.setNumber(sequenceService.getNext(_workspaceOid, DocType.RECEIPT));
+        _receipt.setNumber(sequenceService.getNext(_workspaceOid, DocType.RECEIPT, null));
         Receipt ret = receiptRepository.insert(_receipt);
         try {
             if (!receiptListeners.isEmpty()) {
@@ -239,7 +239,7 @@ public class DocumentService
         validateOrder(_orderId);
         validateContact(_workspaceOid, _invoice);
         sanitizeDecimals(_invoice);
-        _invoice.setNumber(sequenceService.getNext(_workspaceOid, DocType.INVOICE));
+        _invoice.setNumber(sequenceService.getNext(_workspaceOid, DocType.INVOICE, null));
         Invoice ret = invoiceRepository.insert(_invoice);
         try {
             if (!invoiceListeners.isEmpty()) {
@@ -266,7 +266,7 @@ public class DocumentService
         validateOrder(_orderId);
         validateContact(_workspaceOid, _ticket);
         sanitizeDecimals(_ticket);
-        _ticket.setNumber(sequenceService.getNext(_workspaceOid, DocType.TICKET));
+        _ticket.setNumber(sequenceService.getNext(_workspaceOid, DocType.TICKET, null));
         Ticket ret = ticketRepository.insert(_ticket);
         try {
             if (!ticketListeners.isEmpty()) {
@@ -291,7 +291,8 @@ public class DocumentService
     {
         validateContact(_workspaceOid, _creditNote);
         sanitizeDecimals(_creditNote);
-        _creditNote.setNumber(sequenceService.getNext(_workspaceOid, DocType.CREDITNOTE));
+        final var reference = ReferenceService.getReferenceByIdent(_creditNote.getSourceDocOid());
+        _creditNote.setNumber(sequenceService.getNext(_workspaceOid, DocType.CREDITNOTE, reference.getDocType()));
         _creditNote.setDate(LocalDate.now());
         CreditNote ret = creditNoteRepository.insert(_creditNote);
         try {

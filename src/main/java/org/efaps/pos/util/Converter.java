@@ -594,7 +594,8 @@ public final class Converter
                         .withReceiptSeqOid(_entity.getReceiptSeqOid())
                         .withInvoiceSeqOid(_entity.getInvoiceSeqOid())
                         .withTicketSeqOid(_entity.getTicketSeqOid())
-                        .withCreditNoteSeqOid(_entity.getCreditNoteSeqOid())
+                        .withCreditNote4InvoiceSeqOid(_entity.getCreditNote4InvoiceSeqOid())
+                        .withCreditNote4ReceiptSeqOid(_entity.getCreditNote4ReceiptSeqOid())
                         .build();
     }
 
@@ -608,7 +609,8 @@ public final class Converter
                         .setReceiptSeqOid(_dto.getReceiptSeqOid())
                         .setInvoiceSeqOid(_dto.getInvoiceSeqOid())
                         .setTicketSeqOid(_dto.getTicketSeqOid())
-                        .setCreditNoteSeqOid(_dto.getCreditNoteSeqOid());
+                        .setCreditNote4InvoiceSeqOid(_dto.getCreditNote4InvoiceSeqOid())
+                        .setCreditNote4ReceiptSeqOid(_dto.getCreditNote4ReceiptSeqOid());
         return ret;
     }
 

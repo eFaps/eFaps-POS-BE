@@ -42,7 +42,8 @@ public class Pos
     private String receiptSeqOid;
     private String invoiceSeqOid;
     private String ticketSeqOid;
-    private String creditNoteSeqOid;
+    private String creditNote4InvoiceSeqOid;
+    private String creditNote4ReceiptSeqOid;
 
     public String getOid()
     {
@@ -133,14 +134,25 @@ public class Pos
         return this;
     }
 
-    public String getCreditNoteSeqOid()
+    public String getCreditNote4InvoiceSeqOid()
     {
-        return creditNoteSeqOid;
+        return creditNote4InvoiceSeqOid;
     }
 
-    public Pos setCreditNoteSeqOid(final String creditNoteSeqOid)
+    public Pos setCreditNote4InvoiceSeqOid(final String creditNote4InvoiceSeqOid)
     {
-        this.creditNoteSeqOid = creditNoteSeqOid;
+        this.creditNote4InvoiceSeqOid = creditNote4InvoiceSeqOid;
+        return this;
+    }
+
+    public String getCreditNote4ReceiptSeqOid()
+    {
+        return creditNote4ReceiptSeqOid;
+    }
+
+    public Pos setCreditNote4ReceiptSeqOid(final String creditNote4ReceiptSeqOid)
+    {
+        this.creditNote4ReceiptSeqOid = creditNote4ReceiptSeqOid;
         return this;
     }
 

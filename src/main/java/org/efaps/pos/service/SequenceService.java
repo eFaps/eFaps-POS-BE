@@ -43,7 +43,7 @@ public class SequenceService
         return getNextNumber("Order", false);
     }
 
-    public String getNext(final String _workspaceOid, final DocType _docType)
+    public String getNext(final String _workspaceOid, final DocType _docType, final DocType _sourceDocType)
     {
         final Pos pos = posService.getPos4Workspace(_workspaceOid);
         final String next;
@@ -70,10 +70,18 @@ public class SequenceService
                 }
                 break;
             case CREDITNOTE:
-                if (pos.getCreditNoteSeqOid()!= null) {
-                    next = getNextNumber(pos.getCreditNoteSeqOid(), true);
+                if (DocType.INVOICE.equals(_sourceDocType)) {
+                    if (pos.getCreditNote4InvoiceSeqOid()!= null) {
+                        next = getNextNumber(pos.getCreditNote4InvoiceSeqOid(), true);
+                    } else {
+                        next = getNextNumber("CreditNote4Invoice", false);
+                    }
                 } else {
-                    next = getNextNumber("CreditNote", false);
+                    if (pos.getCreditNote4ReceiptSeqOid()!= null) {
+                        next = getNextNumber(pos.getCreditNote4ReceiptSeqOid(), true);
+                    } else {
+                        next = getNextNumber("CreditNote4Receipt", false);
+                    }
                 }
                 break;
             default:
