@@ -17,6 +17,7 @@
 
 package org.efaps.pos.dto;
 
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Map;
 
@@ -34,6 +35,7 @@ public class PrintPayableDto
     private final Map<String, Object> additionalInfo;
 
     private final String amountInWords;
+    private final LocalTime time;
 
     private PrintPayableDto(final Builder builder)
     {
@@ -42,6 +44,7 @@ public class PrintPayableDto
         order = builder.order;
         additionalInfo = builder.additionalInfo;
         amountInWords = builder.amountInWords;
+        time = builder.time;
     }
 
     public DocType getPayableType()
@@ -69,6 +72,11 @@ public class PrintPayableDto
         return amountInWords;
     }
 
+    public LocalTime getTime()
+    {
+        return time;
+    }
+
     /**
      * Creates builder to build {@link PrintPayableDto}.
      * @return created builder
@@ -88,6 +96,7 @@ public class PrintPayableDto
         private PosOrderDto order;
         private Map<String, Object> additionalInfo = Collections.emptyMap();
         private String amountInWords;
+        private LocalTime time;
 
         private Builder()
         {
@@ -121,6 +130,11 @@ public class PrintPayableDto
         public Builder withAmountInWords(final String amountInWords)
         {
             this.amountInWords = amountInWords;
+            return this;
+        }
+
+        public Builder withTime(final LocalTime time) {
+            this.time = time;
             return this;
         }
 

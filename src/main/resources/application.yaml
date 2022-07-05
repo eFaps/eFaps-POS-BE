@@ -2,6 +2,8 @@ name: POS-Backend
 version: 0.0.0
 syncOnStartup: true
 maxSearchResult: 100
+timeZone: America/Lima
+
 
 spring:
   autoconfigure:

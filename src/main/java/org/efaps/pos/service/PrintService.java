@@ -7,6 +7,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,7 @@ import javax.print.attribute.HashPrintServiceAttributeSet;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PrintPayableDto;
 import org.efaps.pos.dto.PrintResponseDto;
@@ -66,23 +69,22 @@ public class PrintService
                     .build();
 
     private final ObjectMapper jacksonObjectMapper;
-
     private final PrinterRepository printerRepository;
-
+    private final ConfigProperties configProperties;
     private final GridFsService gridFsService;
-
     private final DocumentService documentService;
-
     private final List<IPrintListener> printListeners;
 
     public PrintService(final ObjectMapper _jacksonObjectMapper,
                         final GridFsService _gridFsService,
+                        final ConfigProperties _configProperties,
                         final PrinterRepository _printerRepository,
                         final DocumentService _documentService,
                         final Optional<List<IPrintListener>> _printListeners)
     {
         jacksonObjectMapper = _jacksonObjectMapper;
         gridFsService = _gridFsService;
+        configProperties = _configProperties;
         printerRepository = _printerRepository;
         documentService = _documentService;
         printListeners = _printListeners.isPresent() ? _printListeners.get() : Collections.emptyList();
@@ -144,6 +146,7 @@ public class PrintService
             }
             content = PrintPayableDto.builder()
                             .withPayableType(DocType.RECEIPT)
+                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(), ZoneId.of(configProperties.getTimeZone())))
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Receipt) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
@@ -155,8 +158,10 @@ public class PrintService
             for (final IPrintListener listener : printListeners) {
                 listener.addAdditionalInfo2Document(_document, additionalInfo);
             }
+
             content = PrintPayableDto.builder()
                             .withPayableType(DocType.INVOICE)
+                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(), ZoneId.of(configProperties.getTimeZone())))
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Invoice) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
@@ -170,6 +175,7 @@ public class PrintService
             }
             content = PrintPayableDto.builder()
                             .withPayableType(DocType.TICKET)
+                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(), ZoneId.of(configProperties.getTimeZone())))
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Ticket) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
@@ -182,6 +188,7 @@ public class PrintService
             }
             content = PrintPayableDto.builder()
                             .withPayableType(DocType.CREDITNOTE)
+                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(), ZoneId.of(configProperties.getTimeZone())))
                             .withPayable(Converter.toDto((CreditNote) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
                             .withAdditionalInfo(additionalInfo)

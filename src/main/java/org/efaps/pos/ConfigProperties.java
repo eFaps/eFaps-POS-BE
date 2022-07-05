@@ -39,6 +39,8 @@ public class ConfigProperties
 
     private int maxSearchResult;
 
+    private String timeZone;
+
     private final SSO sso = new SSO();
 
     private final EFaps efaps = new EFaps();
@@ -73,6 +75,16 @@ public class ConfigProperties
     public void setName(final String _name)
     {
         name = _name;
+    }
+
+    public String getTimeZone()
+    {
+        return timeZone;
+    }
+
+    public void setTimeZone(final String timeZone)
+    {
+        this.timeZone = timeZone;
     }
 
     public SSO getSso()
