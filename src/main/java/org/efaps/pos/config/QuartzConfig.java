@@ -62,6 +62,7 @@ public class QuartzConfig
         obj.setTargetObject(syncService);
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncPayables");
+        obj.setConcurrent(false);
         return obj;
     }
 
@@ -84,6 +85,7 @@ public class QuartzConfig
         obj.setTargetObject(syncService);
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncContacts");
+        obj.setConcurrent(false);
         return obj;
     }
 
@@ -106,6 +108,7 @@ public class QuartzConfig
         obj.setTargetObject(syncService);
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncInventory");
+        obj.setConcurrent(false);
         return obj;
     }
 
@@ -128,6 +131,7 @@ public class QuartzConfig
         obj.setTargetObject(syncService);
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncExchangeRates");
+        obj.setConcurrent(false);
         return obj;
     }
 
