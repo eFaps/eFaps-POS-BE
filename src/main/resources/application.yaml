@@ -91,7 +91,7 @@ staticWeb:
     "[/pos/**]": "file:/home/jan-moxter/Development/git/nodejs/eFaps-POS-FE/dist/"
 
 jwt:
-  secret: ThisIsNotVerySecret
+  secret: ThisIsNotVerySecretButItIsAtLeastLongEnoughToHaveMoreThan256Bits
   expiration: 300  #accessToken expiration in seconds
   deviation: 60 #devation for the refresh token in seconds => expires in expiration
 

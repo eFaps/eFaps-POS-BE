@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Clock;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultClock;
+import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtTokenUtil
@@ -90,7 +90,8 @@ public class JwtTokenUtil
 
     private Claims getAllClaimsFromToken(final String token)
     {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        final var key = Keys.hmacShaKeyFor(secret.getBytes());
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
     public String generateAccessToken(final UserDetails _userDetails)
@@ -106,12 +107,13 @@ public class JwtTokenUtil
     {
         final Date createdDate = clock.now();
         final Date expirationDate = calculateExpirationDate(createdDate);
+        final var key = Keys.hmacShaKeyFor(secret.getBytes());
         return Jwts.builder()
                         .setClaims(claims)
                         .setSubject(subject)
                         .setIssuedAt(createdDate)
                         .setExpiration(expirationDate)
-                        .signWith(SignatureAlgorithm.HS512, secret)
+                        .signWith(key)
                         .compact();
     }
 
