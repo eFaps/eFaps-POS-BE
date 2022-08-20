@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
-import org.efaps.pos.filters.JwtAuthorizationTokenFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.util.JwtTokenUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,16 +44,17 @@ public class JwtAuthorizationTokenFilterTest
     @BeforeEach
     public void prepare()
     {
-        ReflectionTestUtils.setField(this.jwtTokenUtil, "secret", "a secret value");
-        ReflectionTestUtils.setField(this.jwtTokenUtil, "expiration", 1000L);
+        final var secret = StringUtils.repeat("secret", 20);
+        ReflectionTestUtils.setField(jwtTokenUtil, "secret", secret);
+        ReflectionTestUtils.setField(jwtTokenUtil, "expiration", 1000L);
     }
 
     @Test
     public void testIgnore()
         throws ServletException, IOException
     {
-        final JwtAuthorizationTokenFilter filter = new JwtAuthorizationTokenFilter(this.userDetailsService,
-                        this.jwtTokenUtil);
+        final JwtAuthorizationTokenFilter filter = new JwtAuthorizationTokenFilter(userDetailsService,
+                        jwtTokenUtil);
         final MockHttpServletRequest request = new MockHttpServletRequest();
         final MockHttpServletResponse response = new MockHttpServletResponse();
         final MockFilterChain filterChain = new MockFilterChain();
@@ -64,8 +65,8 @@ public class JwtAuthorizationTokenFilterTest
     public void testWrongHeader()
         throws ServletException, IOException
     {
-        final JwtAuthorizationTokenFilter filter = new JwtAuthorizationTokenFilter(this.userDetailsService,
-                        this.jwtTokenUtil);
+        final JwtAuthorizationTokenFilter filter = new JwtAuthorizationTokenFilter(userDetailsService,
+                        jwtTokenUtil);
         final MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Wrong Header");
         final MockHttpServletResponse response = new MockHttpServletResponse();
@@ -77,8 +78,8 @@ public class JwtAuthorizationTokenFilterTest
     public void testWrongBearerHeader()
         throws ServletException, IOException
     {
-        final JwtAuthorizationTokenFilter filter = new JwtAuthorizationTokenFilter(this.userDetailsService,
-                        this.jwtTokenUtil);
+        final JwtAuthorizationTokenFilter filter = new JwtAuthorizationTokenFilter(userDetailsService,
+                        jwtTokenUtil);
         final MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Bearer blablba");
         final MockHttpServletResponse response = new MockHttpServletResponse();
