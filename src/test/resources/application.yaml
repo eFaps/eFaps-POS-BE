@@ -54,6 +54,6 @@ sso:
   password:
 
 jwt:
-  secret: ThisIsNotVerySecret
+  secret: ThisIsNotVerySecretButItIsAtLeastLongEnoughToHaveMoreThan256Bits
   expiration: 1000
   deviation: 120

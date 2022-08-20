@@ -20,9 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,11 +34,16 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles(profiles = "test")
 public class JwtTokenUtilTest
 {
+
     @Value("${jwt.secret}")
     private String secret;
 
@@ -53,7 +55,8 @@ public class JwtTokenUtilTest
     {
         final String token = jwtTokenUtil.generateAccessToken(new User("testUser", "superSecretPassword",
                         Collections.singletonList(new SimpleGrantedAuthority("admin"))));
-        final Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        final var key = Keys.hmacShaKeyFor(secret.getBytes());
+        final Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         assertEquals("testUser", claims.getSubject());
     }
 
