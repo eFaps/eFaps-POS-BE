@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -146,7 +147,10 @@ public class PrintService
             }
             content = PrintPayableDto.builder()
                             .withPayableType(DocType.RECEIPT)
-                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(), ZoneId.of(configProperties.getTimeZone())))
+                            .withTime(LocalTime.ofInstant(
+                                            _document.getCreatedDate() == null ? Instant.now()
+                                                            : _document.getCreatedDate(),
+                                            ZoneId.of(configProperties.getTimeZone())))
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Receipt) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
@@ -161,7 +165,8 @@ public class PrintService
 
             content = PrintPayableDto.builder()
                             .withPayableType(DocType.INVOICE)
-                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(), ZoneId.of(configProperties.getTimeZone())))
+                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(),
+                                            ZoneId.of(configProperties.getTimeZone())))
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Invoice) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
@@ -175,7 +180,8 @@ public class PrintService
             }
             content = PrintPayableDto.builder()
                             .withPayableType(DocType.TICKET)
-                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(), ZoneId.of(configProperties.getTimeZone())))
+                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(),
+                                            ZoneId.of(configProperties.getTimeZone())))
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPayable(Converter.toDto((Ticket) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
@@ -188,7 +194,8 @@ public class PrintService
             }
             content = PrintPayableDto.builder()
                             .withPayableType(DocType.CREDITNOTE)
-                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(), ZoneId.of(configProperties.getTimeZone())))
+                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(),
+                                            ZoneId.of(configProperties.getTimeZone())))
                             .withPayable(Converter.toDto((CreditNote) _document))
                             .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
                             .withAdditionalInfo(additionalInfo)
