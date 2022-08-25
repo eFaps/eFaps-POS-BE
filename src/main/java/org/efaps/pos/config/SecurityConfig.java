@@ -105,7 +105,7 @@ public class SecurityConfig
                         .and()
                         .ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "logs")
                         .and()
-                        .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "users/**")
+                        .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "users")
                         .and()
                         .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
                         .and()
