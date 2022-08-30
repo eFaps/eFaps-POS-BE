@@ -32,6 +32,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Version;
 
 public abstract class AbstractDocument<T>
 {
@@ -64,6 +65,9 @@ public abstract class AbstractDocument<T>
 
     @LastModifiedDate
     private Instant lastModifiedDate;
+
+    @Version
+    private long version;
 
     public String getId()
     {

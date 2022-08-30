@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "logs")
@@ -25,6 +26,9 @@ public class LogEntry
 
     @CreatedDate
     private Instant createdDate;
+
+    @Version
+    private long version;
 
     public String getId()
     {

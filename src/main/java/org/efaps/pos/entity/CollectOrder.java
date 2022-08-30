@@ -25,6 +25,7 @@ import org.efaps.pos.dto.Currency;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "collectorders")
@@ -55,6 +56,9 @@ public class CollectOrder
 
     @CreatedDate
     private Instant createdDate;
+
+    @Version
+    private long version;
 
     public String getId()
     {

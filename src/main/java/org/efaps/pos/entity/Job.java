@@ -24,6 +24,7 @@ import org.efaps.pos.entity.AbstractDocument.Item;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "jobs")
@@ -48,6 +49,9 @@ public class Job
 
     @CreatedDate
     private Instant createdDate;
+
+    @Version
+    private long version;
 
     public String getId()
     {
