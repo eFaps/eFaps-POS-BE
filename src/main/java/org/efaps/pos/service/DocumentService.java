@@ -33,6 +33,7 @@ import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.PosInvoiceDto;
+import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.AbstractDocument;
@@ -173,10 +174,12 @@ public class DocumentService
         return orderRepository.insert(_order);
     }
 
-    public Order updateOrder(final Order _order)
+    public Order updateOrder(final String id, final PosOrderDto dto)
     {
-        verifyDocument(_order);
-        return orderRepository.save(_order);
+        final var order = orderRepository.findById(id).orElseThrow();
+        Converter.mapToEntity(dto, order);
+        verifyDocument(order);
+        return orderRepository.save(order);
     }
 
     private void verifyDocument(final AbstractDocument<?> _document)

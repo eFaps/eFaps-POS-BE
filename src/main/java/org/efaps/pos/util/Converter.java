@@ -259,6 +259,33 @@ public final class Converter
                         .setSourceDocOid(_dto.getSourceDocOid());
     }
 
+    public static Order mapToEntity(final PosOrderDto _dto, final Order order)
+    {
+        return order
+                        .setOid(_dto.getOid())
+                        .setNumber(_dto.getNumber())
+                        .setCurrency(_dto.getCurrency())
+                        .setDate(_dto.getDate())
+                        .setCurrency(_dto.getCurrency())
+                        .setItems(_dto.getItems().stream()
+                                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
+                                        .collect(Collectors.toSet()))
+                        .setNetTotal(_dto.getNetTotal())
+                        .setCrossTotal(_dto.getCrossTotal())
+                        .setExchangeRate(_dto.getExchangeRate())
+                        .setStatus(_dto.getStatus())
+                        .setTaxes(_dto.getTaxes() == null
+                                        ? null
+                                        : _dto.getTaxes().stream()
+                                                        .map(_tax -> Converter.toEntity(_tax))
+                                                        .collect(Collectors.toSet()))
+                        .setSpot(_dto.getSpot() == null ? null : toEntity(_dto.getSpot()))
+                        .setPayableOid(_dto.getPayableOid())
+                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
+                        .setNote(_dto.getNote())
+                        .setShoutout(_dto.getShoutout());
+    }
+
     public static Order toEntity(final PosOrderDto _dto)
     {
         return new Order()

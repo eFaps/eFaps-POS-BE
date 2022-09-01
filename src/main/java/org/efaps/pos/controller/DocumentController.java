@@ -101,7 +101,7 @@ public class DocumentController
     public PosOrderDto updateOrder(@PathVariable(name = "orderId") final String _orderId,
                                    @RequestBody final PosOrderDto _orderDto)
     {
-        return Converter.toDto(documentService.updateOrder(Converter.toEntity(_orderDto).setId(_orderId)));
+        return Converter.toDto(documentService.updateOrder(_orderId, _orderDto));
     }
 
     @DeleteMapping(path = "documents/orders/{orderId}")
