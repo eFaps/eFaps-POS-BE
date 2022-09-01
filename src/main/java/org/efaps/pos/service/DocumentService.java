@@ -216,7 +216,7 @@ public class DocumentService
         validateContact(_workspaceOid, _receipt);
         sanitizeDecimals(_receipt);
         _receipt.setNumber(sequenceService.getNext(_workspaceOid, DocType.RECEIPT, null));
-        Receipt ret = receiptRepository.insert(_receipt);
+        final Receipt ret = receiptRepository.insert(_receipt);
         try {
             if (!receiptListeners.isEmpty()) {
                 final Config config = mongoTemplate.findById(Config.KEY, Config.class);
@@ -225,7 +225,7 @@ public class DocumentService
                     dto = (PosReceiptDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
                                     config.getProperties());
                 }
-                ret = receiptRepository.save(Converter.toEntity(dto));
+                //ret = receiptRepository.save(Converter.toEntity(dto));
             }
         } catch (final Exception e) {
             LOG.error("Wow that should not happen", e);
@@ -243,7 +243,7 @@ public class DocumentService
         validateContact(_workspaceOid, _invoice);
         sanitizeDecimals(_invoice);
         _invoice.setNumber(sequenceService.getNext(_workspaceOid, DocType.INVOICE, null));
-        Invoice ret = invoiceRepository.insert(_invoice);
+        final Invoice ret = invoiceRepository.insert(_invoice);
         try {
             if (!invoiceListeners.isEmpty()) {
                 final Config config = mongoTemplate.findById(Config.KEY, Config.class);
@@ -252,7 +252,7 @@ public class DocumentService
                     dto = (PosInvoiceDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
                                     config.getProperties());
                 }
-                ret = invoiceRepository.save(Converter.toEntity(dto));
+                //ret = invoiceRepository.save(Converter.toEntity(dto));
             }
         } catch (final Exception e) {
             LOG.error("Wow that should not happen", e);
@@ -270,7 +270,7 @@ public class DocumentService
         validateContact(_workspaceOid, _ticket);
         sanitizeDecimals(_ticket);
         _ticket.setNumber(sequenceService.getNext(_workspaceOid, DocType.TICKET, null));
-        Ticket ret = ticketRepository.insert(_ticket);
+        final Ticket ret = ticketRepository.insert(_ticket);
         try {
             if (!ticketListeners.isEmpty()) {
                 final Config config = mongoTemplate.findById(Config.KEY, Config.class);
@@ -279,7 +279,7 @@ public class DocumentService
                     dto = (PosTicketDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
                                     config.getProperties());
                 }
-                ret = ticketRepository.save(Converter.toEntity(dto));
+                //ret = ticketRepository.save(Converter.toEntity(dto));
             }
         } catch (final Exception e) {
             LOG.error("Wow that should not happen", e);
@@ -297,7 +297,7 @@ public class DocumentService
         final var reference = ReferenceService.getReferenceByIdent(_creditNote.getSourceDocOid());
         _creditNote.setNumber(sequenceService.getNext(_workspaceOid, DocType.CREDITNOTE, reference.getDocType()));
         _creditNote.setDate(LocalDate.now());
-        CreditNote ret = creditNoteRepository.insert(_creditNote);
+        final CreditNote ret = creditNoteRepository.insert(_creditNote);
         try {
             if (!creditNoteListeners.isEmpty()) {
                 final Config config = mongoTemplate.findById(Config.KEY, Config.class);
@@ -306,7 +306,7 @@ public class DocumentService
                     dto = (PosCreditNoteDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
                                     config.getProperties());
                 }
-                ret = creditNoteRepository.save(Converter.toEntity(dto));
+                //ret = creditNoteRepository.save(Converter.toEntity(dto));
             }
         } catch (final Exception e) {
             LOG.error("Wow that should not happen", e);
