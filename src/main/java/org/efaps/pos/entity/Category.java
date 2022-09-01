@@ -36,6 +36,8 @@ public class Category
 
     private String imageOid;
 
+    private String parentOid;
+
     public String getOid()
     {
         return oid;
@@ -78,6 +80,17 @@ public class Category
     public Category setImageOid(final String imageOid)
     {
         this.imageOid = imageOid;
+        return this;
+    }
+
+    public String getParentOid()
+    {
+        return parentOid;
+    }
+
+    public Category setParentOid(final String parentOid)
+    {
+        this.parentOid = parentOid;
         return this;
     }
 

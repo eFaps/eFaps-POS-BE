@@ -48,7 +48,7 @@ public class CategoryController
     public List<CategoryDto> getCategorys()
     {
         return service.getCategories().stream()
-                        .map(product -> Converter.toDto(product))
+                        .map(category -> Converter.toDto(category))
                         .collect(Collectors.toList());
     }
 
