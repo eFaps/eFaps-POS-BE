@@ -60,7 +60,7 @@ public class ProductService
 
     public List<Product> findProductsByCategory(final String _categoryOid)
     {
-        return productRepository.findByCategoryOidsContains(_categoryOid);
+        return productRepository.findByCategoryOid(_categoryOid);
     }
 
     public List<Product> findProductsByBarcode(final String _barcode)

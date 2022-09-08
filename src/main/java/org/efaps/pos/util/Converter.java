@@ -54,6 +54,7 @@ import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.PrintCmdDto;
 import org.efaps.pos.dto.PrinterDto;
+import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ProductRelationDto;
 import org.efaps.pos.dto.ReceiptDto;
@@ -84,6 +85,7 @@ import org.efaps.pos.entity.Payment;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.Product2Category;
 import org.efaps.pos.entity.ProductRelation;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
@@ -360,7 +362,9 @@ public final class Converter
                         .setNetPrice(_dto.getNetPrice())
                         .setCrossPrice(_dto.getCrossPrice())
                         .setCurrency(_dto.getCurrency())
-                        .setCategoryOids(_dto.getCategoryOids())
+                        .setCategories(_dto.getCategories().stream()
+                                        .map(cat -> toEntity(cat))
+                                        .collect(Collectors.toSet()))
                         .setTaxes(_dto.getTaxes().stream()
                                         .map(_tax -> _tax == null ? null : toEntity(_tax))
                                         .collect(Collectors.toSet()))
@@ -376,6 +380,17 @@ public final class Converter
                                         .map(rel -> toEntity(rel))
                                         .collect(Collectors.toSet()));
         return ret;
+    }
+
+    public static Product2Category toEntity(final Product2CategoryDto _dto)
+    {
+        return new Product2Category().setCategoryOid(_dto.getCategoryOid()).setWeight(_dto.getWeight());
+    }
+
+    public static Product2CategoryDto toDto(final Product2Category _entity)
+    {
+        return Product2CategoryDto.builder().withCategoryOid(_entity.getCategoryOid()).withWeight(_entity.getWeight())
+                        .build();
     }
 
     public static Barcode toEntity(final BarcodeDto _dto)
@@ -448,7 +463,11 @@ public final class Converter
                                         .withNetPrice(_entity.getNetPrice())
                                         .withCrossPrice(_entity.getCrossPrice())
                                         .withCurrency(_entity.getCurrency())
-                                        .withCategoryOids(_entity.getCategoryOids())
+                                        .withCategories(_entity.getCategories() == null
+                                        ? null : _entity.getCategories().stream()
+                                                        .map(prod2cat -> toDto(prod2cat))
+                                                        .collect(Collectors.toSet()))
+
                                         .withTaxes(_entity.getTaxes() == null
                                                         ? null
                                                         : _entity.getTaxes().stream()

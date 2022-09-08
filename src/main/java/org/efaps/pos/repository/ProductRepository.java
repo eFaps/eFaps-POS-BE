@@ -30,7 +30,8 @@ public interface ProductRepository
 {
     Page<Product> findByDescriptionLikeOrSkuLikeAllIgnoreCase(String _term1, String _term2, Pageable pageable);
 
-    List<Product> findByCategoryOidsContains(String _oid);
+    @Query("{'categories.categoryOid':'?0'}")
+    List<Product> findByCategoryOid(String _oid);
 
     @Query("{'barcodes.code':'?0'}")
     List<Product> findByBarcode(String _barcode);

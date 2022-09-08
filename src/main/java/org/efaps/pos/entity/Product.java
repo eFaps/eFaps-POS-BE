@@ -40,7 +40,7 @@ public class Product
     private BigDecimal netPrice;
     private BigDecimal crossPrice;
     private Currency currency;
-    private Set<String> categoryOids;
+    private Set<Product2Category> categories;
     private Set<Tax> taxes;
     private String uoM;
     private String uoMCode;
@@ -137,14 +137,14 @@ public class Product
         return this;
     }
 
-    public Set<String> getCategoryOids()
+    public Set<Product2Category> getCategories()
     {
-        return categoryOids == null ? Collections.emptySet() : categoryOids;
+        return categories == null ? Collections.emptySet() : categories;
     }
 
-    public Product setCategoryOids(final Set<String> _categoryOids)
+    public Product setCategories(final Set<Product2Category> _categories)
     {
-        categoryOids = _categoryOids;
+        categories = _categories;
         return this;
     }
 
