@@ -51,6 +51,7 @@ import org.efaps.pos.dto.PrintCmdDto;
 import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.PrinterType;
+import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ProductRelationDto;
 import org.efaps.pos.dto.ReceiptDto;
@@ -75,6 +76,7 @@ import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.Product2Category;
 import org.efaps.pos.entity.ProductRelation;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
@@ -100,18 +102,21 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ActiveProfiles(profiles = "test")
 public class ConverterTest
 {
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
     @BeforeEach
-    public void setup() {
+    public void setup()
+    {
         mongoTemplate.remove(new Query(), Product.class);
         mongoTemplate.remove(new Query(), Order.class);
         mongoTemplate.remove(new Query(), Warehouse.class);
     }
 
     @Test
-    public void testProductToEntity() {
+    public void testProductToEntity()
+    {
         final ProductDto dto = ProductDto.builder()
                         .withOID("Asda")
                         .withSKU("100612.001")
@@ -119,7 +124,8 @@ public class ConverterTest
                         .withImageOid("1234.1")
                         .withNetPrice(new BigDecimal("12.50"))
                         .withCrossPrice(new BigDecimal("14.40"))
-                        .withCategoryOids(Collections.singleton("555.1651"))
+                        .withCategories(Collections
+                                        .singleton(Product2CategoryDto.builder().withCategoryOid("555.1651").build()))
                         .withTaxes(Collections.singleton(TaxDto.builder().build()))
                         .build();
 
@@ -130,12 +136,14 @@ public class ConverterTest
         assertEquals(dto.getImageOid(), product.getImageOid());
         assertEquals(dto.getNetPrice(), product.getNetPrice());
         assertEquals(dto.getCrossPrice(), product.getCrossPrice());
-        assertEquals(dto.getCategoryOids(), product.getCategoryOids());
+        assertEquals(dto.getCategories().iterator().next().getCategoryOid(),
+                        product.getCategories().iterator().next().getCategoryOid());
         assertEquals(dto.getTaxes().size(), product.getTaxes().size());
     }
 
     @Test
-    public void testProductToDto() {
+    public void testProductToDto()
+    {
         final Product entity = new Product()
                         .setSKU("100612.001")
                         .setDescription("This is the product Description")
@@ -143,7 +151,7 @@ public class ConverterTest
                         .setNetPrice(new BigDecimal("12.50"))
                         .setCrossPrice(new BigDecimal("14.40"))
                         .setOid("165165.14651")
-                        .setCategoryOids(Collections.singleton("5515.1651"));
+                        .setCategories(Collections.singleton(new Product2Category().setCategoryOid("5515.1651")));
 
         final ProductDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
@@ -152,11 +160,13 @@ public class ConverterTest
         assertEquals(entity.getImageOid(), dto.getImageOid());
         assertEquals(entity.getNetPrice(), dto.getNetPrice());
         assertEquals(entity.getCrossPrice(), dto.getCrossPrice());
-        assertEquals(entity.getCategoryOids(), dto.getCategoryOids());
+        assertEquals(entity.getCategories().iterator().next().getCategoryOid(),
+                        dto.getCategories().iterator().next().getCategoryOid());
     }
 
     @Test
-    public void testUserToDto() {
+    public void testUserToDto()
+    {
         final User entity = new User()
                         .setUsername("a username")
                         .setFirstName("Juan")
@@ -170,7 +180,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testWorkspaceToDto() {
+    public void testWorkspaceToDto()
+    {
         final Workspace entity = new Workspace()
                         .setOid("165165.14651")
                         .setName("Caja 1")
@@ -187,7 +198,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testPosToDto() {
+    public void testPosToDto()
+    {
         final Pos entity = new Pos()
                         .setName("Caja 1")
                         .setOid("165165.14651");
@@ -198,7 +210,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testCategoryToDto() {
+    public void testCategoryToDto()
+    {
         final Category entity = new Category()
                         .setName("Caja 1")
                         .setOid("165165.14651")
@@ -211,7 +224,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testCategoryToEntity() {
+    public void testCategoryToEntity()
+    {
         final CategoryDto dto = CategoryDto.builder()
                         .withOID("165165.14651")
                         .withName("Caja 1")
@@ -225,7 +239,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testContactToDto() {
+    public void testContactToDto()
+    {
         final Contact entity = new Contact()
                         .setId("the mongo id")
                         .setName("Contact 1")
@@ -242,7 +257,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testContactToEntity() {
+    public void testContactToEntity()
+    {
         final ContactDto dto = ContactDto.builder()
                         .withId("this is the id")
                         .withOID("165165.14651")
@@ -260,7 +276,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testReceiptToEntity() {
+    public void testReceiptToEntity()
+    {
         final PosReceiptDto dto = PosReceiptDto.builder()
                         .withOID("16515.5165")
                         .withNumber("B001-1651651")
@@ -277,7 +294,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testInvoiceToEntity() {
+    public void testInvoiceToEntity()
+    {
         final PosInvoiceDto dto = PosInvoiceDto.builder()
                         .withOID("16515.5165")
                         .withNumber("B001-1651651")
@@ -294,7 +312,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testTicketToEntity() {
+    public void testTicketToEntity()
+    {
         final PosTicketDto dto = PosTicketDto.builder()
                         .withOID("16515.5165")
                         .withNumber("B001-1651651")
@@ -311,7 +330,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testOrderToEntity() {
+    public void testOrderToEntity()
+    {
         final PosOrderDto dto = PosOrderDto.builder()
                         .withOID("16515.5165")
                         .withNumber("B001-1651651")
@@ -333,7 +353,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testItemToEntity() {
+    public void testItemToEntity()
+    {
         final PosDocItemDto dto = PosDocItemDto.builder()
                         .withOID("16515.5165")
                         .withIndex(2)
@@ -359,7 +380,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testItemToEntityWithProduct() {
+    public void testItemToEntityWithProduct()
+    {
         final PosDocItemDto dto = PosDocItemDto.builder()
                         .withProductOid("ProductOid")
                         .withProduct(ProductDto.builder().withOID("ThisOid").build())
@@ -370,7 +392,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testTaxToEntity() {
+    public void testTaxToEntity()
+    {
         final TaxDto dto = TaxDto.builder()
                         .withOID("653.25")
                         .withName("VAT")
@@ -384,7 +407,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testTaxToDto() {
+    public void testTaxToDto()
+    {
         final Tax entity = new Tax()
                         .setOid("123.44")
                         .setName("VAT")
@@ -397,7 +421,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testOrderToDto() {
+    public void testOrderToDto()
+    {
         final Order entity = new Order()
                         .setOid("165165.14651")
                         .setNumber("B001-165165")
@@ -418,7 +443,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testItemToDto() {
+    public void testItemToDto()
+    {
         final Product product = new Product()
                         .setOid("1234.652")
                         .setDescription("This is a description");
@@ -446,8 +472,9 @@ public class ConverterTest
     }
 
     @Test
-    public void testItemToItemDto() {
-       final Item entity = new Item()
+    public void testItemToItemDto()
+    {
+        final Item entity = new Item()
                         .setIndex(1)
                         .setOid("5555.622")
                         .setCrossPrice(new BigDecimal("1.11"))
@@ -469,7 +496,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testSpotToEntity() {
+    public void testSpotToEntity()
+    {
         final SpotDto dto = SpotDto.builder()
                         .withLabel("Label")
                         .withOID("123.45")
@@ -480,7 +508,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testUserToEntity() {
+    public void testUserToEntity()
+    {
         final UserDto dto = UserDto.builder()
                         .withOID("id 1")
                         .withFirstName("First Name")
@@ -499,7 +528,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testSequenceToEntity() {
+    public void testSequenceToEntity()
+    {
         final SequenceDto dto = SequenceDto.builder()
                         .withOID("id 1")
                         .withFormat("Format")
@@ -512,7 +542,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testWorkspaceToEntity() {
+    public void testWorkspaceToEntity()
+    {
         final WorkspaceDto dto = WorkspaceDto.builder()
                         .withOID("id 1")
                         .withName("Name")
@@ -533,7 +564,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testWarehouseToEntity() {
+    public void testWarehouseToEntity()
+    {
         final WarehouseDto dto = WarehouseDto.builder()
                         .withOID("id 1")
                         .withName("Name")
@@ -544,7 +576,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testWarehouseToDto() {
+    public void testWarehouseToDto()
+    {
         final Warehouse entity = new Warehouse()
                         .setOid("id 1")
                         .setName("Name");
@@ -554,7 +587,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testInventoryToEntity() {
+    public void testInventoryToEntity()
+    {
         final InventoryEntryDto dto = InventoryEntryDto.builder()
                         .withOID("id 1")
                         .withProductOid("Some oid")
@@ -569,7 +603,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testInventoryToDto() {
+    public void testInventoryToDto()
+    {
         final Product product = new Product().setOid("productOid");
         mongoTemplate.save(product);
         final Warehouse warehouse = new Warehouse().setOid("warehouseOid");
@@ -588,7 +623,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testJobToDto() {
+    public void testJobToDto()
+    {
         final Order order = new Order();
         mongoTemplate.save(order);
         final Job entity = new Job()
@@ -600,7 +636,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testPrinterToEntity() {
+    public void testPrinterToEntity()
+    {
         final PrinterDto dto = PrinterDto.builder()
                         .withOID("id 1")
                         .withName("Name")
@@ -613,7 +650,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testPrinterToDto() {
+    public void testPrinterToDto()
+    {
         final Printer entity = new Printer()
                         .setOid("someId")
                         .setName("name")
@@ -625,7 +663,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testPrintCmdToEntity() {
+    public void testPrintCmdToEntity()
+    {
         final PrintCmdDto dto = PrintCmdDto.builder()
                         .withPrinterOid("printerOid")
                         .withReportOid("reportOid")
@@ -640,7 +679,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testPrintCmdToDto() {
+    public void testPrintCmdToDto()
+    {
         final PrintCmd entity = new PrintCmd()
                         .setPrinterOid("printerOid")
                         .setReportOid("reportOid")
@@ -653,7 +693,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testInvoiceToInvoiceDto() {
+    public void testInvoiceToInvoiceDto()
+    {
         final Invoice entity = new Invoice()
                         .setId("an id")
                         .setOid("OID")
@@ -679,7 +720,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testInvoiceToDto() {
+    public void testInvoiceToDto()
+    {
         final Invoice entity = new Invoice()
                         .setId("an id")
                         .setOid("OID")
@@ -705,7 +747,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testReceiptToReceiptDto() {
+    public void testReceiptToReceiptDto()
+    {
         final Receipt entity = new Receipt()
                         .setId("an id")
                         .setOid("OID")
@@ -731,7 +774,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testReceiptToDto() {
+    public void testReceiptToDto()
+    {
         final Receipt entity = new Receipt()
                         .setId("an id")
                         .setOid("OID")
@@ -757,7 +801,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testTicketToTicketDto() {
+    public void testTicketToTicketDto()
+    {
         final Ticket entity = new Ticket()
                         .setId("an id")
                         .setOid("OID")
@@ -783,7 +828,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testTicketToDto() {
+    public void testTicketToDto()
+    {
         final Ticket entity = new Ticket()
                         .setId("an id")
                         .setOid("OID")
@@ -809,7 +855,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testPosToEntity() {
+    public void testPosToEntity()
+    {
         final PosDto dto = PosDto.builder()
                         .withOID("1651.1651")
                         .withName("A name")
@@ -830,7 +877,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testBalanceToEntity() {
+    public void testBalanceToEntity()
+    {
         final BalanceDto dto = BalanceDto.builder()
                         .withOID("5556.26")
                         .withId("asimsddfsdfs")
@@ -851,7 +899,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testBalanceToDto() {
+    public void testBalanceToDto()
+    {
         final Balance entity = new Balance()
                         .setOid("5556.26")
                         .setId("asimsddfsdfs")
@@ -871,7 +920,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testProductRelationToEntity() {
+    public void testProductRelationToEntity()
+    {
         final ProductRelationDto dto = ProductRelationDto.builder()
                         .withLabel("a label")
                         .withProductOid("986.253")
@@ -882,7 +932,8 @@ public class ConverterTest
     }
 
     @Test
-    public void testProductRelationToDto() {
+    public void testProductRelationToDto()
+    {
         final ProductRelation entity = new ProductRelation()
                         .setLabel("asimsddfsdfs")
                         .setProductOid("1984.5161");

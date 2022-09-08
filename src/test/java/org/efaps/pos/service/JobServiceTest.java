@@ -16,6 +16,7 @@ import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.Product2Category;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,8 +89,8 @@ public class JobServiceTest
     @Test
     public void testCreateJobsCategoryDoesNotExist()
     {
-        mongoTemplate.save(new Product().setOid("productOid").setCategoryOids(Collections.singleton(
-                        "categoryOid")));
+        mongoTemplate.save(new Product().setOid("productOid").setCategories(Collections.singleton(
+                        new Product2Category().setCategoryOid("categoryOid"))));
 
         final Set<Item> items = new HashSet<>();
         items.add(new Item().setProductOid("productOid"));
@@ -103,8 +104,8 @@ public class JobServiceTest
     public void testCreateJobsCategoryNoPrinter()
     {
         mongoTemplate.save(new Category().setOid("categoryOid"));
-        mongoTemplate.save(new Product().setOid("productOid").setCategoryOids(Collections.singleton(
-                        "categoryOid")));
+        mongoTemplate.save(new Product().setOid("productOid").setCategories(Collections.singleton(
+                        new Product2Category().setCategoryOid("categoryOid"))));
 
         final Workspace workspace = new Workspace();
         final Set<Item> items = new HashSet<>();
@@ -119,8 +120,8 @@ public class JobServiceTest
     public void testCreateJobsNpPrintCmds()
     {
         mongoTemplate.save(new Category().setOid("categoryOid"));
-        mongoTemplate.save(new Product().setOid("productOid").setCategoryOids(Collections.singleton(
-                        "categoryOid")));
+        mongoTemplate.save(new Product().setOid("productOid").setCategories(Collections.singleton(
+                        new Product2Category().setCategoryOid("categoryOid"))));
 
         final Workspace workspace = new Workspace();
         final Set<Item> items = new HashSet<>();
@@ -136,8 +137,8 @@ public class JobServiceTest
     {
         mongoTemplate.save(new Printer().setOid("printerOid"));
         mongoTemplate.save(new Category().setOid("categoryOid"));
-        mongoTemplate.save(new Product().setOid("productOid").setCategoryOids(Collections.singleton(
-                        "categoryOid")));
+        mongoTemplate.save(new Product().setOid("productOid").setCategories(Collections.singleton(
+                        new Product2Category().setCategoryOid("categoryOid"))));
 
         final Workspace workspace = new Workspace();
         final Set<PrintCmd> printCmds = new HashSet<>();
@@ -165,16 +166,16 @@ public class JobServiceTest
         mongoTemplate.save(new Category().setOid("categoryOid2"));
         mongoTemplate.save(new Category().setOid("categoryOid3"));
 
-        mongoTemplate.save(new Product().setOid("productOid1").setCategoryOids(Collections.singleton(
-                        "categoryOid1")));
-        mongoTemplate.save(new Product().setOid("productOid2").setCategoryOids(Collections.singleton(
-                        "categoryOid2")));
-        mongoTemplate.save(new Product().setOid("productOid3").setCategoryOids(Collections.singleton(
-                        "categoryOid3")));
-        mongoTemplate.save(new Product().setOid("productOid4").setCategoryOids(Collections.singleton(
-                        "categoryOid1")));
-        mongoTemplate.save(new Product().setOid("productOid5").setCategoryOids(Collections.singleton(
-                        "categoryOid2")));
+        mongoTemplate.save(new Product().setOid("productOid1").setCategories(Collections.singleton(
+                        new Product2Category().setCategoryOid("categoryOid1"))));
+        mongoTemplate.save(new Product().setOid("productOid2").setCategories(Collections.singleton(
+                        new Product2Category().setCategoryOid("categoryOid2"))));
+        mongoTemplate.save(new Product().setOid("productOid3").setCategories(Collections.singleton(
+                        new Product2Category().setCategoryOid("categoryOid3"))));
+        mongoTemplate.save(new Product().setOid("productOid4").setCategories(Collections.singleton(
+                        new Product2Category().setCategoryOid("categoryOid1"))));
+        mongoTemplate.save(new Product().setOid("productOid5").setCategories(Collections.singleton(
+                        new Product2Category().setCategoryOid("categoryOid2"))));
 
         final Workspace workspace = new Workspace();
         final Set<PrintCmd> printCmds = new HashSet<>();
@@ -205,7 +206,8 @@ public class JobServiceTest
     }
 
     @Test
-    public void testGetItems() {
+    public void testGetItems()
+    {
         final Set<Item> items = new HashSet<>();
         items.add(new Item().setIndex(1));
         items.add(new Item().setIndex(2));
