@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BalanceSummaryDto;
+import org.efaps.pos.dto.CashEntryDto;
 import org.efaps.pos.dto.PosBalanceDto;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.User;
@@ -34,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +56,7 @@ public class BalanceController
 
     @GetMapping(path = "current", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BalanceDto> getCurrentBalance(final Authentication _authentication,
-                                @RequestParam(name = "createNew", required = false) final boolean _createNew)
+                                                        @RequestParam(name = "createNew", required = false) final boolean _createNew)
     {
         final Optional<Balance> balanceOpt = balanceService.getCurrent((User) _authentication.getPrincipal(),
                         _createNew);
@@ -69,21 +71,29 @@ public class BalanceController
 
     @PutMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public BalanceDto updateBalance(@PathVariable("id") final String _id,
-                                   @RequestBody final BalanceDto _balanceDto)
+                                    @RequestBody final BalanceDto _balanceDto)
     {
         return Converter.toBalanceDto(balanceService.update(Converter.toEntity(_balanceDto)));
     }
 
     @GetMapping(path = "{id}/summary", produces = MediaType.APPLICATION_JSON_VALUE)
-    public BalanceSummaryDto getSummary(@PathVariable("id") final String _balanceId) {
+    public BalanceSummaryDto getSummary(@PathVariable("id") final String _balanceId)
+    {
         return balanceService.getSummary(_balanceId);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PosBalanceDto>getBalances() {
-       return balanceService.getBalances().stream()
-                       .map(balance -> Converter.toDto(balance))
-                       .collect(Collectors.toList());
+    public List<PosBalanceDto> getBalances()
+    {
+        return balanceService.getBalances().stream()
+                        .map(balance -> Converter.toDto(balance))
+                        .collect(Collectors.toList());
+    }
+
+    @PostMapping(path = "{id}/cash", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void addCashEntries(@PathVariable("id") final String _id, @RequestBody final List<CashEntryDto> cashEntries)
+    {
+        balanceService.addCashEntries(_id, cashEntries);
     }
 
 }

@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BarcodeDto;
 import org.efaps.pos.dto.CardDto;
+import org.efaps.pos.dto.CashEntryDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.CollectOrderDto;
 import org.efaps.pos.dto.ContactDto;
@@ -70,6 +71,7 @@ import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Barcode;
+import org.efaps.pos.entity.CashEntry;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.Contact;
@@ -1417,6 +1419,24 @@ public final class Converter
                         .withExchangeRate(_projection.getExchangeRate())
                         .withDate(_projection.getDate())
                         .withStatus(_projection.getStatus())
+                        .build();
+    }
+
+    public static CashEntry toEntity(final CashEntryDto dto)
+    {
+        return new CashEntry().setBalanceOid(dto.getBalanceOid())
+                        .setAmount(dto.getAmount())
+                        .setCurrency(dto.getCurrency())
+                        .setEntryType(dto.getEntryType());
+    }
+
+    public static CashEntryDto toDto(final CashEntry entity)
+    {
+        return CashEntryDto.builder()
+                        .withBalanceOid(entity.getBalanceOid())
+                        .withAmount(entity.getAmount())
+                        .withCurrency(entity.getCurrency())
+                        .withEntryType(entity.getEntryType())
                         .build();
     }
 }

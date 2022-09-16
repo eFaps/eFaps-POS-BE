@@ -16,27 +16,29 @@
  */
 package org.efaps.pos.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.util.Collections;
+import java.util.List;
 
-@JsonDeserialize(builder = BalanceSummaryDto.Builder.class)
 public class BalanceSummaryDto
 {
 
     private final BalanceDto balance;
     private final PosUserDto user;
+    private final List<CashEntryDto> cashEntries;
     private final BalanceSummaryDetailDto detail;
     private final BalanceSummaryDetailDto invoiceDetail;
     private final BalanceSummaryDetailDto receiptDetail;
     private final BalanceSummaryDetailDto ticketDetail;
 
-    private BalanceSummaryDto(final Builder _builder)
+    private BalanceSummaryDto(final Builder builder)
     {
-        balance = _builder.balance;
-        user = _builder.user;
-        detail = _builder.detail;
-        invoiceDetail = _builder.invoiceDetail;
-        receiptDetail = _builder.receiptDetail;
-        ticketDetail = _builder.ticketDetail;
+        balance = builder.balance;
+        user = builder.user;
+        cashEntries = builder.cashEntries;
+        detail = builder.detail;
+        invoiceDetail = builder.invoiceDetail;
+        receiptDetail = builder.receiptDetail;
+        ticketDetail = builder.ticketDetail;
     }
 
     public BalanceDto getBalance()
@@ -47,6 +49,11 @@ public class BalanceSummaryDto
     public PosUserDto getUser()
     {
         return user;
+    }
+
+    public List<CashEntryDto> getCashEntries()
+    {
+        return cashEntries;
     }
 
     public BalanceSummaryDetailDto getDetail()
@@ -74,48 +81,60 @@ public class BalanceSummaryDto
         return new Builder();
     }
 
-    public static class Builder
+    public static final class Builder
     {
+
         private BalanceDto balance;
         private PosUserDto user;
+        private List<CashEntryDto> cashEntries = Collections.emptyList();
         private BalanceSummaryDetailDto detail;
         private BalanceSummaryDetailDto invoiceDetail;
         private BalanceSummaryDetailDto receiptDetail;
         private BalanceSummaryDetailDto ticketDetail;
 
-        public Builder withBalance(final BalanceDto _balance)
+        private Builder()
         {
-            balance = _balance;
+        }
+
+        public Builder withBalance(final BalanceDto balance)
+        {
+            this.balance = balance;
             return this;
         }
 
-        public Builder withUser(final PosUserDto _user)
+        public Builder withUser(final PosUserDto user)
         {
-            user = _user;
+            this.user = user;
             return this;
         }
 
-        public Builder withDetail(final BalanceSummaryDetailDto _detail)
+        public Builder withCashEntries(final List<CashEntryDto> cashEntries)
         {
-            detail = _detail;
+            this.cashEntries = cashEntries;
             return this;
         }
 
-        public Builder withInvoiceDetail(final BalanceSummaryDetailDto _invoiceDetail)
+        public Builder withDetail(final BalanceSummaryDetailDto detail)
         {
-            invoiceDetail = _invoiceDetail;
+            this.detail = detail;
             return this;
         }
 
-        public Builder withReceiptDetail(final BalanceSummaryDetailDto _receiptDetail)
+        public Builder withInvoiceDetail(final BalanceSummaryDetailDto invoiceDetail)
         {
-            receiptDetail = _receiptDetail;
+            this.invoiceDetail = invoiceDetail;
             return this;
         }
 
-        public Builder withTicketDetail(final BalanceSummaryDetailDto _ticketDetail)
+        public Builder withReceiptDetail(final BalanceSummaryDetailDto receiptDetail)
         {
-            ticketDetail = _ticketDetail;
+            this.receiptDetail = receiptDetail;
+            return this;
+        }
+
+        public Builder withTicketDetail(final BalanceSummaryDetailDto ticketDetail)
+        {
+            this.ticketDetail = ticketDetail;
             return this;
         }
 
