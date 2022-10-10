@@ -36,6 +36,7 @@ public class Product
     private String sku;
     private ProductType type;
     private String description;
+    private String note;
     private String imageOid;
     private BigDecimal netPrice;
     private BigDecimal crossPrice;
@@ -90,6 +91,17 @@ public class Product
     public Product setDescription(final String _description)
     {
         description = _description;
+        return this;
+    }
+
+    public String getNote()
+    {
+        return note;
+    }
+
+    public Product setNote(final String note)
+    {
+        this.note = note;
         return this;
     }
 
