@@ -23,13 +23,16 @@ import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.util.Converter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * The Class ProductController.
@@ -38,24 +41,37 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(IApi.BASEPATH + "contacts")
 public class ContactController
 {
+
     private final ContactService service;
 
-    public ContactController(final ContactService _service) {
-        this.service = _service;
+    public ContactController(final ContactService _service)
+    {
+        service = _service;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ContactDto> getContacts() {
-        return this.service.getContacts().stream()
+    public List<ContactDto> getContacts()
+    {
+        return service.getContacts().stream()
                         .map(contact -> Converter.toDto(contact))
                         .collect(Collectors.toList());
     }
 
+    @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ContactDto getContact(@PathVariable final String id)
+    {
+        final var contact = service.findContact(id);
+        if (contact == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact not found");
+        }
+        return Converter.toDto(contact);
+    }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
     public List<ContactDto> findContacts(@RequestParam(name = "term") final String _term,
-                                 @RequestParam(name = "nameSearch", defaultValue = "false") final Boolean _nameSearch)
+                                         @RequestParam(name = "nameSearch", defaultValue = "false") final Boolean _nameSearch)
     {
-        return this.service.findContacts(_term, _nameSearch).stream()
+        return service.findContacts(_term, _nameSearch).stream()
                         .map(contact -> Converter.toDto(contact))
                         .collect(Collectors.toList());
     }
@@ -63,6 +79,6 @@ public class ContactController
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ContactDto createContact(@RequestBody final ContactDto _posContactDto)
     {
-        return Converter.toDto(this.service.createContact(Converter.toEntity(_posContactDto)));
+        return Converter.toDto(service.createContact(Converter.toEntity(_posContactDto)));
     }
 }

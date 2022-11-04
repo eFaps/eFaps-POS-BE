@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,11 +61,11 @@ public class Workspace
 
     private PosGridSize gridSize;
 
-    private boolean gridShowPrice;
-
     private List<Floor> floors;
 
     private List<String> categoryOids;
+
+    private int flags;
 
     public String getOid()
     {
@@ -200,17 +200,6 @@ public class Workspace
         return this;
     }
 
-    public boolean isGridShowPrice()
-    {
-        return gridShowPrice;
-    }
-
-    public Workspace setGridShowPrice(final boolean _gridShowPrice)
-    {
-        gridShowPrice = _gridShowPrice;
-        return this;
-    }
-
     public List<Floor> getFloors()
     {
         return floors;
@@ -230,6 +219,17 @@ public class Workspace
     public Workspace setCategoryOids(final List<String> _categoryOids)
     {
         categoryOids = _categoryOids;
+        return this;
+    }
+
+    public int getFlags()
+    {
+        return flags;
+    }
+
+    public Workspace setFlags(final int flags)
+    {
+        this.flags = flags;
         return this;
     }
 

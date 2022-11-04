@@ -288,6 +288,7 @@ public final class Converter
         return order
                         .setOid(_dto.getOid())
                         .setNumber(_dto.getNumber())
+                        .setContactOid(_dto.getContactOid())
                         .setCurrency(_dto.getCurrency())
                         .setDate(_dto.getDate())
                         .setCurrency(_dto.getCurrency())
@@ -553,7 +554,6 @@ public final class Converter
                                         : _entity.getCards().stream()
                                                         .map(card -> Converter.toDto(card))
                                                         .collect(Collectors.toSet()))
-                        .withGridShowPrice(_entity.isGridShowPrice())
                         .withGridSize(_entity.getGridSize())
                         .withFloors(_entity.getFloors() == null
                                         ? Collections.emptyList()
@@ -563,6 +563,7 @@ public final class Converter
                         .withCategoryOids(_entity.getCategoryOids() == null
                                         ? Collections.emptyList()
                                         : _entity.getCategoryOids())
+                        .withFlags(_entity.getFlags())
                         .build();
     }
 
@@ -592,14 +593,14 @@ public final class Converter
                                         : _dto.getCards().stream()
                                                         .map(card -> Converter.toEntity(card))
                                                         .collect(Collectors.toSet()))
-                        .setGridShowPrice(_dto.isGridShowPrice())
                         .setGridSize(_dto.getGridSize())
                         .setFloors(_dto.getFloors() == null
                                         ? null
                                         : _dto.getFloors().stream()
                                                         .map(floor -> Converter.toEntity(floor))
                                                         .collect(Collectors.toList()))
-                        .setCategoryOids(_dto.getCategoryOids());
+                        .setCategoryOids(_dto.getCategoryOids())
+                        .setFlags(_dto.getFlags());
     }
 
     public static Floor toEntity(final FloorDto _dto)
@@ -770,6 +771,7 @@ public final class Converter
                         .withId(_entity.getId())
                         .withOID(_entity.getOid())
                         .withNumber(_entity.getNumber())
+                        .withContactOid(_entity.getContactOid())
                         .withCurrency(_entity.getCurrency())
                         .withExchangeRate(_entity.getExchangeRate())
                         .withDate(_entity.getDate())
