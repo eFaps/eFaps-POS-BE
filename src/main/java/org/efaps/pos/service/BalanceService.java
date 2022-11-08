@@ -38,6 +38,7 @@ import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
+import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Payment;
 import org.efaps.pos.entity.Receipt;
@@ -126,6 +127,9 @@ public class BalanceService
         final Collection<Ticket> tickets = documentService.getTickets4Balance(balance.getOid() == null
                         ? balance.getId()
                         : balance.getOid());
+        final Collection<CreditNote> creditNotes = documentService.getCreditNotes4Balance(balance.getOid() == null
+                        ? balance.getId()
+                        : balance.getOid());
 
         final List<AbstractPayableDocument<?>> all = new ArrayList<>();
         all.addAll(invoices);
@@ -136,6 +140,7 @@ public class BalanceService
         final BalanceSummaryDetailDto invoiceDetail = getDetail(invoices);
         final BalanceSummaryDetailDto receiptDetail = getDetail(receipts);
         final BalanceSummaryDetailDto ticketDetail = getDetail(tickets);
+        final BalanceSummaryDetailDto creditNoteDetail = getDetail(creditNotes);
 
         return BalanceSummaryDto.builder()
                         .withUser(user)
@@ -144,6 +149,7 @@ public class BalanceService
                         .withReceiptDetail(receiptDetail)
                         .withInvoiceDetail(invoiceDetail)
                         .withTicketDetail(ticketDetail)
+                        .withCreditNoteDetaill(creditNoteDetail)
                         .withBalance(Converter.toBalanceDto(balance))
                         .build();
     }

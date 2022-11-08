@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ public class BalanceSummaryDto
     private final BalanceSummaryDetailDto invoiceDetail;
     private final BalanceSummaryDetailDto receiptDetail;
     private final BalanceSummaryDetailDto ticketDetail;
+    private final BalanceSummaryDetailDto creditNoteDetail;
 
     private BalanceSummaryDto(final Builder builder)
     {
@@ -39,6 +40,7 @@ public class BalanceSummaryDto
         invoiceDetail = builder.invoiceDetail;
         receiptDetail = builder.receiptDetail;
         ticketDetail = builder.ticketDetail;
+        creditNoteDetail=builder.creditNoteDetail;
     }
 
     public BalanceDto getBalance()
@@ -76,6 +78,11 @@ public class BalanceSummaryDto
         return ticketDetail;
     }
 
+    public BalanceSummaryDetailDto getCreditNoteDetail()
+    {
+        return creditNoteDetail;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -91,6 +98,7 @@ public class BalanceSummaryDto
         private BalanceSummaryDetailDto invoiceDetail;
         private BalanceSummaryDetailDto receiptDetail;
         private BalanceSummaryDetailDto ticketDetail;
+        private BalanceSummaryDetailDto creditNoteDetail;
 
         private Builder()
         {
@@ -135,6 +143,12 @@ public class BalanceSummaryDto
         public Builder withTicketDetail(final BalanceSummaryDetailDto ticketDetail)
         {
             this.ticketDetail = ticketDetail;
+            return this;
+        }
+
+        public Builder withCreditNoteDetaill(final BalanceSummaryDetailDto creditNoteDetail)
+        {
+            this.creditNoteDetail = creditNoteDetail;
             return this;
         }
 

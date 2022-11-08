@@ -12,4 +12,6 @@ public interface CreditNoteRepository
     List<CreditNote> findBySourceDocOid(String _oid);
 
     Collection<CreditNote> findByOidIsNull();
+
+    Collection<CreditNote> findByBalanceOid(String _balanceOid);
 }

@@ -423,6 +423,11 @@ public class DocumentService
         return creditNoteRepository.findById(_documentId).orElse(null);
     }
 
+    public Collection<CreditNote> getCreditNotes4Balance(final String _balanceKey)
+    {
+        return creditNoteRepository.findByBalanceOid(evalBalanceOid(_balanceKey));
+    }
+
     public Collection<PayableHead> getTicketHeads4Balance(final String _balanceKey)
     {
         return getPayableHeads4Balance(_balanceKey, "tickets");
