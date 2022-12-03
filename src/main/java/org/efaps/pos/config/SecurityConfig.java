@@ -80,10 +80,10 @@ public class SecurityConfig
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
-            .antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate", IApi.BASEPATH + "refreshauth",
+            .requestMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate", IApi.BASEPATH + "refreshauth",
                             IApi.BASEPATH + "logs")
             .permitAll()
-            .antMatchers(getIgnore())
+            .requestMatchers(getIgnore())
             .permitAll()
             .anyRequest()
             .authenticated();
@@ -99,23 +99,23 @@ public class SecurityConfig
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer()
     {
-        return (web) -> web.ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate")
+        return (web) -> web.ignoring().requestMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate")
                         .and()
-                        .ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "refreshauth")
+                        .ignoring().requestMatchers(HttpMethod.POST, IApi.BASEPATH + "refreshauth")
                         .and()
-                        .ignoring().antMatchers(HttpMethod.POST, IApi.BASEPATH + "logs")
+                        .ignoring().requestMatchers(HttpMethod.POST, IApi.BASEPATH + "logs")
                         .and()
-                        .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "users")
+                        .ignoring().requestMatchers(HttpMethod.GET, IApi.BASEPATH + "users")
                         .and()
-                        .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
+                        .ignoring().requestMatchers(HttpMethod.GET, IApi.BASEPATH + "companies")
                         .and()
-                        .ignoring().antMatchers(HttpMethod.GET, IApi.BASEPATH + "health")
+                        .ignoring().requestMatchers(HttpMethod.GET, IApi.BASEPATH + "health")
                         .and()
-                        .ignoring().antMatchers(HttpMethod.GET, getIgnore())
+                        .ignoring().requestMatchers(HttpMethod.GET, getIgnore())
                         .and()
-                        .ignoring().antMatchers(HttpMethod.OPTIONS)
+                        .ignoring().requestMatchers(HttpMethod.OPTIONS)
                         .and()
-                        .ignoring().antMatchers("/socket/**");
+                        .ignoring().requestMatchers("/socket/**");
     }
 
     private String[] getIgnore()

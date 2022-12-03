@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2020 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ public class MongoConfig
         throws ClassNotFoundException
     {
         return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter(mongoDbFactory(), customConversions(),
-                        mongoMappingContext(customConversions())));
+                        mongoMappingContext(customConversions(), mongoManagedTypes())));
     }
 
     @Override

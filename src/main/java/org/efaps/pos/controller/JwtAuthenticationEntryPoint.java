@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,23 +18,19 @@ package org.efaps.pos.controller;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-@Component
-public class JwtAuthenticationEntryPoint
-    implements AuthenticationEntryPoint
-{
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-    @Override
-    public void commence(final HttpServletRequest request, final HttpServletResponse response,
-                         final AuthenticationException authException)
-        throws IOException
-    {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-    }
+@Component
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
+  @Override
+  public void commence(final HttpServletRequest request, final HttpServletResponse response,
+      final AuthenticationException authException) throws IOException {
+    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+  }
 }

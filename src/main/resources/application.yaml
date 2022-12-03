@@ -98,7 +98,9 @@ jwt:
 ---
 
 spring:
-  profiles: demo
+  config:
+    activate:
+      on-profile: demo
 
   data:
     mongodb:
@@ -120,6 +122,8 @@ name: POS-Demo-Backend
 ---
 
 spring:
-  profiles: embedded
+  config:
+    activate:
+      on-profile: embedded
   autoconfigure:
     exclude:

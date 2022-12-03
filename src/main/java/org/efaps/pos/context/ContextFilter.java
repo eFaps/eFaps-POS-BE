@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,6 @@ package org.efaps.pos.context;
 import java.io.IOException;
 import java.util.Optional;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.ConfigProperties.Company;
@@ -34,37 +29,38 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 @Component
-public class ContextFilter
-    extends OncePerRequestFilter
-{
-    private static final Logger LOG = LoggerFactory.getLogger(ContextFilter.class);
+public class ContextFilter extends OncePerRequestFilter {
+  private static final Logger LOG = LoggerFactory.getLogger(ContextFilter.class);
 
-    private final ConfigProperties configProperties;
+  private final ConfigProperties configProperties;
 
-    public ContextFilter(final ConfigProperties _configProperties) {
-        configProperties = _configProperties;
+  public ContextFilter(final ConfigProperties _configProperties) {
+    configProperties = _configProperties;
+  }
+
+  @Override
+  protected void doFilterInternal(final HttpServletRequest _request, final HttpServletResponse _response,
+      final FilterChain _filterChain) throws ServletException, IOException {
+    final String companyKey = _request.getHeader("X-CONTEXT-COMPANY");
+    if (StringUtils.isNotEmpty(companyKey)) {
+      final Optional<Company> compOpt = configProperties.getCompanies()
+        .stream()
+        .filter(company -> companyKey.equals(company.getKey()))
+        .findFirst();
+      if (compOpt.isPresent()) {
+        final Company company = compOpt.get();
+        Context.get().setCompany(company);
+        MDC.put("company", company.getTenant());
+      } else {
+        LOG.debug("No company found for given X-CONTEXT-COMPANY Header", companyKey);
+      }
     }
-
-    @Override
-    protected void doFilterInternal(final HttpServletRequest _request,
-                                    final HttpServletResponse _response,
-                                    final FilterChain _filterChain)
-        throws ServletException, IOException
-    {
-       final String companyKey = _request.getHeader("X-CONTEXT-COMPANY");
-       if (StringUtils.isNotEmpty(companyKey)) {
-           final Optional<Company> compOpt = configProperties.getCompanies().stream()
-               .filter(company -> companyKey.equals(company.getKey()))
-               .findFirst();
-           if (compOpt.isPresent()) {
-               final Company company = compOpt.get();
-               Context.get().setCompany(company);
-               MDC.put("company", company.getTenant());
-           } else {
-               LOG.debug("No company found for given X-CONTEXT-COMPANY Header", companyKey);
-           }
-       }
-       _filterChain.doFilter(_request, _response);
-    }
+    _filterChain.doFilter(_request, _response);
+  }
 }

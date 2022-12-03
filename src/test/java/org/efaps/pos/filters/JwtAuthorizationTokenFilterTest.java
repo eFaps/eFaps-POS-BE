@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.util.JwtTokenUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +32,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import io.jsonwebtoken.MalformedJwtException;
+import jakarta.servlet.ServletException;
 
 public class JwtAuthorizationTokenFilterTest
 {
