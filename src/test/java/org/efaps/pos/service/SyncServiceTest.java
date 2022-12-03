@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,13 @@ import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.util.SyncServiceDeactivatedException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.MediaType;
@@ -61,25 +67,26 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
-//@SpringBootTest
-//@AutoConfigureMockMvc
-//@AutoConfigureMockRestServiceServer
+@AutoConfigureMockMvc
+@AutoConfigureMockRestServiceServer
 @ActiveProfiles(profiles = "test")
+@SpringBootTest
+@AutoConfigureDataMongo
 public class SyncServiceTest
 {
-    //@Autowired
+    @Autowired
     private MongoTemplate mongoTemplate;
 
-    //@Autowired
+    @Autowired
     private SyncService syncService;
 
-    //@Autowired
+    @Autowired
     private MockRestServiceServer server;
 
-    //@Autowired
+    @Autowired
     private ObjectMapper mapper;
 
-    //@BeforeEach
+    @BeforeEach
     public void setup()
     {
         mongoTemplate.remove(new Query(), Product.class);
