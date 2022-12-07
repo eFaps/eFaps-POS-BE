@@ -30,6 +30,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,20 +38,24 @@ import org.springframework.stereotype.Component;
 public class ApplicationStartup
     implements ApplicationListener<ApplicationReadyEvent>
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationStartup.class);
 
     private final Environment env;
     private final ConfigProperties configProperties;
+    private final TaskExecutor taskExecutor;
     private final SyncService service;
     private DemoService demoService;
 
     public ApplicationStartup(final Environment _env,
                               final ConfigProperties _configProperties,
+                              final TaskExecutor taskExecutor,
                               final SyncService _service)
     {
         env = _env;
         configProperties = _configProperties;
         service = _service;
+        this.taskExecutor = taskExecutor;
     }
 
     @Override
@@ -59,7 +64,7 @@ public class ApplicationStartup
         if (ArrayUtils.contains(env.getActiveProfiles(), "demo")) {
             service.setDeactivated(true);
             demoService.init();
-        } else if (configProperties.isSyncOnStartup()){
+        } else if (configProperties.isSyncOnStartup()) {
             if (configProperties.getCompanies().size() > 0) {
                 for (final Company company : configProperties.getCompanies()) {
                     Context.get().setCompany(company);
@@ -74,29 +79,33 @@ public class ApplicationStartup
 
     private void sync()
     {
-        try {
-            service.syncExchangeRates();
-            service.syncProducts();
-            service.syncCategories();
-            service.syncPOSs();
-            service.syncWorkspaces();
-            service.syncUsers();
-            service.syncBalance();
-            service.syncReceipts();
-            service.syncInvoices();
-            service.syncTickets();
-            service.syncSequences();
-            service.syncContacts();
-            service.syncWarehouses();
-            service.syncInventory();
-            service.syncPrinters();
-            service.syncProperties();
-            service.syncImages();
-            service.syncReports();
-            service.syncOrders();
-        } catch (final Exception e){
-            LOG.error("Catched error during startup sync", e);
-        }
+        taskExecutor.execute(() -> {
+            try {
+                service.syncExchangeRates();
+                service.syncProducts();
+                service.syncCategories();
+                service.syncPOSs();
+                service.syncWorkspaces();
+                service.syncUsers();
+                service.syncBalance();
+                service.syncReceipts();
+                service.syncInvoices();
+                service.syncTickets();
+                service.syncSequences();
+                service.syncContacts();
+                service.syncWarehouses();
+                service.syncInventory();
+                service.syncPrinters();
+                service.syncProperties();
+                service.syncImages();
+                service.syncReports();
+                service.syncOrders();
+            } catch (final Exception e) {
+                LOG.error("Catched error during startup sync", e);
+            }
+
+        });
+
     }
 
     @Autowired(required = false)
