@@ -49,6 +49,7 @@ import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Config;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.CreditNote;
+import org.efaps.pos.entity.Employee;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
@@ -856,6 +857,29 @@ public class SyncService
                 }
             }
         }
+    }
+
+    public void syncEmployees()
+        throws SyncServiceDeactivatedException
+    {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
+        LOG.info("Syncing Employees");
+        final List<Employee> employees = eFapsClient.getEmployees().stream()
+            .map(dto -> Converter.toEntity(dto))
+            .collect(Collectors.toList());
+        if (!employees.isEmpty()) {
+            final List<Employee> existingEmployees = mongoTemplate.findAll(Employee.class);
+            existingEmployees.forEach(existing -> {
+                if (!employees.stream().filter(employee -> employee.getOid().equals(existing.getOid())).findFirst()
+                                .isPresent()) {
+                    mongoTemplate.remove(existing);
+                }
+            });
+            employees.forEach(product -> mongoTemplate.save(product));
+        }
+        registerSync(StashId.EMPLOYEESYNC);
     }
 
     private void registerSync(final StashId _stashId)

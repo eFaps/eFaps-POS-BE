@@ -213,6 +213,15 @@ public class ConfigProperties
         private String configPath;
         private String balancePath;
         private String exchangeRatePath;
+        private String employeePath;
+
+        public String getEmployeePath() {
+          return employeePath;
+        }
+
+        public void setEmployeePath(String employeePath) {
+          this.employeePath = employeePath;
+        }
 
         public URI getBaseUrl()
         {

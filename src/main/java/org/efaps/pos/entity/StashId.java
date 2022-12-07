@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ public enum StashId
     WORKSPACESYNC("org.efaps.pos.sync.Workspace"),
     BALANCESYNC("org.efaps.pos.sync.Balance"),
     EXCHANGERATES("org.efaps.pos.ExchangeRates"),
-    EXCHANGERATESSYNC("org.efaps.pos.sync.ExchangeRates");
+    EXCHANGERATESSYNC("org.efaps.pos.sync.ExchangeRates"),
+    EMPLOYEESYNC("org.efaps.pos.sync.Employee");
 
     private final String key;
 

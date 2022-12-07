@@ -29,6 +29,7 @@ import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.CreditNoteDto;
+import org.efaps.pos.dto.EmployeeDto;
 import org.efaps.pos.dto.ExchangeRateDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
@@ -252,6 +253,23 @@ public class EFapsClient
         }
         return ret;
     }
+
+    public List<EmployeeDto> getEmployees()
+    {
+      List<EmployeeDto> ret = new ArrayList<>();
+        try {
+            final RequestEntity<?> requestEntity = get(getEFapsConfig().getEmployeePath());
+            final ResponseEntity<List<EmployeeDto>> response = getRestTemplate().exchange(requestEntity,
+                            new ParameterizedTypeReference<List<EmployeeDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
 
     public List<ExchangeRateDto> getExchangeRates()
     {

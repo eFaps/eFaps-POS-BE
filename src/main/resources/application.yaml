@@ -55,6 +55,7 @@ efaps:
   configPath: /servlet/rest/pos/{identifier}/config
   balancePath: /servlet/rest/pos/{identifier}/balance
   exchangeRatePath: /servlet/rest/pos/{identifier}/exchange-rates
+  employeePath: /servlet/rest/pos/{identifier}/employees
 
 auth:
   user: Administrator

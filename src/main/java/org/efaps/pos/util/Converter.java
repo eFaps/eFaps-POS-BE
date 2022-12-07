@@ -33,6 +33,7 @@ import org.efaps.pos.dto.DiscountDto;
 import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.DocumentHeadDto;
 import org.efaps.pos.dto.DocumentHeadDto.Builder;
+import org.efaps.pos.dto.EmployeeDto;
 import org.efaps.pos.dto.FloorDto;
 import org.efaps.pos.dto.IndicationDto;
 import org.efaps.pos.dto.IndicationSetDto;
@@ -77,6 +78,7 @@ import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Discount;
+import org.efaps.pos.entity.Employee;
 import org.efaps.pos.entity.Indication;
 import org.efaps.pos.entity.IndicationSet;
 import org.efaps.pos.entity.InventoryEntry;
@@ -1441,6 +1443,20 @@ public final class Converter
                         .withAmount(entity.getAmount())
                         .withCurrency(entity.getCurrency())
                         .withEntryType(entity.getEntryType())
+                        .build();
+    }
+
+    public static Employee toEntity(final EmployeeDto dto)
+    {
+        return new Employee().setOid(dto.getOid()).setFirstName(dto.getFirstName()).setSurName(dto.getSurName());
+    }
+
+    public static EmployeeDto toDto(final Employee entity)
+    {
+        return EmployeeDto.builder()
+                        .withOID(entity.getOid())
+                        .withFirstName(entity.getFirstName())
+                        .withSurName(entity.getSurName())
                         .build();
     }
 }
