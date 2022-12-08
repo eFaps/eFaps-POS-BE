@@ -30,6 +30,7 @@ import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataM
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
@@ -63,7 +64,7 @@ public class ContactServiceTest
         mongoTemplate.save(new Contact().setOid("1.2"));
         mongoTemplate.save(new Contact().setOid("1.3"));
 
-        final List<Contact> contacts = contactService.getContacts();
+        final List<Contact> contacts = contactService.getContacts(PageRequest.of(0, 10)).getContent();
         assertEquals(3, contacts.size());
     }
 
