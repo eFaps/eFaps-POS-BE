@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.repository.ContactRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -47,9 +49,9 @@ public class ContactService
         return contactRepository.findOneByOid(_key).orElse(contactRepository.findById(_key).orElse(null));
     }
 
-    public List<Contact> getContacts()
+    public Page<Contact> getContacts(final Pageable pageable)
     {
-        return contactRepository.findAll();
+        return contactRepository.findAll(pageable);
     }
 
     public List<Contact> findContacts(final String _term, final boolean _nameSearch)

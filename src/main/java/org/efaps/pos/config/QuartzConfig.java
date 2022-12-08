@@ -150,7 +150,7 @@ public class QuartzConfig
     }
 
     @Bean
-    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncEmployees.interval.interval:0} > 0}")
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncEmployees.interval:0} > 0}")
     public MethodInvokingJobDetailFactoryBean syncEmployeesJobDetailFactoryBean()
     {
         final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
@@ -166,7 +166,7 @@ public class QuartzConfig
     public SimpleTriggerFactoryBean syncEmployeesTriggerFactoryBean()
     {
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncExchangeRatesJobDetailFactoryBean().getObject());
+        stFactory.setJobDetail(syncEmployeesJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(180 * 1000);
         stFactory.setRepeatInterval(Math.abs(syncEmployeesInterval) * 1000);
         return stFactory;

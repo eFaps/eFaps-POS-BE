@@ -115,7 +115,7 @@ public class SecurityConfig
                         .and()
                         .ignoring().requestMatchers(HttpMethod.OPTIONS)
                         .and()
-                        .ignoring().requestMatchers("/socket/**");
+                        .ignoring().requestMatchers("/socket");
     }
 
     private String[] getIgnore()

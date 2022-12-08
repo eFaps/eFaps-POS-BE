@@ -23,6 +23,8 @@ import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.util.Converter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,11 +52,8 @@ public class ContactController
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ContactDto> getContacts()
-    {
-        return service.getContacts().stream()
-                        .map(contact -> Converter.toDto(contact))
-                        .collect(Collectors.toList());
+    public Page<ContactDto> getContacts(final Pageable pageable) {
+      return service.getContacts(pageable).map(contact -> Converter.toDto(contact));
     }
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
