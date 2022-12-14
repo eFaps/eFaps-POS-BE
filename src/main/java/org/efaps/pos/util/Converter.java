@@ -156,6 +156,7 @@ public final class Converter
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
                         .setExchangeRate(_dto.getExchangeRate())
+                        .setPayableAmount(_dto.getPayableAmount())
                         .setContactOid(_dto.getContactOid())
                         .setWorkspaceOid(_dto.getWorkspaceOid())
                         .setTaxes(_dto.getTaxes() == null
@@ -191,6 +192,7 @@ public final class Converter
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
                         .setExchangeRate(_dto.getExchangeRate())
+                        .setPayableAmount(_dto.getPayableAmount())
                         .setContactOid(_dto.getContactOid())
                         .setWorkspaceOid(_dto.getWorkspaceOid())
                         .setTaxes(_dto.getTaxes() == null
@@ -226,6 +228,7 @@ public final class Converter
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
                         .setExchangeRate(_dto.getExchangeRate())
+                        .setPayableAmount(_dto.getPayableAmount())
                         .setContactOid(_dto.getContactOid())
                         .setWorkspaceOid(_dto.getWorkspaceOid())
                         .setTaxes(_dto.getTaxes() == null
@@ -262,6 +265,7 @@ public final class Converter
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
                         .setExchangeRate(_dto.getExchangeRate())
+                        .setPayableAmount(_dto.getPayableAmount())
                         .setContactOid(_dto.getContactOid())
                         .setWorkspaceOid(_dto.getWorkspaceOid())
                         .setTaxes(_dto.getTaxes() == null
@@ -300,6 +304,7 @@ public final class Converter
                         .setNetTotal(_dto.getNetTotal())
                         .setCrossTotal(_dto.getCrossTotal())
                         .setExchangeRate(_dto.getExchangeRate())
+                        .setPayableAmount(_dto.getPayableAmount())
                         .setStatus(_dto.getStatus())
                         .setTaxes(_dto.getTaxes() == null
                                         ? null
@@ -785,6 +790,7 @@ public final class Converter
                         .withStatus(_entity.getStatus())
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
+                        .withPayableAmount(_entity.getPayableAmount())
                         .withTaxes(_entity.getTaxes() == null
                                         ? null
                                         : _entity.getTaxes().stream()
@@ -844,6 +850,7 @@ public final class Converter
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withExchangeRate(_entity.getExchangeRate())
+                        .withPayableAmount(_entity.getPayableAmount())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
@@ -878,6 +885,7 @@ public final class Converter
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withExchangeRate(_entity.getExchangeRate())
+                        .withPayableAmount(_entity.getPayableAmount())
                         .withStatus(_entity.getStatus())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
@@ -913,6 +921,7 @@ public final class Converter
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withExchangeRate(_entity.getExchangeRate())
+                        .withPayableAmount(_entity.getPayableAmount())
                         .withStatus(_entity.getStatus())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
@@ -949,6 +958,7 @@ public final class Converter
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withExchangeRate(_entity.getExchangeRate())
+                        .withPayableAmount(_entity.getPayableAmount())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
@@ -999,6 +1009,7 @@ public final class Converter
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
                         .withExchangeRate(_entity.getExchangeRate())
+                        .withPayableAmount(_entity.getPayableAmount())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
@@ -1027,6 +1038,7 @@ public final class Converter
                         .withStatus(_entity.getStatus())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withExchangeRate(_entity.getExchangeRate())
+                        .withPayableAmount(_entity.getPayableAmount())
                         .withNetTotal(_entity.getNetTotal())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
@@ -1062,6 +1074,7 @@ public final class Converter
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
                         .withExchangeRate(_entity.getExchangeRate())
+                        .withPayableAmount(_entity.getPayableAmount())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
@@ -1096,6 +1109,7 @@ public final class Converter
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
                         .withExchangeRate(_entity.getExchangeRate())
+                        .withPayableAmount(_entity.getPayableAmount())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
@@ -1130,6 +1144,7 @@ public final class Converter
                         .withCrossTotal(_entity.getCrossTotal())
                         .withNetTotal(_entity.getNetTotal())
                         .withExchangeRate(_entity.getExchangeRate())
+                        .withPayableAmount(_entity.getPayableAmount())
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null
@@ -1408,6 +1423,7 @@ public final class Converter
                         .withNetTotal(_projection.getNetTotal())
                         .withCurrency(_projection.getCurrency())
                         .withExchangeRate(_projection.getExchangeRate())
+                        .withPayableAmount(_projection.getPayableAmount())
                         .withDate(_projection.getDate())
                         .withStatus(_projection.getStatus())
                         .withOrder(order)
@@ -1423,6 +1439,7 @@ public final class Converter
                         .withNetTotal(_projection.getNetTotal())
                         .withCurrency(_projection.getCurrency())
                         .withExchangeRate(_projection.getExchangeRate())
+                        .withPayableAmount(_projection.getPayableAmount())
                         .withDate(_projection.getDate())
                         .withStatus(_projection.getStatus())
                         .build();

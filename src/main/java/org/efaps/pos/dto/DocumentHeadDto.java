@@ -27,6 +27,7 @@ public class DocumentHeadDto
     private final BigDecimal crossTotal;
     private final Currency currency;
     private final BigDecimal exchangeRate;
+    private final BigDecimal payableAmount;
     private final LocalDate date;
     private final DocStatus status;
 
@@ -38,6 +39,7 @@ public class DocumentHeadDto
         crossTotal = _builder.crossTotal;
         currency = _builder.currency;
         exchangeRate = _builder.exchangeRate;
+        payableAmount = _builder.payableAmount;
         date = _builder.date;
         status = _builder.status;
     }
@@ -72,6 +74,10 @@ public class DocumentHeadDto
         return exchangeRate;
     }
 
+    public BigDecimal getPayableAmount() {
+      return payableAmount;
+    }
+
     public LocalDate getDate()
     {
         return date;
@@ -90,6 +96,7 @@ public class DocumentHeadDto
         private BigDecimal crossTotal;
         private Currency currency;
         private BigDecimal exchangeRate;
+        private BigDecimal payableAmount;
         private LocalDate date;
         private DocStatus status;
 
@@ -132,6 +139,13 @@ public class DocumentHeadDto
         public S withExchangeRate(final BigDecimal _exchangeRate)
         {
             exchangeRate = _exchangeRate;
+            return (S) this;
+        }
+
+        @SuppressWarnings("unchecked")
+        public S withPayableAmount(final BigDecimal _payableAmount)
+        {
+            payableAmount = _payableAmount;
             return (S) this;
         }
 

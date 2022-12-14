@@ -34,6 +34,7 @@ public class DocumentHead
     private BigDecimal crossTotal;
     private Currency currency;
     private BigDecimal exchangeRate;
+    private BigDecimal payableAmount;
     private LocalDate date;
     private DocStatus status;
 
@@ -117,6 +118,14 @@ public class DocumentHead
     public void setExchangeRate(final BigDecimal exchangeRate)
     {
         this.exchangeRate = exchangeRate;
+    }
+
+    public BigDecimal getPayableAmount() {
+      return payableAmount;
+    }
+
+    public void setPayableAmount(BigDecimal payableAmount) {
+      this.payableAmount = payableAmount;
     }
 
 }

@@ -317,6 +317,7 @@ public class DocumentService
     private void sanitizeDecimals(final AbstractPayableDocument<?> _payable)
     {
         _payable.setNetTotal(round(_payable.getNetTotal()));
+        _payable.setPayableAmount(round(_payable.getPayableAmount()));
         _payable.setCrossTotal(round(_payable.getCrossTotal()));
         _payable.getTaxes().stream()
                         .forEach(taxEntry -> sanitizeDecimals(taxEntry));

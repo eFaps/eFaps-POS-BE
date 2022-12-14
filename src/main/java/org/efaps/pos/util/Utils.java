@@ -22,6 +22,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
+import org.efaps.pos.dto.WorkspaceFlag;
+
 public final class Utils
 {
 
@@ -48,5 +50,9 @@ public final class Utils
             ret = _localDateTime.atOffset(ZonedDateTime.now().getOffset()).withOffsetSameInstant(ZoneOffset.UTC);
         }
         return ret;
+    }
+
+    public static boolean hasFlag(int value, WorkspaceFlag flag) {
+      return (value & 1 << flag.bitIndex) != 0;
     }
 }

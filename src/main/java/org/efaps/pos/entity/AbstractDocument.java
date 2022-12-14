@@ -48,6 +48,7 @@ public abstract class AbstractDocument<T>
     private BigDecimal netTotal;
     private BigDecimal crossTotal;
     private BigDecimal exchangeRate;
+    private BigDecimal payableAmount;
     private Set<TaxEntry> taxes;
     private String contactOid;
     private String workspaceOid;
@@ -187,6 +188,17 @@ public abstract class AbstractDocument<T>
     {
         this.exchangeRate = exchangeRate;
         return (T) this;
+    }
+
+    public BigDecimal getPayableAmount() {
+      return payableAmount;
+    }
+
+    @SuppressWarnings("unchecked")
+    public  T setPayableAmount(BigDecimal payableAmount)
+    {
+      this.payableAmount = payableAmount;
+      return (T) this;
     }
 
     public Set<TaxEntry> getTaxes()
