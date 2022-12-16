@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ public abstract class AbstractDocument<T>
     private String workspaceOid;
     private Discount discount;
     private String note;
+    private Set<EmployeeRelation> employeeRelations;
 
     @CreatedBy
     private String user;
@@ -190,15 +191,16 @@ public abstract class AbstractDocument<T>
         return (T) this;
     }
 
-    public BigDecimal getPayableAmount() {
-      return payableAmount;
+    public BigDecimal getPayableAmount()
+    {
+        return payableAmount;
     }
 
     @SuppressWarnings("unchecked")
-    public  T setPayableAmount(BigDecimal payableAmount)
+    public T setPayableAmount(BigDecimal payableAmount)
     {
-      this.payableAmount = payableAmount;
-      return (T) this;
+        this.payableAmount = payableAmount;
+        return (T) this;
     }
 
     public Set<TaxEntry> getTaxes()
@@ -299,6 +301,18 @@ public abstract class AbstractDocument<T>
     public void setLastModifiedDate(final Instant lastModifiedDate)
     {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Set<EmployeeRelation> getEmployeeRelations()
+    {
+        return employeeRelations;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setEmployeeRelations(Set<EmployeeRelation> employeeRelations)
+    {
+        this.employeeRelations = employeeRelations;
+        return (T) this;
     }
 
     @Override

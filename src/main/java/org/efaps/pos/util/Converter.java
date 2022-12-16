@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.efaps.pos.dto.AbstractDocumentDto;
+import org.efaps.pos.dto.AbstractPayableDocumentDto;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BarcodeDto;
 import org.efaps.pos.dto.CardDto;
@@ -34,6 +36,7 @@ import org.efaps.pos.dto.DocItemDto;
 import org.efaps.pos.dto.DocumentHeadDto;
 import org.efaps.pos.dto.DocumentHeadDto.Builder;
 import org.efaps.pos.dto.EmployeeDto;
+import org.efaps.pos.dto.EmployeeRelationDto;
 import org.efaps.pos.dto.FloorDto;
 import org.efaps.pos.dto.IndicationDto;
 import org.efaps.pos.dto.IndicationSetDto;
@@ -70,6 +73,7 @@ import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
+import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Barcode;
 import org.efaps.pos.entity.CashEntry;
@@ -79,6 +83,7 @@ import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Discount;
 import org.efaps.pos.entity.Employee;
+import org.efaps.pos.entity.EmployeeRelation;
 import org.efaps.pos.entity.Indication;
 import org.efaps.pos.entity.IndicationSet;
 import org.efaps.pos.entity.InventoryEntry;
@@ -143,35 +148,11 @@ public final class Converter
                         .setId(_dto.getId()));
     }
 
-    public static Receipt mapToEntity(final PosReceiptDto _dto, final Receipt receipt)
+    public static Receipt mapToEntity(final PosReceiptDto dto,
+                                      final Receipt receipt)
     {
-        return receipt.setOid(_dto.getOid())
-                        .setNumber(_dto.getNumber())
-                        .setCurrency(_dto.getCurrency())
-                        .setStatus(_dto.getStatus())
-                        .setDate(_dto.getDate())
-                        .setItems(_dto.getItems().stream()
-                                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
-                                        .collect(Collectors.toSet()))
-                        .setNetTotal(_dto.getNetTotal())
-                        .setCrossTotal(_dto.getCrossTotal())
-                        .setExchangeRate(_dto.getExchangeRate())
-                        .setPayableAmount(_dto.getPayableAmount())
-                        .setContactOid(_dto.getContactOid())
-                        .setWorkspaceOid(_dto.getWorkspaceOid())
-                        .setTaxes(_dto.getTaxes() == null
-                                        ? null
-                                        : _dto.getTaxes().stream()
-                                                        .map(_tax -> Converter.toEntity(_tax))
-                                                        .collect(Collectors.toSet()))
-                        .setPayments(_dto.getPayments() == null
-                                        ? null
-                                        : _dto.getPayments().stream()
-                                                        .map(_payment -> Converter.toEntity(_payment))
-                                                        .collect(Collectors.toSet()))
-                        .setBalanceOid(_dto.getBalanceOid())
-                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
-                        .setNote(_dto.getNote());
+        map2DocEntity(dto, receipt);
+        return receipt.setDiscount(dto.getDiscount() == null ? null : toEntity(dto.getDiscount()));
     }
 
     public static Invoice toEntity(final PosInvoiceDto _dto)
@@ -179,35 +160,11 @@ public final class Converter
         return mapToEntity(_dto, new Invoice().setId(_dto.getId()));
     }
 
-    public static Invoice mapToEntity(final PosInvoiceDto _dto, final Invoice invoice)
+    public static Invoice mapToEntity(final PosInvoiceDto dto,
+                                      final Invoice invoice)
     {
-        return invoice.setOid(_dto.getOid())
-                        .setNumber(_dto.getNumber())
-                        .setCurrency(_dto.getCurrency())
-                        .setStatus(_dto.getStatus())
-                        .setDate(_dto.getDate())
-                        .setItems(_dto.getItems().stream()
-                                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
-                                        .collect(Collectors.toSet()))
-                        .setNetTotal(_dto.getNetTotal())
-                        .setCrossTotal(_dto.getCrossTotal())
-                        .setExchangeRate(_dto.getExchangeRate())
-                        .setPayableAmount(_dto.getPayableAmount())
-                        .setContactOid(_dto.getContactOid())
-                        .setWorkspaceOid(_dto.getWorkspaceOid())
-                        .setTaxes(_dto.getTaxes() == null
-                                        ? null
-                                        : _dto.getTaxes().stream()
-                                                        .map(_tax -> Converter.toEntity(_tax))
-                                                        .collect(Collectors.toSet()))
-                        .setPayments(_dto.getPayments() == null
-                                        ? null
-                                        : _dto.getPayments().stream()
-                                                        .map(_payment -> Converter.toEntity(_payment))
-                                                        .collect(Collectors.toSet()))
-                        .setBalanceOid(_dto.getBalanceOid())
-                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
-                        .setNote(_dto.getNote());
+        map2DocEntity(dto, invoice);
+        return invoice.setDiscount(dto.getDiscount() == null ? null : toEntity(dto.getDiscount()));
     }
 
     public static Ticket toEntity(final PosTicketDto _dto)
@@ -215,35 +172,11 @@ public final class Converter
         return mapToEntity(_dto, new Ticket().setId(_dto.getId()));
     }
 
-    public static Ticket mapToEntity(final PosTicketDto _dto, final Ticket ticket)
+    public static Ticket mapToEntity(final PosTicketDto dto,
+                                     final Ticket ticket)
     {
-        return ticket.setOid(_dto.getOid())
-                        .setNumber(_dto.getNumber())
-                        .setCurrency(_dto.getCurrency())
-                        .setStatus(_dto.getStatus())
-                        .setDate(_dto.getDate())
-                        .setItems(_dto.getItems().stream()
-                                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
-                                        .collect(Collectors.toSet()))
-                        .setNetTotal(_dto.getNetTotal())
-                        .setCrossTotal(_dto.getCrossTotal())
-                        .setExchangeRate(_dto.getExchangeRate())
-                        .setPayableAmount(_dto.getPayableAmount())
-                        .setContactOid(_dto.getContactOid())
-                        .setWorkspaceOid(_dto.getWorkspaceOid())
-                        .setTaxes(_dto.getTaxes() == null
-                                        ? null
-                                        : _dto.getTaxes().stream()
-                                                        .map(_tax -> Converter.toEntity(_tax))
-                                                        .collect(Collectors.toSet()))
-                        .setPayments(_dto.getPayments() == null
-                                        ? null
-                                        : _dto.getPayments().stream()
-                                                        .map(_payment -> Converter.toEntity(_payment))
-                                                        .collect(Collectors.toSet()))
-                        .setBalanceOid(_dto.getBalanceOid())
-                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
-                        .setNote(_dto.getNote());
+        map2DocEntity(dto, ticket);
+        return ticket.setDiscount(dto.getDiscount() == null ? null : toEntity(dto.getDiscount()));
     }
 
     public static CreditNote toEntity(final PosCreditNoteDto _dto)
@@ -251,37 +184,11 @@ public final class Converter
         return mapToEntity(_dto, new CreditNote().setId(_dto.getId()));
     }
 
-    public static CreditNote mapToEntity(final PosCreditNoteDto _dto, final CreditNote creditNote)
+    public static CreditNote mapToEntity(final PosCreditNoteDto dto,
+                                         final CreditNote creditNote)
     {
-        return creditNote
-                        .setOid(_dto.getOid())
-                        .setNumber(_dto.getNumber())
-                        .setCurrency(_dto.getCurrency())
-                        .setStatus(_dto.getStatus())
-                        .setDate(_dto.getDate())
-                        .setItems(_dto.getItems().stream()
-                                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
-                                        .collect(Collectors.toSet()))
-                        .setNetTotal(_dto.getNetTotal())
-                        .setCrossTotal(_dto.getCrossTotal())
-                        .setExchangeRate(_dto.getExchangeRate())
-                        .setPayableAmount(_dto.getPayableAmount())
-                        .setContactOid(_dto.getContactOid())
-                        .setWorkspaceOid(_dto.getWorkspaceOid())
-                        .setTaxes(_dto.getTaxes() == null
-                                        ? null
-                                        : _dto.getTaxes().stream()
-                                                        .map(_tax -> Converter.toEntity(_tax))
-                                                        .collect(Collectors.toSet()))
-                        .setPayments(_dto.getPayments() == null
-                                        ? null
-                                        : _dto.getPayments().stream()
-                                                        .map(_payment -> Converter.toEntity(_payment))
-                                                        .collect(Collectors.toSet()))
-                        .setBalanceOid(_dto.getBalanceOid())
-                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
-                        .setNote(_dto.getNote())
-                        .setSourceDocOid(_dto.getSourceDocOid());
+        map2DocEntity(dto, creditNote);
+        return creditNote.setDiscount(dto.getDiscount() == null ? null : toEntity(dto.getDiscount()));
     }
 
     public static Order toEntity(final PosOrderDto _dto)
@@ -289,33 +196,14 @@ public final class Converter
         return mapToEntity(_dto, new Order().setId(_dto.getId()));
     }
 
-    public static Order mapToEntity(final PosOrderDto _dto, final Order order)
+    public static Order mapToEntity(final PosOrderDto dto,
+                                    final Order order)
     {
-        return order
-                        .setOid(_dto.getOid())
-                        .setNumber(_dto.getNumber())
-                        .setContactOid(_dto.getContactOid())
-                        .setCurrency(_dto.getCurrency())
-                        .setDate(_dto.getDate())
-                        .setCurrency(_dto.getCurrency())
-                        .setItems(_dto.getItems().stream()
-                                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
-                                        .collect(Collectors.toSet()))
-                        .setNetTotal(_dto.getNetTotal())
-                        .setCrossTotal(_dto.getCrossTotal())
-                        .setExchangeRate(_dto.getExchangeRate())
-                        .setPayableAmount(_dto.getPayableAmount())
-                        .setStatus(_dto.getStatus())
-                        .setTaxes(_dto.getTaxes() == null
-                                        ? null
-                                        : _dto.getTaxes().stream()
-                                                        .map(_tax -> Converter.toEntity(_tax))
-                                                        .collect(Collectors.toSet()))
-                        .setSpot(_dto.getSpot() == null ? null : toEntity(_dto.getSpot()))
-                        .setPayableOid(_dto.getPayableOid())
-                        .setDiscount(_dto.getDiscount() == null ? null : toEntity(_dto.getDiscount()))
-                        .setNote(_dto.getNote())
-                        .setShoutout(_dto.getShoutout());
+        map2DocEntity(dto, order);
+        return order.setSpot(dto.getSpot() == null ? null : toEntity(dto.getSpot()))
+                        .setPayableOid(dto.getPayableOid())
+                        .setDiscount(dto.getDiscount() == null ? null : toEntity(dto.getDiscount()))
+                        .setShoutout(dto.getShoutout());
     }
 
     public static Spot toEntity(final PosSpotDto _dto)
@@ -476,9 +364,10 @@ public final class Converter
                                         .withCrossPrice(_entity.getCrossPrice())
                                         .withCurrency(_entity.getCurrency())
                                         .withCategories(_entity.getCategories() == null
-                                        ? null : _entity.getCategories().stream()
-                                                        .map(prod2cat -> toDto(prod2cat))
-                                                        .collect(Collectors.toSet()))
+                                                        ? null
+                                                        : _entity.getCategories().stream()
+                                                                        .map(prod2cat -> toDto(prod2cat))
+                                                                        .collect(Collectors.toSet()))
 
                                         .withTaxes(_entity.getTaxes() == null
                                                         ? null
@@ -801,6 +690,11 @@ public final class Converter
                         .withNote(_entity.getNote())
                         .withPayableOid(_entity.getPayableOid())
                         .withShoutout(_entity.getShoutout())
+                        .withEmployeeRelations(_entity.getEmployeeRelations() == null
+                                        ? Collections.emptySet()
+                                        : _entity.getEmployeeRelations().stream()
+                                                        .map(relation -> toDto(relation))
+                                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -871,6 +765,11 @@ public final class Converter
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .withNote(_entity.getNote())
+                        .withEmployeeRelations(_entity.getEmployeeRelations() == null
+                                        ? Collections.emptySet()
+                                        : _entity.getEmployeeRelations().stream()
+                                                        .map(relation -> toDto(relation))
+                                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -907,6 +806,11 @@ public final class Converter
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .withNote(_entity.getNote())
+                        .withEmployeeRelations(_entity.getEmployeeRelations() == null
+                                        ? Collections.emptySet()
+                                        : _entity.getEmployeeRelations().stream()
+                                                        .map(relation -> toDto(relation))
+                                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -943,6 +847,11 @@ public final class Converter
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .withNote(_entity.getNote())
+                        .withEmployeeRelations(_entity.getEmployeeRelations() == null
+                                        ? Collections.emptySet()
+                                        : _entity.getEmployeeRelations().stream()
+                                                        .map(relation -> toDto(relation))
+                                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -980,6 +889,11 @@ public final class Converter
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .withNote(_entity.getNote())
                         .withSourceDocOid(_entity.getSourceDocOid())
+                        .withEmployeeRelations(_entity.getEmployeeRelations() == null
+                                        ? Collections.emptySet()
+                                        : _entity.getEmployeeRelations().stream()
+                                                        .map(relation -> toDto(relation))
+                                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -1024,6 +938,11 @@ public final class Converter
                                                         .collect(Collectors.toSet()))
                         .withPayableOid(_entity.getPayableOid())
                         .withNote(_entity.getNote())
+                        .withEmployeeRelations(_entity.getEmployeeRelations() == null
+                                        ? Collections.emptySet()
+                                        : _entity.getEmployeeRelations().stream()
+                                                        .map(relation -> toDto(relation))
+                                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -1059,6 +978,11 @@ public final class Converter
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withNote(_entity.getNote())
+                        .withEmployeeRelations(_entity.getEmployeeRelations() == null
+                                        ? Collections.emptySet()
+                                        : _entity.getEmployeeRelations().stream()
+                                                        .map(relation -> toDto(relation))
+                                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -1094,6 +1018,11 @@ public final class Converter
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withNote(_entity.getNote())
+                        .withEmployeeRelations(_entity.getEmployeeRelations() == null
+                                        ? Collections.emptySet()
+                                        : _entity.getEmployeeRelations().stream()
+                                                        .map(relation -> toDto(relation))
+                                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -1129,6 +1058,11 @@ public final class Converter
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withNote(_entity.getNote())
+                        .withEmployeeRelations(_entity.getEmployeeRelations() == null
+                                        ? Collections.emptySet()
+                                        : _entity.getEmployeeRelations().stream()
+                                                        .map(relation -> toDto(relation))
+                                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -1165,6 +1099,11 @@ public final class Converter
                         .withBalanceOid(_entity.getBalanceOid())
                         .withNote(_entity.getNote())
                         .withSourceDocOid(_entity.getSourceDocOid())
+                        .withEmployeeRelations(_entity.getEmployeeRelations() == null
+                                        ? Collections.emptySet()
+                                        : _entity.getEmployeeRelations().stream()
+                                                        .map(relation -> toDto(relation))
+                                                        .collect(Collectors.toSet()))
                         .build();
     }
 
@@ -1393,7 +1332,8 @@ public final class Converter
         return toDto(_entity, null);
     }
 
-    public static CollectOrderDto toDto(final CollectOrder _entity, final Map<String, Object> additionalInfo)
+    public static CollectOrderDto toDto(final CollectOrder _entity,
+                                        final Map<String, Object> additionalInfo)
     {
         return _entity == null
                         ? null
@@ -1475,5 +1415,61 @@ public final class Converter
                         .withFirstName(entity.getFirstName())
                         .withSurName(entity.getSurName())
                         .build();
+    }
+
+    public static EmployeeRelation toEntity(EmployeeRelationDto dto)
+    {
+        return new EmployeeRelation()
+                        .setEmployeeOid(dto.getEmployeeOid())
+                        .setType(dto.getType());
+    }
+
+    public static EmployeeRelationDto toDto(EmployeeRelation entity)
+    {
+        return EmployeeRelationDto.builder()
+                        .withEmployeeOid(entity.getEmployeeOid())
+                        .withType(entity.getType())
+                        .build();
+    }
+
+    public static void map2DocEntity(AbstractDocumentDto dto,
+                                     AbstractDocument<?> entity)
+    {
+        entity.setOid(dto.getOid());
+        entity.setNumber(dto.getNumber());
+        entity.setCurrency(dto.getCurrency());
+
+        entity.setStatus(dto.getStatus());
+        entity.setDate(dto.getDate());
+        entity.setItems(dto.getItems().stream()
+                        .map(_item -> Converter.toEntity((PosDocItemDto) _item))
+                        .collect(Collectors.toSet()));
+        entity.setNetTotal(dto.getNetTotal());
+        entity.setCrossTotal(dto.getCrossTotal());
+        entity.setExchangeRate(dto.getExchangeRate());
+        entity.setPayableAmount(dto.getPayableAmount());
+        entity.setContactOid(dto.getContactOid());
+        entity.setWorkspaceOid(dto.getWorkspaceOid());
+        entity.setTaxes(dto.getTaxes() == null
+                        ? null
+                        : dto.getTaxes().stream()
+                                        .map(_tax -> Converter.toEntity(_tax))
+                                        .collect(Collectors.toSet()));
+        entity.setEmployeeRelations(dto.getEmployeeRelations() == null ? null
+                        : dto.getEmployeeRelations().stream()
+                                        .map(employeeRelation -> Converter.toEntity(employeeRelation))
+                                        .collect(Collectors.toSet()));
+        entity.setNote(dto.getNote());
+
+        if (entity instanceof AbstractPayableDocument && dto instanceof AbstractPayableDocumentDto) {
+            final var payableEntity = (AbstractPayableDocument<?>) entity;
+            final var payableDto = (AbstractPayableDocumentDto) dto;
+            payableEntity.setBalanceOid(payableDto.getBalanceOid());
+            payableEntity.setPayments(payableDto.getPayments() == null
+                            ? null
+                            : payableDto.getPayments().stream()
+                                            .map(_payment -> Converter.toEntity(_payment))
+                                            .collect(Collectors.toSet()));
+        }
     }
 }
