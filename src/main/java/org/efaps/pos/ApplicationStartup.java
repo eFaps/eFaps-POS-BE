@@ -86,7 +86,6 @@ public class ApplicationStartup
                 service.syncCategories();
                 service.syncPOSs();
                 service.syncWorkspaces();
-                service.syncUsers();
                 service.syncBalance();
                 service.syncReceipts();
                 service.syncInvoices();

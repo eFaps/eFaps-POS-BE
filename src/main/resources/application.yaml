@@ -65,32 +65,6 @@ taxpayerRegistry:
   baseUrl: https://consulta-ruc.synercom.pe
   queryPath: query
 
-staticWeb:
-  ignore:
-    - "/"
-    - "/kiosk/*"
-    - "/pos/*"
-    - "/*/*.html"
-    - "/favicon.ico"
-    - "/*/favicon.png"
-    - "/*/*.html"
-    - "/*/*.css"
-    - "/*/*.js"
-    - "/*/*.json"
-    - "/*/*.svg"
-  views:
-    "[/kiosk]": "forward:/kiosk/index.html"
-    "[/kiosk/config]": "forward:/kiosk/index.html"
-    "[/kiosk/categories]": "forward:/kiosk/index.html"
-    "[/kiosk/categories/*]": "forward:/kiosk/index.html"
-    "[/kiosk/login]": "forward:/kiosk/index.html"
-    "[/kiosk/end]": "forward:/kiosk/index.html"
-    "[/pos]": "forward:/pos/index.html"
-    "[/pos/login]": "forward:/pos/index.html"
-  resources:
-    "[/kiosk/**]": "file:/home/jan-moxter/Development/git/nodejs/synerkiosk-cashcontrol/dist/synerkiosk-cashcontrol/"
-    "[/pos/**]": "file:/home/jan-moxter/Development/git/nodejs/eFaps-POS-FE/dist/"
-
 jwt:
   secret: ThisIsNotVerySecretButItIsAtLeastLongEnoughToHaveMoreThan256Bits
   expiration: 300  #accessToken expiration in seconds
