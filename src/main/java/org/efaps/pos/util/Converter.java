@@ -181,7 +181,7 @@ public final class Converter
 
     public static CreditNote toEntity(final PosCreditNoteDto _dto)
     {
-        return mapToEntity(_dto, new CreditNote().setId(_dto.getId()));
+        return mapToEntity(_dto, new CreditNote().setId(_dto.getId()).setSourceDocOid(_dto.getSourceDocOid()));
     }
 
     public static CreditNote mapToEntity(final PosCreditNoteDto dto,
