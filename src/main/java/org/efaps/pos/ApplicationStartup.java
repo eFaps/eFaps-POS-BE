@@ -81,6 +81,7 @@ public class ApplicationStartup
     {
         taskExecutor.execute(() -> {
             try {
+                service.syncUsers();
                 service.syncExchangeRates();
                 service.syncProducts();
                 service.syncCategories();
