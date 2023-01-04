@@ -54,8 +54,7 @@ public class ProductService
 
     public List<Product> findProducts(final String _term)
     {
-        return productRepository.findByDescriptionLikeOrSkuLikeAllIgnoreCase(_term, _term,
-                        PageRequest.of(0, configProperties.getMaxSearchResult())).toList();
+        return productRepository.find(_term, PageRequest.of(0, configProperties.getMaxSearchResult())).toList();
     }
 
     public List<Product> findProductsByCategory(final String _categoryOid)

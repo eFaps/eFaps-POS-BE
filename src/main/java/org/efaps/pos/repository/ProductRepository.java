@@ -28,7 +28,12 @@ import org.springframework.data.mongodb.repository.Query;
 public interface ProductRepository
     extends MongoRepository<Product, String>
 {
-    Page<Product> findByDescriptionLikeOrSkuLikeAllIgnoreCase(String _term1, String _term2, Pageable pageable);
+    @Query("{ '$or' : ["
+        + "{ 'description' : { '$regularExpression' : { 'pattern' : '?0', 'options' : 'i'}}}, "
+        + "{ 'sku' : { '$regularExpression' : { 'pattern' : '?0', 'options' : 'i'}}},"
+        + "{ 'barcodes.code' : '?0'}"
+        + "]} ")
+    Page<Product> find(String _term1, Pageable pageable);
 
     @Query("{'categories.categoryOid':'?0'}")
     List<Product> findByCategoryOid(String _oid);
