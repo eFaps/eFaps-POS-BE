@@ -18,6 +18,7 @@
 package org.efaps.pos.client;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Base64;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +38,9 @@ public abstract class AbstractRestClient
     public AbstractRestClient(final RestTemplateBuilder _restTemplateBuilder,
                               final ConfigProperties _config,
                               final SSOClient _ssoClient) {
-        restTemplate = _restTemplateBuilder.build();
+        restTemplate = _restTemplateBuilder
+            .setReadTimeout(Duration.ofMinutes(10))
+            .build();
         config = _config;
         ssoClient = _ssoClient;
     }
