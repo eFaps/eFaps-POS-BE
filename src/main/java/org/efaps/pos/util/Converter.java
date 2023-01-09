@@ -645,8 +645,7 @@ public final class Converter
                         .withCardTypeId(_entity.getCardTypeId())
                         .withCardLabel(_entity.getCardLabel())
                         .withMappingKey(_entity.getMappingKey());
-
-         return builder.withCollectOrderId(null) .build();
+         return builder.withCollectOrderId(_entity.getCollectOrderId()).build();
     }
 
     public static PaymentDto toDto(final Payment _entity)
