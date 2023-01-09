@@ -16,14 +16,14 @@
  */
 package org.efaps.pos.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.interfaces.IReceipt;
 import org.efaps.pos.interfaces.IReceiptItem;
 import org.efaps.pos.util.Converter;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosReceiptDto.Builder.class)
 public class PosReceiptDto
@@ -77,9 +77,13 @@ public class PosReceiptDto
             return this;
         }
 
-        public Builder withPayments(final Set<PaymentDto> _payments)
+        public Builder withPayments(final Set<PosPaymentDto> _payments)
         {
-            setPayments(_payments);
+            if (_payments == null) {
+              setPayments(null);
+            } else {
+              setPayments(_payments.stream().map(posDto -> (PaymentDto) posDto).collect(Collectors.toSet()));
+            }
             return this;
         }
 

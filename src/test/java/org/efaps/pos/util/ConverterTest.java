@@ -44,6 +44,7 @@ import org.efaps.pos.dto.PosInventoryEntryDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosLayout;
 import org.efaps.pos.dto.PosOrderDto;
+import org.efaps.pos.dto.PosPaymentDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
@@ -284,7 +285,7 @@ public class ConverterTest
                         .withStatus(DocStatus.CLOSED)
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))
                         .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
-                        .withPayments(Collections.singleton(PaymentDto.builder().build()))
+                        .withPayments(Collections.singleton(PosPaymentDto.builder().build()))
                         .build();
 
         final Receipt entity = Converter.toEntity(dto);

@@ -32,10 +32,12 @@ import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.CollectStartOrderDto;
 import org.efaps.pos.dto.CollectStartResponseDto;
 import org.efaps.pos.dto.CollectorDto;
+import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.CollectOrder.State;
 import org.efaps.pos.entity.Collector;
 import org.efaps.pos.entity.Order;
+import org.efaps.pos.entity.Payment;
 import org.efaps.pos.listener.ICollectorListener;
 import org.efaps.pos.pojo.CollectorState;
 import org.efaps.pos.repository.CollectOrderRepository;
@@ -193,5 +195,12 @@ public class CollectorService
     public Optional<CollectorState> getCollectorState(final String _collectOrderId)
     {
         return Optional.ofNullable(CACHE.get(_collectOrderId));
+    }
+
+    public void add2PaymentDto(PaymentDto.Builder builder, Payment payment)
+    {
+      for (final ICollectorListener listener : collectorListener) {
+        listener.add2PaymentDto(builder, payment);
+      }
     }
 }

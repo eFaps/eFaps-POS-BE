@@ -21,7 +21,9 @@ import java.util.Map;
 
 import org.efaps.pos.dto.CollectStartOrderDto;
 import org.efaps.pos.dto.CollectorDto;
+import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.entity.CollectOrder;
+import org.efaps.pos.entity.Payment;
 import org.efaps.pos.pojo.CollectorState;
 import org.efaps.pos.service.CollectorException;
 
@@ -42,6 +44,10 @@ public interface ICollectorListener
     default void addAdditionalInfo2CollectOrderDto(final CollectOrder collectOrder,
                                                    final Map<String, Object> additionalInfo)
     {
+
+    }
+
+    default void add2PaymentDto(PaymentDto.Builder builder, Payment payment) {
 
     }
 

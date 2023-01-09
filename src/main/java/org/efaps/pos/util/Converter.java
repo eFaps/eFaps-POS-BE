@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosInventoryEntryDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
+import org.efaps.pos.dto.PosPaymentDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosSpotDto;
 import org.efaps.pos.dto.PosTicketDto;
@@ -109,6 +110,7 @@ import org.efaps.pos.entity.Workspace.Floor;
 import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.projection.DocumentHead;
 import org.efaps.pos.projection.PayableHead;
+import org.efaps.pos.service.CollectorService;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.service.InventoryService;
@@ -127,12 +129,14 @@ public final class Converter
     private final DocumentService documentService;
     private final ContactService contactService;
     private final UserService userService;
+    private final CollectorService collectorService;
 
     public Converter(final ProductService _productService,
                      final InventoryService _inventoryService,
                      final DocumentService _documentService,
                      final ContactService _contactService,
-                     final UserService _userService)
+                     final UserService _userService,
+                     final CollectorService _collectorService)
     {
         INSTANCE = this;
         productService = _productService;
@@ -140,6 +144,7 @@ public final class Converter
         documentService = _documentService;
         contactService = _contactService;
         userService = _userService;
+        collectorService = _collectorService;
     }
 
     public static Receipt toEntity(final PosReceiptDto _dto)
@@ -625,9 +630,9 @@ public final class Converter
                         .setMappingKey(_dto.getMappingKey());
     }
 
-    public static PaymentDto toDto(final Payment _entity)
+    public static PosPaymentDto toPosDto(final Payment _entity)
     {
-        return PaymentDto.builder()
+         final org.efaps.pos.dto.PosPaymentDto.Builder builder = (org.efaps.pos.dto.PosPaymentDto.Builder) PosPaymentDto.builder()
                         .withOID(_entity.getOid())
                         .withType(_entity.getType())
                         .withAmount(_entity.getAmount())
@@ -635,8 +640,24 @@ public final class Converter
                         .withExchangeRate(_entity.getExchangeRate())
                         .withCardTypeId(_entity.getCardTypeId())
                         .withCardLabel(_entity.getCardLabel())
-                        .withMappingKey(_entity.getMappingKey())
-                        .build();
+                        .withMappingKey(_entity.getMappingKey());
+
+         return builder.withCollectOrderId(null) .build();
+    }
+
+    public static PaymentDto toDto(final Payment _entity)
+    {
+      final var builder = PaymentDto.builder()
+          .withOID(_entity.getOid())
+          .withType(_entity.getType())
+          .withAmount(_entity.getAmount())
+          .withCurrency(_entity.getCurrency())
+          .withExchangeRate(_entity.getExchangeRate())
+          .withCardTypeId(_entity.getCardTypeId())
+          .withCardLabel(_entity.getCardLabel())
+          .withMappingKey(_entity.getMappingKey());
+      INSTANCE.collectorService.add2PaymentDto(builder, _entity);
+      return builder.build();
     }
 
     public static TaxEntry toEntity(final TaxEntryDto _dto)
@@ -760,7 +781,7 @@ public final class Converter
                         .withPayments(_entity.getPayments() == null
                                         ? null
                                         : _entity.getPayments().stream()
-                                                        .map(_item -> toDto(_item))
+                                                        .map(_item -> toPosDto(_item))
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
@@ -801,7 +822,7 @@ public final class Converter
                         .withPayments(_entity.getPayments() == null
                                         ? null
                                         : _entity.getPayments().stream()
-                                                        .map(_item -> toDto(_item))
+                                                        .map(_item -> toPosDto(_item))
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
@@ -842,7 +863,7 @@ public final class Converter
                         .withPayments(_entity.getPayments() == null
                                         ? null
                                         : _entity.getPayments().stream()
-                                                        .map(_item -> toDto(_item))
+                                                        .map(_item -> toPosDto(_item))
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
@@ -883,7 +904,7 @@ public final class Converter
                         .withPayments(_entity.getPayments() == null
                                         ? null
                                         : _entity.getPayments().stream()
-                                                        .map(_item -> toDto(_item))
+                                                        .map(_item -> toPosDto(_item))
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))

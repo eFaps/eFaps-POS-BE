@@ -33,6 +33,7 @@ public class Payment
     private String mappingKey;
     private Currency currency;
     private BigDecimal exchangeRate;
+    private String collectOrderId;
 
     public String getOid()
     {
@@ -120,5 +121,14 @@ public class Payment
     {
         this.exchangeRate = exchangeRate;
         return this;
+    }
+
+    public String getCollectOrderId() {
+      return collectOrderId;
+    }
+
+    public Payment setCollectOrderId(String collectOrderId) {
+      this.collectOrderId = collectOrderId;
+      return this;
     }
 }
