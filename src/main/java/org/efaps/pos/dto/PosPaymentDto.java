@@ -17,6 +17,9 @@
 
 package org.efaps.pos.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(builder = PosPaymentDto.Builder.class)
 public class PosPaymentDto extends PaymentDto {
   private final String collectOrderId;
 

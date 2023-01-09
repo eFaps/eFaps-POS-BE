@@ -619,7 +619,7 @@ public final class Converter
 
     public static Payment toEntity(final PaymentDto _dto)
     {
-        return new Payment()
+        final var payment = new Payment()
                         .setOid(_dto.getOid())
                         .setType(_dto.getType())
                         .setAmount(_dto.getAmount())
@@ -628,6 +628,10 @@ public final class Converter
                         .setCardTypeId(_dto.getCardTypeId())
                         .setCardLabel(_dto.getCardLabel())
                         .setMappingKey(_dto.getMappingKey());
+        if (_dto instanceof PosPaymentDto) {
+          payment.setCollectOrderId(((PosPaymentDto)_dto).getCollectOrderId());
+        }
+        return payment;
     }
 
     public static PosPaymentDto toPosDto(final Payment _entity)

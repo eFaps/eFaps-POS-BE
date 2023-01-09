@@ -22,6 +22,7 @@ import org.efaps.pos.interfaces.IInvoiceItem;
 import org.efaps.pos.interfaces.IReceiptItem;
 import org.efaps.pos.interfaces.ITicketItem;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosDocItemDto.Builder.class)
@@ -66,6 +67,7 @@ public class PosDocItemDto
         return new Builder();
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder
         extends AbstractDocItemDto.Builder<Builder, PosDocItemDto>
     {
