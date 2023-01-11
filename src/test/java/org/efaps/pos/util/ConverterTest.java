@@ -37,7 +37,6 @@ import org.efaps.pos.dto.IdentificationType;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.JobDto;
-import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PosInventoryEntryDto;
@@ -303,7 +302,7 @@ public class ConverterTest
                         .withStatus(DocStatus.CLOSED)
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))
                         .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
-                        .withPayments(Collections.singleton(PaymentDto.builder().build()))
+                        .withPayments(Collections.singleton(PosPaymentDto.builder().build()))
                         .build();
 
         final Invoice entity = Converter.toEntity(dto);
@@ -321,7 +320,7 @@ public class ConverterTest
                         .withStatus(DocStatus.CLOSED)
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))
                         .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
-                        .withPayments(Collections.singleton(PaymentDto.builder().build()))
+                        .withPayments(Collections.singleton(PosPaymentDto.builder().build()))
                         .build();
 
         final Ticket entity = Converter.toEntity(dto);

@@ -25,6 +25,7 @@ import org.efaps.pos.interfaces.IReference;
 import org.efaps.pos.service.ReferenceService;
 import org.efaps.pos.util.Converter;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosCreditNoteDto.Builder.class)
@@ -76,6 +77,7 @@ public class PosCreditNoteDto
         return new Builder();
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder
         extends AbstractPayableDocumentDto.Builder<Builder, PosCreditNoteDto>
     {
@@ -101,9 +103,13 @@ public class PosCreditNoteDto
             return this;
         }
 
-        public Builder withPayments(final Set<PaymentDto> _payments)
+        public Builder withPayments(final Set<PosPaymentDto> _payments)
         {
-            setPayments(_payments);
+            if (_payments == null) {
+              setPayments(null);
+            } else {
+              setPayments(_payments.stream().map(posDto -> (PaymentDto) posDto).collect(Collectors.toSet()));
+            }
             return this;
         }
 

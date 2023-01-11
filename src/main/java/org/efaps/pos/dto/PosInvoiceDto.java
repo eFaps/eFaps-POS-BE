@@ -16,14 +16,15 @@
  */
 package org.efaps.pos.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.interfaces.IInvoice;
 import org.efaps.pos.interfaces.IInvoiceItem;
 import org.efaps.pos.util.Converter;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosInvoiceDto.Builder.class)
 public class PosInvoiceDto
@@ -60,6 +61,7 @@ public class PosInvoiceDto
         return new Builder();
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder
         extends AbstractPayableDocumentDto.Builder<Builder, PosInvoiceDto>
     {
@@ -77,9 +79,13 @@ public class PosInvoiceDto
             return this;
         }
 
-        public Builder withPayments(final Set<PaymentDto> _payments)
+        public Builder withPayments(final Set<PosPaymentDto> _payments)
         {
-            setPayments(_payments);
+            if (_payments == null) {
+              setPayments(null);
+            } else {
+              setPayments(_payments.stream().map(posDto -> (PaymentDto) posDto).collect(Collectors.toSet()));
+            }
             return this;
         }
 
