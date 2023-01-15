@@ -37,6 +37,7 @@ efaps:
   baseUrl: http://localhost:8888/eFaps
   backendPath: /servlet/rest/pos/backend
   productPath: /servlet/rest/pos/{identifier}/products
+  productLimit: 500
   categoryPath: /servlet/rest/pos/{identifier}/categories
   workspacePath: /servlet/rest/pos/{identifier}/workspaces
   posPath: /servlet/rest/pos/{identifier}/poss

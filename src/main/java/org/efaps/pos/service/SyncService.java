@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -211,18 +212,27 @@ public class SyncService
             throw new SyncServiceDeactivatedException();
         }
         LOG.info("Syncing Products");
-        final List<Product> products = eFapsClient.getProducts().stream()
+        final var allProducts = new ArrayList<Product>();
+        final var limit = configProperties.getEFaps().getProductLimit();
+        var next = true;
+        var i = 0;
+        while (next) {
+          final List<Product> products = eFapsClient.getProducts(limit, i * limit).stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
-        if (!products.isEmpty()) {
+          allProducts.addAll(products);
+          i++;
+          next = !(products.size() < limit);
+        }
+        if (!allProducts.isEmpty()) {
             final List<Product> existingProducts = mongoTemplate.findAll(Product.class);
             existingProducts.forEach(existing -> {
-                if (!products.stream().filter(product -> product.getOid().equals(existing.getOid())).findFirst()
+                if (!allProducts.stream().filter(product -> product.getOid().equals(existing.getOid())).findFirst()
                                 .isPresent()) {
                     mongoTemplate.remove(existing);
                 }
             });
-            products.forEach(product -> mongoTemplate.save(product));
+            allProducts.forEach(product -> mongoTemplate.save(product));
         }
         registerSync(StashId.PRODUCTSYNC);
     }

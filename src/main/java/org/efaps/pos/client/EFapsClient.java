@@ -19,6 +19,7 @@ package org.efaps.pos.client;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -94,11 +97,14 @@ public class EFapsClient
         return ret;
     }
 
-    public List<ProductDto> getProducts()
+    public List<ProductDto> getProducts(int limit, int offset)
     {
         List<ProductDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getProductPath());
+            final var params = new LinkedMultiValueMap<String, String>();
+            params.put("limit", Collections.singletonList(String.valueOf(limit)));
+            params.put("offset", Collections.singletonList(String.valueOf(offset)));
+            final RequestEntity<?> requestEntity = get(getEFapsConfig().getProductPath(), params);
             final ResponseEntity<List<ProductDto>> response = getRestTemplate().exchange(requestEntity,
                             new ParameterizedTypeReference<List<ProductDto>>()
                             {
@@ -415,7 +421,7 @@ public class EFapsClient
         return ret;
     }
 
-    private UriComponents getUriComponent(final String _path)
+    private UriComponents getUriComponent(final String _path, MultiValueMap<String, String> params)
         throws IdentException
     {
         final String ident = getIdentifier();
@@ -424,8 +430,16 @@ public class EFapsClient
         }
         final Map<String, String> map = new HashMap<>();
         map.put("identifier", ident);
-        return UriComponentsBuilder.fromUri(getEFapsConfig().getBaseUrl()).path(_path)
+        return UriComponentsBuilder.fromUri(getEFapsConfig().getBaseUrl())
+                        .path(_path)
+                        .queryParams(params)
                         .buildAndExpand(map);
+    }
+
+    private UriComponents getUriComponent(final String _path)
+        throws IdentException
+    {
+        return getUriComponent(_path, null);
     }
 
     public RequestEntity<?> get(final URI _uri)
@@ -437,6 +451,12 @@ public class EFapsClient
         throws IdentException
     {
         return get(getUriComponent(_path).toUri());
+    }
+
+    public RequestEntity<?> get(final String _path, MultiValueMap<String, String> params)
+        throws IdentException
+    {
+        return get(getUriComponent(_path, params).toUri());
     }
 
     public <T> RequestEntity<T> post(final String _path, final T _body)

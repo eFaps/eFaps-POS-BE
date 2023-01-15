@@ -195,6 +195,7 @@ public class ConfigProperties
         private URI baseUrl;
         private String backendPath;
         private String productPath;
+        private int productLimit;
         private String categoryPath;
         private String workspacePath;
         private String posPath;
@@ -241,6 +242,16 @@ public class ConfigProperties
         public void setProductPath(final String _productPath)
         {
             productPath = _productPath;
+        }
+
+        public int getProductLimit()
+        {
+          return productLimit;
+        }
+
+        public void setProductLimit(int productLimit)
+        {
+          this.productLimit = productLimit;
         }
 
         public String getCategoryPath()
