@@ -244,11 +244,14 @@ public class EFapsClient
         return ret;
     }
 
-    public List<ContactDto> getContacts()
+    public List<ContactDto> getContacts(int limit, int offset)
     {
         List<ContactDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getContactPath());
+            final var params = new LinkedMultiValueMap<String, String>();
+            params.put("limit", Collections.singletonList(String.valueOf(limit)));
+            params.put("offset", Collections.singletonList(String.valueOf(offset)));
+            final RequestEntity<?> requestEntity = get(getEFapsConfig().getContactPath(), params);
             final ResponseEntity<List<ContactDto>> response = getRestTemplate().exchange(requestEntity,
                             new ParameterizedTypeReference<List<ContactDto>>()
                             {

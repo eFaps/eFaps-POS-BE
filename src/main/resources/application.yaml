@@ -50,6 +50,7 @@ efaps:
   checkoutPath: /servlet/checkout
   sequencePath: /servlet/rest/pos/{identifier}/sequences
   contactPath: /servlet/rest/pos/{identifier}/contacts
+  contactLimit: 500
   warehousePath: /servlet/rest/pos/{identifier}/warehouses
   inventoryPath: /servlet/rest/pos/{identifier}/inventory
   printerPath: /servlet/rest/pos/{identifier}/printers

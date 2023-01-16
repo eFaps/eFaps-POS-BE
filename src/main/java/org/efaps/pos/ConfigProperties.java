@@ -208,6 +208,7 @@ public class ConfigProperties
         private String checkoutPath;
         private String sequencePath;
         private String contactPath;
+        private int contactLimit;
         private String warehousePath;
         private String inventoryPath;
         private String printerPath;
@@ -342,6 +343,16 @@ public class ConfigProperties
         public void setContactPath(final String _contactPath)
         {
             contactPath = _contactPath;
+        }
+
+        public int getContactLimit()
+        {
+          return contactLimit;
+        }
+
+        public void setContactLimit(int contactLimit)
+        {
+          this.contactLimit = contactLimit;
         }
 
         public String getInvoicePath()

@@ -844,10 +844,19 @@ public class SyncService
 
     private void syncContactsDown()
     {
-        final List<Contact> recievedContacts = eFapsClient.getContacts().stream()
-                        .map(dto -> Converter.toEntity(dto))
-                        .collect(Collectors.toList());
-        for (final Contact contact : recievedContacts) {
+      final var allContacts = new ArrayList<Contact>();
+      final var limit = configProperties.getEFaps().getContactLimit();
+      var next = true;
+      var i = 0;
+      while (next) {
+        final List<Contact> recievedContacts = eFapsClient.getContacts(limit, i * limit).stream()
+                      .map(dto -> Converter.toEntity(dto))
+                      .collect(Collectors.toList());
+        allContacts.addAll(recievedContacts);
+        i++;
+        next = !(recievedContacts.size() < limit);
+      }
+        for (final Contact contact : allContacts) {
             final List<Contact> contacts = contactRepository.findByOid(contact.getOid());
             if (CollectionUtils.isEmpty(contacts)) {
                 contactRepository.save(contact);
@@ -859,9 +868,9 @@ public class SyncService
                 contactRepository.save(contact);
             }
         }
-        if (!recievedContacts.isEmpty()) {
+        if (!allContacts.isEmpty()) {
             for (final Contact contact : contactRepository.findAll()) {
-                if (contact.getOid() != null && !recievedContacts.stream().filter(recieved -> recieved.getOid().equals(
+                if (contact.getOid() != null && !allContacts.stream().filter(recieved -> recieved.getOid().equals(
                                 contact.getOid())).findFirst().isPresent()) {
                     contactRepository.delete(contact);
                 }
