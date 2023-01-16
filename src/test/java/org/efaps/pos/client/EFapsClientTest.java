@@ -20,9 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +32,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 //@ExtendWith(SpringExtension.class)
 //@SpringBootTest
@@ -78,7 +78,7 @@ public class EFapsClientTest
         server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
             .andRespond(withSuccess(mapper.writeValueAsString(products), MediaType.APPLICATION_JSON));
 
-        final List<ProductDto> response = client.getProducts();
+        final List<ProductDto> response = client.getProducts(0, 0);
 
         assertEquals(1, response.size());
         server.verify();
