@@ -96,7 +96,6 @@ public class ApplicationStartup
                 service.syncInvoices();
                 service.syncTickets();
                 service.syncSequences();
-                service.syncContacts();
                 service.syncWarehouses();
                 service.syncInventory();
                 service.syncPrinters();
@@ -104,6 +103,7 @@ public class ApplicationStartup
                 service.syncImages();
                 service.syncReports();
                 service.syncOrders();
+                service.syncAllContacts();
             } catch (final Exception e) {
                 LOG.error("Catched error during startup sync", e);
             }

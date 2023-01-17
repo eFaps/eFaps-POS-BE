@@ -217,7 +217,9 @@ public class SyncService
         var next = true;
         var i = 0;
         while (next) {
-          final List<Product> products = eFapsClient.getProducts(limit, i * limit).stream()
+          final var offset = i * limit;
+          LOG.info("    Batch {} - {}", offset, offset + limit);
+          final List<Product> products = eFapsClient.getProducts(limit, offset).stream()
                         .map(dto -> Converter.toEntity(dto))
                         .collect(Collectors.toList());
           allProducts.addAll(products);
@@ -804,6 +806,17 @@ public class SyncService
         registerSync(StashId.SEQUENCESYNC);
     }
 
+    public void syncAllContacts()
+        throws SyncServiceDeactivatedException
+    {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
+        LOG.info("Syncing All Contacts");
+        syncContactsUp();
+        syncContactsDown();
+    }
+
     public void syncContacts()
         throws SyncServiceDeactivatedException
     {
@@ -812,7 +825,6 @@ public class SyncService
         }
         LOG.info("Syncing Contacts");
         syncContactsUp();
-        syncContactsDown();
         registerSync(StashId.CONTACTSYNC);
     }
 
@@ -849,6 +861,8 @@ public class SyncService
       var next = true;
       var i = 0;
       while (next) {
+        final var offset = i * limit;
+        LOG.info("    Batch {} - {}", offset, offset + limit);
         final List<Contact> recievedContacts = eFapsClient.getContacts(limit, i * limit).stream()
                       .map(dto -> Converter.toEntity(dto))
                       .collect(Collectors.toList());
