@@ -83,10 +83,10 @@ public class ApplicationStartup
             try {
                 service.syncUsers();
                 service.syncExchangeRates();
-                service.syncProducts();
-                service.syncCategories();
                 service.syncPOSs();
                 service.syncWorkspaces();
+                service.syncProducts();
+                service.syncCategories();
                 service.syncBalance();
                 service.syncReceipts();
                 service.syncInvoices();
