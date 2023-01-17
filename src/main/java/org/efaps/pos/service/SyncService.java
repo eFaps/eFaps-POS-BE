@@ -21,6 +21,8 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -814,7 +816,7 @@ public class SyncService
         }
         LOG.info("Syncing All Contacts");
         syncContactsUp();
-        syncContactsDown();
+        syncContactsDown(null);
     }
 
     public void syncContacts()
@@ -825,6 +827,11 @@ public class SyncService
         }
         LOG.info("Syncing Contacts");
         syncContactsUp();
+        final var lastSync = getSync(StashId.CONTACTSYNC);
+        if (lastSync != null) {
+          final var after = OffsetDateTime.of(lastSync.getLastSync(), ZoneOffset.of("-5")).minusHours(2);
+          syncContactsDown(after);
+        }
         registerSync(StashId.CONTACTSYNC);
     }
 
@@ -854,23 +861,24 @@ public class SyncService
         }
     }
 
-    private void syncContactsDown()
+    private void syncContactsDown(OffsetDateTime after)
     {
-      final var allContacts = new ArrayList<Contact>();
-      final var limit = configProperties.getEFaps().getContactLimit();
-      var next = true;
-      var i = 0;
-      while (next) {
-        final var offset = i * limit;
-        LOG.info("    Batch {} - {}", offset, offset + limit);
-        final List<Contact> recievedContacts = eFapsClient.getContacts(limit, i * limit).stream()
-                      .map(dto -> Converter.toEntity(dto))
-                      .collect(Collectors.toList());
-        allContacts.addAll(recievedContacts);
-        i++;
-        next = !(recievedContacts.size() < limit);
-      }
-        for (final Contact contact : allContacts) {
+        final var queriedContacts = new ArrayList<Contact>();
+        final var limit = configProperties.getEFaps().getContactLimit();
+        var next = true;
+        var i = 0;
+        while (next) {
+            final var offset = i * limit;
+            LOG.info("    Batch {} - {}", offset, offset + limit);
+            final List<Contact> recievedContacts = eFapsClient.getContacts(limit, i * limit, after)
+                            .stream()
+                            .map(dto -> Converter.toEntity(dto))
+                            .collect(Collectors.toList());
+            queriedContacts.addAll(recievedContacts);
+            i++;
+            next = !(recievedContacts.size() < limit);
+        }
+        for (final Contact contact : queriedContacts) {
             final List<Contact> contacts = contactRepository.findByOid(contact.getOid());
             if (CollectionUtils.isEmpty(contacts)) {
                 contactRepository.save(contact);
@@ -882,10 +890,12 @@ public class SyncService
                 contactRepository.save(contact);
             }
         }
-        if (!allContacts.isEmpty()) {
+        if (after == null && !queriedContacts.isEmpty()) {
             for (final Contact contact : contactRepository.findAll()) {
-                if (contact.getOid() != null && !allContacts.stream().filter(recieved -> recieved.getOid().equals(
-                                contact.getOid())).findFirst().isPresent()) {
+                if (contact.getOid() != null && !queriedContacts.stream()
+                                .filter(recieved -> recieved.getOid().equals(contact.getOid()))
+                                .findFirst()
+                                .isPresent()) {
                     contactRepository.delete(contact);
                 }
             }
@@ -929,6 +939,11 @@ public class SyncService
         }
         syncInfo.setLastSync(LocalDateTime.now());
         mongoTemplate.save(syncInfo);
+    }
+
+    private SyncInfo getSync(final StashId _stashId)
+    {
+        return mongoTemplate.findById(_stashId.getKey(), SyncInfo.class);
     }
 
     public boolean isDeactivated()

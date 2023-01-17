@@ -18,6 +18,7 @@ package org.efaps.pos.client;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -244,13 +245,16 @@ public class EFapsClient
         return ret;
     }
 
-    public List<ContactDto> getContacts(int limit, int offset)
+    public List<ContactDto> getContacts(int limit, int offset, OffsetDateTime after)
     {
         List<ContactDto> ret = new ArrayList<>();
         try {
             final var params = new LinkedMultiValueMap<String, String>();
             params.put("limit", Collections.singletonList(String.valueOf(limit)));
             params.put("offset", Collections.singletonList(String.valueOf(offset)));
+            if (after != null) {
+                params.put("after", Collections.singletonList(after.toString()));
+            }
             final RequestEntity<?> requestEntity = get(getEFapsConfig().getContactPath(), params);
             final ResponseEntity<List<ContactDto>> response = getRestTemplate().exchange(requestEntity,
                             new ParameterizedTypeReference<List<ContactDto>>()
