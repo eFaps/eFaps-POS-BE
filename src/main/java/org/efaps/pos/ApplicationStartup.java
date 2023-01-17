@@ -79,8 +79,12 @@ public class ApplicationStartup
 
     private void sync()
     {
-        taskExecutor.execute(() -> {
+      final var company = Context.get().getCompany();
+      taskExecutor.execute(() -> {
             try {
+                if (company != null) {
+                    Context.get().setCompany(company);
+                }
                 service.syncUsers();
                 service.syncExchangeRates();
                 service.syncPOSs();
@@ -103,9 +107,7 @@ public class ApplicationStartup
             } catch (final Exception e) {
                 LOG.error("Catched error during startup sync", e);
             }
-
         });
-
     }
 
     @Autowired(required = false)
