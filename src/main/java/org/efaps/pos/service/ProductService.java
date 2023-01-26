@@ -25,21 +25,43 @@ import org.efaps.pos.entity.Product;
 import org.efaps.pos.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.TextIndexDefinition;
+import org.springframework.data.mongodb.core.index.TextIndexDefinition.TextIndexDefinitionBuilder;
 import org.springframework.stereotype.Service;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class ProductService
 {
-
-    private final ProductRepository productRepository;
     private final ConfigProperties configProperties;
+    private final MongoTemplate mongoTemplate;
+    private final ProductRepository productRepository;
+
 
     @Autowired
     public ProductService(final ConfigProperties _configProperties,
+                          final MongoTemplate mongoTemplate,
                           final ProductRepository _productRepository)
     {
-        productRepository = _productRepository;
         configProperties = _configProperties;
+        this.mongoTemplate = mongoTemplate;
+        productRepository = _productRepository;
+    }
+
+    @PostConstruct
+    public void init() {
+        final TextIndexDefinition textIndex = new TextIndexDefinitionBuilder()
+                        .named("TextSearch")
+                        .onField("description")
+                        .onField("note")
+                        .onField("sku")
+                        .onField("barcodes.code")
+                        .withDefaultLanguage("spanish")
+                        .build();
+
+        mongoTemplate.indexOps(Product.class).ensureIndex(textIndex);
     }
 
     public List<Product> getProducts()
@@ -52,9 +74,13 @@ public class ProductService
         return _oid == null ? null : productRepository.findById(_oid).orElse(null);
     }
 
-    public List<Product> findProducts(final String _term)
+    public List<Product> findProducts(final String _term,
+                                      boolean textSearch)
     {
-        return productRepository.find(_term, PageRequest.of(0, configProperties.getMaxSearchResult())).toList();
+        return textSearch ? productRepository.findText(_term, PageRequest.of(0, configProperties.getMaxSearchResult()))
+                        .toList()
+                        : productRepository.find(_term, PageRequest.of(0, configProperties.getMaxSearchResult()))
+                                        .toList();
     }
 
     public List<Product> findProductsByCategory(final String _categoryOid)

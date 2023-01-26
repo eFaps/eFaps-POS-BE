@@ -38,47 +38,56 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(IApi.BASEPATH + "products")
 public class ProductController
 {
+
     private final ProductService service;
 
-    public ProductController(final ProductService _service) {
+    public ProductController(final ProductService _service)
+    {
         service = _service;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ProductDto> getProducts() {
+    public List<ProductDto> getProducts()
+    {
         return service.getProducts().stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "{productOid}")
-    public ProductDto getProduct(@PathVariable(name = "productOid") final String _productOid) {
+    public ProductDto getProduct(@PathVariable(name = "productOid") final String _productOid)
+    {
         return Converter.toDto(service.getProduct(_productOid));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public List<ProductDto> findProducts(@RequestParam(name = "term") final String _term) {
-        return service.findProducts(_term).stream()
+    public List<ProductDto> findProducts(@RequestParam(name = "term") final String _term,
+                                         @RequestParam(name = "textsearch", required = false) final boolean textSearch)
+    {
+        return service.findProducts(_term, textSearch).stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "category" })
-    public List<ProductDto> getProductsByCategory(@RequestParam(name = "category") final String _categoryOid) {
+    public List<ProductDto> getProductsByCategory(@RequestParam(name = "category") final String _categoryOid)
+    {
         return service.findProductsByCategory(_categoryOid).stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "barcode" })
-    public List<ProductDto> getProductsByBarcode(@RequestParam(name = "barcode") final String barcode) {
+    public List<ProductDto> getProductsByBarcode(@RequestParam(name = "barcode") final String barcode)
+    {
         return service.findProductsByBarcode(barcode).stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "type" })
-    public List<ProductDto> getProductsByType(@RequestParam(name = "type") final ProductType type) {
+    public List<ProductDto> getProductsByType(@RequestParam(name = "type") final ProductType type)
+    {
         return service.findProductsByType(type).stream()
                         .map(product -> Converter.toDto(product))
                         .collect(Collectors.toList());

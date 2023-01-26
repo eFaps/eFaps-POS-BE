@@ -33,7 +33,12 @@ public interface ProductRepository
         + "{ 'sku' : { '$regularExpression' : { 'pattern' : '?0', 'options' : 'i'}}},"
         + "{ 'barcodes.code' : '?0'}"
         + "]} ")
-    Page<Product> find(String _term1, Pageable pageable);
+    Page<Product> find(String term, Pageable pageable);
+
+    @Query(value = "{ "
+        + "$text : { $search: '?0' }"
+        + "}", sort=" { score: { $meta: 'textScore' }}")
+    Page<Product> findText(String term, Pageable pageable);
 
     @Query("{'categories.categoryOid':'?0'}")
     List<Product> findByCategoryOid(String _oid);
