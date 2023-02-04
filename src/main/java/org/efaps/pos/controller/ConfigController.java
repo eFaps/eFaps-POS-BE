@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2020 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public class ConfigController
         configProperties = _configProperties;
     }
 
-    @GetMapping(produces = MediaType.TEXT_PLAIN_VALUE, path = "/system/{key}")
+    @GetMapping(produces = { MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE}, path = "/system/{key}")
     public String getSystemConfig(@PathVariable(name = "key") final String _key)
     {
         final Config config = mongoTemplate.findById(Config.KEY, Config.class);
