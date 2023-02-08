@@ -214,7 +214,6 @@ public class DocumentService
     {
         validateOrder(_orderId);
         validateContact(_workspaceOid, _receipt);
-        sanitizeDecimals(_receipt);
         _receipt.setNumber(sequenceService.getNext(_workspaceOid, DocType.RECEIPT, null));
         Receipt ret = receiptRepository.insert(_receipt);
         try {
@@ -241,7 +240,6 @@ public class DocumentService
     {
         validateOrder(_orderId);
         validateContact(_workspaceOid, _invoice);
-        sanitizeDecimals(_invoice);
         _invoice.setNumber(sequenceService.getNext(_workspaceOid, DocType.INVOICE, null));
         Invoice ret = invoiceRepository.insert(_invoice);
         try {
@@ -268,7 +266,6 @@ public class DocumentService
     {
         validateOrder(_orderId);
         validateContact(_workspaceOid, _ticket);
-        sanitizeDecimals(_ticket);
         _ticket.setNumber(sequenceService.getNext(_workspaceOid, DocType.TICKET, null));
         Ticket ret = ticketRepository.insert(_ticket);
         try {
@@ -293,7 +290,6 @@ public class DocumentService
                                        final CreditNote _creditNote)
     {
         validateContact(_workspaceOid, _creditNote);
-        sanitizeDecimals(_creditNote);
         final var reference = ReferenceService.getReferenceByIdent(_creditNote.getSourceDocOid());
         _creditNote.setNumber(sequenceService.getNext(_workspaceOid, DocType.CREDITNOTE, reference.getDocType()));
         _creditNote.setDate(LocalDate.now());
@@ -312,34 +308,6 @@ public class DocumentService
             LOG.error("Wow that should not happen", e);
         }
         return ret;
-    }
-
-    private void sanitizeDecimals(final AbstractPayableDocument<?> _payable)
-    {
-        _payable.setNetTotal(round(_payable.getNetTotal()));
-        _payable.setPayableAmount(round(_payable.getPayableAmount()));
-        _payable.setCrossTotal(round(_payable.getCrossTotal()));
-        _payable.getTaxes().stream()
-                        .forEach(taxEntry -> sanitizeDecimals(taxEntry));
-        _payable.getItems().forEach(item -> {
-            item.setCrossPrice(round(item.getCrossPrice()));
-            item.setCrossUnitPrice(round(item.getCrossUnitPrice()));
-            item.setNetPrice(round(item.getNetPrice()));
-            item.setNetUnitPrice(round(item.getNetUnitPrice()));
-            item.getTaxes().stream()
-                            .forEach(taxEntry -> sanitizeDecimals(taxEntry));
-        });
-    }
-
-    private void sanitizeDecimals(final TaxEntry taxEntry)
-    {
-        taxEntry.setAmount(round(taxEntry.getAmount()));
-        taxEntry.setBase(round(taxEntry.getBase()));
-    }
-
-    private BigDecimal round(final BigDecimal amount)
-    {
-        return amount == null ? null : amount.setScale(2, RoundingMode.HALF_UP);
     }
 
     private void validateOrder(final String _orderId)
