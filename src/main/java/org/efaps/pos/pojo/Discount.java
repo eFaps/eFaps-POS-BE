@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.entity;
+package org.efaps.pos.pojo;
 
 import java.math.BigDecimal;
 

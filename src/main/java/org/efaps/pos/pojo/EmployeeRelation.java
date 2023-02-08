@@ -1,4 +1,4 @@
-package org.efaps.pos.entity;
+package org.efaps.pos.pojo;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.EmployeeRelationType;

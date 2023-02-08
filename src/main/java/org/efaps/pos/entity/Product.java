@@ -23,6 +23,13 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.ProductType;
+import org.efaps.pos.pojo.BOMGroupConfig;
+import org.efaps.pos.pojo.Barcode;
+import org.efaps.pos.pojo.ConfigurationBOM;
+import org.efaps.pos.pojo.IndicationSet;
+import org.efaps.pos.pojo.Product2Category;
+import org.efaps.pos.pojo.ProductRelation;
+import org.efaps.pos.pojo.Tax;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -48,6 +55,8 @@ public class Product
     private Set<ProductRelation> relations;
     private Set<IndicationSet> indicationSets;
     private Set<Barcode> barcodes;
+    private Set<BOMGroupConfig> bomGroupConfigs;
+    private Set<ConfigurationBOM> configurationBOMs;
 
     public String getOid()
     {
@@ -223,6 +232,28 @@ public class Product
     public Product setBarcodes(final Set<Barcode> barcodes)
     {
         this.barcodes = barcodes;
+        return this;
+    }
+
+    public Set<BOMGroupConfig> getBomGroupConfigs()
+    {
+        return bomGroupConfigs;
+    }
+
+    public Product setBomGroupConfigs(Set<BOMGroupConfig> bomGroupConfigs)
+    {
+        this.bomGroupConfigs = bomGroupConfigs;
+        return this;
+    }
+
+    public Set<ConfigurationBOM> getConfigurationBOMs()
+    {
+        return configurationBOMs;
+    }
+
+    public Product setConfigurationBOMs(Set<ConfigurationBOM> configurationBOMs)
+    {
+        this.configurationBOMs = configurationBOMs;
         return this;
     }
 

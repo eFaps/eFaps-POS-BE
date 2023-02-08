@@ -27,6 +27,8 @@ import org.efaps.pos.dto.PosGridSize;
 import org.efaps.pos.dto.PosLayout;
 import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.dto.SpotConfig;
+import org.efaps.pos.pojo.Discount;
+import org.efaps.pos.pojo.Spot;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

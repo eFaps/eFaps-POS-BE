@@ -22,7 +22,7 @@ import java.util.HashMap;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.Currency;
 import org.efaps.pos.entity.ExchangeRates;
-import org.efaps.pos.entity.StashId;
+import org.efaps.pos.pojo.StashId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;

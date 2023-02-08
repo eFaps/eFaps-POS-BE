@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2022 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,38 +14,34 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.entity;
+package org.efaps.pos.pojo;
 
-
-public class Product2Category
+public class Barcode
 {
-    private String categoryOid;
 
-    private int weight;
+    private String type;
 
+    private String code;
 
-    public String getCategoryOid()
+    public String getType()
     {
-        return categoryOid;
+        return type;
     }
 
-
-    public Product2Category setCategoryOid(final String categoryOid)
+    public Barcode setType(final String type)
     {
-        this.categoryOid = categoryOid;
+        this.type = type;
         return this;
     }
 
-
-    public int getWeight()
+    public String getCode()
     {
-        return weight;
+        return code;
     }
 
-
-    public Product2Category setWeight(final int weight)
+    public Barcode setCode(final String code)
     {
-        this.weight = weight;
+        this.code = code;
         return this;
     }
 }

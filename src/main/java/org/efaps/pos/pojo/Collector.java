@@ -1,4 +1,4 @@
-package org.efaps.pos.entity;
+package org.efaps.pos.pojo;
 
 public class Collector
 {

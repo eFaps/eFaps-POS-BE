@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2019 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,38 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.entity;
+package org.efaps.pos.pojo;
 
-public class Spot
+
+public class Product2Category
 {
+    private String categoryOid;
 
-    private String id;
+    private int weight;
 
-    private String label;
 
-    public String getId()
+    public String getCategoryOid()
     {
-        return this.id;
+        return categoryOid;
     }
 
-    public Spot setId(final String _id)
+
+    public Product2Category setCategoryOid(final String categoryOid)
     {
-        this.id = _id;
+        this.categoryOid = categoryOid;
         return this;
     }
 
-    public String getLabel()
+
+    public int getWeight()
     {
-        return this.label;
+        return weight;
     }
 
-    public Spot setLabel(final String _label)
+
+    public Product2Category setWeight(final int weight)
     {
-        this.label = _label;
+        this.weight = weight;
         return this;
     }
 }

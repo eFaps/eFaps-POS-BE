@@ -19,6 +19,8 @@ package org.efaps.pos.entity;
 
 import java.util.Set;
 
+import org.efaps.pos.pojo.Payment;
+
 public abstract class AbstractPayableDocument<T>
     extends AbstractDocument<T>
 {

@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.entity;
 
+import org.efaps.pos.pojo.Spot;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "orders")

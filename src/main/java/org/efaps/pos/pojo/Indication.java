@@ -15,7 +15,7 @@
  *
  */
 
-package org.efaps.pos.entity;
+package org.efaps.pos.pojo;
 
 import org.springframework.data.annotation.Id;
 

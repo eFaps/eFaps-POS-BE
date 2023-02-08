@@ -23,12 +23,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.dto.AbstractDocumentDto;
 import org.efaps.pos.dto.AbstractPayableDocumentDto;
+import org.efaps.pos.dto.BOMGroupConfigDto;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BarcodeDto;
 import org.efaps.pos.dto.CardDto;
 import org.efaps.pos.dto.CashEntryDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.CollectOrderDto;
+import org.efaps.pos.dto.ConfigurationBOMDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.CreditNoteDto;
 import org.efaps.pos.dto.DiscountDto;
@@ -76,31 +78,21 @@ import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
-import org.efaps.pos.entity.Barcode;
 import org.efaps.pos.entity.CashEntry;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.CreditNote;
-import org.efaps.pos.entity.Discount;
 import org.efaps.pos.entity.Employee;
-import org.efaps.pos.entity.EmployeeRelation;
-import org.efaps.pos.entity.Indication;
-import org.efaps.pos.entity.IndicationSet;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
-import org.efaps.pos.entity.Payment;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
-import org.efaps.pos.entity.Product2Category;
-import org.efaps.pos.entity.ProductRelation;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
-import org.efaps.pos.entity.Spot;
-import org.efaps.pos.entity.Tax;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
@@ -108,6 +100,18 @@ import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.Card;
 import org.efaps.pos.entity.Workspace.Floor;
 import org.efaps.pos.entity.Workspace.PrintCmd;
+import org.efaps.pos.pojo.BOMGroupConfig;
+import org.efaps.pos.pojo.Barcode;
+import org.efaps.pos.pojo.ConfigurationBOM;
+import org.efaps.pos.pojo.Discount;
+import org.efaps.pos.pojo.EmployeeRelation;
+import org.efaps.pos.pojo.Indication;
+import org.efaps.pos.pojo.IndicationSet;
+import org.efaps.pos.pojo.Payment;
+import org.efaps.pos.pojo.Product2Category;
+import org.efaps.pos.pojo.ProductRelation;
+import org.efaps.pos.pojo.Spot;
+import org.efaps.pos.pojo.Tax;
 import org.efaps.pos.projection.DocumentHead;
 import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.service.CollectorService;
@@ -282,8 +286,34 @@ public final class Converter
                                         .collect(Collectors.toSet()))
                         .setBarcodes(_dto.getBarcodes().stream()
                                         .map(rel -> toEntity(rel))
+                                        .collect(Collectors.toSet()))
+                        .setBomGroupConfigs(_dto.getBomGroupConfigs().stream()
+                                        .map(dto -> toEntity(dto))
+                                        .collect(Collectors.toSet()))
+                        .setConfigurationBOMs(_dto.getConfigurationBOMs().stream()
+                                        .map(dto -> toEntity(dto))
                                         .collect(Collectors.toSet()));
         return ret;
+    }
+
+    public static ConfigurationBOM toEntity(ConfigurationBOMDto dto) {
+        return new ConfigurationBOM()
+                        .setOid(dto.getOid())
+                        .setToProductOid(dto.getToProductOid())
+                        .setPosition(dto.getPosition())
+                        .setBomGroupOid(dto.getBomGroupOid())
+                        .setQuantity(dto.getQuantity())
+                        .setUoM(dto.getUoM());
+    }
+
+    public static BOMGroupConfig toEntity(final BOMGroupConfigDto dto)
+    {
+        return new BOMGroupConfig()
+                        .setOid(dto.getOid())
+                        .setProductOid(dto.getProductOid())
+                        .setName(dto.getName())
+                        .setDescription(dto.getDescription())
+                        .setConfig(dto.getConfig());
     }
 
     public static Product2Category toEntity(final Product2CategoryDto _dto)

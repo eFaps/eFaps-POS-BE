@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2021 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,34 @@
  * limitations under the License.
  *
  */
-package org.efaps.pos.entity;
+package org.efaps.pos.pojo;
 
-public class Barcode
+public class Spot
 {
 
-    private String type;
+    private String id;
 
-    private String code;
+    private String label;
 
-    public String getType()
+    public String getId()
     {
-        return type;
+        return this.id;
     }
 
-    public Barcode setType(final String type)
+    public Spot setId(final String _id)
     {
-        this.type = type;
+        this.id = _id;
         return this;
     }
 
-    public String getCode()
+    public String getLabel()
     {
-        return code;
+        return this.label;
     }
 
-    public Barcode setCode(final String code)
+    public Spot setLabel(final String _label)
     {
-        this.code = code;
+        this.label = _label;
         return this;
     }
 }
