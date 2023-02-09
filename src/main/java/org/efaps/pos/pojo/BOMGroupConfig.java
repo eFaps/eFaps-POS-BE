@@ -10,7 +10,7 @@ public class BOMGroupConfig
     private String productOid;
     private String name;
     private String description;
-    private int config;
+    private int flags;
 
     public String getOid()
     {
@@ -56,14 +56,14 @@ public class BOMGroupConfig
         return this;
     }
 
-    public int getConfig()
+    public int getFlags()
     {
-        return config;
+        return flags;
     }
 
-    public BOMGroupConfig setConfig(int config)
+    public BOMGroupConfig setFlags(int flags)
     {
-        this.config = config;
+        this.flags = flags;
         return this;
     }
 

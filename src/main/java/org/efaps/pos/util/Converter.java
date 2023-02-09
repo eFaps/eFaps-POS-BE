@@ -313,7 +313,7 @@ public final class Converter
                         .setProductOid(dto.getProductOid())
                         .setName(dto.getName())
                         .setDescription(dto.getDescription())
-                        .setConfig(dto.getConfig());
+                        .setFlags(dto.getFlags());
     }
 
     public static Product2Category toEntity(final Product2CategoryDto _dto)
@@ -426,7 +426,37 @@ public final class Converter
                                                         : _entity.getBarcodes().stream()
                                                                         .map(set -> toDto(set))
                                                                         .collect(Collectors.toSet()))
+                                        .withBomGroupConfigs(_entity.getBomGroupConfigs() == null
+                                                        ? null
+                                                        : _entity.getBomGroupConfigs().stream()
+                                                                .map(entity -> toDto(entity))
+                                                                .collect(Collectors.toSet()))
+                                        .withConfigurationBOMs(_entity.getConfigurationBOMs() == null
+                                                        ? null
+                                                        : _entity.getConfigurationBOMs().stream()
+                                                                .map(entity -> toDto(entity))
+                                                                .collect(Collectors.toSet()))
                                         .build();
+    }
+
+
+    public static BOMGroupConfigDto toDto(final BOMGroupConfig entity) {
+        return BOMGroupConfigDto.builder()
+                        .withName(entity.getName())
+                        .withDescription(entity.getDescription())
+                        .withProductOid(entity.getProductOid())
+                        .withFlags(entity.getFlags())
+                        .build();
+    }
+
+    public static ConfigurationBOMDto toDto(final ConfigurationBOM entity) {
+        return ConfigurationBOMDto.builder()
+                        .withBomGroupOid(entity.getBomGroupOid())
+                        .withPosition(entity.getPosition())
+                        .withQuantity(entity.getQuantity())
+                        .withUoM(entity.getUoM())
+                        .withToProductOid(entity.getToProductOid())
+                        .build();
     }
 
     public static PosUserDto toDto(final User _user)
