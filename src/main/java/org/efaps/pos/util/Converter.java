@@ -439,9 +439,9 @@ public final class Converter
                                         .build();
     }
 
-
     public static BOMGroupConfigDto toDto(final BOMGroupConfig entity) {
         return BOMGroupConfigDto.builder()
+                        .withOID(entity.getOid())
                         .withName(entity.getName())
                         .withDescription(entity.getDescription())
                         .withProductOid(entity.getProductOid())
@@ -451,6 +451,7 @@ public final class Converter
 
     public static ConfigurationBOMDto toDto(final ConfigurationBOM entity) {
         return ConfigurationBOMDto.builder()
+                        .withOID(entity.getOid())
                         .withBomGroupOid(entity.getBomGroupOid())
                         .withPosition(entity.getPosition())
                         .withQuantity(entity.getQuantity())
