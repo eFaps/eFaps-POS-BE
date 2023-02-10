@@ -98,13 +98,16 @@ public class EFapsClient
         return ret;
     }
 
-    public List<ProductDto> getProducts(int limit, int offset)
+    public List<ProductDto> getProducts(int limit, int offset, OffsetDateTime after)
     {
         List<ProductDto> ret = new ArrayList<>();
         try {
             final var params = new LinkedMultiValueMap<String, String>();
             params.put("limit", Collections.singletonList(String.valueOf(limit)));
             params.put("offset", Collections.singletonList(String.valueOf(offset)));
+            if (after != null) {
+                params.put("after", Collections.singletonList(after.toString()));
+            }
             final RequestEntity<?> requestEntity = get(getEFapsConfig().getProductPath(), params);
             final ResponseEntity<List<ProductDto>> response = getRestTemplate().exchange(requestEntity,
                             new ParameterizedTypeReference<List<ProductDto>>()

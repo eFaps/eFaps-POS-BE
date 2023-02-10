@@ -207,26 +207,26 @@ public class SyncService
         }
     }
 
-    public void syncProducts()
+    public void syncAllProducts()
         throws SyncServiceDeactivatedException
     {
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Products");
+        LOG.info("Syncing All Products");
         final var allProducts = new ArrayList<Product>();
         final var limit = configProperties.getEFaps().getProductLimit();
         var next = true;
         var i = 0;
         while (next) {
-          final var offset = i * limit;
-          LOG.info("    Batch {} - {}", offset, offset + limit);
-          final List<Product> products = eFapsClient.getProducts(limit, offset).stream()
-                        .map(dto -> Converter.toEntity(dto))
-                        .collect(Collectors.toList());
-          allProducts.addAll(products);
-          i++;
-          next = !(products.size() < limit);
+            final var offset = i * limit;
+            LOG.info("    Products Batch {} - {}", offset, offset + limit);
+            final List<Product> products = eFapsClient.getProducts(limit, offset, null).stream()
+                            .map(dto -> Converter.toEntity(dto))
+                            .collect(Collectors.toList());
+            allProducts.addAll(products);
+            i++;
+            next = !(products.size() < limit);
         }
         if (!allProducts.isEmpty()) {
             final List<Product> existingProducts = mongoTemplate.findAll(Product.class);
@@ -237,6 +237,35 @@ public class SyncService
                 }
             });
             allProducts.forEach(product -> mongoTemplate.save(product));
+        }
+        registerSync(StashId.PRODUCTSYNC);
+    }
+
+    public void syncProducts()
+        throws SyncServiceDeactivatedException
+    {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
+        LOG.info("Syncing Products");
+        final var lastSync = getSync(StashId.PRODUCTSYNC);
+        if (lastSync != null) {
+            final var after = OffsetDateTime.of(lastSync.getLastSync(), ZoneOffset.of("-5")).minusHours(2);
+            final var limit = configProperties.getEFaps().getProductLimit();
+            var next = true;
+            var i = 0;
+            while (next) {
+                final var offset = i * limit;
+                LOG.info("    Products Batch {} - {}", offset, offset + limit);
+                final List<Product> products = eFapsClient.getProducts(limit, offset, after).stream()
+                                .map(dto -> Converter.toEntity(dto))
+                                .collect(Collectors.toList());
+                i++;
+                next = !(products.size() < limit);
+                for (final var product : products) {
+                    mongoTemplate.save(product);
+                }
+            }
         }
         registerSync(StashId.PRODUCTSYNC);
     }
@@ -671,7 +700,6 @@ public class SyncService
         return ret;
     }
 
-
     private boolean validateContact(final AbstractPayableDocument<?> _entity)
     {
         boolean ret = false;
@@ -829,8 +857,8 @@ public class SyncService
         syncContactsUp();
         final var lastSync = getSync(StashId.CONTACTSYNC);
         if (lastSync != null) {
-          final var after = OffsetDateTime.of(lastSync.getLastSync(), ZoneOffset.of("-5")).minusHours(2);
-          syncContactsDown(after);
+            final var after = OffsetDateTime.of(lastSync.getLastSync(), ZoneOffset.of("-5")).minusHours(2);
+            syncContactsDown(after);
         }
         registerSync(StashId.CONTACTSYNC);
     }
@@ -869,7 +897,7 @@ public class SyncService
         var i = 0;
         while (next) {
             final var offset = i * limit;
-            LOG.info("    Batch {} - {}", offset, offset + limit);
+            LOG.info("    Contact Batch {} - {}", offset, offset + limit);
             final List<Contact> recievedContacts = eFapsClient.getContacts(limit, i * limit, after)
                             .stream()
                             .map(dto -> Converter.toEntity(dto))
@@ -910,8 +938,8 @@ public class SyncService
         }
         LOG.info("Syncing Employees");
         final List<Employee> employees = eFapsClient.getEmployees().stream()
-            .map(dto -> Converter.toEntity(dto))
-            .collect(Collectors.toList());
+                        .map(dto -> Converter.toEntity(dto))
+                        .collect(Collectors.toList());
         if (!employees.isEmpty()) {
             final List<Employee> existingEmployees = mongoTemplate.findAll(Employee.class);
             existingEmployees.forEach(existing -> {

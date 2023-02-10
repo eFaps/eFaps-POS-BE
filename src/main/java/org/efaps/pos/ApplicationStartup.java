@@ -89,7 +89,7 @@ public class ApplicationStartup
                 service.syncExchangeRates();
                 service.syncPOSs();
                 service.syncWorkspaces();
-                service.syncProducts();
+                service.syncAllProducts();
                 service.syncCategories();
                 service.syncBalance();
                 service.syncReceipts();

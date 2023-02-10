@@ -122,7 +122,7 @@ public class SyncServiceTest
         server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
             .andRespond(withSuccess(mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
-        syncService.syncProducts();
+        syncService.syncAllProducts();
 
         final List<Product> products = mongoTemplate.findAll(Product.class);
         assertEquals(1, products.size());
@@ -149,7 +149,7 @@ public class SyncServiceTest
         server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
             .andRespond(withSuccess(mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
-        syncService.syncProducts();
+        syncService.syncAllProducts();
 
         final List<Product> products = mongoTemplate.findAll(Product.class);
         assertEquals(1, products.size());
@@ -178,7 +178,7 @@ public class SyncServiceTest
         server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
             .andRespond(withSuccess(mapper.writeValueAsString(productDtos), MediaType.APPLICATION_JSON));
 
-        syncService.syncProducts();
+        syncService.syncAllProducts();
 
         final List<Product> products = mongoTemplate.findAll(Product.class);
         assertEquals(1, products.size());

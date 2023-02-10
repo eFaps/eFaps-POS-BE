@@ -55,7 +55,7 @@ public class AdminController
         throws SyncServiceDeactivatedException
     {
         if (!syncService.isDeactivated()) {
-            syncService.syncProducts();
+            syncService.syncAllProducts();
             syncService.syncCategories();
             syncService.syncPOSs();
             syncService.syncWorkspaces();
