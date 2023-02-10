@@ -78,7 +78,7 @@ public class EFapsClientTest
         server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/TESTIDENT/products"))
             .andRespond(withSuccess(mapper.writeValueAsString(products), MediaType.APPLICATION_JSON));
 
-        final List<ProductDto> response = client.getProducts(0, 0);
+        final List<ProductDto> response = client.getProducts(0, 0, null);
 
         assertEquals(1, response.size());
         server.verify();
