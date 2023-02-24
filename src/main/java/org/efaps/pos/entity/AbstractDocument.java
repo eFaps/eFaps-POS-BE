@@ -329,6 +329,7 @@ public abstract class AbstractDocument<T>
 
         private String oid;
         private Integer index;
+        private Integer parentIdx;
         private String productOid;
         private BigDecimal quantity;
         private BigDecimal netUnitPrice;
@@ -348,6 +349,17 @@ public abstract class AbstractDocument<T>
         public Item setIndex(final Integer _index)
         {
             index = _index;
+            return this;
+        }
+
+        public Integer getParentIdx()
+        {
+            return parentIdx;
+        }
+
+        public Item setParentIdx(final Integer parentIdx)
+        {
+            this.parentIdx = parentIdx;
             return this;
         }
 
