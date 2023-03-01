@@ -6,10 +6,11 @@ public class BOMGroupConfig
 {
 
     private String oid;
-
     private String productOid;
     private String name;
     private String description;
+    private int weight;
+
     private int flags;
 
     public String getOid()
@@ -53,6 +54,17 @@ public class BOMGroupConfig
     public BOMGroupConfig setDescription(String description)
     {
         this.description = description;
+        return this;
+    }
+
+    public int getWeight()
+    {
+        return weight;
+    }
+
+    public BOMGroupConfig setWeight(int weight)
+    {
+        this.weight = weight;
         return this;
     }
 
