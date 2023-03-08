@@ -1059,6 +1059,7 @@ public final class Converter
         return DocItemDto.builder()
                         .withOID(_entity.getOid())
                         .withIndex(_entity.getIndex())
+                        .withParentIdx(_entity.getParentIdx())
                         .withCrossPrice(_entity.getCrossPrice())
                         .withCrossUnitPrice(_entity.getCrossUnitPrice())
                         .withNetPrice(_entity.getNetPrice())
