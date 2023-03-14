@@ -36,7 +36,6 @@ import org.efaps.pos.dto.PaymentInfoDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
-import org.efaps.pos.pojo.Payment;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.CreditNote;
@@ -44,6 +43,7 @@ import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
+import org.efaps.pos.pojo.Payment;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.CashEntryRepository;
 import org.efaps.pos.util.Converter;
@@ -58,17 +58,20 @@ public class BalanceService
     private final CashEntryRepository cashEntryRepository;
     private final SequenceService sequenceService;
     private final DocumentService documentService;
+    private final CollectorService collectorService;
     private final UserService userService;
 
     public BalanceService(final BalanceRepository _repository,
                           final CashEntryRepository _cashEntryRepository,
                           final SequenceService _sequenceService,
                           final DocumentService _documentService,
+                          final CollectorService _collectorService,
                           final UserService _userService)
     {
         repository = _repository;
         cashEntryRepository = _cashEntryRepository;
         sequenceService = _sequenceService;
+        collectorService = _collectorService;
         documentService = _documentService;
         userService = _userService;
     }
@@ -233,10 +236,16 @@ public class BalanceService
 
     protected PaymentGroup getPaymentGroup(final Payment _payment)
     {
+        String label = null;
+        if (_payment.getCollectOrderId() != null) {
+            final var collectOrderOpt = collectorService.getCollectOrder(_payment.getCollectOrderId());
+            if (collectOrderOpt.isPresent() && collectOrderOpt.get().getCollector() != null) {
+                label = collectOrderOpt.get().getCollector().getLabel();
+            }
+        }
         return PaymentGroup.builder()
                         .withType(_payment.getType())
-                        .withCardTypeId(_payment.getCardTypeId())
-                        .withCardLabel(_payment.getCardLabel())
+                        .withLabel(label ==null ? _payment.getCardLabel() : label)
                         .build();
     }
 

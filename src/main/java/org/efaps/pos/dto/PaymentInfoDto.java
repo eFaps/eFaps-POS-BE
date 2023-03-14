@@ -9,8 +9,7 @@ public class PaymentInfoDto
 {
 
     private final PaymentType type;
-    private final Long cardTypeId;
-    private final String cardLabel;
+    private final String label;
     private final int count;
     private final BigDecimal amount;
     private final Currency currency;
@@ -18,8 +17,7 @@ public class PaymentInfoDto
     private PaymentInfoDto(final Builder _builder)
     {
         type = _builder.type;
-        cardTypeId = _builder.cardTypeId == null ? 0 : _builder.cardTypeId;
-        cardLabel = _builder.cardLabel == null ? "" : _builder.cardLabel;
+        label = _builder.label == null ? "" : _builder.label;
         count = _builder.count;
         amount = _builder.amount;
         currency = _builder.currency;
@@ -30,14 +28,9 @@ public class PaymentInfoDto
         return type;
     }
 
-    public Long getCardTypeId()
+    public String getLabel()
     {
-        return cardTypeId;
-    }
-
-    public String getCardLabel()
-    {
-        return cardLabel;
+        return label;
     }
 
     public int getCount()
@@ -64,8 +57,7 @@ public class PaymentInfoDto
     {
 
         private PaymentType type;
-        private Long cardTypeId;
-        private String cardLabel;
+        private String label;
         private int count;
         private BigDecimal amount;
         private Currency currency;
@@ -76,15 +68,9 @@ public class PaymentInfoDto
             return this;
         }
 
-        public Builder withCardTypeId(final Long _cardTypeId)
+        public Builder withLabel(final String label)
         {
-            cardTypeId = _cardTypeId;
-            return this;
-        }
-
-        public Builder withCardLabel(final String _cardLabel)
-        {
-            cardLabel = _cardLabel;
+            this.label = label;
             return this;
         }
 

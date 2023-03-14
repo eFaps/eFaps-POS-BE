@@ -9,14 +9,12 @@ public class PaymentGroup
 {
 
     private final PaymentType type;
-    private Long cardTypeId;
-    private String cardLabel;
+    private String label;
 
     private PaymentGroup(final Builder _builder)
     {
         type = _builder.type;
-        cardTypeId = _builder.cardTypeId == null ? 0 : _builder.cardTypeId;
-        cardLabel = _builder.cardLabel == null ? "" : _builder.cardLabel;
+        label = _builder.label == null ? "" : _builder.label;
     }
 
     public PaymentType getType()
@@ -24,32 +22,21 @@ public class PaymentGroup
         return type;
     }
 
-    public Long getCardTypeId()
+    public String getLabel()
     {
-        return cardTypeId;
+        return label;
     }
 
-    public void setCardTypeId(final Long cardTypeId)
+    public void setLabel(final String label)
     {
-        this.cardTypeId = cardTypeId;
-    }
-
-    public String getCardLabel()
-    {
-        return cardLabel;
-    }
-
-    public void setCardLabel(final String cardLabel)
-    {
-        this.cardLabel = cardLabel;
+        this.label = label;
     }
 
     public PaymentInfoDto getInfo(final int _count, final BigDecimal _amount) {
         return PaymentInfoDto.builder()
                         .withCount(_count)
                         .withAmount(_amount)
-                        .withCardLabel(cardLabel)
-                        .withCardTypeId(cardTypeId)
+                        .withLabel(label)
                         .withType(type)
                         .build();
     }
@@ -60,7 +47,7 @@ public class PaymentGroup
         boolean ret = false;
         if (_obj instanceof PaymentGroup) {
             final PaymentGroup other = (PaymentGroup) _obj;
-            ret = other.type.equals(type) && other.cardTypeId.equals(cardTypeId);
+            ret = other.type.equals(type) && other.label.equals(label);
         } else {
             ret = super.equals(_obj);
         }
@@ -70,7 +57,7 @@ public class PaymentGroup
     @Override
     public int hashCode()
     {
-        return type.hashCode() + cardTypeId.hashCode();
+        return type.hashCode() + label.hashCode();
     }
 
 
@@ -83,8 +70,7 @@ public class PaymentGroup
     {
 
         private PaymentType type;
-        private Long cardTypeId;
-        private String cardLabel;
+        private String label;
 
         public Builder withType(final PaymentType _type)
         {
@@ -92,15 +78,9 @@ public class PaymentGroup
             return this;
         }
 
-        public Builder withCardTypeId(final Long _cardTypeId)
+        public Builder withLabel(final String label)
         {
-            cardTypeId = _cardTypeId;
-            return this;
-        }
-
-        public Builder withCardLabel(final String _cardLabel)
-        {
-            cardLabel = _cardLabel;
+            this.label = label;
             return this;
         }
 
