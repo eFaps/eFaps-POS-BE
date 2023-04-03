@@ -64,6 +64,7 @@ import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
+import org.efaps.pos.entity.Visibility;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.Floor;
@@ -907,6 +908,7 @@ public class SyncService
             next = !(recievedContacts.size() < limit);
         }
         for (final Contact contact : queriedContacts) {
+            contact.setVisibility(Visibility.VISIBLE);
             final List<Contact> contacts = contactRepository.findByOid(contact.getOid());
             if (CollectionUtils.isEmpty(contacts)) {
                 contactRepository.save(contact);
@@ -919,12 +921,13 @@ public class SyncService
             }
         }
         if (after == null && !queriedContacts.isEmpty()) {
-            for (final Contact contact : contactRepository.findAll()) {
+            for (final Contact contact : contactRepository.findAllVisible()) {
                 if (contact.getOid() != null && !queriedContacts.stream()
                                 .filter(recieved -> recieved.getOid().equals(contact.getOid()))
                                 .findFirst()
                                 .isPresent()) {
-                    contactRepository.delete(contact);
+                    contact.setVisibility(Visibility.HIDDEN);
+                    contactRepository.save(contact);
                 }
             }
         }

@@ -270,6 +270,25 @@ public class EFapsClient
         return ret;
     }
 
+    public ContactDto getContact(String oid)
+    {
+        ContactDto ret = null;
+        try {
+            final var uriVariables = new HashMap<String, String>();
+            uriVariables.put("oid", oid);
+            final RequestEntity<?> requestEntity = get(
+                            getUriComponent(getEFapsConfig().getContactPath() + "/{oid}", uriVariables, null).toUri());
+            final ResponseEntity<ContactDto> response = getRestTemplate().exchange(requestEntity,
+                            new ParameterizedTypeReference<ContactDto>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
     public List<EmployeeDto> getEmployees()
     {
       List<EmployeeDto> ret = new ArrayList<>();
@@ -431,25 +450,34 @@ public class EFapsClient
         return ret;
     }
 
-    private UriComponents getUriComponent(final String _path, MultiValueMap<String, String> params)
+    private UriComponents getUriComponent(final String _path)
+        throws IdentException
+    {
+        return getUriComponent(_path, null);
+    }
+
+    private UriComponents getUriComponent(final String _path,
+                                          MultiValueMap<String, String> params)
+        throws IdentException
+    {
+
+        return getUriComponent(_path, new HashMap<String, String>(), params);
+    }
+
+    private UriComponents getUriComponent(final String _path,
+                                          Map<String, String> uriVariables,
+                                          MultiValueMap<String, String> params)
         throws IdentException
     {
         final String ident = getIdentifier();
         if (ident == null) {
             throw new IdentException();
         }
-        final Map<String, String> map = new HashMap<>();
-        map.put("identifier", ident);
+        uriVariables.put("identifier", ident);
         return UriComponentsBuilder.fromUri(getEFapsConfig().getBaseUrl())
                         .path(_path)
                         .queryParams(params)
-                        .buildAndExpand(map);
-    }
-
-    private UriComponents getUriComponent(final String _path)
-        throws IdentException
-    {
-        return getUriComponent(_path, null);
+                        .buildAndExpand(uriVariables);
     }
 
     public RequestEntity<?> get(final URI _uri)

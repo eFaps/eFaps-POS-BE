@@ -39,6 +39,8 @@ public class Contact
 
     private String email;
 
+    private Visibility visibility;
+
     public String getId()
     {
         return id;
@@ -102,6 +104,17 @@ public class Contact
     public Contact setEmail(final String _email)
     {
         email = _email;
+        return this;
+    }
+
+    public Visibility getVisibility()
+    {
+        return visibility;
+    }
+
+    public Contact setVisibility(Visibility visibility)
+    {
+        this.visibility = visibility;
         return this;
     }
 

@@ -1246,7 +1246,7 @@ public final class Converter
 
     public static ContactDto getContactDto(final String _key)
     {
-        return Converter.toDto(INSTANCE.contactService.findContact(_key));
+        return Converter.toDto(INSTANCE.contactService.findContact(_key, true));
     }
 
     public static CollectOrderDto toDto(final CollectOrder _entity)

@@ -19,8 +19,12 @@ package org.efaps.pos.service;
 
 import java.util.List;
 
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.Visibility;
 import org.efaps.pos.repository.ContactRepository;
+import org.efaps.pos.util.Converter;
+import org.efaps.pos.util.Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,26 +36,42 @@ public class ContactService
 {
 
     private final ContactRepository contactRepository;
+    private final EFapsClient eFapsClient;
 
-    public ContactService(final ContactRepository _contactRepository)
+    public ContactService(final ContactRepository _contactRepository, final EFapsClient eFapsClient)
     {
         contactRepository = _contactRepository;
+        this.eFapsClient = eFapsClient;
     }
 
     public Contact getContact(final String _oid)
     {
-
         return contactRepository.findOneByOid(_oid).orElse(null);
     }
 
     public Contact findContact(final String _key)
     {
-        return contactRepository.findOneByOid(_key).orElse(contactRepository.findById(_key).orElse(null));
+        return findContact(_key, false);
+    }
+
+    public Contact findContact(final String _key,
+                               final boolean evalCloud)
+    {
+        var contact = contactRepository.findOneByOid(_key).orElse(contactRepository.findById(_key).orElse(null));
+        if (contact == null && evalCloud && Utils.isOid(_key)) {
+            final var dto = eFapsClient.getContact(_key);
+            if (dto != null) {
+                contact = Converter.toEntity(dto);
+                contact.setVisibility(Visibility.HIDDEN);
+                contact = contactRepository.save(contact);
+            }
+        }
+        return contact;
     }
 
     public Page<Contact> getContacts(final Pageable pageable)
     {
-        return contactRepository.findAll(pageable);
+        return contactRepository.findAllVisible(pageable);
     }
 
     public List<Contact> findContacts(final String _term, final boolean _nameSearch)
