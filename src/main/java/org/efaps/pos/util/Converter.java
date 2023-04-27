@@ -58,6 +58,7 @@ import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosPaymentDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosSpotDto;
+import org.efaps.pos.dto.PosStocktakingDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.PrintCmdDto;
@@ -93,6 +94,7 @@ import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.entity.Stocktaking;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
@@ -1386,5 +1388,16 @@ public final class Converter
                                             .map(_payment -> Converter.toEntity(_payment))
                                             .collect(Collectors.toSet()));
         }
+    }
+
+    public static PosStocktakingDto toDto(final Stocktaking entity) {
+        return PosStocktakingDto.builder()
+                        .withId(entity.getId())
+                        .withNumber(entity.getNumber())
+                        .withUserOid(entity.getUserOid())
+                        .withStartAt(entity.getStartAt())
+                        .withStatus(entity.getStatus())
+                        .withWarehouseOid(entity.getWarehouseOid())
+                        .build();
     }
 }
