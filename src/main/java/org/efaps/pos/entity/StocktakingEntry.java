@@ -1,10 +1,8 @@
 package org.efaps.pos.entity;
 
+import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.efaps.pos.dto.StocktakingStatus;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -13,17 +11,15 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "stocktakings")
-public class Stocktaking
+@Document(collection = "stocktaking-entries")
+public class StocktakingEntry
 {
 
     @Id
     private String id;
-    private String userOid;
-    private StocktakingStatus status;
-    private String number;
-    private LocalDateTime startAt;
-    private String warehouseOid;
+    private String productOid;
+    private BigDecimal quantity;
+    private String stocktakingId;
 
     @CreatedBy
     private String user;
@@ -46,47 +42,36 @@ public class Stocktaking
         this.id = id;
     }
 
-    public String getUserOid()
+    public String getProductOid()
     {
-        return userOid;
+        return productOid;
     }
 
-    public Stocktaking setUserOid(String userOid)
+    public StocktakingEntry setProductOid(String productOid)
     {
-        this.userOid = userOid;
+        this.productOid = productOid;
         return this;
     }
 
-    public StocktakingStatus getStatus()
+    public BigDecimal getQuantity()
     {
-        return status;
+        return quantity;
     }
 
-    public Stocktaking setStatus(StocktakingStatus status)
+    public StocktakingEntry setQuantity(BigDecimal quantity)
     {
-        this.status = status;
+        this.quantity = quantity;
         return this;
     }
 
-    public String getNumber()
+    public String getStocktakingId()
     {
-        return number;
+        return stocktakingId;
     }
 
-    public Stocktaking setNumber(String number)
+    public StocktakingEntry setStocktakingId(String stocktakingId)
     {
-        this.number = number;
-        return this;
-    }
-
-    public String getWarehouseOid()
-    {
-        return warehouseOid;
-    }
-
-    public Stocktaking setWarehouseOid(String warehouseOid)
-    {
-        this.warehouseOid = warehouseOid;
+        this.stocktakingId = stocktakingId;
         return this;
     }
 
@@ -98,17 +83,6 @@ public class Stocktaking
     public void setUser(String user)
     {
         this.user = user;
-    }
-
-    public LocalDateTime getStartAt()
-    {
-        return startAt;
-    }
-
-    public Stocktaking setStartAt(LocalDateTime startAt)
-    {
-        this.startAt = startAt;
-        return this;
     }
 
     public Instant getCreatedDate()
@@ -149,11 +123,5 @@ public class Stocktaking
     public void setVersion(long version)
     {
         this.version = version;
-    }
-
-    @Override
-    public String toString()
-    {
-        return ReflectionToStringBuilder.toString(this);
     }
 }

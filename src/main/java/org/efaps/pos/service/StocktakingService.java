@@ -19,9 +19,12 @@ package org.efaps.pos.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.efaps.pos.dto.StockTakingEntryDto;
 import org.efaps.pos.dto.StocktakingStatus;
 import org.efaps.pos.entity.Stocktaking;
+import org.efaps.pos.entity.StocktakingEntry;
 import org.efaps.pos.entity.User;
+import org.efaps.pos.repository.StocktakingEntriesRepository;
 import org.efaps.pos.repository.StocktakingRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,18 +35,21 @@ public class StocktakingService
 {
 
     private final StocktakingRepository stocktakingRepository;
+    private final StocktakingEntriesRepository stocktakingEntriesRepository;
     private final SequenceService sequenceService;
 
     public StocktakingService(final StocktakingRepository stocktakingRepository,
+                              StocktakingEntriesRepository stocktakingEntriesRepository,
                               final SequenceService sequenceService)
     {
         this.stocktakingRepository = stocktakingRepository;
+        this.stocktakingEntriesRepository = stocktakingEntriesRepository;
         this.sequenceService = sequenceService;
     }
 
-    public Optional<Stocktaking> getCurrent(final User principal)
+    public Optional<Stocktaking> getCurrent(final String warehouseOid)
     {
-        return stocktakingRepository.findOneByUserOidAndStatus(principal.getOid(), StocktakingStatus.OPEN);
+        return stocktakingRepository.findOneByWarehouseOidAndStatus(warehouseOid, StocktakingStatus.OPEN);
     }
 
     public Stocktaking createStocktaking(final User principal,
@@ -54,12 +60,24 @@ public class StocktakingService
                         .setStartAt(LocalDateTime.now())
                         .setUserOid(principal.getOid())
                         .setStatus(StocktakingStatus.OPEN)
-                        .setNumber(number);
+                        .setNumber(number)
+                        .setWarehouseOid(warehousOid);
         return stocktakingRepository.save(stocktaking);
     }
 
     public Page<Stocktaking> getStocktakings(Pageable pageable)
     {
         return stocktakingRepository.findAll(pageable);
+    }
+
+    public StocktakingEntry addEntry(String stocktakingId,
+                                     StockTakingEntryDto entry)
+    {
+        final var stocktaking = stocktakingRepository.findById(stocktakingId).orElseThrow();
+        stocktaking.getId();
+        return stocktakingEntriesRepository.save(new StocktakingEntry()
+                        .setProductOid(entry.getProductOid())
+                        .setQuantity(entry.getQuantity())
+                        .setStocktakingId(stocktakingId));
     }
 }

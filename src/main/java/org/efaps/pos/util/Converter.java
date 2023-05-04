@@ -1391,13 +1391,16 @@ public final class Converter
     }
 
     public static PosStocktakingDto toDto(final Stocktaking entity) {
+        return toBuilder(entity).build();
+    }
+
+    public static PosStocktakingDto.Builder toBuilder(final Stocktaking entity) {
         return PosStocktakingDto.builder()
                         .withId(entity.getId())
                         .withNumber(entity.getNumber())
                         .withUserOid(entity.getUserOid())
                         .withStartAt(entity.getStartAt())
                         .withStatus(entity.getStatus())
-                        .withWarehouseOid(entity.getWarehouseOid())
-                        .build();
+                        .withWarehouseOid(entity.getWarehouseOid());
     }
 }

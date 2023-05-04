@@ -15,6 +15,8 @@ public class PosStocktakingDto
     private final LocalDateTime endAt;
     private final StocktakingStatus status;
     private final String warehouseOid;
+    private final WarehouseDto warehouse;
+    private final PosUserDto user;
 
     private PosStocktakingDto(Builder builder)
     {
@@ -25,6 +27,8 @@ public class PosStocktakingDto
         this.endAt = builder.endAt;
         this.status = builder.status;
         this.warehouseOid = builder.warehouseOid;
+        this.warehouse = builder.warehouse;
+        this.user = builder.user;
     }
 
     public String getId()
@@ -62,6 +66,16 @@ public class PosStocktakingDto
         return warehouseOid;
     }
 
+    public WarehouseDto getWarehouse()
+    {
+        return warehouse;
+    }
+
+    public PosUserDto getUser()
+    {
+        return user;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -77,6 +91,8 @@ public class PosStocktakingDto
         private LocalDateTime endAt;
         private StocktakingStatus status;
         private String warehouseOid;
+        private WarehouseDto warehouse;
+        private PosUserDto user;
 
         private Builder()
         {
@@ -121,6 +137,18 @@ public class PosStocktakingDto
         public Builder withWarehouseOid(String warehouseOid)
         {
             this.warehouseOid = warehouseOid;
+            return this;
+        }
+
+        public Builder withWarehouse(WarehouseDto warehouse)
+        {
+            this.warehouse = warehouse;
+            return this;
+        }
+
+        public Builder withUser(PosUserDto user)
+        {
+            this.user = user;
             return this;
         }
 

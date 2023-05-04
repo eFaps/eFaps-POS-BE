@@ -10,7 +10,7 @@ public interface StocktakingRepository
     extends MongoRepository<Stocktaking, String>
 {
 
-    Optional<Stocktaking> findOneByUserOidAndStatus(String userOid,
-                                                    StocktakingStatus open);
+    Optional<Stocktaking> findOneByWarehouseOidAndStatus(String warehouseOid,
+                                                         StocktakingStatus open);
 
 }
