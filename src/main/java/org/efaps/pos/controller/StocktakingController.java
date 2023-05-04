@@ -112,9 +112,9 @@ public class StocktakingController
         return stocktakingService.addEntry(stocktakingId, entry).getId();
     }
 
-    @PostMapping(path = "{id}/entries", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "{id}/entries", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<StockTakingEntryDto> getEntries(final @PathVariable("id") String stocktakingId)
     {
-        return stocktakingService.addEntry(stocktakingId, entry).getId();
+        return null;
     }
 }

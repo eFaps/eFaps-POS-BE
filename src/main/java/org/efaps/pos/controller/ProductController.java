@@ -24,6 +24,8 @@ import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.service.ProductService;
 import org.efaps.pos.util.Converter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,11 +49,10 @@ public class ProductController
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ProductDto> getProducts()
+    public Page<ProductDto> getProducts(final Pageable pageable)
     {
-        return service.getProducts().stream()
-                        .map(product -> Converter.toDto(product))
-                        .collect(Collectors.toList());
+        return service.getProducts(pageable)
+                        .map(product -> Converter.toDto(product));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "{productOid}")

@@ -24,7 +24,9 @@ import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.TextIndexDefinition;
 import org.springframework.data.mongodb.core.index.TextIndexDefinition.TextIndexDefinitionBuilder;
@@ -64,9 +66,9 @@ public class ProductService
         mongoTemplate.indexOps(Product.class).ensureIndex(textIndex);
     }
 
-    public List<Product> getProducts()
+    public Page<Product> getProducts(Pageable pageable)
     {
-        return productRepository.findAll();
+        return productRepository.findAll(pageable);
     }
 
     public Product getProduct(final String _oid)
