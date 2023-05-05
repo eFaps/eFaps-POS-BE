@@ -18,8 +18,6 @@ package org.efaps.pos.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
-
 import org.efaps.pos.entity.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +27,8 @@ import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataM
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
@@ -60,9 +60,9 @@ public class ProductServiceTest
                         .setDescription("This is a description");
         mongoTemplate.save(product);
 
-        final List<Product> products = productcService.getProducts();
-        assertEquals(1, products.size());
-        assertEquals("1234.652", products.get(0).getOid());
-        assertEquals("This is a description", products.get(0).getDescription());
+        final Page<Product> products = productcService.getProducts(PageRequest.of(0, 20));
+        assertEquals(1, products.getContent().size());
+        assertEquals("1234.652", products.getContent().get(0).getOid());
+        assertEquals("This is a description", products.getContent().get(0).getDescription());
     }
 }
