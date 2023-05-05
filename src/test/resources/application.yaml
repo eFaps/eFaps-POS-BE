@@ -3,14 +3,16 @@ spring:
   config:
     activate:
       on-profile: test
-  mongodb:
-    embedded:
-      version: 4.4.13
-
   data:
     mongodb:
       database: test
       host: localhost
+de:
+   flapdoodle:
+      mongodb:
+         embedded:
+            version: 4.6.3
+
 
 mongoClientURI: mongodb://localhost:27017/efapsPOS
 

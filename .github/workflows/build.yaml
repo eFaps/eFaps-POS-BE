@@ -30,8 +30,8 @@ jobs:
         run: |
           wget https://raw.githubusercontent.com/eFaps/Utils/master/settings/settings.xml -O mySettings.xml
           mvn install -s mySettings.xml -DskipTests=true -B -U
-      #- name: Run Tests
-      #  run: mvn test -s mySettings.xml -B
+      - name: Run Tests
+        run: mvn test -s mySettings.xml -B
       - name: Deploy
         run: mvn deploy -DskipTests -s mySettings.xml
       - name: Run coverage
