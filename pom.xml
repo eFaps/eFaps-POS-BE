@@ -29,8 +29,8 @@
 
     <properties>
         <spring.boot.version>3.0.6</spring.boot.version>
-        <junit.jupiter.version>5.9.2</junit.jupiter.version>
-        <junit.platform.version>1.9.2</junit.platform.version>
+        <junit.jupiter.version>5.9.3</junit.jupiter.version>
+        <junit.platform.version>1.9.3</junit.platform.version>
     </properties>
     <build>
         <plugins>
@@ -150,7 +150,7 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.20.0</version>
+            <version>6.20.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
@@ -174,7 +174,7 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>3.1.2</version>
+            <version>3.1.6</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
