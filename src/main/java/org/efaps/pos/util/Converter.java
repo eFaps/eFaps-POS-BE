@@ -65,10 +65,12 @@ import org.efaps.pos.dto.PrintCmdDto;
 import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.ProductHeadDto;
 import org.efaps.pos.dto.ProductRelationDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.SpotDto;
+import org.efaps.pos.dto.StockTakingEntryDto;
 import org.efaps.pos.dto.TaxDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.dto.TicketDto;
@@ -95,6 +97,7 @@ import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.Stocktaking;
+import org.efaps.pos.entity.StocktakingEntry;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
@@ -1402,5 +1405,20 @@ public final class Converter
                         .withStartAt(entity.getStartAt())
                         .withStatus(entity.getStatus())
                         .withWarehouseOid(entity.getWarehouseOid());
+    }
+
+    public static StockTakingEntryDto toDto(StocktakingEntry entity)
+    {
+        final var product = INSTANCE.productService.getProduct(entity.getProductOid());
+        return StockTakingEntryDto.builder()
+                        .withId(entity.getId())
+                        .withProduct(ProductHeadDto.builder()
+                                        .withOid(product.getOid())
+                                        .withSku(product.getSKU())
+                                        .withDescription(product.getDescription())
+                                        .withUoM(product.getUoM())
+                                        .build())
+                        .withQuantity(entity.getQuantity())
+                        .build();
     }
 }

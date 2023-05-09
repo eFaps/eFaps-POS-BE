@@ -21,6 +21,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.AddStockTakingEntryDto;
 import org.efaps.pos.dto.PosStocktakingDto;
 import org.efaps.pos.dto.StockTakingEntryDto;
 import org.efaps.pos.entity.User;
@@ -107,14 +108,15 @@ public class StocktakingController
 
     @PostMapping(path = "{id}/entries", produces = MediaType.APPLICATION_JSON_VALUE)
     public String addEntry(final @PathVariable("id") String stocktakingId,
-                           @RequestBody final StockTakingEntryDto entry)
+                           @RequestBody final AddStockTakingEntryDto dto)
     {
-        return stocktakingService.addEntry(stocktakingId, entry).getId();
+        return stocktakingService.addEntry(stocktakingId, dto).getId();
     }
 
     @GetMapping(path = "{id}/entries", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<StockTakingEntryDto> getEntries(final @PathVariable("id") String stocktakingId)
+    public Page<StockTakingEntryDto> getEntries(final @PathVariable("id") String stocktakingId,
+                                                final Pageable pageable)
     {
-        return null;
+        return stocktakingService.getEntries(stocktakingId, pageable).map(entry -> Converter.toDto(entry));
     }
 }

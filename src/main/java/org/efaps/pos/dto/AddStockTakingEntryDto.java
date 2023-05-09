@@ -20,19 +20,19 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-@JsonDeserialize(builder = StockTakingEntryDto.Builder.class)
-public class StockTakingEntryDto
+@JsonDeserialize(builder = AddStockTakingEntryDto.Builder.class)
+public class AddStockTakingEntryDto
 {
 
     private final String id;
     private final BigDecimal quantity;
-    private final ProductHeadDto product;
+    private final String productOid;
 
-    private StockTakingEntryDto(Builder builder)
+    private AddStockTakingEntryDto(Builder builder)
     {
         this.id = builder.id;
         this.quantity = builder.quantity;
-        this.product = builder.product;
+        this.productOid = builder.productOid;
     }
 
     public String getId()
@@ -45,9 +45,9 @@ public class StockTakingEntryDto
         return quantity;
     }
 
-    public ProductHeadDto getProduct()
+    public String getProductOid()
     {
-        return product;
+        return productOid;
     }
 
     public static Builder builder()
@@ -60,7 +60,7 @@ public class StockTakingEntryDto
 
         private String id;
         private BigDecimal quantity;
-        private ProductHeadDto product;
+        private String productOid;
 
         private Builder()
         {
@@ -78,15 +78,15 @@ public class StockTakingEntryDto
             return this;
         }
 
-        public Builder withProduct(ProductHeadDto product)
+        public Builder withProductOid(String productOid)
         {
-            this.product = product;
+            this.productOid = productOid;
             return this;
         }
 
-        public StockTakingEntryDto build()
+        public AddStockTakingEntryDto build()
         {
-            return new StockTakingEntryDto(this);
+            return new AddStockTakingEntryDto(this);
         }
     }
 }

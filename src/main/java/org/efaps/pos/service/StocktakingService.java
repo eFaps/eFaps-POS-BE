@@ -19,7 +19,7 @@ package org.efaps.pos.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import org.efaps.pos.dto.StockTakingEntryDto;
+import org.efaps.pos.dto.AddStockTakingEntryDto;
 import org.efaps.pos.dto.StocktakingStatus;
 import org.efaps.pos.entity.Stocktaking;
 import org.efaps.pos.entity.StocktakingEntry;
@@ -71,13 +71,19 @@ public class StocktakingService
     }
 
     public StocktakingEntry addEntry(String stocktakingId,
-                                     StockTakingEntryDto entry)
+                                     AddStockTakingEntryDto dto)
     {
         final var stocktaking = stocktakingRepository.findById(stocktakingId).orElseThrow();
         stocktaking.getId();
         return stocktakingEntriesRepository.save(new StocktakingEntry()
-                        .setProductOid(entry.getProductOid())
-                        .setQuantity(entry.getQuantity())
+                        .setProductOid(dto.getProductOid())
+                        .setQuantity(dto.getQuantity())
                         .setStocktakingId(stocktakingId));
+    }
+
+    public Page<StocktakingEntry> getEntries(final String stocktakingId,
+                                             final Pageable pageable)
+    {
+        return stocktakingEntriesRepository.findAllByStocktakingId(stocktakingId, pageable);
     }
 }
