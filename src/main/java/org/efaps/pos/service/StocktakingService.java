@@ -74,16 +74,33 @@ public class StocktakingService
                                      AddStockTakingEntryDto dto)
     {
         final var stocktaking = stocktakingRepository.findById(stocktakingId).orElseThrow();
-        stocktaking.getId();
         return stocktakingEntriesRepository.save(new StocktakingEntry()
                         .setProductOid(dto.getProductOid())
                         .setQuantity(dto.getQuantity())
-                        .setStocktakingId(stocktakingId));
+                        .setStocktakingId(stocktaking.getId())
+                        .setComment(dto.getComment()));
     }
 
     public Page<StocktakingEntry> getEntries(final String stocktakingId,
                                              final Pageable pageable)
     {
         return stocktakingEntriesRepository.findAllByStocktakingId(stocktakingId, pageable);
+    }
+
+    public void deleteEntry(final String stocktakingId,
+                            final String entryId)
+    {
+        final var entryOpt = stocktakingEntriesRepository.findById(entryId);
+        if (entryOpt.isPresent() && entryOpt.get().getStocktakingId().equals(stocktakingId)) {
+            stocktakingEntriesRepository.delete(entryOpt.get());
+        }
+    }
+
+    public Stocktaking closeStocktaking(String stocktakingId)
+    {
+        final var stocktaking = stocktakingRepository.findById(stocktakingId).orElseThrow();
+        stocktaking.setStatus(StocktakingStatus.CLOSED);
+        stocktaking.setEndAt(LocalDateTime.now());
+        return stocktakingRepository.save(stocktaking);
     }
 }

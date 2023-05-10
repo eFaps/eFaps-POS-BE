@@ -20,6 +20,7 @@ public class StocktakingEntry
     private String productOid;
     private BigDecimal quantity;
     private String stocktakingId;
+    private String comment;
 
     @CreatedBy
     private String user;
@@ -72,6 +73,17 @@ public class StocktakingEntry
     public StocktakingEntry setStocktakingId(String stocktakingId)
     {
         this.stocktakingId = stocktakingId;
+        return this;
+    }
+
+    public String getComment()
+    {
+        return comment;
+    }
+
+    public StocktakingEntry setComment(String comment)
+    {
+        this.comment = comment;
         return this;
     }
 

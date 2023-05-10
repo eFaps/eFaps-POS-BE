@@ -36,9 +36,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -78,7 +80,7 @@ public class StocktakingController
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public PosStocktakingDto create(final Authentication authentication,
-                                    @RequestBody final String warehouseOid)
+                                    final @RequestBody String warehouseOid)
     {
         return Converter.toDto(
                         stocktakingService.createStocktaking((User) authentication.getPrincipal(), warehouseOid));
@@ -86,7 +88,7 @@ public class StocktakingController
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<PosStocktakingDto> getStocktakings(final Pageable pageable,
-                                                   @RequestParam(required = false) boolean expand)
+                                                   final @RequestParam(required = false) boolean expand)
     {
         Page<PosStocktakingDto> result;
         if (expand) {
@@ -106,9 +108,21 @@ public class StocktakingController
         return result;
     }
 
+    @PutMapping(path = "{stocktakingId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosStocktakingDto closeStocktaking(final @PathVariable String stocktakingId)
+    {
+        final var stocktaking = stocktakingService.closeStocktaking(stocktakingId);
+        final var warehouse = inventoryService.getWarehouse(stocktaking.getWarehouseOid());
+        final var user = userService.getUserByOid(stocktaking.getUserOid());
+        return Converter.toBuilder(stocktaking)
+                        .withWarehouse(Converter.toDto(warehouse))
+                        .withUser(Converter.toDto(user))
+                        .build();
+    }
+
     @PostMapping(path = "{id}/entries", produces = MediaType.APPLICATION_JSON_VALUE)
     public String addEntry(final @PathVariable("id") String stocktakingId,
-                           @RequestBody final AddStockTakingEntryDto dto)
+                           final @RequestBody AddStockTakingEntryDto dto)
     {
         return stocktakingService.addEntry(stocktakingId, dto).getId();
     }
@@ -118,5 +132,12 @@ public class StocktakingController
                                                 final Pageable pageable)
     {
         return stocktakingService.getEntries(stocktakingId, pageable).map(entry -> Converter.toDto(entry));
+    }
+
+    @DeleteMapping(path = "{stocktakingId}/entries/{entryId}")
+    public void deleteEntry(final @PathVariable String stocktakingId,
+                            final @PathVariable String entryId)
+    {
+        stocktakingService.deleteEntry(stocktakingId, entryId);
     }
 }

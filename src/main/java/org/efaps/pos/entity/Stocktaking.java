@@ -23,6 +23,7 @@ public class Stocktaking
     private StocktakingStatus status;
     private String number;
     private LocalDateTime startAt;
+    private LocalDateTime endAt;
     private String warehouseOid;
 
     @CreatedBy
@@ -108,6 +109,17 @@ public class Stocktaking
     public Stocktaking setStartAt(LocalDateTime startAt)
     {
         this.startAt = startAt;
+        return this;
+    }
+
+    public LocalDateTime getEndAt()
+    {
+        return endAt;
+    }
+
+    public Stocktaking setEndAt(LocalDateTime endAt)
+    {
+        this.endAt = endAt;
         return this;
     }
 

@@ -27,12 +27,14 @@ public class AddStockTakingEntryDto
     private final String id;
     private final BigDecimal quantity;
     private final String productOid;
+    private final String comment;
 
     private AddStockTakingEntryDto(Builder builder)
     {
         this.id = builder.id;
         this.quantity = builder.quantity;
         this.productOid = builder.productOid;
+        this.comment = builder.comment;
     }
 
     public String getId()
@@ -50,6 +52,11 @@ public class AddStockTakingEntryDto
         return productOid;
     }
 
+    public String getComment()
+    {
+        return comment;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -61,6 +68,7 @@ public class AddStockTakingEntryDto
         private String id;
         private BigDecimal quantity;
         private String productOid;
+        private String comment;
 
         private Builder()
         {
@@ -81,6 +89,12 @@ public class AddStockTakingEntryDto
         public Builder withProductOid(String productOid)
         {
             this.productOid = productOid;
+            return this;
+        }
+
+        public Builder withComment(String comment)
+        {
+            this.comment = comment;
             return this;
         }
 

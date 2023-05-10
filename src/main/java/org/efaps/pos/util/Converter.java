@@ -16,11 +16,14 @@
  */
 package org.efaps.pos.util;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.AbstractDocumentDto;
 import org.efaps.pos.dto.AbstractPayableDocumentDto;
 import org.efaps.pos.dto.BOMGroupConfigDto;
@@ -133,6 +136,7 @@ public final class Converter
 
     private static Converter INSTANCE;
 
+    private final ConfigProperties configProperties;
     private final ProductService productService;
     private final InventoryService inventoryService;
     private final DocumentService documentService;
@@ -140,7 +144,8 @@ public final class Converter
     private final UserService userService;
     private final CollectorService collectorService;
 
-    public Converter(final ProductService _productService,
+    public Converter(final ConfigProperties configProperties,
+                     final ProductService _productService,
                      final InventoryService _inventoryService,
                      final DocumentService _documentService,
                      final ContactService _contactService,
@@ -148,6 +153,7 @@ public final class Converter
                      final CollectorService _collectorService)
     {
         INSTANCE = this;
+        this.configProperties = configProperties;
         productService = _productService;
         inventoryService = _inventoryService;
         documentService = _documentService;
@@ -403,15 +409,19 @@ public final class Converter
                                                                         .collect(Collectors.toSet()))
                                         .withBomGroupConfigs(_entity.getBomGroupConfigs() == null ? null
                                                         : _entity.getBomGroupConfigs().stream()
-                                                        .sorted((arg,arg1) -> Integer.valueOf(
-                                                                        arg.getWeight()).compareTo(arg1.getWeight()))
+                                                                        .sorted((arg,
+                                                                                 arg1) -> Integer.valueOf(
+                                                                                                 arg.getWeight())
+                                                                                                 .compareTo(arg1.getWeight()))
                                                                         .map(entity -> toDto(entity))
                                                                         .collect(Collectors.toSet()))
                                         .withConfigurationBOMs(_entity.getConfigurationBOMs() == null ? null
                                                         : _entity.getConfigurationBOMs()
                                                                         .stream()
-                                                                        .sorted((arg,arg1) -> Integer.valueOf(
-                                                                     arg.getPosition()).compareTo(arg1.getPosition()))
+                                                                        .sorted((arg,
+                                                                                 arg1) -> Integer.valueOf(
+                                                                                                 arg.getPosition())
+                                                                                                 .compareTo(arg1.getPosition()))
                                                                         .map(entity -> toDto(entity))
                                                                         .collect(Collectors.toSet()))
                                         .build();
@@ -1393,16 +1403,19 @@ public final class Converter
         }
     }
 
-    public static PosStocktakingDto toDto(final Stocktaking entity) {
+    public static PosStocktakingDto toDto(final Stocktaking entity)
+    {
         return toBuilder(entity).build();
     }
 
-    public static PosStocktakingDto.Builder toBuilder(final Stocktaking entity) {
+    public static PosStocktakingDto.Builder toBuilder(final Stocktaking entity)
+    {
         return PosStocktakingDto.builder()
                         .withId(entity.getId())
                         .withNumber(entity.getNumber())
                         .withUserOid(entity.getUserOid())
                         .withStartAt(entity.getStartAt())
+                        .withEndAt(entity.getEndAt())
                         .withStatus(entity.getStatus())
                         .withWarehouseOid(entity.getWarehouseOid());
     }
@@ -1410,6 +1423,8 @@ public final class Converter
     public static StockTakingEntryDto toDto(StocktakingEntry entity)
     {
         final var product = INSTANCE.productService.getProduct(entity.getProductOid());
+        final var createdAt = LocalDateTime.ofInstant(entity.getCreatedDate(),
+                        ZoneId.of(INSTANCE.configProperties.getTimeZone()));
         return StockTakingEntryDto.builder()
                         .withId(entity.getId())
                         .withProduct(ProductHeadDto.builder()
@@ -1419,6 +1434,8 @@ public final class Converter
                                         .withUoM(product.getUoM())
                                         .build())
                         .withQuantity(entity.getQuantity())
+                        .withComment(entity.getComment())
+                        .withCreatedAt(createdAt)
                         .build();
     }
 }

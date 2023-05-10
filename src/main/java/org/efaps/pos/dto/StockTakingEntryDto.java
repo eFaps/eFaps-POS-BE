@@ -17,6 +17,7 @@
 package org.efaps.pos.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -27,12 +28,21 @@ public class StockTakingEntryDto
     private final String id;
     private final BigDecimal quantity;
     private final ProductHeadDto product;
+    private final String comment;
+    private final LocalDateTime createdAt;
 
     private StockTakingEntryDto(Builder builder)
     {
         this.id = builder.id;
         this.quantity = builder.quantity;
         this.product = builder.product;
+        this.comment = builder.comment;
+        this.createdAt = builder.createdAt;
+    }
+
+    public LocalDateTime getCreatedAt()
+    {
+        return createdAt;
     }
 
     public String getId()
@@ -50,6 +60,11 @@ public class StockTakingEntryDto
         return product;
     }
 
+    public String getComment()
+    {
+        return comment;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -61,6 +76,8 @@ public class StockTakingEntryDto
         private String id;
         private BigDecimal quantity;
         private ProductHeadDto product;
+        private String comment;
+        private LocalDateTime createdAt;
 
         private Builder()
         {
@@ -81,6 +98,18 @@ public class StockTakingEntryDto
         public Builder withProduct(ProductHeadDto product)
         {
             this.product = product;
+            return this;
+        }
+
+        public Builder withComment(String comment)
+        {
+            this.comment = comment;
+            return this;
+        }
+
+        public Builder withCreatedAt(LocalDateTime createdAt)
+        {
+            this.createdAt = createdAt;
             return this;
         }
 
