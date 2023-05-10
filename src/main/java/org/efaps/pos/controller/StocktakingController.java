@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.controller;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -118,6 +119,14 @@ public class StocktakingController
                         .withWarehouse(Converter.toDto(warehouse))
                         .withUser(Converter.toDto(user))
                         .build();
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = {"status"})
+    public List<PosStocktakingDto> getOpenStocktakings()
+    {
+        return stocktakingService.getOpenStocktakings().stream()
+                        .map(stocktaking -> Converter.toDto(stocktaking))
+                        .collect(Collectors.toList());
     }
 
     @PostMapping(path = "{id}/entries", produces = MediaType.APPLICATION_JSON_VALUE)

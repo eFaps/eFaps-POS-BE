@@ -17,6 +17,7 @@
 package org.efaps.pos.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.efaps.pos.dto.AddStockTakingEntryDto;
@@ -68,6 +69,11 @@ public class StocktakingService
     public Page<Stocktaking> getStocktakings(Pageable pageable)
     {
         return stocktakingRepository.findAll(pageable);
+    }
+
+    public List<Stocktaking> getOpenStocktakings()
+    {
+        return stocktakingRepository.findAllByStatus(StocktakingStatus.OPEN);
     }
 
     public StocktakingEntry addEntry(String stocktakingId,
