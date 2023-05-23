@@ -56,6 +56,7 @@ public class InventoryController
     {
         return this.service.getInventory4Warehouse(_warehouseOid).stream()
                         .map(entry -> Converter.toDto(entry))
+                        .filter(dto -> dto.getProduct() != null && dto.getWarehouse() != null)
                         .collect(Collectors.toList());
     }
 
