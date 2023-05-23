@@ -16,17 +16,24 @@
  */
 package org.efaps.pos.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.AddStockTakingEntryDto;
+import org.efaps.pos.dto.StocktakingDto;
+import org.efaps.pos.dto.StocktakingEntryDto;
 import org.efaps.pos.dto.StocktakingStatus;
 import org.efaps.pos.entity.Stocktaking;
 import org.efaps.pos.entity.StocktakingEntry;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.repository.StocktakingEntriesRepository;
 import org.efaps.pos.repository.StocktakingRepository;
+import org.efaps.pos.util.Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,14 +44,17 @@ public class StocktakingService
 
     private final StocktakingRepository stocktakingRepository;
     private final StocktakingEntriesRepository stocktakingEntriesRepository;
+    private final EFapsClient eFapsClient;
     private final SequenceService sequenceService;
 
     public StocktakingService(final StocktakingRepository stocktakingRepository,
-                              StocktakingEntriesRepository stocktakingEntriesRepository,
+                              final StocktakingEntriesRepository stocktakingEntriesRepository,
+                              final EFapsClient eFapsClient,
                               final SequenceService sequenceService)
     {
         this.stocktakingRepository = stocktakingRepository;
         this.stocktakingEntriesRepository = stocktakingEntriesRepository;
+        this.eFapsClient = eFapsClient;
         this.sequenceService = sequenceService;
     }
 
@@ -102,11 +112,46 @@ public class StocktakingService
         }
     }
 
-    public Stocktaking closeStocktaking(String stocktakingId)
+    public Stocktaking closeStocktaking(final String stocktakingId)
     {
         final var stocktaking = stocktakingRepository.findById(stocktakingId).orElseThrow();
         stocktaking.setStatus(StocktakingStatus.CLOSED);
         stocktaking.setEndAt(LocalDateTime.now());
-        return stocktakingRepository.save(stocktaking);
+        sync(stocktaking);
+        Stocktaking result;
+        if (stocktaking.getOid() != null) {
+            result = stocktakingRepository.save(stocktaking);
+        } else {
+            result = stocktakingRepository.findById(stocktakingId).get();
+        }
+        return result;
+    }
+
+    public void sync(final Stocktaking stocktaking)
+    {
+        final var entriesMap = stocktakingEntriesRepository.findAllByStocktakingId(stocktaking.getId()).stream()
+                        .collect(Collectors.groupingBy(StocktakingEntry::getProductOid));
+        final List<StocktakingEntryDto> entriesDtos = new ArrayList<>();
+
+        for (final var entry : entriesMap.entrySet()) {
+
+            final var quantity = entry.getValue().stream()
+                            .map(stocktakingEntry -> stocktakingEntry.getQuantity())
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+            entriesDtos.add(StocktakingEntryDto.builder()
+                            .withQuantity(quantity)
+                            .withProductOid(entry.getKey())
+                            .build());
+        }
+        final var dto = StocktakingDto.builder()
+                        .withStartAt(Utils.toOffset(stocktaking.getStartAt()))
+                        .withEndAt(Utils.toOffset(stocktaking.getEndAt()))
+                        .withNumber(stocktaking.getNumber())
+                        .withUserOid(stocktaking.getUserOid())
+                        .withStatus(stocktaking.getStatus())
+                        .withEntries(entriesDtos)
+                        .build();
+        final var responseDto = eFapsClient.postStocktaking(dto);
+        stocktaking.setOid(responseDto.getOid());
     }
 }

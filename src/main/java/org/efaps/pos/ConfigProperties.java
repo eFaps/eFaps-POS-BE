@@ -216,13 +216,26 @@ public class ConfigProperties
         private String balancePath;
         private String exchangeRatePath;
         private String employeePath;
+        private String stocktakingPath;
 
-        public String getEmployeePath() {
-          return employeePath;
+        public String getStocktakingPath()
+        {
+            return stocktakingPath;
         }
 
-        public void setEmployeePath(String employeePath) {
-          this.employeePath = employeePath;
+        public void setStocktakingPath(final String stocktakingPath)
+        {
+            this.stocktakingPath = stocktakingPath;
+        }
+
+        public String getEmployeePath()
+        {
+            return employeePath;
+        }
+
+        public void setEmployeePath(final String employeePath)
+        {
+            this.employeePath = employeePath;
         }
 
         public URI getBaseUrl()
@@ -247,12 +260,12 @@ public class ConfigProperties
 
         public int getProductLimit()
         {
-          return productLimit;
+            return productLimit;
         }
 
         public void setProductLimit(int productLimit)
         {
-          this.productLimit = productLimit;
+            this.productLimit = productLimit;
         }
 
         public String getCategoryPath()
@@ -347,12 +360,12 @@ public class ConfigProperties
 
         public int getContactLimit()
         {
-          return contactLimit;
+            return contactLimit;
         }
 
         public void setContactLimit(int contactLimit)
         {
-          this.contactLimit = contactLimit;
+            this.contactLimit = contactLimit;
         }
 
         public String getInvoicePath()
@@ -445,12 +458,10 @@ public class ConfigProperties
             this.exchangeRatePath = exchangeRatePath;
         }
 
-
         public String getCreditnotePath()
         {
             return creditnotePath;
         }
-
 
         public void setCreditnotePath(final String creditnotePath)
         {

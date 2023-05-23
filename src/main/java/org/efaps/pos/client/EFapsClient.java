@@ -41,6 +41,7 @@ import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
+import org.efaps.pos.dto.StocktakingDto;
 import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WarehouseDto;
@@ -425,6 +426,21 @@ public class EFapsClient
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for Invoices", e);
+        }
+        return ret;
+    }
+
+    public StocktakingDto postStocktaking(final StocktakingDto stocktaking)
+    {
+        var ret = stocktaking;
+        try {
+            final RequestEntity<StocktakingDto> requestEntity = post(getEFapsConfig().getStocktakingPath(),
+                            stocktaking);
+            final ResponseEntity<StocktakingDto> response = getRestTemplate().exchange(requestEntity,
+                            StocktakingDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during post for StocktakingD", e);
         }
         return ret;
     }
