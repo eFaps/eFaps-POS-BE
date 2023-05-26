@@ -430,14 +430,14 @@ public class EFapsClient
         return ret;
     }
 
-    public StocktakingDto postStocktaking(final StocktakingDto stocktaking)
+    public String postStocktaking(final StocktakingDto stocktaking)
     {
-        var ret = stocktaking;
+        String ret = null;
         try {
             final RequestEntity<StocktakingDto> requestEntity = post(getEFapsConfig().getStocktakingPath(),
                             stocktaking);
-            final ResponseEntity<StocktakingDto> response = getRestTemplate().exchange(requestEntity,
-                            StocktakingDto.class);
+            final ResponseEntity<String> response = getRestTemplate().exchange(requestEntity,
+                            String.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for StocktakingD", e);

@@ -147,11 +147,12 @@ public class StocktakingService
                         .withStartAt(Utils.toOffset(stocktaking.getStartAt()))
                         .withEndAt(Utils.toOffset(stocktaking.getEndAt()))
                         .withNumber(stocktaking.getNumber())
+                        .withWarehouseOid(stocktaking.getWarehouseOid())
                         .withUserOid(stocktaking.getUserOid())
                         .withStatus(stocktaking.getStatus())
                         .withEntries(entriesDtos)
                         .build();
-        final var responseDto = eFapsClient.postStocktaking(dto);
-        stocktaking.setOid(responseDto.getOid());
+        final var oid = eFapsClient.postStocktaking(dto);
+        stocktaking.setOid(oid);
     }
 }
