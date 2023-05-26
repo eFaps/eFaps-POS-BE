@@ -58,7 +58,7 @@ efaps:
   balancePath: /servlet/rest/pos/{identifier}/balance
   exchangeRatePath: /servlet/rest/pos/{identifier}/exchange-rates
   employeePath: /servlet/rest/pos/{identifier}/employees
-  stocktakingPath: /servlet/rest/pos/{identifier}/stocktaking
+  stocktakingPath: /servlet/rest/pos/{identifier}/stocktakings
 
 auth:
   user: Administrator
