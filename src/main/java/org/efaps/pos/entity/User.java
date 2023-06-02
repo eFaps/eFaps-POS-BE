@@ -16,8 +16,6 @@
  */
 package org.efaps.pos.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -30,6 +28,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Document(collection = "users")
 public class User
@@ -47,6 +47,8 @@ public class User
     private String username;
 
     private String password;
+
+    private String employeeOid;
 
     private String firstName;
 
@@ -130,6 +132,17 @@ public class User
     public String getFirstName()
     {
         return this.firstName;
+    }
+
+    public String getEmployeeOid()
+    {
+        return employeeOid;
+    }
+
+    public User setEmployeeOid(String employeeOid)
+    {
+        this.employeeOid = employeeOid;
+        return this;
     }
 
     public User setFirstName(final String _firstName)

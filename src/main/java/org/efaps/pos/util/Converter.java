@@ -456,6 +456,7 @@ public final class Converter
         return _user == null ? null
                         : PosUserDto.builder()
                                         .withUsername(_user.getUsername())
+                                        .withEmployeeOid(_user.getEmployeeOid())
                                         .withFirstName(_user.getFirstName())
                                         .withSurName(_user.getSurName())
                                         .build();
@@ -466,6 +467,7 @@ public final class Converter
         return new User().setOid(_dto.getOid())
                         .setUsername(_dto.getUsername())
                         .setPassword(_dto.getPassword())
+                        .setEmployeeOid(_dto.getEmployeeOid())
                         .setFirstName(_dto.getFirstName())
                         .setSurName(_dto.getSurName())
                         .setVisible(_dto.isVisible())

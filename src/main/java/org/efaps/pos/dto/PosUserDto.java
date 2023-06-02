@@ -23,12 +23,14 @@ public class PosUserDto
 {
 
     private final String username;
+    private final String employeeOid;
     private final String firstName;
     private final String surName;
 
     private PosUserDto(final Builder _builder)
     {
         this.username = _builder.username;
+        this.employeeOid = _builder.employeeOid;
         this.firstName = _builder.firstName;
         this.surName = _builder.surName;
     }
@@ -41,6 +43,11 @@ public class PosUserDto
     public String getUsername()
     {
         return this.username;
+    }
+
+    public String getEmployeeOid()
+    {
+        return employeeOid;
     }
 
     public String getFirstName()
@@ -58,13 +65,21 @@ public class PosUserDto
      */
     public static final class Builder
     {
+
         private String username;
+        private String employeeOid;
         private String firstName;
         private String surName;
 
         public Builder withUsername(final String _username)
         {
             this.username = _username;
+            return this;
+        }
+
+        public Builder withEmployeeOid(final String employeeOid)
+        {
+            this.employeeOid = employeeOid;
             return this;
         }
 
