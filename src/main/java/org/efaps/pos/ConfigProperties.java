@@ -57,6 +57,13 @@ public class ConfigProperties
 
     private final List<LogToken> logTokens = new ArrayList<>();
 
+    private final Proxy proxy = new Proxy();
+
+    public Proxy getProxy()
+    {
+        return proxy;
+    }
+
     public String getVersion()
     {
         return version;
@@ -680,6 +687,30 @@ public class ConfigProperties
         {
             this.token = token;
         }
+    }
 
+    public static class Proxy {
+        private String uri;
+        private List<String> ignoreHostNames;
+
+        public List<String> getIgnoreHostNames()
+        {
+            return ignoreHostNames;
+        }
+
+        public void setIgnoreHostNames(List<String> ignoreHostNames)
+        {
+            this.ignoreHostNames = ignoreHostNames;
+        }
+
+        public String getUri()
+        {
+            return uri;
+        }
+
+        public void setUri(String uri)
+        {
+            this.uri = uri;
+        }
     }
 }
