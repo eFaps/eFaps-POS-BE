@@ -28,7 +28,6 @@ import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PrintPayableDto;
 import org.efaps.pos.dto.PrintResponseDto;
-import org.efaps.pos.dto.PrinterType;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.CreditNote;
@@ -92,7 +91,9 @@ public class PrintService
         LOG.info("Discovered {} IPrintListener", printListeners.size());
     }
 
-    public byte[] print2Image(final Object _object, final String _reportOid, final Map<String, Object> _parameters)
+    public byte[] print2Image(final Object _object,
+                              final String _reportOid,
+                              final Map<String, Object> _parameters)
     {
         byte[] ret = null;
         try {
@@ -108,7 +109,9 @@ public class PrintService
         return ret;
     }
 
-    public byte[] print2Image(final InputStream _json, final InputStream _report, final Map<String, Object> _parameters)
+    public byte[] print2Image(final InputStream _json,
+                              final InputStream _report,
+                              final Map<String, Object> _parameters)
     {
         byte[] ret = null;
         try {
@@ -134,7 +137,8 @@ public class PrintService
         return queue(_job.getPrinterOid(), _job.getReportOid(), Converter.toDto(_job));
     }
 
-    public Optional<PrintResponseDto> queue(final PrintCmd _printCmd, final AbstractDocument<?> _document)
+    public Optional<PrintResponseDto> queue(final PrintCmd _printCmd,
+                                            final AbstractDocument<?> _document)
     {
         Object content;
         if (_document instanceof Order) {
@@ -212,26 +216,40 @@ public class PrintService
         return num2wrdCvtr.convert(amount.longValue());
     }
 
-    public Optional<PrintResponseDto> queue(final String _printerOid, final String _reportOid, final Object _content)
+    public Optional<PrintResponseDto> queue(final String _printerOid,
+                                            final String _reportOid,
+                                            final Object _content)
     {
         Optional<PrintResponseDto> ret;
         final Optional<Printer> printerOpt = printerRepository.findById(_printerOid);
         if (printerOpt.isPresent()) {
             final Map<String, Object> parameters = new HashMap<>();
             parameters.put("PRINTER", printerOpt.get().getName());
-            if (printerOpt.get().getType().equals(PrinterType.PREVIEW)) {
-                final byte[] data = print2Image(_content, _reportOid, parameters);
-                final String key = RandomStringUtils.randomAlphabetic(12);
-                CACHE.put(key, data);
-                ret = Optional.of(PrintResponseDto.builder()
-                                .withKey(key)
-                                .withPrinter(Converter.toDto(printerOpt.get()))
-                                .build());
-            } else {
-                print(printerOpt.get().getName(), _content, _reportOid, parameters);
-                ret = Optional.of(PrintResponseDto.builder()
-                                .withPrinter(Converter.toDto(printerOpt.get()))
-                                .build());
+
+            switch (printerOpt.get().getType()) {
+                case PREVIEW: {
+                    final byte[] data = print2Image(_content, _reportOid, parameters);
+                    final String key = RandomStringUtils.randomAlphabetic(12);
+                    CACHE.put(key, data);
+                    ret = Optional.of(PrintResponseDto.builder()
+                                    .withKey(key)
+                                    .withPrinter(Converter.toDto(printerOpt.get()))
+                                    .build());
+                    break;
+                }
+                case EXTENSION:
+                    printViaExtension(printerOpt.get().getName(), _content);
+                    ret = Optional.of(PrintResponseDto.builder()
+                                    .withPrinter(Converter.toDto(printerOpt.get()))
+                                    .build());
+                    break;
+                case PHYSICAL:
+                default:
+                    print(printerOpt.get().getName(), _content, _reportOid, parameters);
+                    ret = Optional.of(PrintResponseDto.builder()
+                                    .withPrinter(Converter.toDto(printerOpt.get()))
+                                    .build());
+
             }
         } else {
             ret = Optional.empty();
@@ -244,7 +262,9 @@ public class PrintService
         return CACHE.getIfPresent(_key);
     }
 
-    public void print(final String _printer, final Object _object, final String _reportOid,
+    public void print(final String _printer,
+                      final Object _object,
+                      final String _reportOid,
                       final Map<String, Object> _parameters)
     {
         try {
@@ -283,6 +303,12 @@ public class PrintService
             exporter.exportReport();
         } catch (IllegalStateException | JRException | IOException e) {
             LOG.error("Catched", e);
+        }
+    }
+
+    public void printViaExtension(final String identifier, final Object object) {
+        for (final IPrintListener listener : printListeners) {
+            listener.print(identifier, object);
         }
     }
 }

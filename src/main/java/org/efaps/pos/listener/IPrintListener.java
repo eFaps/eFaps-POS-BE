@@ -28,4 +28,10 @@ public interface IPrintListener
     {
 
     }
+
+    default void print(final String identifier,
+                       final Object object)
+    {
+
+    }
 }
