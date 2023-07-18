@@ -17,6 +17,7 @@
 
 package org.efaps.pos.entity;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -45,7 +46,7 @@ public class Workspace
 
     private String posOid;
 
-    private Set<DocType> docTypes;
+    private Collection<DocType> docTypes;
 
     private SpotConfig spotConfig;
 
@@ -57,15 +58,15 @@ public class Workspace
 
     private PosLayout posLayout;
 
-    private Set<Discount> discounts;
+    private Collection<Discount> discounts;
 
-    private Set<Card> cards;
+    private Collection<Card> cards;
 
     private PosGridSize gridSize;
 
-    private List<Floor> floors;
+    private Collection<Floor> floors;
 
-    private List<String> categoryOids;
+    private Collection<String> categoryOids;
 
     private int flags;
 
@@ -103,12 +104,12 @@ public class Workspace
         return this;
     }
 
-    public Set<DocType> getDocTypes()
+    public Collection<DocType> getDocTypes()
     {
         return docTypes;
     }
 
-    public Workspace setDocTypes(final Set<DocType> _docTypes)
+    public Workspace setDocTypes(final Collection<DocType> _docTypes)
     {
         docTypes = _docTypes;
         return this;
@@ -169,7 +170,7 @@ public class Workspace
         return this;
     }
 
-    public Set<Discount> getDiscounts()
+    public Collection<Discount> getDiscounts()
     {
         return discounts;
     }
@@ -180,7 +181,7 @@ public class Workspace
         return this;
     }
 
-    public Set<Card> getCards()
+    public Collection<Card> getCards()
     {
         return cards;
     }
@@ -202,7 +203,7 @@ public class Workspace
         return this;
     }
 
-    public List<Floor> getFloors()
+    public Collection<Floor> getFloors()
     {
         return floors;
     }
@@ -213,12 +214,12 @@ public class Workspace
         return this;
     }
 
-    public List<String> getCategoryOids()
+    public Collection<String> getCategoryOids()
     {
         return categoryOids;
     }
 
-    public Workspace setCategoryOids(final List<String> _categoryOids)
+    public Workspace setCategoryOids(final Collection<String> _categoryOids)
     {
         categoryOids = _categoryOids;
         return this;

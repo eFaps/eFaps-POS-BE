@@ -16,7 +16,7 @@
  */
 package org.efaps.pos.dto;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.interfaces.IInvoice;
@@ -45,9 +45,9 @@ public class PosInvoiceDto
     }
 
     @Override
-    public Set<IInvoiceItem> getInvoiceItems()
+    public Collection<IInvoiceItem> getInvoiceItems()
     {
-        return getItems().stream().map(item -> (IInvoiceItem) item).collect(Collectors.toSet());
+        return getItems().stream().map(item -> (IInvoiceItem) item).collect(Collectors.toList());
     }
 
     @Override
@@ -73,13 +73,13 @@ public class PosInvoiceDto
             return this;
         }
 
-        public Builder withItems(final Set<PosDocItemDto> _items)
+        public Builder withItems(final Collection<PosDocItemDto> _items)
         {
             setItems(_items);
             return this;
         }
 
-        public Builder withPayments(final Set<PosPaymentDto> _payments)
+        public Builder withPayments(final Collection<PosPaymentDto> _payments)
         {
             if (_payments == null) {
               setPayments(null);

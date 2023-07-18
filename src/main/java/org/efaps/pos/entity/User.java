@@ -18,7 +18,6 @@ package org.efaps.pos.entity;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -56,9 +55,9 @@ public class User
 
     private boolean visible;
 
-    private Set<Roles> roles;
+    private Collection<Roles> roles;
 
-    private Set<String> workspaceOids;
+    private Collection<String> workspaceOids;
 
     public String getOid()
     {
@@ -173,23 +172,23 @@ public class User
         return this;
     }
 
-    public Set<Roles> getRoles()
+    public Collection<Roles> getRoles()
     {
         return this.roles;
     }
 
-    public User setRoles(final Set<Roles> _roles)
+    public User setRoles(final Collection<Roles> _roles)
     {
         this.roles = _roles;
         return this;
     }
 
-    public Set<String> getWorkspaceOids()
+    public Collection<String> getWorkspaceOids()
     {
         return this.workspaceOids;
     }
 
-    public User setWorkspaceOids(final Set<String> _workspaceOids)
+    public User setWorkspaceOids(final Collection<String> _workspaceOids)
     {
         this.workspaceOids = _workspaceOids;
         return this;
