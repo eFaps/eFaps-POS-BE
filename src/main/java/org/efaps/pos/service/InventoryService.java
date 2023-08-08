@@ -17,11 +17,15 @@
 package org.efaps.pos.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.efaps.pos.dto.ProductRelationType;
 import org.efaps.pos.dto.ProductType;
+import org.efaps.pos.dto.ValidateStockDto;
+import org.efaps.pos.dto.ValidateStockResponseDto;
+import org.efaps.pos.dto.ValidateStockResponseEntryDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Warehouse;
@@ -105,6 +109,31 @@ public class InventoryService
                 inventoryRepository.delete(entry);
             }
         }
+    }
+
+    public ValidateStockResponseDto validateStock(final ValidateStockDto dto)
+    {
+        final List<ValidateStockResponseEntryDto> errorEntries = new ArrayList<>();
+        for (final var entry : dto.getEntries()) {
+            final var inventoryOpt = inventoryRepository.findByWarehouseOidAndProductOid(dto.getWarehouseOid(),
+                            entry.getProductOid());
+            if (inventoryOpt.isEmpty()) {
+                errorEntries.add(ValidateStockResponseEntryDto.builder()
+                                .withQuantity(BigDecimal.ZERO)
+                                .withProductOid(entry.getProductOid())
+                                .build());
+            } else {
+                final var inventory = inventoryOpt.get();
+                if (inventory.getQuantity().compareTo(entry.getQuantity()) < 0) {
+                    errorEntries.add(ValidateStockResponseEntryDto.builder()
+                                    .withQuantity(inventory.getQuantity())
+                                    .withProductOid(entry.getProductOid())
+                                    .build());
+                }
+            }
+        }
+
+        return ValidateStockResponseDto.builder().withStock(errorEntries.isEmpty()).withEntries(errorEntries).build();
     }
 
 }

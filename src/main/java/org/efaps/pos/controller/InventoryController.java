@@ -21,11 +21,15 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PosInventoryEntryDto;
+import org.efaps.pos.dto.ValidateStockDto;
+import org.efaps.pos.dto.ValidateStockResponseDto;
 import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,7 +50,7 @@ public class InventoryController
     public List<WarehouseDto> getWarehouses()
     {
         return this.service.getWarehouses().stream()
-                        .map(warehouse -> Converter.toDto(warehouse))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -55,7 +59,7 @@ public class InventoryController
                      @RequestParam(name = "warehouseOid") final String _warehouseOid)
     {
         return this.service.getInventory4Warehouse(_warehouseOid).stream()
-                        .map(entry -> Converter.toDto(entry))
+                        .map(Converter::toDto)
                         .filter(dto -> dto.getProduct() != null && dto.getWarehouse() != null)
                         .collect(Collectors.toList());
     }
@@ -65,7 +69,13 @@ public class InventoryController
                    @RequestParam(name = "productOid") final String _productOid)
     {
         return this.service.getInventory4Product(_productOid).stream()
-                        .map(entry -> Converter.toDto(entry))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
+    }
+
+    @PostMapping(path = "validate")
+    public ValidateStockResponseDto validateStock(@RequestBody final ValidateStockDto dto)
+    {
+        return this.service.validateStock(dto);
     }
 }
