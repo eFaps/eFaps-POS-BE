@@ -19,6 +19,7 @@ package org.efaps.pos.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import org.efaps.pos.dto.ProductRelationType;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class InventoryService
 {
+
     private final WorkspaceService workspaceService;
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
@@ -75,7 +77,8 @@ public class InventoryService
         return warehouseRepository.findOneByOid(_oid).orElse(null);
     }
 
-    public void removeFromInventory(final String _workspaceOid, final AbstractDocument<?> _document)
+    public void removeFromInventory(final String _workspaceOid,
+                                    final AbstractDocument<?> _document)
     {
         final var warehouseOidOpt = workspaceService.getWarehouseOid4Workspace(_workspaceOid);
         if (warehouseOidOpt.isPresent()) {
@@ -86,7 +89,9 @@ public class InventoryService
         }
     }
 
-    private void removeFromInventory(final String warehouseOid, final String productOid, final BigDecimal quantity)
+    private void removeFromInventory(final String warehouseOid,
+                                     final String productOid,
+                                     final BigDecimal quantity)
     {
         final var entryOpt = inventoryRepository.findByWarehouseOidAndProductOid(warehouseOid, productOid);
         if (entryOpt.isPresent()) {
@@ -114,26 +119,43 @@ public class InventoryService
     public ValidateStockResponseDto validateStock(final ValidateStockDto dto)
     {
         final List<ValidateStockResponseEntryDto> errorEntries = new ArrayList<>();
-        for (final var entry : dto.getEntries()) {
-            final var inventoryOpt = inventoryRepository.findByWarehouseOidAndProductOid(dto.getWarehouseOid(),
-                            entry.getProductOid());
-            if (inventoryOpt.isEmpty()) {
-                errorEntries.add(ValidateStockResponseEntryDto.builder()
-                                .withQuantity(BigDecimal.ZERO)
-                                .withProductOid(entry.getProductOid())
-                                .build());
-            } else {
-                final var inventory = inventoryOpt.get();
-                if (inventory.getQuantity().compareTo(entry.getQuantity()) < 0) {
+        for (final var stockEntry : dto.getEntries()) {
+            final var prodVsQuantity = new HashMap<String, BigDecimal>();
+            final var product = productRepository.findById(stockEntry.getProductOid()).orElseThrow();
+            switch (product.getType()) {
+                case STANDART:
+                    prodVsQuantity.put(product.getOid(), stockEntry.getQuantity());
+                    break;
+                case PARTLIST:
+                    product.getRelations().forEach(relation -> {
+                        if (ProductRelationType.SALESBOM.equals(relation.getType())) {
+                            prodVsQuantity.put(relation.getProductOid(),
+                                            stockEntry.getQuantity().multiply(relation.getQuantity()));
+                        }
+                    });
+                    break;
+                default:
+                    // do nothing
+            }
+            for (final var entry : prodVsQuantity.entrySet()) {
+                final var inventoryOpt = inventoryRepository.findByWarehouseOidAndProductOid(dto.getWarehouseOid(),
+                                stockEntry.getProductOid());
+                if (inventoryOpt.isEmpty()) {
                     errorEntries.add(ValidateStockResponseEntryDto.builder()
-                                    .withQuantity(inventory.getQuantity())
-                                    .withProductOid(entry.getProductOid())
+                                    .withQuantity(BigDecimal.ZERO)
+                                    .withProductOid(entry.getKey())
                                     .build());
+                } else {
+                    final var inventory = inventoryOpt.get();
+                    if (inventory.getQuantity().compareTo(entry.getValue()) < 0) {
+                        errorEntries.add(ValidateStockResponseEntryDto.builder()
+                                        .withQuantity(inventory.getQuantity())
+                                        .withProductOid(entry.getKey())
+                                        .build());
+                    }
                 }
             }
         }
-
         return ValidateStockResponseDto.builder().withStock(errorEntries.isEmpty()).withEntries(errorEntries).build();
     }
-
 }
