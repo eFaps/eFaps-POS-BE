@@ -129,8 +129,11 @@ public class InventoryService
                 case PARTLIST:
                     product.getRelations().forEach(relation -> {
                         if (ProductRelationType.SALESBOM.equals(relation.getType())) {
-                            prodVsQuantity.put(relation.getProductOid(),
+                            final var relProd = productRepository.findById(relation.getProductOid()).orElseThrow();
+                            if (relProd.getType().equals(ProductType.STANDART)) {
+                                prodVsQuantity.put(relation.getProductOid(),
                                             stockEntry.getQuantity().multiply(relation.getQuantity()));
+                            }
                         }
                     });
                     break;
