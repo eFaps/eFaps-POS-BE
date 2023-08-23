@@ -525,7 +525,7 @@ public class ConverterTest
         assertEquals(dto.getFirstName(), entity.getFirstName());
         assertEquals(dto.getSurName(), entity.getSurName());
         assertEquals(dto.getPassword(), entity.getPassword());
-        assertEquals(dto.getRoles(), entity.getRoles());
+        assertEquals(dto.getPermissions(), entity.getPermissions());
         assertEquals(dto.getWorkspaceOids(), entity.getWorkspaceOids());
     }
 

@@ -255,7 +255,7 @@ public final class Converter
                         .setRemark(_dto.getRemark())
                         .setProductOid(_dto.getProduct() == null ? _dto.getProductOid() : _dto.getProduct().getOid())
                         .setTaxes(_dto.getTaxes() == null ? null
-                                        : _dto.getTaxes().stream().map(_tax -> Converter.toEntity(_tax))
+                                        : _dto.getTaxes().stream().map(Converter::toEntity)
                                                         .collect(Collectors.toSet()));
     }
 
@@ -270,20 +270,20 @@ public final class Converter
                         .setNetPrice(_dto.getNetPrice())
                         .setCrossPrice(_dto.getCrossPrice())
                         .setCurrency(_dto.getCurrency())
-                        .setCategories(_dto.getCategories().stream().map(cat -> toEntity(cat))
+                        .setCategories(_dto.getCategories().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()))
                         .setTaxes(_dto.getTaxes().stream().map(_tax -> _tax == null ? null : toEntity(_tax))
                                         .collect(Collectors.toSet()))
                         .setUoM(_dto.getUoM())
                         .setUoMCode(_dto.getUoMCode())
-                        .setRelations(_dto.getRelations().stream().map(rel -> toEntity(rel))
+                        .setRelations(_dto.getRelations().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()))
-                        .setIndicationSets(_dto.getIndicationSets().stream().map(rel -> toEntity(rel))
+                        .setIndicationSets(_dto.getIndicationSets().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()))
-                        .setBarcodes(_dto.getBarcodes().stream().map(rel -> toEntity(rel)).collect(Collectors.toSet()))
-                        .setBomGroupConfigs(_dto.getBomGroupConfigs().stream().map(dto -> toEntity(dto))
+                        .setBarcodes(_dto.getBarcodes().stream().map(Converter::toEntity).collect(Collectors.toSet()))
+                        .setBomGroupConfigs(_dto.getBomGroupConfigs().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()))
-                        .setConfigurationBOMs(_dto.getConfigurationBOMs().stream().map(dto -> toEntity(dto))
+                        .setConfigurationBOMs(_dto.getConfigurationBOMs().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()));
         return ret;
     }
@@ -339,7 +339,7 @@ public final class Converter
                         .setRequired(_dto.isRequired())
                         .setMultiple(_dto.isMultiple())
                         .setImageOid(_dto.getImageOid())
-                        .setIndications(_dto.getIndications().stream().map(dto -> toEntity(dto))
+                        .setIndications(_dto.getIndications().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()));
     }
 
@@ -352,7 +352,7 @@ public final class Converter
                         .withRequired(_entity.isRequired())
                         .withMultiple(_entity.isMultiple())
                         .withImageOid(_entity.getImageOid())
-                        .withIndications(_entity.getIndications().stream().map(entity -> toDto(entity))
+                        .withIndications(_entity.getIndications().stream().map(Converter::toDto)
                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -390,22 +390,22 @@ public final class Converter
                                         .withCurrency(_entity.getCurrency())
                                         .withCategories(_entity.getCategories() == null ? null
                                                         : _entity.getCategories().stream()
-                                                                        .map(prod2cat -> toDto(prod2cat))
+                                                                        .map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
 
                                         .withTaxes(_entity.getTaxes() == null ? null
-                                                        : _entity.getTaxes().stream().map(_tax -> toDto(_tax))
+                                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
                                         .withUoM(_entity.getUoM())
                                         .withUoMCode(_entity.getUoMCode())
                                         .withRelations(_entity.getRelations() == null ? null
-                                                        : _entity.getRelations().stream().map(rel -> toDto(rel))
+                                                        : _entity.getRelations().stream().map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
                                         .withIndicationSets(_entity.getIndicationSets() == null ? null
-                                                        : _entity.getIndicationSets().stream().map(set -> toDto(set))
+                                                        : _entity.getIndicationSets().stream().map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
                                         .withBarcodes(_entity.getBarcodes() == null ? null
-                                                        : _entity.getBarcodes().stream().map(set -> toDto(set))
+                                                        : _entity.getBarcodes().stream().map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
                                         .withBomGroupConfigs(_entity.getBomGroupConfigs() == null ? null
                                                         : _entity.getBomGroupConfigs().stream()
@@ -413,7 +413,7 @@ public final class Converter
                                                                                  arg1) -> Integer.valueOf(
                                                                                                  arg.getWeight())
                                                                                                  .compareTo(arg1.getWeight()))
-                                                                        .map(entity -> toDto(entity))
+                                                                        .map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
                                         .withConfigurationBOMs(_entity.getConfigurationBOMs() == null ? null
                                                         : _entity.getConfigurationBOMs()
@@ -422,7 +422,7 @@ public final class Converter
                                                                                  arg1) -> Integer.valueOf(
                                                                                                  arg.getPosition())
                                                                                                  .compareTo(arg1.getPosition()))
-                                                                        .map(entity -> toDto(entity))
+                                                                        .map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
                                         .build();
     }
@@ -471,8 +471,8 @@ public final class Converter
                         .setFirstName(_dto.getFirstName())
                         .setSurName(_dto.getSurName())
                         .setVisible(_dto.isVisible())
-                        .setRoles(_dto.getRoles())
-                        .setWorkspaceOids(_dto.getWorkspaceOids());
+                        .setWorkspaceOids(_dto.getWorkspaceOids())
+                        .setPermissions(_dto.getPermissions());
     }
 
     public static Sequence toEntity(final SequenceDto _dto)
@@ -491,18 +491,18 @@ public final class Converter
                         .withSpotCount(_entity.getSpotCount() == null ? 0 : _entity.getSpotCount())
                         .withWarehouseOid(_entity.getWarehouseOid())
                         .withPrintCmds(_entity.getPrintCmds() == null ? Collections.emptySet()
-                                        : _entity.getPrintCmds().stream().map(cmd -> Converter.toDto(cmd))
+                                        : _entity.getPrintCmds().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withPosLayout(_entity.getPosLayout())
                         .withDiscounts(_entity.getDiscounts() == null ? Collections.emptySet()
-                                        : _entity.getDiscounts().stream().map(discount -> Converter.toDto(discount))
+                                        : _entity.getDiscounts().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withCards(_entity.getCards() == null ? Collections.emptySet()
-                                        : _entity.getCards().stream().map(card -> Converter.toDto(card))
+                                        : _entity.getCards().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withGridSize(_entity.getGridSize())
                         .withFloors(_entity.getFloors() == null ? Collections.emptyList()
-                                        : _entity.getFloors().stream().map(floor -> Converter.toDto(floor))
+                                        : _entity.getFloors().stream().map(Converter::toDto)
                                                         .collect(Collectors.toList()))
                         .withCategoryOids(_entity.getCategoryOids() == null ? Collections.emptyList()
                                         : _entity.getCategoryOids())
@@ -520,18 +520,18 @@ public final class Converter
                         .setSpotCount(_dto.getSpotCount())
                         .setWarehouseOid(_dto.getWarehouseOid())
                         .setPrintCmds(_dto.getPrintCmds() == null ? null
-                                        : _dto.getPrintCmds().stream().map(cmd -> Converter.toEntity(cmd))
+                                        : _dto.getPrintCmds().stream().map(Converter::toEntity)
                                                         .collect(Collectors.toSet()))
                         .setPosLayout(_dto.getPosLayout())
                         .setDiscounts(_dto.getDiscounts() == null ? null
-                                        : _dto.getDiscounts().stream().map(discount -> Converter.toEntity(discount))
+                                        : _dto.getDiscounts().stream().map(Converter::toEntity)
                                                         .collect(Collectors.toSet()))
                         .setCards(_dto.getCards() == null ? null
-                                        : _dto.getCards().stream().map(card -> Converter.toEntity(card))
+                                        : _dto.getCards().stream().map(Converter::toEntity)
                                                         .collect(Collectors.toSet()))
                         .setGridSize(_dto.getGridSize())
                         .setFloors(_dto.getFloors() == null ? null
-                                        : _dto.getFloors().stream().map(floor -> Converter.toEntity(floor))
+                                        : _dto.getFloors().stream().map(Converter::toEntity)
                                                         .collect(Collectors.toList()))
                         .setCategoryOids(_dto.getCategoryOids())
                         .setFlags(_dto.getFlags());
@@ -543,7 +543,7 @@ public final class Converter
                         .setImageOid(_dto.getImageOid())
                         .setName(_dto.getName())
                         .setSpots(_dto.getSpots() == null ? null
-                                        : _dto.getSpots().stream().map(spot -> Converter.toEntity(spot))
+                                        : _dto.getSpots().stream().map(Converter::toEntity)
                                                         .collect(Collectors.toList()));
     }
 
@@ -554,7 +554,7 @@ public final class Converter
                         .withImageOid(_entity.getImageOid())
                         .withName(_entity.getName())
                         .withSpots(_entity.getSpots() == null ? null
-                                        : _entity.getSpots().stream().map(spot -> Converter.toDto(spot))
+                                        : _entity.getSpots().stream().map(Converter::toDto)
                                                         .collect(Collectors.toList()))
                         .build();
     }
@@ -719,14 +719,14 @@ public final class Converter
                         .withExchangeRate(_entity.getExchangeRate())
                         .withDate(_entity.getDate())
                         .withItems(_entity.getItems() == null ? Collections.emptySet()
-                                        : _entity.getItems().stream().map(_item -> toDto(_item))
+                                        : _entity.getItems().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withStatus(_entity.getStatus())
                         .withNetTotal(_entity.getNetTotal())
                         .withCrossTotal(_entity.getCrossTotal())
                         .withPayableAmount(_entity.getPayableAmount())
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withSpot(toSpotDto(_entity.getSpot()))
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
@@ -734,7 +734,7 @@ public final class Converter
                         .withPayableOid(_entity.getPayableOid())
                         .withShoutout(_entity.getShoutout())
                         .withEmployeeRelations(_entity.getEmployeeRelations() == null ? Collections.emptySet()
-                                        : _entity.getEmployeeRelations().stream().map(relation -> toDto(relation))
+                                        : _entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -762,7 +762,7 @@ public final class Converter
                         .withProduct(_entity.getProductOid() == null ? null
                                         : Converter.toDto(INSTANCE.productService.getProduct(_entity.getProductOid())))
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -783,19 +783,19 @@ public final class Converter
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
-                                        : _entity.getItems().stream().map(_item -> toDto(_item))
+                                        : _entity.getItems().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withPayments(_entity.getPayments() == null ? null
-                                        : _entity.getPayments().stream().map(_item -> toPosDto(_item))
+                                        : _entity.getPayments().stream().map(Converter::toPosDto)
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .withNote(_entity.getNote())
                         .withEmployeeRelations(_entity.getEmployeeRelations() == null ? Collections.emptySet()
-                                        : _entity.getEmployeeRelations().stream().map(relation -> toDto(relation))
+                                        : _entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -816,19 +816,19 @@ public final class Converter
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
-                                        : _entity.getItems().stream().map(_item -> toDto(_item))
+                                        : _entity.getItems().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withPayments(_entity.getPayments() == null ? null
-                                        : _entity.getPayments().stream().map(_item -> toPosDto(_item))
+                                        : _entity.getPayments().stream().map(Converter::toPosDto)
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .withNote(_entity.getNote())
                         .withEmployeeRelations(_entity.getEmployeeRelations() == null ? Collections.emptySet()
-                                        : _entity.getEmployeeRelations().stream().map(relation -> toDto(relation))
+                                        : _entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -849,19 +849,19 @@ public final class Converter
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
-                                        : _entity.getItems().stream().map(_item -> toDto(_item))
+                                        : _entity.getItems().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withPayments(_entity.getPayments() == null ? null
-                                        : _entity.getPayments().stream().map(_item -> toPosDto(_item))
+                                        : _entity.getPayments().stream().map(Converter::toPosDto)
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .withNote(_entity.getNote())
                         .withEmployeeRelations(_entity.getEmployeeRelations() == null ? Collections.emptySet()
-                                        : _entity.getEmployeeRelations().stream().map(relation -> toDto(relation))
+                                        : _entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -882,20 +882,20 @@ public final class Converter
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
-                                        : _entity.getItems().stream().map(_item -> toDto(_item))
+                                        : _entity.getItems().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withPayments(_entity.getPayments() == null ? null
-                                        : _entity.getPayments().stream().map(_item -> toPosDto(_item))
+                                        : _entity.getPayments().stream().map(Converter::toPosDto)
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withDiscount(_entity.getDiscount() == null ? null : toDto(_entity.getDiscount()))
                         .withNote(_entity.getNote())
                         .withSourceDocOid(_entity.getSourceDocOid())
                         .withEmployeeRelations(_entity.getEmployeeRelations() == null ? Collections.emptySet()
-                                        : _entity.getEmployeeRelations().stream().map(relation -> toDto(relation))
+                                        : _entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -929,15 +929,15 @@ public final class Converter
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
-                                        : _entity.getItems().stream().map(_item -> toItemDto(_item))
+                                        : _entity.getItems().stream().map(Converter::toItemDto)
                                                         .collect(Collectors.toSet()))
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withPayableOid(_entity.getPayableOid())
                         .withNote(_entity.getNote())
                         .withEmployeeRelations(_entity.getEmployeeRelations() == null ? Collections.emptySet()
-                                        : _entity.getEmployeeRelations().stream().map(relation -> toDto(relation))
+                                        : _entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -958,18 +958,18 @@ public final class Converter
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
-                                        : _entity.getItems().stream().map(_item -> toItemDto(_item))
+                                        : _entity.getItems().stream().map(Converter::toItemDto)
                                                         .collect(Collectors.toSet()))
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withPayments(_entity.getPayments() == null ? null
-                                        : _entity.getPayments().stream().map(_item -> toDto(_item))
+                                        : _entity.getPayments().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withNote(_entity.getNote())
                         .withEmployeeRelations(_entity.getEmployeeRelations() == null ? Collections.emptySet()
-                                        : _entity.getEmployeeRelations().stream().map(relation -> toDto(relation))
+                                        : _entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -990,18 +990,18 @@ public final class Converter
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
-                                        : _entity.getItems().stream().map(_item -> toItemDto(_item))
+                                        : _entity.getItems().stream().map(Converter::toItemDto)
                                                         .collect(Collectors.toSet()))
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withPayments(_entity.getPayments() == null ? null
-                                        : _entity.getPayments().stream().map(_item -> toDto(_item))
+                                        : _entity.getPayments().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withNote(_entity.getNote())
                         .withEmployeeRelations(_entity.getEmployeeRelations() == null ? Collections.emptySet()
-                                        : _entity.getEmployeeRelations().stream().map(relation -> toDto(relation))
+                                        : _entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -1022,18 +1022,18 @@ public final class Converter
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
-                                        : _entity.getItems().stream().map(_item -> toItemDto(_item))
+                                        : _entity.getItems().stream().map(Converter::toItemDto)
                                                         .collect(Collectors.toSet()))
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withPayments(_entity.getPayments() == null ? null
-                                        : _entity.getPayments().stream().map(_item -> toDto(_item))
+                                        : _entity.getPayments().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withNote(_entity.getNote())
                         .withEmployeeRelations(_entity.getEmployeeRelations() == null ? Collections.emptySet()
-                                        : _entity.getEmployeeRelations().stream().map(relation -> toDto(relation))
+                                        : _entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -1054,19 +1054,19 @@ public final class Converter
                         .withContactOid(_entity.getContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
-                                        : _entity.getItems().stream().map(_item -> toItemDto(_item))
+                                        : _entity.getItems().stream().map(Converter::toItemDto)
                                                         .collect(Collectors.toSet()))
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withPayments(_entity.getPayments() == null ? null
-                                        : _entity.getPayments().stream().map(_item -> toDto(_item))
+                                        : _entity.getPayments().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withBalanceOid(_entity.getBalanceOid())
                         .withNote(_entity.getNote())
                         .withSourceDocOid(_entity.getSourceDocOid())
                         .withEmployeeRelations(_entity.getEmployeeRelations() == null ? Collections.emptySet()
-                                        : _entity.getEmployeeRelations().stream().map(relation -> toDto(relation))
+                                        : _entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -1087,7 +1087,7 @@ public final class Converter
                         .withProductOid(_entity.getProductOid())
                         .withRemark(_entity.getRemark())
                         .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(_tax -> Converter.toDto(_tax))
+                                        : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -1137,7 +1137,7 @@ public final class Converter
                         .withId(_entity.getId())
                         .withNote(order.getNote())
                         .withItems(_entity.getItems() == null ? Collections.emptySet()
-                                        : _entity.getItems().stream().map(item -> Converter.toDto(item))
+                                        : _entity.getItems().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -1385,11 +1385,11 @@ public final class Converter
         entity.setContactOid(dto.getContactOid());
         entity.setWorkspaceOid(dto.getWorkspaceOid());
         entity.setTaxes(dto.getTaxes() == null ? null
-                        : dto.getTaxes().stream().map(_tax -> Converter.toEntity(_tax)).collect(Collectors.toSet()));
+                        : dto.getTaxes().stream().map(Converter::toEntity).collect(Collectors.toSet()));
         entity.setEmployeeRelations(dto.getEmployeeRelations() == null ? null
                         : dto.getEmployeeRelations()
                                         .stream()
-                                        .map(employeeRelation -> Converter.toEntity(employeeRelation))
+                                        .map(Converter::toEntity)
                                         .collect(Collectors.toSet()));
         entity.setNote(dto.getNote());
 
@@ -1400,7 +1400,7 @@ public final class Converter
             payableEntity.setPayments(payableDto.getPayments() == null ? null
                             : payableDto.getPayments()
                                             .stream()
-                                            .map(_payment -> Converter.toEntity(_payment))
+                                            .map(Converter::toEntity)
                                             .collect(Collectors.toSet()));
         }
     }

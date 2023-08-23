@@ -27,6 +27,7 @@ import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Component;
@@ -97,8 +98,8 @@ public class JwtTokenUtil
     public String generateAccessToken(final UserDetails _userDetails)
     {
         final Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", _userDetails.getAuthorities().stream()
-                        .map(authority -> authority.getAuthority())
+        claims.put("permissions", _userDetails.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toSet()));
         return generateToken(claims, _userDetails.getUsername());
     }
@@ -126,7 +127,7 @@ public class JwtTokenUtil
     {
         if (REFRESH_TOCKEN_STORE == null) {
             REFRESH_TOCKEN_STORE = Collections.synchronizedMap(
-                            new PassiveExpiringMap<String, String>((expiration + deviation) * 1000));
+                            new PassiveExpiringMap<>((expiration + deviation) * 1000));
         }
         return REFRESH_TOCKEN_STORE;
     }

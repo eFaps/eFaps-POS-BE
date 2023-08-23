@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.efaps.pos.dto.Roles;
+import org.efaps.pos.dto.Permission;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
@@ -55,9 +55,9 @@ public class User
 
     private boolean visible;
 
-    private Collection<Roles> roles;
-
     private Collection<String> workspaceOids;
+
+    private Collection<Permission> permissions;
 
     public String getOid()
     {
@@ -74,9 +74,9 @@ public class User
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities()
     {
-        return getRoles() == null ? Collections.emptyList()
-                        : getRoles().stream().map(_role -> new SimpleGrantedAuthority(_role.name())).collect(Collectors
-                                        .toSet());
+        return getPermissions() == null ? Collections.emptyList()
+                        : getPermissions().stream().map(permission -> new SimpleGrantedAuthority(permission.name()))
+                                        .collect(Collectors.toSet());
     }
 
     @Override
@@ -172,17 +172,6 @@ public class User
         return this;
     }
 
-    public Collection<Roles> getRoles()
-    {
-        return this.roles;
-    }
-
-    public User setRoles(final Collection<Roles> _roles)
-    {
-        this.roles = _roles;
-        return this;
-    }
-
     public Collection<String> getWorkspaceOids()
     {
         return this.workspaceOids;
@@ -191,6 +180,17 @@ public class User
     public User setWorkspaceOids(final Collection<String> _workspaceOids)
     {
         this.workspaceOids = _workspaceOids;
+        return this;
+    }
+
+    public Collection<Permission> getPermissions()
+    {
+        return this.permissions;
+    }
+
+    public User setPermissions(final Collection<Permission> permissions)
+    {
+        this.permissions = permissions;
         return this;
     }
 
