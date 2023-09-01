@@ -20,6 +20,7 @@ import org.efaps.pos.ConfigProperties.LogToken;
 import org.efaps.pos.dto.LogDto;
 import org.efaps.pos.entity.LogEntry;
 import org.efaps.pos.repository.LogEntryRepository;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,12 +34,24 @@ public class LogService
         this.logEntryRepository = logEntryRepository;
     }
 
-    public void register(final LogToken logToken, final LogDto logDto)
+    public void register(final LogToken logToken,
+                         final LogDto logDto)
     {
         logEntryRepository.save(new LogEntry()
                         .setIdent(logToken.getIdent())
                         .setKey(logDto.getKey())
                         .setValue(logDto.getValue())
                         .setLevel(logDto.getLevel()));
+    }
+
+    public void error(final String ident,
+                      final String key,
+                      final String value)
+    {
+        logEntryRepository.save(new LogEntry()
+                        .setIdent(ident)
+                        .setKey(key)
+                        .setValue(value)
+                        .setLevel(LogLevel.ERROR));
     }
 }
