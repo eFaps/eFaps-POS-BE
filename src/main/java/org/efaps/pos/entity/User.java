@@ -16,10 +16,12 @@
  */
 package org.efaps.pos.entity;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.Permission;
 import org.efaps.pos.dto.Roles;
@@ -77,6 +79,11 @@ public class User
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities()
     {
+        if (CollectionUtils.isEmpty(getPermissions()) && CollectionUtils.isNotEmpty(getRoles())) {
+            return Arrays.asList(new SimpleGrantedAuthority(Permission.ADMIN.name()),
+                            new SimpleGrantedAuthority(Permission.COLLECT.name()),
+                            new SimpleGrantedAuthority(Permission.ORDER.name()));
+        }
         return getPermissions() == null ? Collections.emptyList()
                         : getPermissions().stream().map(permission -> new SimpleGrantedAuthority(permission.name()))
                                         .collect(Collectors.toSet());
