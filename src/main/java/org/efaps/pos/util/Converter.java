@@ -472,6 +472,7 @@ public final class Converter
                         .setSurName(_dto.getSurName())
                         .setVisible(_dto.isVisible())
                         .setWorkspaceOids(_dto.getWorkspaceOids())
+                        .setRoles(_dto.getRoles())
                         .setPermissions(_dto.getPermissions());
     }
 

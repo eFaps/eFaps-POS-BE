@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.Permission;
+import org.efaps.pos.dto.Roles;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
@@ -54,6 +55,8 @@ public class User
     private String surName;
 
     private boolean visible;
+
+    private Collection<Roles> roles;
 
     private Collection<String> workspaceOids;
 
@@ -169,6 +172,18 @@ public class User
     public User setVisible(final boolean _visible)
     {
         this.visible = _visible;
+        return this;
+    }
+    @Deprecated
+    public Collection<Roles> getRoles()
+    {
+        return this.roles;
+    }
+
+    @Deprecated
+    public User setRoles(final Collection<Roles> _roles)
+    {
+        this.roles = _roles;
         return this;
     }
 
