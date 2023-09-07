@@ -106,3 +106,38 @@ spring:
       on-profile: embedded
   autoconfigure:
     exclude:
+
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: api    
+
+efaps:
+  backendPath: /api/pos/backend
+  productPath: /api/pos/{identifier}/products
+  categoryPath: /api/pos/{identifier}/categories
+  workspacePath: /api/pos/{identifier}/workspaces
+  posPath: /api/pos/{identifier}/poss
+  userPath: /api/pos/{identifier}/users
+  orderPath: /api/pos/{identifier}/orders
+  receiptPath: /api/pos/{identifier}/receipts
+  invoicePath: /api/pos/{identifier}/invoices
+  ticketPath: /api/pos/{identifier}/tickets
+  creditnotePath: /api/pos/{identifier}/creditnotes
+  checkoutPath: /api/checkout
+  sequencePath: /api/pos/{identifier}/sequences
+  contactPath: /api/pos/{identifier}/contacts
+  warehousePath: /api/pos/{identifier}/warehouses
+  inventoryPath: /api/pos/{identifier}/inventory
+  printerPath: /api/pos/{identifier}/printers
+  configPath: /api/pos/{identifier}/config
+  balancePath: /api/pos/{identifier}/balance
+  exchangeRatePath: /api/pos/{identifier}/exchange-rates
+  employeePath: /api/pos/{identifier}/employees
+  stocktakingPath: /api/pos/{identifier}/stocktakings
+  logEntryPath: /api/pos/{identifier}/log-entries
+      
+      
