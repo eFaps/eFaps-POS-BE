@@ -1460,7 +1460,7 @@ public final class Converter
                         .withKey(entity.getKey())
                         .withValue(entity.getValue())
                         .withLevel(entity.getLevel())
+                        .withCreatedAt(Utils.toOffset(entity.getCreatedDate(), INSTANCE.configProperties.getTimeZone()))
                         .build();
     }
-
 }

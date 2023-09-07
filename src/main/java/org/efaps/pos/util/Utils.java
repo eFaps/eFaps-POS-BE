@@ -17,8 +17,10 @@
 
 package org.efaps.pos.util;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
@@ -36,7 +38,8 @@ public final class Utils
         return _value != null && _value.matches("^\\d+\\.\\d+$");
     }
 
-    public static LocalDateTime toLocal(final OffsetDateTime _offsetDateTime) {
+    public static LocalDateTime toLocal(final OffsetDateTime _offsetDateTime)
+    {
         LocalDateTime ret = null;
         if (_offsetDateTime != null) {
             ret = _offsetDateTime.withOffsetSameInstant(ZonedDateTime.now().getOffset()).toLocalDateTime();
@@ -44,7 +47,8 @@ public final class Utils
         return ret;
     }
 
-    public static OffsetDateTime toOffset(final LocalDateTime _localDateTime) {
+    public static OffsetDateTime toOffset(final LocalDateTime _localDateTime)
+    {
         OffsetDateTime ret = null;
         if (_localDateTime != null) {
             ret = _localDateTime.atOffset(ZonedDateTime.now().getOffset()).withOffsetSameInstant(ZoneOffset.UTC);
@@ -52,7 +56,13 @@ public final class Utils
         return ret;
     }
 
-    public static boolean hasFlag(int value, WorkspaceFlag flag) {
-      return (value & 1 << flag.bitIndex) != 0;
+    public static OffsetDateTime toOffset(Instant instant, String timeZone) {
+        return toOffset(LocalDateTime.ofInstant(instant, ZoneId.of(timeZone)));
+    }
+
+    public static boolean hasFlag(int value,
+                                  WorkspaceFlag flag)
+    {
+        return (value & 1 << flag.bitIndex) != 0;
     }
 }
