@@ -35,6 +35,7 @@ import org.efaps.pos.dto.EmployeeDto;
 import org.efaps.pos.dto.ExchangeRateDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
+import org.efaps.pos.dto.LogEntryDto;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PrinterDto;
@@ -445,6 +446,20 @@ public class EFapsClient
         return ret;
     }
 
+    public String postLogEntry(final LogEntryDto dto)
+    {
+        String ret = null;
+        try {
+            final RequestEntity<LogEntryDto> requestEntity = post(getEFapsConfig().getLogEntryPath(), dto);
+            final ResponseEntity<String> response = getRestTemplate().exchange(requestEntity,
+                            String.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during post for StocktakingD", e);
+        }
+        return ret;
+    }
+
     public Checkout checkout(final String _oid)
     {
         Checkout ret = null;
@@ -477,7 +492,7 @@ public class EFapsClient
         throws IdentException
     {
 
-        return getUriComponent(_path, new HashMap<String, String>(), params);
+        return getUriComponent(_path, new HashMap<>(), params);
     }
 
     private UriComponents getUriComponent(final String _path,

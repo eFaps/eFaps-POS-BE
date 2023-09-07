@@ -224,6 +224,17 @@ public class ConfigProperties
         private String exchangeRatePath;
         private String employeePath;
         private String stocktakingPath;
+        private String logEntryPath;
+
+        public String getLogEntryPath()
+        {
+            return logEntryPath;
+        }
+
+        public void setLogEntryPath(String logEntryPath)
+        {
+            this.logEntryPath = logEntryPath;
+        }
 
         public String getStocktakingPath()
         {
@@ -689,7 +700,9 @@ public class ConfigProperties
         }
     }
 
-    public static class Proxy {
+    public static class Proxy
+    {
+
         private String uri;
         private List<String> ignoreHostNames;
 

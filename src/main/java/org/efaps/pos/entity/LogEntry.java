@@ -3,7 +3,7 @@ package org.efaps.pos.entity;
 import java.time.Instant;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.springframework.boot.logging.LogLevel;
+import org.efaps.pos.dto.LogLevel;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
@@ -15,6 +15,8 @@ public class LogEntry
 
     @Id
     private String id;
+
+    private String oid;
 
     private String ident;
 
@@ -38,6 +40,17 @@ public class LogEntry
     public void setId(final String id)
     {
         this.id = id;
+    }
+
+    public String getOid()
+    {
+        return oid;
+    }
+
+    public LogEntry setOid(final String oid)
+    {
+        this.oid = oid;
+        return this;
     }
 
     public String getIdent()

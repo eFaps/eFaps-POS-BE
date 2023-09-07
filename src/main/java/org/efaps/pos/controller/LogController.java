@@ -2,7 +2,7 @@ package org.efaps.pos.controller;
 
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.config.IApi;
-import org.efaps.pos.dto.LogDto;
+import org.efaps.pos.dto.LogEntryDto;
 import org.efaps.pos.service.LogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +30,8 @@ public class LogController
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void log(@RequestHeader("X-LOG-TOKEN") final String token, @RequestBody final LogDto logDto)
+    public void log(@RequestHeader("X-LOG-TOKEN") final String token,
+                    @RequestBody final LogEntryDto logDto)
     {
         final var logtoken = configProperties.getLogTokens().stream()
                         .filter(logToken -> logToken.getToken().equals(token))

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2021 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package org.efaps.pos.service;
 
 import org.efaps.pos.ConfigProperties.LogToken;
-import org.efaps.pos.dto.LogDto;
+import org.efaps.pos.dto.LogEntryDto;
+import org.efaps.pos.dto.LogLevel;
 import org.efaps.pos.entity.LogEntry;
 import org.efaps.pos.repository.LogEntryRepository;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,7 +35,7 @@ public class LogService
     }
 
     public void register(final LogToken logToken,
-                         final LogDto logDto)
+                         final LogEntryDto logDto)
     {
         logEntryRepository.save(new LogEntry()
                         .setIdent(logToken.getIdent())

@@ -48,6 +48,7 @@ import org.efaps.pos.dto.IndicationSetDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.JobDto;
+import org.efaps.pos.dto.LogEntryDto;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PayableHeadDto;
 import org.efaps.pos.dto.PaymentDto;
@@ -93,6 +94,7 @@ import org.efaps.pos.entity.Employee;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Job;
+import org.efaps.pos.entity.LogEntry;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
@@ -1441,4 +1443,24 @@ public final class Converter
                         .withCreatedAt(createdAt)
                         .build();
     }
+
+    public static LogEntry toEntity(LogEntryDto dto)
+    {
+        return new LogEntry()
+                        .setIdent(dto.getIdent())
+                        .setKey(dto.getKey())
+                        .setValue(dto.getValue())
+                        .setLevel(dto.getLevel());
+    }
+
+    public static LogEntryDto toDto(LogEntry entity)
+    {
+        return LogEntryDto.builder()
+                        .withIdent(entity.getIdent())
+                        .withKey(entity.getKey())
+                        .withValue(entity.getValue())
+                        .withLevel(entity.getLevel())
+                        .build();
+    }
+
 }

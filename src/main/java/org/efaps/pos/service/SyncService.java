@@ -55,6 +55,7 @@ import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Employee;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
+import org.efaps.pos.entity.LogEntry;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
@@ -76,6 +77,7 @@ import org.efaps.pos.repository.ContactRepository;
 import org.efaps.pos.repository.CreditNoteRepository;
 import org.efaps.pos.repository.InventoryRepository;
 import org.efaps.pos.repository.InvoiceRepository;
+import org.efaps.pos.repository.LogEntryRepository;
 import org.efaps.pos.repository.OrderRepository;
 import org.efaps.pos.repository.PrinterRepository;
 import org.efaps.pos.repository.ProductRepository;
@@ -126,6 +128,7 @@ public class SyncService
     private final BalanceRepository balanceRepository;
     private final OrderRepository orderRepository;
     private final CategoryRepository categoryRepository;
+    private final LogEntryRepository logEntryRepository;
     private final ConfigProperties configProperties;
     private final DocumentService documentService;
     private final ExchangeRateService exchangeRateService;
@@ -150,6 +153,7 @@ public class SyncService
                        final BalanceRepository _balanceRepository,
                        final OrderRepository _orderRepository,
                        final CategoryRepository _categoryRepository,
+                       final LogEntryRepository logEntryRepository,
                        final EFapsClient _eFapsClient,
                        final ConfigProperties _configProperties,
                        final DocumentService _documentService,
@@ -172,6 +176,7 @@ public class SyncService
         balanceRepository = _balanceRepository;
         orderRepository = _orderRepository;
         categoryRepository = _categoryRepository;
+        this.logEntryRepository = logEntryRepository;
         eFapsClient = _eFapsClient;
         configProperties = _configProperties;
         documentService = _documentService;
@@ -191,6 +196,19 @@ public class SyncService
             }
         } else {
             method.invoke(this);
+        }
+    }
+
+    public void syncLogs()
+    {
+        LOG.info("Syncing Logs");
+        for (final LogEntry entry : logEntryRepository.findByOidIsNull()) {
+            LOG.debug("Syncing LogEntry: {}", entry);
+            final var oid = eFapsClient.postLogEntry(Converter.toDto(entry));
+            LOG.debug("received oid: {}", oid);
+            if (oid != null) {
+                logEntryRepository.save(entry.setOid(oid));
+            }
         }
     }
 
@@ -223,7 +241,7 @@ public class SyncService
             final var offset = i * limit;
             LOG.info("    Products Batch {} - {}", offset, offset + limit);
             final List<Product> products = eFapsClient.getProducts(limit, offset, null).stream()
-                            .map(dto -> Converter.toEntity(dto))
+                            .map(Converter::toEntity)
                             .collect(Collectors.toList());
             allProducts.addAll(products);
             i++;
@@ -259,7 +277,7 @@ public class SyncService
                 final var offset = i * limit;
                 LOG.info("    Products Batch {} - {}", offset, offset + limit);
                 final List<Product> products = eFapsClient.getProducts(limit, offset, after).stream()
-                                .map(dto -> Converter.toEntity(dto))
+                                .map(Converter::toEntity)
                                 .collect(Collectors.toList());
                 i++;
                 next = !(products.size() < limit);
@@ -279,7 +297,7 @@ public class SyncService
         }
         LOG.info("Syncing Categories");
         final List<Category> categories = eFapsClient.getCategories().stream()
-                        .map(dto -> Converter.toEntity(dto))
+                        .map(Converter::toEntity)
                         .collect(Collectors.toList());
         if (!categories.isEmpty()) {
             final List<Category> existingCategories = mongoTemplate.findAll(Category.class);
@@ -304,7 +322,7 @@ public class SyncService
 
         LOG.info("Syncing Workspaces");
         final List<Workspace> workspaces = eFapsClient.getWorkspaces().stream()
-                        .map(dto -> Converter.toEntity(dto))
+                        .map(Converter::toEntity)
                         .collect(Collectors.toList());
         if (!workspaces.isEmpty()) {
             final List<Workspace> existingWorkspaces = workspaceRepository.findAll();
@@ -328,7 +346,7 @@ public class SyncService
         }
         LOG.info("Syncing Warehouses");
         final List<Warehouse> warehouses = eFapsClient.getWarehouses().stream()
-                        .map(dto -> Converter.toEntity(dto))
+                        .map(Converter::toEntity)
                         .collect(Collectors.toList());
         if (!warehouses.isEmpty()) {
             warehouseRepository.deleteAll();
@@ -356,7 +374,7 @@ public class SyncService
         }
         LOG.info("Syncing Inventory");
         final List<InventoryEntry> entries = eFapsClient.getInventory().stream()
-                        .map(dto -> Converter.toEntity(dto))
+                        .map(Converter::toEntity)
                         .collect(Collectors.toList());
         if (!entries.isEmpty()) {
             inventoryRepository.deleteAll();
@@ -373,7 +391,7 @@ public class SyncService
         }
         LOG.info("Syncing Printers");
         final List<Printer> printers = eFapsClient.getPrinters().stream()
-                        .map(dto -> Converter.toEntity(dto))
+                        .map(Converter::toEntity)
                         .collect(Collectors.toList());
         if (!printers.isEmpty()) {
             printerRepository.deleteAll();
@@ -390,7 +408,7 @@ public class SyncService
         }
         LOG.info("Syncing POSs");
         final List<Pos> poss = eFapsClient.getPOSs().stream()
-                        .map(dto -> Converter.toEntity(dto))
+                        .map(Converter::toEntity)
                         .collect(Collectors.toList());
         if (!poss.isEmpty()) {
             final List<Pos> existingPoss = mongoTemplate.findAll(Pos.class);
@@ -415,7 +433,7 @@ public class SyncService
 
         LOG.info("Syncing Users");
         final List<User> users = eFapsClient.getUsers().stream()
-                        .map(dto -> Converter.toEntity(dto))
+                        .map(Converter::toEntity)
                         .collect(Collectors.toList());
         if (!users.isEmpty()) {
             userRepository.deleteAll();
@@ -444,7 +462,7 @@ public class SyncService
         }
         LOG.info("Syncing Balance");
         final Collection<BalanceDto> tosync = balanceRepository.findByOidIsNull().stream()
-                        .map(balance -> Converter.toBalanceDto(balance))
+                        .map(Converter::toBalanceDto)
                         .collect(Collectors.toList());
         for (final BalanceDto dto : tosync) {
             LOG.debug("Syncing Balance: {}", dto);
@@ -476,7 +494,7 @@ public class SyncService
         }
         final Collection<BalanceDto> tosync2 = balanceRepository.findBySyncedIsFalseAndStatus(BalanceStatus.CLOSED)
                         .stream()
-                        .map(balance -> Converter.toBalanceDto(balance))
+                        .map(Converter::toBalanceDto)
                         .collect(Collectors.toList());
         for (final BalanceDto dto : tosync2) {
             if (eFapsClient.putBalance(dto)) {
@@ -815,7 +833,7 @@ public class SyncService
         }
         LOG.info("Syncing Sequences");
         final List<Sequence> sequences = eFapsClient.getSequences().stream()
-                        .map(dto -> Converter.toEntity(dto))
+                        .map(Converter::toEntity)
                         .collect(Collectors.toList());
         for (final Sequence sequence : sequences) {
             LOG.debug("Syncing Sequence: {}", sequence);
@@ -901,7 +919,7 @@ public class SyncService
             LOG.info("    Contact Batch {} - {}", offset, offset + limit);
             final List<Contact> recievedContacts = eFapsClient.getContacts(limit, i * limit, after)
                             .stream()
-                            .map(dto -> Converter.toEntity(dto))
+                            .map(Converter::toEntity)
                             .collect(Collectors.toList());
             queriedContacts.addAll(recievedContacts);
             i++;
@@ -941,7 +959,7 @@ public class SyncService
         }
         LOG.info("Syncing Employees");
         final List<Employee> employees = eFapsClient.getEmployees().stream()
-                        .map(dto -> Converter.toEntity(dto))
+                        .map(Converter::toEntity)
                         .collect(Collectors.toList());
         if (!employees.isEmpty()) {
             final List<Employee> existingEmployees = mongoTemplate.findAll(Employee.class);
