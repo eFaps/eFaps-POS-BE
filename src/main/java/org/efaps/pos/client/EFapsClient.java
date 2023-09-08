@@ -441,7 +441,7 @@ public class EFapsClient
                             String.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
-            LOG.error("Catched error during post for StocktakingD", e);
+            LOG.error("Catched error during post for Stocktaking", e);
         }
         return ret;
     }
@@ -455,7 +455,7 @@ public class EFapsClient
                             String.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
-            LOG.error("Catched error during post for StocktakingD", e);
+            LOG.error("Catched error during post for LogEntry", e);
         }
         return ret;
     }

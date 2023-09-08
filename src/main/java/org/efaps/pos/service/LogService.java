@@ -16,10 +16,18 @@
  */
 package org.efaps.pos.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.efaps.pos.ConfigProperties.LogToken;
 import org.efaps.pos.dto.LogEntryDto;
 import org.efaps.pos.dto.LogLevel;
 import org.efaps.pos.entity.LogEntry;
+import org.efaps.pos.listener.ILogListener;
 import org.efaps.pos.repository.LogEntryRepository;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +36,13 @@ public class LogService
 {
 
     private final LogEntryRepository logEntryRepository;
+    private final List<ILogListener> logListeners;
 
-    public LogService(final LogEntryRepository logEntryRepository)
+    public LogService(final LogEntryRepository logEntryRepository,
+                      final Optional<List<ILogListener>> logListeners)
     {
         this.logEntryRepository = logEntryRepository;
+        this.logListeners = logListeners.isPresent() ? logListeners.get() : Collections.emptyList();
     }
 
     public void register(final LogToken logToken,
@@ -46,12 +57,35 @@ public class LogService
 
     public void error(final String ident,
                       final String key,
-                      final String value)
+                      final String value,
+                      final Map<String, String> info)
     {
         logEntryRepository.save(new LogEntry()
                         .setIdent(ident)
                         .setKey(key)
                         .setValue(value)
-                        .setLevel(LogLevel.ERROR));
+                        .setLevel(LogLevel.ERROR)
+                        .setInfo(info));
+    }
+
+    public Collection<LogEntry> getEntriesToBeSynced()
+    {
+        final var toBeSynced = new ArrayList<LogEntry>();
+        final var entries = logEntryRepository.findByOidIsNull();
+        for (final var entry : entries) {
+            boolean sync = true;
+            for (final ILogListener listener : logListeners) {
+                sync = sync && listener.prepareForSync(entry);
+            }
+            if (sync) {
+                toBeSynced.add(entry);
+            }
+        }
+        return toBeSynced;
+    }
+
+    public LogEntry save(final LogEntry entry)
+    {
+        return logEntryRepository.save(entry);
     }
 }

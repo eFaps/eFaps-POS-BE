@@ -77,7 +77,6 @@ import org.efaps.pos.repository.ContactRepository;
 import org.efaps.pos.repository.CreditNoteRepository;
 import org.efaps.pos.repository.InventoryRepository;
 import org.efaps.pos.repository.InvoiceRepository;
-import org.efaps.pos.repository.LogEntryRepository;
 import org.efaps.pos.repository.OrderRepository;
 import org.efaps.pos.repository.PrinterRepository;
 import org.efaps.pos.repository.ProductRepository;
@@ -128,10 +127,10 @@ public class SyncService
     private final BalanceRepository balanceRepository;
     private final OrderRepository orderRepository;
     private final CategoryRepository categoryRepository;
-    private final LogEntryRepository logEntryRepository;
     private final ConfigProperties configProperties;
     private final DocumentService documentService;
     private final ExchangeRateService exchangeRateService;
+    private final LogService logService;
 
     private boolean deactivated;
 
@@ -153,11 +152,11 @@ public class SyncService
                        final BalanceRepository _balanceRepository,
                        final OrderRepository _orderRepository,
                        final CategoryRepository _categoryRepository,
-                       final LogEntryRepository logEntryRepository,
                        final EFapsClient _eFapsClient,
                        final ConfigProperties _configProperties,
                        final DocumentService _documentService,
-                       final ExchangeRateService _exchangeRateService)
+                       final ExchangeRateService _exchangeRateService,
+                       final LogService logService)
     {
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
@@ -176,11 +175,11 @@ public class SyncService
         balanceRepository = _balanceRepository;
         orderRepository = _orderRepository;
         categoryRepository = _categoryRepository;
-        this.logEntryRepository = logEntryRepository;
         eFapsClient = _eFapsClient;
         configProperties = _configProperties;
         documentService = _documentService;
         exchangeRateService = _exchangeRateService;
+        this.logService = logService;
     }
 
     public void runSyncJob(final String _methodName)
@@ -201,13 +200,14 @@ public class SyncService
 
     public void syncLogs()
     {
-        LOG.info("Syncing Logs");
-        for (final LogEntry entry : logEntryRepository.findByOidIsNull()) {
+
+        for (final LogEntry entry : logService.getEntriesToBeSynced()) {
             LOG.debug("Syncing LogEntry: {}", entry);
             final var oid = eFapsClient.postLogEntry(Converter.toDto(entry));
             LOG.debug("received oid: {}", oid);
             if (oid != null) {
-                logEntryRepository.save(entry.setOid(oid));
+                entry.setOid(oid);
+                logService.save(entry);
             }
         }
     }

@@ -20,6 +20,7 @@ import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
 import org.efaps.pos.listener.ICollectorListener;
+import org.efaps.pos.listener.ILogListener;
 import org.efaps.pos.listener.IPrintListener;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
@@ -110,6 +111,14 @@ public class Application
     {
         final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
         serviceListFactoryBean.setServiceType(IPrintListener.class);
+        return serviceListFactoryBean;
+    }
+
+    @Bean(name = "logListeners")
+    public ServiceListFactoryBean logListeners()
+    {
+        final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
+        serviceListFactoryBean.setServiceType(ILogListener.class);
         return serviceListFactoryBean;
     }
 

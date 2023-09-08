@@ -1444,7 +1444,7 @@ public final class Converter
                         .build();
     }
 
-    public static LogEntry toEntity(LogEntryDto dto)
+    public static LogEntry toEntity(final LogEntryDto dto)
     {
         return new LogEntry()
                         .setIdent(dto.getIdent())
@@ -1453,13 +1453,14 @@ public final class Converter
                         .setLevel(dto.getLevel());
     }
 
-    public static LogEntryDto toDto(LogEntry entity)
+    public static LogEntryDto toDto(final LogEntry entity)
     {
         return LogEntryDto.builder()
                         .withIdent(entity.getIdent())
                         .withKey(entity.getKey())
                         .withValue(entity.getValue())
                         .withLevel(entity.getLevel())
+                        .withInfo(entity.getInfo())
                         .withCreatedAt(Utils.toOffset(entity.getCreatedDate(), INSTANCE.configProperties.getTimeZone()))
                         .build();
     }
