@@ -32,10 +32,12 @@ public interface ICollectorListener
 
     List<CollectorDto> getCollectors();
 
-    void collect(CollectorState _collectorState, Map<String, Object> _details)
+    void collect(final CollectorState collectorState,
+                 final Map<String, Object> details)
         throws CollectorException;
 
-    default Object init(final CollectStartOrderDto _dto, final String _collectOrderId)
+    default Object init(final CollectStartOrderDto dto,
+                        final String collectOrderId)
         throws CollectorException
     {
         return null;
@@ -44,11 +46,11 @@ public interface ICollectorListener
     default void addAdditionalInfo2CollectOrderDto(final CollectOrder collectOrder,
                                                    final Map<String, Object> additionalInfo)
     {
-
     }
 
-    default void add2PaymentDto(PaymentDto.Builder builder, Payment payment) {
-
+    default void add2PaymentDto(final PaymentDto.Builder builder,
+                                final Payment payment)
+    {
     }
 
 }

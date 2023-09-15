@@ -68,6 +68,15 @@ public class LogService
                         .setInfo(info));
     }
 
+    public void error(final CollectorException e) {
+        logEntryRepository.save(new LogEntry()
+                        .setIdent(e.getIdent())
+                        .setKey(e.getKey())
+                        .setValue(e.getMessage())
+                        .setLevel(LogLevel.ERROR)
+                        .setInfo(e.getInfo()));
+    }
+
     public Collection<LogEntry> getEntriesToBeSynced()
     {
         final var toBeSynced = new ArrayList<LogEntry>();
@@ -75,7 +84,7 @@ public class LogService
         for (final var entry : entries) {
             boolean sync = true;
             for (final ILogListener listener : logListeners) {
-                sync = sync && listener.prepareForSync(entry);
+                sync = sync && !listener.vetoSync(entry);
             }
             if (sync) {
                 toBeSynced.add(entry);

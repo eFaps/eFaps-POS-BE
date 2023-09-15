@@ -20,7 +20,7 @@ import org.efaps.pos.entity.LogEntry;
 
 public interface ILogListener
 {
-    default boolean prepareForSync(final LogEntry logentry)
+    default boolean vetoSync(final LogEntry logentry)
     {
         return false;
     }
