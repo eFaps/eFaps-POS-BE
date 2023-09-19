@@ -57,24 +57,24 @@ public class LogService
 
     public void error(final String ident,
                       final String key,
-                      final String value,
-                      final Map<String, String> info)
+                      final String message,
+                      final Map<String, String> value)
     {
         logEntryRepository.save(new LogEntry()
                         .setIdent(ident)
                         .setKey(key)
-                        .setValue(value)
+                        .setMessage(message)
                         .setLevel(LogLevel.ERROR)
-                        .setInfo(info));
+                        .setValue(value));
     }
 
     public void error(final CollectorException e) {
         logEntryRepository.save(new LogEntry()
                         .setIdent(e.getIdent())
                         .setKey(e.getKey())
-                        .setValue(e.getMessage())
+                        .setMessage(e.getMessage())
                         .setLevel(LogLevel.ERROR)
-                        .setInfo(e.getInfo()));
+                        .setValue(e.getInfo()));
     }
 
     public Collection<LogEntry> getEntriesToBeSynced()

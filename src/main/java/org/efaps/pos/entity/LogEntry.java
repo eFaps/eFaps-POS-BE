@@ -39,11 +39,11 @@ public class LogEntry
 
     private String key;
 
-    private String value;
+    private String message;
 
     private LogLevel level;
 
-    private Map<String, String> info;
+    private Map<String, String> value;
 
     @CreatedDate
     private Instant createdDate;
@@ -94,14 +94,14 @@ public class LogEntry
         return this;
     }
 
-    public String getValue()
+    public String getMessage()
     {
-        return value;
+        return message;
     }
 
-    public LogEntry setValue(final String value)
+    public LogEntry setMessage(final String message)
     {
-        this.value = value;
+        this.message = message;
         return this;
     }
 
@@ -116,14 +116,14 @@ public class LogEntry
         return this;
     }
 
-    public Map<String, String> getInfo()
+    public Map<String, String> getValue()
     {
-        return info;
+        return value;
     }
 
-    public LogEntry setInfo(final Map<String, String> info)
+    public LogEntry setValue(final Map<String, String> value)
     {
-        this.info = info;
+        this.value = value;
         return this;
     }
 
