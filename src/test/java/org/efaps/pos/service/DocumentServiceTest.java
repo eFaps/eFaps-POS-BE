@@ -39,6 +39,7 @@ import org.efaps.pos.entity.Pos.Company;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.error.PreconditionException;
 import org.efaps.pos.pojo.Spot;
 import org.efaps.pos.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,6 +65,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 @SpringBootTest
 public class DocumentServiceTest
 {
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -75,7 +77,6 @@ public class DocumentServiceTest
 
     @Mock
     private OrderRepository mockOrderRepository;
-
 
     @BeforeEach
     public void setup()
@@ -144,7 +145,7 @@ public class DocumentServiceTest
         assertEquals(1, mongoTemplate.findAll(Order.class).size());
     }
 
-   // @Test
+    // @Test
     public void testUpdateOrder()
     {
         mongoTemplate.save(new Order());
@@ -191,6 +192,7 @@ public class DocumentServiceTest
 
     @Test
     public void testCreateReceipt()
+        throws PreconditionException
     {
         ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
@@ -220,6 +222,7 @@ public class DocumentServiceTest
 
     @Test
     public void testCreateReceiptCatchesError()
+        throws PreconditionException
     {
         ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
@@ -248,6 +251,7 @@ public class DocumentServiceTest
 
     @Test
     public void testCreateInvoice()
+        throws PreconditionException
     {
         ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
@@ -277,6 +281,7 @@ public class DocumentServiceTest
 
     @Test
     public void testCreateInvoiceCatchesError()
+        throws PreconditionException
     {
         ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
@@ -305,6 +310,7 @@ public class DocumentServiceTest
 
     @Test
     public void testCreateTicket()
+        throws PreconditionException
     {
         ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
@@ -334,6 +340,7 @@ public class DocumentServiceTest
 
     @Test
     public void testCreateTicketCatchesError()
+        throws PreconditionException
     {
         ReflectionTestUtils.setField(documentService, "orderRepository", mockOrderRepository);
         final String wsOid = "123.4";
@@ -361,21 +368,24 @@ public class DocumentServiceTest
     }
 
     @Test
-    public void testEvalBalanceOidIsValidOid() {
+    public void testEvalBalanceOidIsValidOid()
+    {
         final String key = "123.45";
         final String oid = documentService.evalBalanceOid(key);
         assertEquals(key, oid);
     }
 
     @Test
-    public void testEvalBalanceOidNoBalanceFound() {
+    public void testEvalBalanceOidNoBalanceFound()
+    {
         final String key = "AnId";
         final String oid = documentService.evalBalanceOid(key);
         assertEquals(key, oid);
     }
 
     @Test
-    public void testEvalBalanceOidBalanceNoOIDYet() {
+    public void testEvalBalanceOidBalanceNoOIDYet()
+    {
         final Balance balance = new Balance();
         mongoTemplate.save(balance);
         final String key = balance.getId();
@@ -384,7 +394,8 @@ public class DocumentServiceTest
     }
 
     @Test
-    public void testEvalBalanceOidBalanceHasOID() {
+    public void testEvalBalanceOidBalanceHasOID()
+    {
         final Balance balance = new Balance().setOid("123.456");
         mongoTemplate.save(balance);
         final String key = balance.getId();
