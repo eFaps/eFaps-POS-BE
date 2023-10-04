@@ -22,14 +22,13 @@ import java.util.List;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Visibility;
+import org.efaps.pos.error.PreconditionException;
 import org.efaps.pos.repository.ContactRepository;
 import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class ContactService
@@ -81,10 +80,10 @@ public class ContactService
     }
 
     public Contact createContact(final Contact _entity)
+        throws PreconditionException
     {
         if (!contactRepository.findByIdNumber(_entity.getIdNumber()).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
-                            "Contact with same IdNumber already exists");
+            throw new PreconditionException("Contact with same IdNumber already exists");
         }
         return contactRepository.save(_entity);
     }

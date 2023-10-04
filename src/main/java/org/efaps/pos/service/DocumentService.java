@@ -47,6 +47,7 @@ import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Ticket;
+import org.efaps.pos.error.PreconditionException;
 import org.efaps.pos.interfaces.ICreditNoteListener;
 import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IPos;
@@ -71,9 +72,7 @@ import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class DocumentService
@@ -174,7 +173,8 @@ public class DocumentService
         return orderRepository.insert(_order);
     }
 
-    public Order updateOrder(final String id, final PosOrderDto dto)
+    public Order updateOrder(final String id,
+                             final PosOrderDto dto)
     {
         final var order = orderRepository.findById(id).orElseThrow();
         Converter.mapToEntity(dto, order);
@@ -211,6 +211,7 @@ public class DocumentService
     public Receipt createReceipt(final String _workspaceOid,
                                  final String _orderId,
                                  final Receipt _receipt)
+        throws PreconditionException
     {
         validateOrder(_orderId);
         validateContact(_workspaceOid, _receipt);
@@ -237,6 +238,7 @@ public class DocumentService
     public Invoice createInvoice(final String _workspaceOid,
                                  final String _orderId,
                                  final Invoice _invoice)
+        throws PreconditionException
     {
         validateOrder(_orderId);
         validateContact(_workspaceOid, _invoice);
@@ -263,6 +265,7 @@ public class DocumentService
     public Ticket createTicket(final String _workspaceOid,
                                final String _orderId,
                                final Ticket _ticket)
+        throws PreconditionException
     {
         validateOrder(_orderId);
         validateContact(_workspaceOid, _ticket);
@@ -311,15 +314,13 @@ public class DocumentService
     }
 
     private void validateOrder(final String _orderId)
-        throws ResponseStatusException
+        throws PreconditionException
     {
         final Optional<Order> orderOpt = orderRepository.findById(_orderId);
         if (orderOpt.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "Order cannot be found");
-        } else {
-            if (!DocStatus.OPEN.equals(orderOpt.get().getStatus())) {
-                throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Order must be in state OPEN");
-            }
+            throw new PreconditionException("Order cannot be found");
+        } else if (!DocStatus.OPEN.equals(orderOpt.get().getStatus())) {
+            throw new PreconditionException("Order must be in state OPEN");
         }
     }
 

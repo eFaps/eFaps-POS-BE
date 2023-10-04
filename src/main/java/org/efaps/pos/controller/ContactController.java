@@ -21,11 +21,12 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.error.NotFoundException;
+import org.efaps.pos.error.PreconditionException;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.util.Converter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
  * The Class ProductController.
@@ -52,16 +52,18 @@ public class ContactController
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<ContactDto> getContacts(final Pageable pageable) {
-      return service.getContacts(pageable).map(contact -> Converter.toDto(contact));
+    public Page<ContactDto> getContacts(final Pageable pageable)
+    {
+        return service.getContacts(pageable).map(Converter::toDto);
     }
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ContactDto getContact(@PathVariable final String id)
+        throws NotFoundException
     {
         final var contact = service.findContact(id);
         if (contact == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact not found");
+            throw new NotFoundException("Contact not found");
         }
         return Converter.toDto(contact);
     }
@@ -71,12 +73,13 @@ public class ContactController
                                          @RequestParam(name = "nameSearch", defaultValue = "false") final Boolean _nameSearch)
     {
         return service.findContacts(_term, _nameSearch).stream()
-                        .map(contact -> Converter.toDto(contact))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ContactDto createContact(@RequestBody final ContactDto _posContactDto)
+        throws PreconditionException
     {
         return Converter.toDto(service.createContact(Converter.toEntity(_posContactDto)));
     }

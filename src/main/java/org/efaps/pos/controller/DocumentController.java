@@ -31,11 +31,11 @@ import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Ticket;
+import org.efaps.pos.error.NotFoundException;
+import org.efaps.pos.error.PreconditionException;
 import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.util.Converter;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,7 +46,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(IApi.BASEPATH)
@@ -64,6 +63,7 @@ public class DocumentController
     public PosReceiptDto createReceipt(@PathVariable("oid") final String _oid,
                                        @RequestParam(name = "orderId") final String _orderId,
                                        @RequestBody final PosReceiptDto _receiptDto)
+        throws PreconditionException
     {
         return Converter.toDto(documentService.createReceipt(_oid, _orderId, Converter.toEntity(_receiptDto)));
     }
@@ -72,6 +72,7 @@ public class DocumentController
     public PosInvoiceDto createInvoice(@PathVariable("oid") final String _oid,
                                        @RequestParam(name = "orderId") final String _orderId,
                                        @RequestBody final PosInvoiceDto _invoiceDto)
+        throws PreconditionException
     {
         return Converter.toDto(documentService.createInvoice(_oid, _orderId, Converter.toEntity(_invoiceDto)));
     }
@@ -80,6 +81,7 @@ public class DocumentController
     public PosTicketDto createTicket(@PathVariable("oid") final String _oid,
                                      @RequestParam(name = "orderId") final String _orderId,
                                      @RequestBody final PosTicketDto _ticketDto)
+        throws PreconditionException
     {
         return Converter.toDto(documentService.createTicket(_oid, _orderId, Converter.toEntity(_ticketDto)));
     }
@@ -117,7 +119,7 @@ public class DocumentController
                         ? documentService.getOrders4Spots()
                         : documentService.getOrders();
         return orders.stream()
-                        .map(_order -> Converter.toDto(_order))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -125,7 +127,7 @@ public class DocumentController
     public List<PosOrderDto> getOrders(@RequestParam(name = "status") final DocStatus _status)
     {
         return documentService.getOrders(_status).stream()
-                        .map(_order -> Converter.toDto(_order))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -133,7 +135,7 @@ public class DocumentController
     public List<PosOrderDto> findOrders(@RequestParam(name = "term") final String _term)
     {
         return documentService.findOrders(_term).stream()
-                        .map(_order -> Converter.toDto(_order))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -142,7 +144,7 @@ public class DocumentController
     {
         final Collection<PayableHead> receipts = documentService.getReceiptHeads4Balance(_balanceOid);
         return receipts.stream()
-                        .map(_order -> Converter.toDto(_order))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -151,15 +153,16 @@ public class DocumentController
     {
         final Collection<PayableHead> receipts = documentService.findReceipts(_term);
         return receipts.stream()
-                        .map(_order -> Converter.toDto(_order))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
     @GetMapping(path = "documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE, params = { "ident" })
     public PosReceiptDto getReceiptByIdent(@RequestParam(name = "ident") final String ident)
+        throws NotFoundException
     {
         final var receipt = documentService.findReceipt(ident)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Receipt not found"));
+                        .orElseThrow(() -> new NotFoundException("Receipt not found"));
         return Converter.toDto(receipt);
     }
 
@@ -169,45 +172,49 @@ public class DocumentController
     {
         final var receipt = documentService.getReceipt(_id);
         if (receipt == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receipt not found");
+            throw new NotFoundException("Receipt not found");
         }
         return Converter.toDto(receipt);
     }
 
     @GetMapping(path = "documents/invoices/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosInvoiceDto getInvoice(@PathVariable("id") final String _id)
+        throws NotFoundException
     {
         final var invoice = documentService.getInvoice(_id);
         if (invoice == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found");
+            throw new NotFoundException("Invoice not found");
         }
         return Converter.toDto(invoice);
     }
 
     @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE, params = { "ident" })
     public PosInvoiceDto getInvoiceByIdent(@RequestParam(name = "ident") final String ident)
+        throws NotFoundException
     {
         final var invoice = documentService.findInvoice(ident)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Receipt not found"));
+                        .orElseThrow(() -> new NotFoundException("Receipt not found"));
         return Converter.toDto(invoice);
     }
 
     @GetMapping(path = "documents/tickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosTicketDto getTicket(@PathVariable("id") final String _id)
+        throws NotFoundException
     {
         final Ticket ticket = documentService.getTicket(_id);
         if (ticket == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found");
+            throw new NotFoundException("Ticket not found");
         }
         return Converter.toDto(ticket);
     }
 
     @GetMapping(path = "documents/creditnotes/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosCreditNoteDto getCreditNote(@PathVariable("id") final String _id)
+        throws NotFoundException
     {
         final var creditNote = documentService.getCreditNote(_id);
         if (creditNote == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "CreditNote not found");
+            throw new NotFoundException("CreditNote not found");
         }
         return Converter.toDto(creditNote);
     }
@@ -217,7 +224,7 @@ public class DocumentController
     {
         final Collection<PayableHead> receipts = documentService.getInvoiceHeads4Balance(_balanceOid);
         return receipts.stream()
-                        .map(receipt -> Converter.toDto(receipt))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -226,7 +233,7 @@ public class DocumentController
     {
         final Collection<PayableHead> invoices = documentService.findInvoices(_term);
         return invoices.stream()
-                        .map(invoice -> Converter.toDto(invoice))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -235,7 +242,7 @@ public class DocumentController
     {
         final Collection<PayableHead> receipts = documentService.getTicketHeads4Balance(_balanceOid);
         return receipts.stream()
-                        .map(_order -> Converter.toDto(_order))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -244,7 +251,7 @@ public class DocumentController
     {
         final Collection<PayableHead> tickets = documentService.findTickets(_term);
         return tickets.stream()
-                        .map(ticket -> Converter.toDto(ticket))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -253,7 +260,7 @@ public class DocumentController
     {
         final var creditNotes = documentService.findCreditNotes(_term);
         return creditNotes.stream()
-                        .map(creditNote -> Converter.toDto(creditNote))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -262,7 +269,7 @@ public class DocumentController
     {
         final Collection<PayableHead> receipts = documentService.getCreditNoteHeads4Balance(_balanceOid);
         return receipts.stream()
-                        .map(_order -> Converter.toDto(_order))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -272,7 +279,7 @@ public class DocumentController
     {
         final Collection<CreditNote> creditnotes = documentService.getCreditNotes4SourceDocument(_sourceDocOid);
         return creditnotes.stream()
-                        .map(_order -> Converter.toDto(_order))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 }
