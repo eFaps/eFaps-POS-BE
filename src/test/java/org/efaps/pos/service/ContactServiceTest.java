@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Visibility;
+import org.efaps.pos.error.PreconditionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -116,6 +117,7 @@ public class ContactServiceTest
 
     @Test
     public void testCreateContact()
+        throws PreconditionException
     {
         final Contact contact = new Contact().setOid("11.23").setName("A name");
         contactService.createContact(contact);
