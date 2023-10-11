@@ -51,6 +51,7 @@ public class LogService
         logEntryRepository.save(new LogEntry()
                         .setIdent(logToken.getIdent())
                         .setKey(logDto.getKey())
+                        .setMessage(logDto.getMessage())
                         .setValue(logDto.getValue())
                         .setLevel(logDto.getLevel()));
     }
