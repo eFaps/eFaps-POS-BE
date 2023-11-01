@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2022 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ public class JwtTokenUtil
     private Claims getAllClaimsFromToken(final String token)
     {
         final var key = Keys.hmacShaKeyFor(secret.getBytes());
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
     }
 
     public String generateAccessToken(final UserDetails _userDetails)
@@ -110,10 +110,10 @@ public class JwtTokenUtil
         final Date expirationDate = calculateExpirationDate(createdDate);
         final var key = Keys.hmacShaKeyFor(secret.getBytes());
         return Jwts.builder()
-                        .setClaims(claims)
-                        .setSubject(subject)
-                        .setIssuedAt(createdDate)
-                        .setExpiration(expirationDate)
+                        .claims(claims)
+                        .subject(subject)
+                        .issuedAt(createdDate)
+                        .expiration(expirationDate)
                         .signWith(key)
                         .compact();
     }

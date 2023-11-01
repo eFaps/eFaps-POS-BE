@@ -56,7 +56,7 @@ public class JwtTokenUtilTest
         final String token = jwtTokenUtil.generateAccessToken(new User("testUser", "superSecretPassword",
                         Collections.singletonList(new SimpleGrantedAuthority("admin"))));
         final var key = Keys.hmacShaKeyFor(secret.getBytes());
-        final Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        final Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
         assertEquals("testUser", claims.getSubject());
     }
 
