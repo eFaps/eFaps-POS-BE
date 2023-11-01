@@ -50,6 +50,7 @@ import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.Identifier;
 import org.efaps.pos.sso.SSOClient;
 import org.efaps.pos.util.IdentException;
+import org.efaps.promotionengine.promotion.Promotion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -316,6 +317,22 @@ public class EFapsClient
 
             final var response = getRestTemplate().exchange(requestEntity,
                             new ParameterizedTypeReference<List<ExchangeRateDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final IdentException e) {
+            LOG.error("Catched error during get for ExchangeRateDto", e);
+        }
+        return ret;
+    }
+
+    public List<Promotion> getPromotions() {
+        List<Promotion> ret = null;
+        try {
+            final var requestEntity = get(getEFapsConfig().getPromotionPath());
+
+            final var response = getRestTemplate().exchange(requestEntity,
+                            new ParameterizedTypeReference<List<Promotion>>()
                             {
                             });
             ret = response.getBody();

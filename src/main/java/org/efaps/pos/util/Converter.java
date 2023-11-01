@@ -99,6 +99,7 @@ import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.PromotionEntity;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.Stocktaking;
@@ -130,6 +131,7 @@ import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.service.ProductService;
 import org.efaps.pos.service.UserService;
+import org.efaps.promotionengine.promotion.Promotion;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -1463,5 +1465,19 @@ public final class Converter
                         .withMessage(entity.getMessage())
                         .withCreatedAt(Utils.toOffset(entity.getCreatedDate(), INSTANCE.configProperties.getTimeZone()))
                         .build();
+    }
+
+    public static PromotionEntity toEntity(final Promotion dto)
+    {
+        return new PromotionEntity()
+                        .setOid(dto.getOid())
+                        .setName(dto.getName())
+                        .setDescription(dto.getDescription())
+                        .setPriority(dto.getPriority())
+                        .setStartDateTime(dto.getStartDateTime())
+                        .setEndDateTime(dto.getEndDateTime())
+                        .setSourceConditions(dto.getSourceConditions())
+                        .setTargetConditions(dto.getTargetConditions())
+                        .setActions(dto.getActions());
     }
 }

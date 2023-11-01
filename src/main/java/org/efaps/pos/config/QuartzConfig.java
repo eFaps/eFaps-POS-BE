@@ -51,13 +51,14 @@ public class QuartzConfig
     @Value("${org.quartz.jobs.syncEmployees.interval:0}")
     private Integer syncEmployeesInterval;
 
-    /** The sync interval for products. */
     @Value("${org.quartz.jobs.syncProducts.interval:0}")
     private Integer syncProductsInterval;
 
-    /** The sync interval for products. */
     @Value("${org.quartz.jobs.syncLogs.interval:0}")
     private Integer syncLogsInterval;
+
+    @Value("${org.quartz.jobs.syncPromotions.interval:0}")
+    private Integer syncPromotionsInterval;
 
     @Autowired
     public QuartzConfig(final SyncService _syncService)
@@ -223,6 +224,29 @@ public class QuartzConfig
         stFactory.setJobDetail(syncLogsJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(240 * 1000);
         stFactory.setRepeatInterval(Math.abs(syncLogsInterval) * 1000);
+        return stFactory;
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncPromotions.interval:0} > 0}")
+    public MethodInvokingJobDetailFactoryBean syncPromotionsJobDetailFactoryBean()
+    {
+        final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
+        obj.setTargetObject(syncService);
+        obj.setTargetMethod("runSyncJob");
+        obj.setArguments("syncPromotions");
+        obj.setConcurrent(false);
+        return obj;
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncPromotions.interval:0} > 0}")
+    public SimpleTriggerFactoryBean syncPromotionsTriggerFactoryBean()
+    {
+        final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
+        stFactory.setJobDetail(syncPromotionsJobDetailFactoryBean().getObject());
+        stFactory.setStartDelay(240 * 1000);
+        stFactory.setRepeatInterval(Math.abs(syncPromotionsInterval) * 1000);
         return stFactory;
     }
 }

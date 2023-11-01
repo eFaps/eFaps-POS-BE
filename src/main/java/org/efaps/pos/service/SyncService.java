@@ -60,6 +60,7 @@ import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.PromotionEntity;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.SyncInfo;
@@ -80,6 +81,7 @@ import org.efaps.pos.repository.InvoiceRepository;
 import org.efaps.pos.repository.OrderRepository;
 import org.efaps.pos.repository.PrinterRepository;
 import org.efaps.pos.repository.ProductRepository;
+import org.efaps.pos.repository.PromotionRepository;
 import org.efaps.pos.repository.ReceiptRepository;
 import org.efaps.pos.repository.SequenceRepository;
 import org.efaps.pos.repository.TicketRepository;
@@ -127,6 +129,7 @@ public class SyncService
     private final BalanceRepository balanceRepository;
     private final OrderRepository orderRepository;
     private final CategoryRepository categoryRepository;
+    private final PromotionRepository promotionRepository;
     private final ConfigProperties configProperties;
     private final DocumentService documentService;
     private final ExchangeRateService exchangeRateService;
@@ -152,6 +155,7 @@ public class SyncService
                        final BalanceRepository _balanceRepository,
                        final OrderRepository _orderRepository,
                        final CategoryRepository _categoryRepository,
+                       final PromotionRepository promotionRepository,
                        final EFapsClient _eFapsClient,
                        final ConfigProperties _configProperties,
                        final DocumentService _documentService,
@@ -175,6 +179,7 @@ public class SyncService
         balanceRepository = _balanceRepository;
         orderRepository = _orderRepository;
         categoryRepository = _categoryRepository;
+        this.promotionRepository = promotionRepository;
         eFapsClient = _eFapsClient;
         configProperties = _configProperties;
         documentService = _documentService;
@@ -198,9 +203,24 @@ public class SyncService
         }
     }
 
+    public void syncPromotions()
+    {
+        LOG.debug("Syncing Promotions");
+        final var promotions = eFapsClient.getPromotions();
+        final List<PromotionEntity> existingPromotions = promotionRepository.findAll();
+        existingPromotions.forEach(existing -> {
+            if (!promotions.stream()
+                            .filter(promotion -> promotion.getOid().equals(existing.getOid())).findFirst()
+                            .isPresent()) {
+                promotionRepository.delete(existing);
+            }
+        });
+        promotions.forEach(promotion -> promotionRepository.save(Converter.toEntity(promotion)));
+        registerSync(StashId.CATEGORYSYNC);
+    }
+
     public void syncLogs()
     {
-
         for (final LogEntry entry : logService.getEntriesToBeSynced()) {
             LOG.debug("Syncing LogEntry: {}", entry);
             final var oid = eFapsClient.postLogEntry(Converter.toDto(entry));

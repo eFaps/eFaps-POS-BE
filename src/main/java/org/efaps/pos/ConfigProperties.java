@@ -225,6 +225,17 @@ public class ConfigProperties
         private String employeePath;
         private String stocktakingPath;
         private String logEntryPath;
+        private String promotionPath;
+
+        public String getPromotionPath()
+        {
+            return promotionPath;
+        }
+
+        public void setPromotionPath(String promotionPath)
+        {
+            this.promotionPath = promotionPath;
+        }
 
         public String getLogEntryPath()
         {

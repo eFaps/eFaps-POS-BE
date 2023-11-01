@@ -37,7 +37,8 @@ public enum StashId
     BALANCESYNC("org.efaps.pos.sync.Balance"),
     EXCHANGERATES("org.efaps.pos.ExchangeRates"),
     EXCHANGERATESSYNC("org.efaps.pos.sync.ExchangeRates"),
-    EMPLOYEESYNC("org.efaps.pos.sync.Employee");
+    EMPLOYEESYNC("org.efaps.pos.sync.Employee"),
+    PROMOTIONSYNC("org.efaps.pos.sync.Promotion");
 
     private final String key;
 

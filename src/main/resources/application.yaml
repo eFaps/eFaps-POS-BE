@@ -61,6 +61,7 @@ efaps:
   stocktakingPath: /servlet/rest/pos/{identifier}/stocktakings
   logEntryPath: /servlet/rest/pos/{identifier}/log-entries
 
+
 auth:
   user: Administrator
   password: Administrator
@@ -113,7 +114,7 @@ spring:
 spring:
   config:
     activate:
-      on-profile: api    
+      on-profile: api
 
 efaps:
   backendPath: /api/pos/backend
@@ -139,5 +140,4 @@ efaps:
   employeePath: /api/pos/{identifier}/employees
   stocktakingPath: /api/pos/{identifier}/stocktakings
   logEntryPath: /api/pos/{identifier}/log-entries
-      
-      
+  promotionPath: /api/pos/{identifier}/promotions
