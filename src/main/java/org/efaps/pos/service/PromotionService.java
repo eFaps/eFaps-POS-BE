@@ -17,10 +17,28 @@
 
 package org.efaps.pos.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.efaps.pos.repository.PromotionRepository;
+import org.efaps.pos.util.Converter;
+import org.efaps.promotionengine.promotion.Promotion;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PromotionService
 {
+
+    private final PromotionRepository promotionRepository;
+
+    public PromotionService(final PromotionRepository promotionRepository)
+    {
+        this.promotionRepository = promotionRepository;
+    }
+
+    protected List<Promotion> getPromotions()
+    {
+        return promotionRepository.findAll().stream().map(Converter::toDto).collect(Collectors.toList());
+    }
 
 }

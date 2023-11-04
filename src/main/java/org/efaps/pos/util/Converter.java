@@ -1480,4 +1480,19 @@ public final class Converter
                         .setTargetConditions(dto.getTargetConditions())
                         .setActions(dto.getActions());
     }
+
+    public static Promotion toDto(final PromotionEntity entity)
+    {
+        return Promotion.builder()
+                        .withOid(entity.getOid())
+                        .withName(entity.getName())
+                        .withDescription(entity.getDescription())
+                        .withPriority(entity.getPriority())
+                        .withStartDateTime(entity.getStartDateTime())
+                        .withEndDateTime(entity.getEndDateTime())
+                        .withSourceConditions(entity.getSourceConditions())
+                        .withTargetConditions(entity.getTargetConditions())
+                        .withActions(entity.getActions())
+                        .build();
+    }
 }
