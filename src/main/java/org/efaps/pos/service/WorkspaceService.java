@@ -63,4 +63,5 @@ public class WorkspaceService
         final var workspace = getWorkspace(_oid);
         return workspace == null ? Optional.empty() : Optional.ofNullable(workspace.getWarehouseOid());
     }
+
 }

@@ -21,13 +21,14 @@ import org.efaps.pos.dto.CalculatorRequestDto;
 import org.efaps.pos.dto.CalculatorResponseDto;
 import org.efaps.pos.service.CalculatorService;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(IApi.BASEPATH + "calculator")
+@RequestMapping(IApi.BASEPATH)
 public class CalculatorController
 {
 
@@ -38,10 +39,11 @@ public class CalculatorController
         this.calculatorService = calculatorService;
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CalculatorResponseDto calculate(@RequestBody final CalculatorRequestDto calculatorPayload)
+    @PostMapping(path = "workspaces/{oid}/calculator", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public CalculatorResponseDto calculate(@PathVariable("oid") final String workspaceOid,
+                                           @RequestBody final CalculatorRequestDto calculatorPayload)
     {
-        return calculatorService.calculate(calculatorPayload);
+        return calculatorService.calculate(workspaceOid, calculatorPayload);
     }
 
 }

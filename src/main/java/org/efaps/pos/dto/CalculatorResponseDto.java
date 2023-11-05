@@ -38,6 +38,8 @@ public class CalculatorResponseDto
 
     private final List<CalculatorPositionResponseDto> positions;
 
+    private final BigDecimal payableAmount;
+
     private CalculatorResponseDto(Builder builder)
     {
         this.netTotal = builder.netTotal;
@@ -45,6 +47,7 @@ public class CalculatorResponseDto
         this.taxTotal = builder.taxTotal;
         this.taxes = builder.taxes;
         this.positions = builder.positions;
+        this.payableAmount = builder.payableAmount;
     }
 
     public BigDecimal getNetTotal()
@@ -72,6 +75,11 @@ public class CalculatorResponseDto
         return positions;
     }
 
+    public BigDecimal getPayableAmount()
+    {
+        return payableAmount;
+    }
+
     @Override
     public String toString()
     {
@@ -91,6 +99,7 @@ public class CalculatorResponseDto
         private BigDecimal taxTotal;
         private List<TaxEntryDto> taxes = Collections.emptyList();
         private List<CalculatorPositionResponseDto> positions = Collections.emptyList();
+        private BigDecimal payableAmount;
 
         private Builder()
         {
@@ -123,6 +132,12 @@ public class CalculatorResponseDto
         public Builder withPositions(List<CalculatorPositionResponseDto> positions)
         {
             this.positions = positions;
+            return this;
+        }
+
+        public Builder withPayableAmount(BigDecimal payableAmount)
+        {
+            this.payableAmount = payableAmount;
             return this;
         }
 

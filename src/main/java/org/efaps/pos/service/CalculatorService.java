@@ -17,6 +17,8 @@
 
 package org.efaps.pos.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,9 @@ import org.efaps.pos.dto.CalculatorPositionResponseDto;
 import org.efaps.pos.dto.CalculatorRequestDto;
 import org.efaps.pos.dto.CalculatorResponseDto;
 import org.efaps.pos.dto.TaxEntryDto;
+import org.efaps.pos.dto.WorkspaceFlag;
 import org.efaps.pos.util.Converter;
+import org.efaps.pos.util.Utils;
 import org.efaps.promotionengine.Calculator;
 import org.efaps.promotionengine.api.IDocument;
 import org.efaps.promotionengine.pojo.Document;
@@ -40,19 +44,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class CalculatorService
 {
-
+    private final WorkspaceService workspaceService;
     private final ProductService productService;
     private final PromotionService promotionService;
 
-    public CalculatorService(final ProductService productService,
+    public CalculatorService(final WorkspaceService workspaceService,
+                             final ProductService productService,
                              final PromotionService promotionService)
     {
+        this.workspaceService = workspaceService;
         this.productService = productService;
         this.promotionService = promotionService;
     }
 
-    public CalculatorResponseDto calculate(final CalculatorRequestDto calculatorPayloadDto)
+    public CalculatorResponseDto calculate(final String workspaceOid,
+                                           final CalculatorRequestDto calculatorPayloadDto)
     {
+
         final var document = new Document();
         int i = 0;
         final var taxMap = new HashMap<String, org.efaps.pos.pojo.Tax>();
@@ -78,6 +86,7 @@ public class CalculatorService
                         .withNetTotal(result.getNetTotal())
                         .withTaxTotal(result.getTaxTotal())
                         .withCrossTotal(result.getCrossTotal())
+                        .withPayableAmount(getPayableAmount(workspaceOid, result.getCrossTotal()))
                         .withTaxes(toDto(taxMap, result.getTaxes()))
                         .withPositions(result.getPositions().stream()
                                         .map(pos -> CalculatorPositionResponseDto.builder()
@@ -98,6 +107,16 @@ public class CalculatorService
         final var calculator = new Calculator(getConfig());
         calculator.calc(document, promotionService.getPromotions());
         return document;
+    }
+
+    protected BigDecimal getPayableAmount(final String workspaceOid, final BigDecimal total)
+    {
+        BigDecimal ret = total;
+        final var workspace = workspaceService.getWorkspace(workspaceOid);
+        if (Utils.hasFlag(workspace.getFlags(), WorkspaceFlag.ROUNDPAYABLE)) {
+            ret = total.setScale(1, RoundingMode.FLOOR);
+        }
+        return ret;
     }
 
     protected Configuration getConfig()
