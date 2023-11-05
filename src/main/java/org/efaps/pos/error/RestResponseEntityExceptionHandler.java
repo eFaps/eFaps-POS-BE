@@ -48,4 +48,13 @@ public class RestResponseEntityExceptionHandler
                         .build(), new HttpHeaders(), HttpStatus.PRECONDITION_FAILED);
     }
 
+    @ExceptionHandler({ Exception.class })
+    public ResponseEntity<Object> handleGenericException(final Exception ex,
+                                                          final WebRequest request)
+    {
+        return new ResponseEntity<>(ErrorResponseDto.builder()
+                        .withMessage(ex.getMessage())
+                        .build(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }
