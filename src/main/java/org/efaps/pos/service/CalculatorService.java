@@ -72,6 +72,7 @@ public class CalculatorService
                 return (ITax) new Tax()
                                 .setKey(tax.getKey())
                                 .setPercentage(tax.getPercent())
+                                .setAmount(tax.getAmount())
                                 .setType(EnumUtils.getEnum(TaxType.class, tax.getType().name()));
             }).toList();
             document.addPosition(new Position()
