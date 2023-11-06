@@ -83,8 +83,7 @@ public class SecurityConfig
             .authorizeHttpRequests(authz -> authz
                     .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, IApi.BASEPATH + "authenticate"),
                                     AntPathRequestMatcher.antMatcher(HttpMethod.POST,IApi.BASEPATH + "refreshauth"),
-                                    AntPathRequestMatcher.antMatcher(HttpMethod.POST,IApi.BASEPATH + "logs"),
-                                    AntPathRequestMatcher.antMatcher(HttpMethod.POST,IApi.BASEPATH + "calculator"))
+                                    AntPathRequestMatcher.antMatcher(HttpMethod.POST,IApi.BASEPATH + "logs"))
                     .permitAll()
                     .requestMatchers(getIgnore()).permitAll()
                     .anyRequest().authenticated());
@@ -104,7 +103,7 @@ public class SecurityConfig
             IApi.BASEPATH + "logs")
         .and()
         .ignoring()
-        .requestMatchers(HttpMethod.GET, IApi.BASEPATH + "users", IApi.BASEPATH + "companies", IApi.BASEPATH + "health", IApi.BASEPATH + "calculator")
+        .requestMatchers(HttpMethod.GET, IApi.BASEPATH + "users", IApi.BASEPATH + "companies", IApi.BASEPATH + "health")
         .and()
         .ignoring()
         .requestMatchers(HttpMethod.GET, getIgnorePaths())

@@ -19,7 +19,7 @@ package org.efaps.pos.controller;
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PosVersionsDto;
-import org.efaps.pos.entity.Config;
+import org.efaps.pos.service.ConfigService;
 import org.efaps.pos.service.SyncService;
 import org.efaps.pos.util.SyncServiceDeactivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(IApi.BASEPATH + "admin")
 public class AdminController
 {
-
+    private final ConfigService configService;
     /** The sync service. */
     private final SyncService syncService;
 
@@ -41,10 +41,12 @@ public class AdminController
     private final MongoTemplate mongoTemplate;
 
     @Autowired
-    public AdminController(final ConfigProperties _properties,
+    public AdminController(final ConfigService configService,
+                           final ConfigProperties _properties,
                            final SyncService _syncService,
                            final MongoTemplate _mongoTemplate)
     {
+        this.configService = configService;
         syncService = _syncService;
         properties = _properties;
         mongoTemplate = _mongoTemplate;
@@ -73,8 +75,7 @@ public class AdminController
     @GetMapping(path = "/versions")
     public PosVersionsDto version()
     {
-        final Config config = mongoTemplate.findById(Config.KEY, Config.class);
-        final String remote = config.getProperties().getOrDefault("org.efaps.pos.Version", "0.0.0");
+        final String remote =  configService.getOrDefault("org.efaps.pos.Version", "0.0.0");
         return PosVersionsDto.builder()
                         .withRemote(remote)
                         .withLocal(properties.getVersion()).build();

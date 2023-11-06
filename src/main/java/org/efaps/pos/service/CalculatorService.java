@@ -44,14 +44,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class CalculatorService
 {
+
+    private final ConfigService configService;
     private final WorkspaceService workspaceService;
     private final ProductService productService;
     private final PromotionService promotionService;
 
-    public CalculatorService(final WorkspaceService workspaceService,
+    public CalculatorService(final ConfigService configService,
+                             final WorkspaceService workspaceService,
                              final ProductService productService,
                              final PromotionService promotionService)
     {
+        this.configService = configService;
         this.workspaceService = workspaceService;
         this.productService = productService;
         this.promotionService = promotionService;
@@ -110,7 +114,8 @@ public class CalculatorService
         return document;
     }
 
-    protected BigDecimal getPayableAmount(final String workspaceOid, final BigDecimal total)
+    protected BigDecimal getPayableAmount(final String workspaceOid,
+                                          final BigDecimal total)
     {
         BigDecimal ret = total;
         final var workspace = workspaceService.getWorkspace(workspaceOid);
@@ -122,7 +127,7 @@ public class CalculatorService
 
     protected Configuration getConfig()
     {
-        return new Configuration();
+        return configService.getCalculatorConfig();
     }
 
     protected List<TaxEntryDto> toDto(final Map<String, org.efaps.pos.pojo.Tax> taxMap,

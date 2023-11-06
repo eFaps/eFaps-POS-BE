@@ -18,12 +18,10 @@ package org.efaps.pos.controller;
 
 import java.util.List;
 
-import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.ConfigProperties.Extension;
 import org.efaps.pos.config.IApi;
-import org.efaps.pos.entity.Config;
+import org.efaps.pos.service.ConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,26 +32,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(IApi.BASEPATH + "config")
 public class ConfigController
 {
-    private final MongoTemplate mongoTemplate;
-    private final ConfigProperties configProperties;
+
+    private final ConfigService configService;
 
     @Autowired
-    public ConfigController(final MongoTemplate _mongoTemplate, final ConfigProperties _configProperties)
+    public ConfigController(final ConfigService configService)
     {
-        mongoTemplate = _mongoTemplate;
-        configProperties = _configProperties;
+        this.configService = configService;
     }
 
-    @GetMapping(produces = { MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE}, path = "/system/{key}")
-    public String getSystemConfig(@PathVariable(name = "key") final String _key)
+    @GetMapping(produces = { MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE }, path = "/system/{key}")
+    public String getSystemConfig(@PathVariable(name = "key") final String key)
     {
-        final Config config = mongoTemplate.findById(Config.KEY, Config.class);
-        return config.getProperties().get(_key);
+        return configService.getSystemConfig(key);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/extensions")
     public List<Extension> getExtensions()
     {
-        return configProperties.getExtensions();
+        return configService.getExtensions();
     }
 }

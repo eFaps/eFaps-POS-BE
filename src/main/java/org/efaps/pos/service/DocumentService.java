@@ -40,7 +40,6 @@ import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
-import org.efaps.pos.entity.Config;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
@@ -80,6 +79,7 @@ public class DocumentService
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
 
+    private final ConfigService configService;
     private final PosService posService;
     private final SequenceService sequenceService;
     private final ContactService contactService;
@@ -99,6 +99,7 @@ public class DocumentService
 
     @Autowired
     public DocumentService(final MongoTemplate _mongoTemplate,
+                           final ConfigService configService,
                            final PosService _posService,
                            final SequenceService _sequenceService,
                            final ContactService _contactService,
@@ -115,6 +116,7 @@ public class DocumentService
                            final Optional<List<ICreditNoteListener>> _creditNoteListener)
     {
         mongoTemplate = _mongoTemplate;
+        this.configService = configService;
         posService = _posService;
         sequenceService = _sequenceService;
         orderRepository = _orderRepository;
@@ -219,11 +221,10 @@ public class DocumentService
         Receipt ret = receiptRepository.insert(_receipt);
         try {
             if (!receiptListeners.isEmpty()) {
-                final Config config = mongoTemplate.findById(Config.KEY, Config.class);
                 PosReceiptDto dto = Converter.toDto(ret);
                 for (final IReceiptListener listener : receiptListeners) {
                     dto = (PosReceiptDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
-                                    config.getProperties());
+                                    configService.getProperties());
                 }
                 ret = receiptRepository.save(Converter.mapToEntity(dto, ret));
             }
@@ -246,11 +247,10 @@ public class DocumentService
         Invoice ret = invoiceRepository.insert(_invoice);
         try {
             if (!invoiceListeners.isEmpty()) {
-                final Config config = mongoTemplate.findById(Config.KEY, Config.class);
                 PosInvoiceDto dto = Converter.toDto(ret);
                 for (final IInvoiceListener listener : invoiceListeners) {
                     dto = (PosInvoiceDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
-                                    config.getProperties());
+                                    configService.getProperties());
                 }
                 ret = invoiceRepository.save(Converter.mapToEntity(dto, ret));
             }
@@ -273,11 +273,10 @@ public class DocumentService
         Ticket ret = ticketRepository.insert(_ticket);
         try {
             if (!ticketListeners.isEmpty()) {
-                final Config config = mongoTemplate.findById(Config.KEY, Config.class);
                 PosTicketDto dto = Converter.toDto(ret);
                 for (final ITicketListener listener : ticketListeners) {
                     dto = (PosTicketDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
-                                    config.getProperties());
+                                    configService.getProperties());
                 }
                 ret = ticketRepository.save(Converter.mapToEntity(dto, ret));
             }
@@ -299,11 +298,11 @@ public class DocumentService
         CreditNote ret = creditNoteRepository.insert(_creditNote);
         try {
             if (!creditNoteListeners.isEmpty()) {
-                final Config config = mongoTemplate.findById(Config.KEY, Config.class);
+
                 PosCreditNoteDto dto = Converter.toDto(ret);
                 for (final ICreditNoteListener listener : creditNoteListeners) {
                     dto = (PosCreditNoteDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
-                                    config.getProperties());
+                                    configService.getProperties());
                 }
                 ret = creditNoteRepository.save(Converter.mapToEntity(dto, ret));
             }
