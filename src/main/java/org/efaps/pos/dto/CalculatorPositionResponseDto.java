@@ -38,6 +38,8 @@ public class CalculatorPositionResponseDto
 
     private final BigDecimal taxAmount;
 
+    private final BigDecimal crossUnitPrice;
+
     private final BigDecimal crossPrice;
 
     private CalculatorPositionResponseDto(Builder builder)
@@ -48,6 +50,7 @@ public class CalculatorPositionResponseDto
         this.netPrice = builder.netPrice;
         this.taxes = builder.taxes;
         this.taxAmount = builder.taxAmount;
+        this.crossUnitPrice = builder.crossUnitPrice;
         this.crossPrice = builder.crossPrice;
     }
 
@@ -64,6 +67,11 @@ public class CalculatorPositionResponseDto
     public BigDecimal getNetUnitPrice()
     {
         return netUnitPrice;
+    }
+
+    public BigDecimal getCrossUnitPrice()
+    {
+        return crossUnitPrice;
     }
 
     public BigDecimal getNetPrice()
@@ -100,6 +108,7 @@ public class CalculatorPositionResponseDto
         private BigDecimal netPrice;
         private List<TaxEntryDto> taxes = Collections.emptyList();
         private BigDecimal taxAmount;
+        private BigDecimal crossUnitPrice;
         private BigDecimal crossPrice;
 
         private Builder()
@@ -139,6 +148,12 @@ public class CalculatorPositionResponseDto
         public Builder withTaxAmount(BigDecimal taxAmount)
         {
             this.taxAmount = taxAmount;
+            return this;
+        }
+
+        public Builder withCrossUnitPrice(BigDecimal crossUnitPrice)
+        {
+            this.crossUnitPrice = crossUnitPrice;
             return this;
         }
 

@@ -99,6 +99,7 @@ public class CalculatorService
                                                         .withProductOid(pos.getProductOid())
                                                         .withNetUnitPrice(pos.getNetUnitPrice())
                                                         .withNetPrice(pos.getNetPrice())
+                                                        .withCrossUnitPrice(pos.getCrossUnitPrice())
                                                         .withCrossPrice(pos.getCrossPrice())
                                                         .withTaxAmount(pos.getTaxAmount())
                                                         .withTaxes(toDto(taxMap, pos.getTaxes()))
