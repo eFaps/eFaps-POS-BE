@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.service.ProductService;
@@ -52,7 +53,7 @@ public class ProductController
     public Page<ProductDto> getProducts(final Pageable pageable)
     {
         return service.getProducts(pageable)
-                        .map(product -> Converter.toDto(product));
+                        .map(Converter::toDto);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "{productOid}")
@@ -66,15 +67,29 @@ public class ProductController
                                          @RequestParam(name = "textsearch", required = false) final boolean textSearch)
     {
         return service.findProducts(_term, textSearch).stream()
-                        .map(product -> Converter.toDto(product))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "category" })
-    public List<ProductDto> getProductsByCategory(@RequestParam(name = "category") final String _categoryOid)
+    public List<ProductDto> getProductsByCategory(@RequestParam(name = "category") final String categoryOid)
     {
-        return service.findProductsByCategory(_categoryOid).stream()
-                        .map(product -> Converter.toDto(product))
+        return service.findProductsByCategory(categoryOid).stream()
+                        .map(Converter::toDto)
+                        .sorted((productDto0,
+                                 productDto1) -> {
+                            final var sort0 = productDto0.getCategories()
+                                            .stream()
+                                            .filter(catDto -> catDto.getCategoryOid().equals(categoryOid))
+                                            .map(Product2CategoryDto::getWeight)
+                                            .findFirst().orElse(0);
+                            final var sort1 = productDto1.getCategories()
+                                            .stream()
+                                            .filter(catDto -> catDto.getCategoryOid().equals(categoryOid))
+                                            .map(Product2CategoryDto::getWeight)
+                                            .findFirst().orElse(0);
+                            return sort0.compareTo(sort1);
+                        })
                         .collect(Collectors.toList());
     }
 
@@ -82,7 +97,7 @@ public class ProductController
     public List<ProductDto> getProductsByBarcode(@RequestParam(name = "barcode") final String barcode)
     {
         return service.findProductsByBarcode(barcode).stream()
-                        .map(product -> Converter.toDto(product))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -90,7 +105,7 @@ public class ProductController
     public List<ProductDto> getProductsByType(@RequestParam(name = "type") final ProductType type)
     {
         return service.findProductsByType(type).stream()
-                        .map(product -> Converter.toDto(product))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
