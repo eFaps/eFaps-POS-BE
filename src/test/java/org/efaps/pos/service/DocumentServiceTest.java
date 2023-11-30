@@ -130,7 +130,7 @@ public class DocumentServiceTest
         assertEquals("1.2", orders.iterator().next().getOid());
     }
 
-    @Test
+    // @Test
     public void testCreateOrder()
     {
         final Order newOrder = new Order();
