@@ -16,8 +16,6 @@
  */
 package org.efaps.pos.service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +35,6 @@ import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.AbstractDocument;
-import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.CreditNote;
@@ -171,7 +168,6 @@ public class DocumentService
     public Order createOrder(final Order _order)
     {
         _order.setNumber(sequenceService.getNextOrder());
-        verifyDocument(_order);
         return orderRepository.insert(_order);
     }
 
@@ -180,21 +176,7 @@ public class DocumentService
     {
         final var order = orderRepository.findById(id).orElseThrow();
         Converter.mapToEntity(dto, order);
-        verifyDocument(order);
         return orderRepository.save(order);
-    }
-
-    private void verifyDocument(final AbstractDocument<?> _document)
-    {
-        final BigDecimal netTotal = _document.getNetTotal().setScale(2, RoundingMode.HALF_UP);
-        _document.setNetTotal(netTotal);
-        BigDecimal taxTotal = BigDecimal.ZERO;
-        for (final TaxEntry taxEntry : _document.getTaxes()) {
-            final BigDecimal amount = taxEntry.getAmount().setScale(2, RoundingMode.HALF_UP);
-            taxEntry.setAmount(amount);
-            taxTotal = taxTotal.add(amount);
-        }
-        _document.setCrossTotal(netTotal.add(taxTotal).setScale(2, RoundingMode.HALF_UP));
     }
 
     public void deleteOrder(final String _orderId)
