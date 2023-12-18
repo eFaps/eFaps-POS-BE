@@ -23,7 +23,6 @@ import org.efaps.pos.service.ConfigService;
 import org.efaps.pos.service.SyncService;
 import org.efaps.pos.util.SyncServiceDeactivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,18 +37,14 @@ public class AdminController
 
     private final ConfigProperties properties;
 
-    private final MongoTemplate mongoTemplate;
-
     @Autowired
     public AdminController(final ConfigService configService,
                            final ConfigProperties _properties,
-                           final SyncService _syncService,
-                           final MongoTemplate _mongoTemplate)
+                           final SyncService _syncService)
     {
         this.configService = configService;
         syncService = _syncService;
         properties = _properties;
-        mongoTemplate = _mongoTemplate;
     }
 
     @GetMapping(path = "/sync")

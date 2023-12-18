@@ -328,6 +328,12 @@ public class DocumentService
                         Example.of(new Receipt().setId(_identifier).setOid(_identifier), ExampleMatcher.matchingAny()));
     }
 
+    public Optional<CreditNote> findCreditNote(final String _identifier)
+    {
+        return creditNoteRepository.findOne(
+                        Example.of(new CreditNote().setId(_identifier).setOid(_identifier), ExampleMatcher.matchingAny()));
+    }
+
     public Collection<Receipt> getReceipts4Balance(final String _key)
     {
         return receiptRepository.findByBalanceOid(evalBalanceOid(_key));
@@ -532,6 +538,45 @@ public class DocumentService
     public Collection<CreditNote> getCreditNotes4SourceDocument(final String sourceDocOid)
     {
         return creditNoteRepository.findBySourceDocOid(sourceDocOid);
+    }
+
+    public void retrigger4Receipt(final String identifier)
+    {
+        LOG.warn("Retriggering for Receipt: {}", identifier);
+        final var entity = findReceipt(identifier);
+        if (entity.isPresent()) {
+            final var dto = Converter.toDto(entity.get());
+            for (final var listener : receiptListeners) {
+                LOG.warn("Retriggering listener for dto: {}", dto);
+                listener.onCreate(null, dto, configService.getProperties());
+            }
+        }
+    }
+
+    public void retrigger4Invoice(final String identifier)
+    {
+        LOG.warn("Retriggering for Invoice: {}", identifier);
+        final var entity = findInvoice(identifier);
+        if (entity.isPresent()) {
+            final var dto = Converter.toDto(entity.get());
+            for (final var listener : invoiceListeners) {
+                LOG.warn("Retriggering listener for dto: {}", dto);
+                listener.onCreate(null, dto, configService.getProperties());
+            }
+        }
+    }
+
+    public void retrigger4CreditNote(final String identifier)
+    {
+        LOG.warn("Retriggering for CreditNote: {}", identifier);
+        final var entity = findCreditNote(identifier);
+        if (entity.isPresent()) {
+            final var dto = Converter.toDto(entity.get());
+            for (final var listener : creditNoteListeners) {
+                LOG.warn("Retriggering listener for dto: {}", dto);
+                listener.onCreate(null, dto, configService.getProperties());
+            }
+        }
     }
 
     private void validateContact(final String _workspaceOid,
