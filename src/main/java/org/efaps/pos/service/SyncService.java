@@ -46,6 +46,7 @@ import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.TicketDto;
+import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Category;
@@ -538,32 +539,7 @@ public class SyncService
         LOG.info("Syncing Canceled Orders");
         final Collection<Order> tosync = orderRepository.findByOidIsNullAndStatus(DocStatus.CANCELED);
         for (final Order order : tosync) {
-            LOG.debug("Syncing Order: {}", order);
-            final OrderDto recDto = eFapsClient.postOrder(Converter.toOrderDto(order));
-            LOG.debug("received Order: {}", recDto);
-            if (recDto.getOid() != null) {
-                final Optional<Order> orderOpt = orderRepository.findById(recDto.getId());
-                if (orderOpt.isPresent()) {
-                    final Order retOrder = orderOpt.get();
-                    retOrder.setOid(recDto.getOid());
-                    orderRepository.save(retOrder);
-                }
-            }
-        }
-        LOG.info("Syncing Closed Orders");
-        final Collection<Order> tosync2 = orderRepository.findByOidIsNullAndStatus(DocStatus.CLOSED);
-        for (final Order order : tosync2) {
-            boolean sync = true;
-            if (order.getPayableOid() != null && !Utils.isOid(order.getPayableOid())) {
-                final AbstractPayableDocument<?> payable = documentService.getPayable(order.getPayableOid());
-                if (payable != null && Utils.isOid(payable.getOid())) {
-                    order.setPayableOid(payable.getOid());
-                    orderRepository.save(order);
-                } else {
-                    sync = false;
-                }
-            }
-            if (sync) {
+            if (validateContact(order)) {
                 LOG.debug("Syncing Order: {}", order);
                 final OrderDto recDto = eFapsClient.postOrder(Converter.toOrderDto(order));
                 LOG.debug("received Order: {}", recDto);
@@ -575,8 +551,37 @@ public class SyncService
                         orderRepository.save(retOrder);
                     }
                 }
-            } else {
-                LOG.info("skipped Order: {}", order);
+            }
+        }
+        LOG.info("Syncing Closed Orders");
+        final Collection<Order> tosync2 = orderRepository.findByOidIsNullAndStatus(DocStatus.CLOSED);
+        for (final Order order : tosync2) {
+            if (validateContact(order)) {
+                boolean sync = true;
+                if (order.getPayableOid() != null && !Utils.isOid(order.getPayableOid())) {
+                    final AbstractPayableDocument<?> payable = documentService.getPayable(order.getPayableOid());
+                    if (payable != null && Utils.isOid(payable.getOid())) {
+                        order.setPayableOid(payable.getOid());
+                        orderRepository.save(order);
+                    } else {
+                        sync = false;
+                    }
+                }
+                if (sync) {
+                    LOG.debug("Syncing Order: {}", order);
+                    final OrderDto recDto = eFapsClient.postOrder(Converter.toOrderDto(order));
+                    LOG.debug("received Order: {}", recDto);
+                    if (recDto.getOid() != null) {
+                        final Optional<Order> orderOpt = orderRepository.findById(recDto.getId());
+                        if (orderOpt.isPresent()) {
+                            final Order retOrder = orderOpt.get();
+                            retOrder.setOid(recDto.getOid());
+                            orderRepository.save(retOrder);
+                        }
+                    }
+                } else {
+                    LOG.info("skipped Order: {}", order);
+                }
             }
         }
     }
@@ -739,18 +744,18 @@ public class SyncService
         return ret;
     }
 
-    private boolean validateContact(final AbstractPayableDocument<?> _entity)
+    private boolean validateContact(final AbstractDocument<?> entity)
     {
         boolean ret = false;
-        if (Utils.isOid(_entity.getContactOid())) {
-            ret = contactRepository.findOneByOid(_entity.getContactOid()).isPresent();
-        } else if (_entity.getContactOid() != null) {
-            final Optional<Contact> optContact = contactRepository.findById(_entity.getContactOid());
+        if (Utils.isOid(entity.getContactOid())) {
+            ret = contactRepository.findOneByOid(entity.getContactOid()).isPresent();
+        } else if (entity.getContactOid() != null) {
+            final Optional<Contact> optContact = contactRepository.findById(entity.getContactOid());
             if (optContact.isPresent()) {
                 final String contactOid = optContact.get().getOid();
                 if (Utils.isOid(contactOid)) {
-                    _entity.setContactOid(contactOid);
-                    mongoTemplate.save(_entity);
+                    entity.setContactOid(contactOid);
+                    mongoTemplate.save(entity);
                     ret = true;
                 }
             }
