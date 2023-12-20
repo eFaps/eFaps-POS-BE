@@ -226,6 +226,17 @@ public class ConfigProperties
         private String stocktakingPath;
         private String logEntryPath;
         private String promotionPath;
+        private String reportToBasePath;
+
+        public String getReportToBasePath()
+        {
+            return reportToBasePath;
+        }
+
+        public void setReportToBasePath(String reportToBasePath)
+        {
+            this.reportToBasePath = reportToBasePath;
+        }
 
         public String getPromotionPath()
         {

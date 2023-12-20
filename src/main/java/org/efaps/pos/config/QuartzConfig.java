@@ -16,6 +16,7 @@
  */
 package org.efaps.pos.config;
 
+import org.efaps.pos.service.MonitoringService;
 import org.efaps.pos.service.SyncService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,8 @@ public class QuartzConfig
 {
 
     private final SyncService syncService;
+
+    private final MonitoringService monitoringService;
 
     /** The sync interval for receipts. */
     @Value("${org.quartz.jobs.syncPayables.interval}")
@@ -60,10 +63,15 @@ public class QuartzConfig
     @Value("${org.quartz.jobs.syncPromotions.interval:0}")
     private Integer syncPromotionsInterval;
 
+    @Value("${org.quartz.jobs.reportToBase.interval:3600}")
+    private Integer reportToBaseInterval;
+
     @Autowired
-    public QuartzConfig(final SyncService _syncService)
+    public QuartzConfig(final SyncService _syncService,
+                        final MonitoringService monitoringService)
     {
         syncService = _syncService;
+        this.monitoringService = monitoringService;
     }
 
     @Bean
@@ -247,6 +255,28 @@ public class QuartzConfig
         stFactory.setJobDetail(syncPromotionsJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(240 * 1000);
         stFactory.setRepeatInterval(Math.abs(syncPromotionsInterval) * 1000);
+        return stFactory;
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.reportToBase.interval:3600} > 0}")
+    public MethodInvokingJobDetailFactoryBean reportToBaseJobDetailFactoryBean()
+    {
+        final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
+        obj.setTargetObject(monitoringService);
+        obj.setTargetMethod("reportToBase");
+        obj.setConcurrent(false);
+        return obj;
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.reportToBase.interval:3600} > 0}")
+    public SimpleTriggerFactoryBean reportToBaseTriggerFactoryBean()
+    {
+        final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
+        stFactory.setJobDetail(reportToBaseJobDetailFactoryBean().getObject());
+        stFactory.setStartDelay(240 * 1000);
+        stFactory.setRepeatInterval(Math.abs(reportToBaseInterval) * 1000);
         return stFactory;
     }
 }

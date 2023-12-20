@@ -41,6 +41,7 @@ import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ReceiptDto;
+import org.efaps.pos.dto.ReportToBaseDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.StocktakingDto;
 import org.efaps.pos.dto.TicketDto;
@@ -475,6 +476,15 @@ public class EFapsClient
             LOG.error("Catched error during post for LogEntry", e);
         }
         return ret;
+    }
+
+    public void postReportToBase(final ReportToBaseDto dto) {
+        try {
+            final RequestEntity<ReportToBaseDto> requestEntity = post(getEFapsConfig().getReportToBasePath(), dto);
+            getRestTemplate().exchange(requestEntity, Void.class);
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during post for ReportToBase", e);
+        }
     }
 
     public Checkout checkout(final String _oid)
