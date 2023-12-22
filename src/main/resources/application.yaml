@@ -71,6 +71,10 @@ taxpayerRegistry:
   baseUrl: https://consulta-ruc.synercom.pe
   queryPath: query
 
+enquiry:
+  baseUrl: https://enquiry.synercom.pe/api
+  dniPath: dni/{number}
+
 jwt:
   secret: ThisIsNotVerySecretButItIsAtLeastLongEnoughToHaveMoreThan256Bits
   expiration: 300  #accessToken expiration in seconds

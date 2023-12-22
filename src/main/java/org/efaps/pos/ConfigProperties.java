@@ -53,6 +53,8 @@ public class ConfigProperties
 
     private final TaxpayerRegistry taxpayerRegistry = new TaxpayerRegistry();
 
+    private final Enquiry enquiry = new Enquiry();
+
     private final List<Extension> extensions = new ArrayList<>();
 
     private final List<LogToken> logTokens = new ArrayList<>();
@@ -137,6 +139,11 @@ public class ConfigProperties
     public TaxpayerRegistry getTaxpayerRegistry()
     {
         return taxpayerRegistry;
+    }
+
+    public Enquiry getEnquiry()
+    {
+        return enquiry;
     }
 
     public boolean isSyncOnStartup()
@@ -748,4 +755,32 @@ public class ConfigProperties
             this.uri = uri;
         }
     }
+
+    public static class Enquiry
+    {
+
+        private URI baseUrl;
+        private String dniPath;
+
+        public String getDniPath()
+        {
+            return dniPath;
+        }
+
+        public void setDniPath(String dniPath)
+        {
+            this.dniPath = dniPath;
+        }
+
+        public URI getBaseUrl()
+        {
+            return baseUrl;
+        }
+
+        public void setBaseUrl(final URI _baseUrl)
+        {
+            baseUrl = _baseUrl;
+        }
+    }
+
 }

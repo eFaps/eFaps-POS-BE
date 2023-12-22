@@ -1,0 +1,67 @@
+/*
+ * Copyright 2003 - 2023 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package org.efaps.pos.client;
+
+import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.dto.DNIDto;
+import org.efaps.pos.sso.SSOClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.util.UriComponentsBuilder;
+
+@Service
+public class EnquiryClient
+    extends AbstractRestClient
+{
+
+    private static final Logger LOG = LoggerFactory.getLogger(TaxpayerRegistryClient.class);
+
+    public EnquiryClient(final RestTemplateBuilder restTemplateBuilder,
+                         final ConfigProperties config,
+                         final SSOClient ssoClient)
+    {
+        super(restTemplateBuilder, config, ssoClient);
+    }
+
+    public DNIDto getDNI(final String number)
+    {
+        DNIDto ret = null;
+        try {
+            final var uri = UriComponentsBuilder.fromUri(getConfig().getEnquiry().getBaseUrl())
+                            .pathSegment(getConfig().getEnquiry().getDniPath())
+                            .buildAndExpand(number)
+                            .toUri();
+
+            final var requestEntity = addHeader(RequestEntity.get(uri)).build();
+            final ResponseEntity<DNIDto> response = getRestTemplate()
+                            .exchange(requestEntity, new ParameterizedTypeReference<DNIDto>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of dni", e);
+        }
+        return ret;
+    }
+
+}
