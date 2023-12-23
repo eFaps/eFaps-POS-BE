@@ -38,7 +38,7 @@ public class EnquiryController
     }
 
     @GetMapping(path = "/dni/{number}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public DNIDto get(@PathVariable final String number)
+    public DNIDto get(@PathVariable("number") final String number)
     {
         return enquiryService.getDNI(number);
     }
