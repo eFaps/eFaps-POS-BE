@@ -17,18 +17,25 @@
 package org.efaps.pos.service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
+import org.apache.commons.lang3.SystemProperties;
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.ConfigProperties.Company;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.ReportToBaseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MonitoringService
 {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MonitoringService.class);
 
     private final ConfigProperties configProperties;
     private final EFapsClient eFapsClient;
@@ -44,8 +51,25 @@ public class MonitoringService
         throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
         InvocationTargetException
     {
+        var instalationId = "";
+        try {
+            instalationId = String.valueOf(InetAddress.getLocalHost());
+
+            instalationId = String.format("%s - %s - %s - %s - %s - %s - %s",
+                            InetAddress.getLocalHost(),
+                            SystemProperties.getOsName(),
+                            SystemProperties.getOsVersion(),
+                            SystemProperties.getOsArch(),
+                            SystemProperties.getJavaVersion(),
+                            SystemProperties.getJavaVmName(),
+                            SystemProperties.getUserName());
+        } catch (final UnknownHostException e) {
+            LOG.error("Catched error during evaluation of InstalationId", e);
+        }
+
         final var dto = ReportToBaseDto.builder()
                         .withVersion(configProperties.getVersion())
+                        .withInstalationId(instalationId)
                         .build();
         if (configProperties.getCompanies().size() > 0) {
             for (final Company company : configProperties.getCompanies()) {
