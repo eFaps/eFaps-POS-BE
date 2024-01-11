@@ -53,8 +53,6 @@ public class MonitoringService
     {
         var instalationId = "";
         try {
-            instalationId = String.valueOf(InetAddress.getLocalHost());
-
             instalationId = String.format("%s - %s - %s - %s - %s - %s - %s",
                             InetAddress.getLocalHost(),
                             SystemProperties.getOsName(),
