@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = CalculatorPositionRequestDto.Builder.class)
@@ -57,6 +58,7 @@ public class CalculatorPositionRequestDto
         return new Builder();
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder
     {
 
