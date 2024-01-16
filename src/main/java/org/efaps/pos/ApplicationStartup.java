@@ -91,6 +91,7 @@ public class ApplicationStartup
                 service.syncWorkspaces();
                 service.syncAllProducts();
                 service.syncCategories();
+                service.syncPromotions();
                 service.syncBalance();
                 service.syncReceipts();
                 service.syncInvoices();

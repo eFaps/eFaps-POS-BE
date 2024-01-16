@@ -33,28 +33,34 @@ import org.efaps.pos.dto.CalculatorRequestDto;
 import org.efaps.pos.dto.CalculatorResponseDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.dto.WorkspaceFlag;
+import org.efaps.pos.entity.Identifier;
 import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.Utils;
 import org.efaps.promotionengine.Calculator;
 import org.efaps.promotionengine.api.IDocument;
+import org.efaps.promotionengine.condition.StoreCondition;
 import org.efaps.promotionengine.pojo.Document;
 import org.efaps.promotionengine.pojo.Position;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CalculatorService
 {
 
+    private final MongoTemplate mongoTemplate;
     private final ConfigService configService;
     private final WorkspaceService workspaceService;
     private final ProductService productService;
     private final PromotionService promotionService;
 
-    public CalculatorService(final ConfigService configService,
+    public CalculatorService(final MongoTemplate mongoTemplate,
+                             final ConfigService configService,
                              final WorkspaceService workspaceService,
                              final ProductService productService,
                              final PromotionService promotionService)
     {
+        this.mongoTemplate = mongoTemplate;
         this.configService = configService;
         this.workspaceService = workspaceService;
         this.productService = productService;
@@ -111,7 +117,7 @@ public class CalculatorService
     public IDocument calculate(final IDocument document)
     {
         final var calculator = new Calculator(getConfig());
-        calculator.calc(document, promotionService.getPromotions());
+        calculator.calc(document, promotionService.getPromotions(), evalData());
         return document;
     }
 
@@ -146,4 +152,15 @@ public class CalculatorService
                         .withTax(Converter.toDto(taxMap.get(tax.getKey())))
                         .build();
     }
+
+    protected Map<String, Object> evalData()
+    {
+        final Map<String, Object> map = new HashMap<>();
+        final Identifier identifier = mongoTemplate.findById(Identifier.KEY, Identifier.class);
+        if (identifier != null) {
+            map.put(StoreCondition.KEY, identifier.getIdentifier());
+        }
+        return map;
+    }
+
 }
