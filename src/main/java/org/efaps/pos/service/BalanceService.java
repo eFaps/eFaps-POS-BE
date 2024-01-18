@@ -134,10 +134,19 @@ public class BalanceService
                         ? balance.getId()
                         : balance.getOid());
 
+        creditNotes.forEach(nc -> {
+           nc.setCrossTotal(nc.getCrossTotal().negate());
+           nc.setNetTotal(nc.getNetTotal().negate());
+           nc.getTaxes().forEach(tax -> {
+              tax.setAmount(tax.getAmount().negate());
+           });
+        });
+        
         final List<AbstractPayableDocument<?>> all = new ArrayList<>();
         all.addAll(invoices);
         all.addAll(receipts);
         all.addAll(tickets);
+        all.addAll(creditNotes);
 
         final BalanceSummaryDetailDto detail = getDetail(all);
         final BalanceSummaryDetailDto invoiceDetail = getDetail(invoices);
@@ -190,20 +199,26 @@ public class BalanceService
         }
 
         final BigDecimal netTotal = _payable.stream()
-                        .map(AbstractPayableDocument::getNetTotal)
+                        .map(document -> {
+                            return negate(document, document.getNetTotal());
+                        })
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         final BigDecimal crossTotal = _payable.stream()
-                        .map(AbstractPayableDocument::getCrossTotal)
+                        .map(document -> {
+                            return negate(document, document.getCrossTotal());
+                        })
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        final List<TaxEntry> taxes = _payable.stream().map(invoice -> invoice.getTaxes())
+        final List<TaxEntry> taxes = _payable.stream()
+                        .map(invoice -> invoice.getTaxes())
                         .flatMap(Collection::stream)
                         .collect(Collectors.toList());
 
         taxes.stream().collect(Collectors.groupingBy(tax -> tax.getTax().getKey()));
 
-        final Collection<List<TaxEntry>> taxmap = _payable.stream().map(invoice -> invoice.getTaxes())
+        final Collection<List<TaxEntry>> taxmap = _payable.stream()
+                        .map(invoice -> invoice.getTaxes())
                         .flatMap(Collection::stream)
                         .collect(Collectors.groupingBy(tax -> tax.getTax().getKey()))
                         .values();
@@ -234,6 +249,12 @@ public class BalanceService
                         .build();
     }
 
+    protected BigDecimal negate(final AbstractPayableDocument<?> doc,
+                                final BigDecimal value)
+    {
+        return value;
+    }
+        
     protected PaymentGroup getPaymentGroup(final Payment _payment)
     {
         String label = null;
