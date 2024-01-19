@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.CreateDocumentDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.PayableHeadDto;
 import org.efaps.pos.dto.PosCreditNoteDto;
@@ -97,6 +98,13 @@ public class DocumentController
     public PosOrderDto createOrder(@RequestBody final PosOrderDto _orderDto)
     {
         return Converter.toDto(documentService.createOrder(Converter.toEntity(_orderDto)));
+    }
+
+    @PostMapping(path = "workspaces/{oid}/documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosOrderDto createOrder(@PathVariable("oid") final String oid,
+                                   @RequestBody final CreateDocumentDto createOrderDto)
+    {
+        return Converter.toDto(documentService.createOrder(oid, createOrderDto));
     }
 
     @PutMapping(path = "documents/orders/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)

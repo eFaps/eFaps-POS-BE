@@ -428,7 +428,7 @@ public class ConverterTest
         final Order entity = new Order()
                         .setOid("165165.14651")
                         .setNumber("B001-165165")
-                        .setItems(Collections.singleton(new Item()))
+                        .setItems(Collections.singletonList(new Item()))
                         .setStatus(DocStatus.CLOSED)
                         .setTaxes(Collections.emptySet())
                         .setNetTotal(new BigDecimal("12.44"))

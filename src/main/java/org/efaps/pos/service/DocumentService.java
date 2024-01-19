@@ -22,10 +22,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.efaps.pos.dto.ContactDto;
+import org.efaps.pos.dto.CreateDocumentDto;
 import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
@@ -35,6 +37,7 @@ import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.AbstractDocument;
+import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.CreditNote;
@@ -81,6 +84,7 @@ public class DocumentService
     private final SequenceService sequenceService;
     private final ContactService contactService;
     private final InventoryService inventoryService;
+    private final CalculatorService calculatorService;
     private final OrderRepository orderRepository;
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
@@ -101,6 +105,7 @@ public class DocumentService
                            final SequenceService _sequenceService,
                            final ContactService _contactService,
                            final InventoryService _inventoryService,
+                           final CalculatorService calculatorService,
                            final OrderRepository _orderRepository,
                            final ReceiptRepository _receiptRepository,
                            final InvoiceRepository _invoiceRepository,
@@ -118,6 +123,7 @@ public class DocumentService
         sequenceService = _sequenceService;
         orderRepository = _orderRepository;
         inventoryService = _inventoryService;
+        this.calculatorService = calculatorService;
         receiptRepository = _receiptRepository;
         contactService = _contactService;
         invoiceRepository = _invoiceRepository;
@@ -169,6 +175,26 @@ public class DocumentService
     {
         _order.setNumber(sequenceService.getNextOrder());
         return orderRepository.insert(_order);
+    }
+
+    public Order createOrder(final String workspaceOid,
+                             final CreateDocumentDto createOrderDto)
+    {
+        final var items = new ArrayList<Item>();
+        final var counter = new AtomicInteger(1);
+        createOrderDto.getItems().forEach(item -> {
+            items.add(new Item().setIndex(counter.getAndIncrement())
+                            .setQuantity(item.getQuantity())
+                            .setProductOid(item.getProductOid()));
+        });
+        final var order = new Order()
+                        .setDate(LocalDate.now())
+                        .setCurrency(createOrderDto.getCurrency())
+                        .setWorkspaceOid(workspaceOid);
+        order.setNumber(sequenceService.getNextOrder());
+        order.setItems(items);
+        calculatorService.calculate(workspaceOid, order);
+        return orderRepository.insert(order);
     }
 
     public Order updateOrder(final String id,
@@ -331,7 +357,8 @@ public class DocumentService
     public Optional<CreditNote> findCreditNote(final String _identifier)
     {
         return creditNoteRepository.findOne(
-                        Example.of(new CreditNote().setId(_identifier).setOid(_identifier), ExampleMatcher.matchingAny()));
+                        Example.of(new CreditNote().setId(_identifier).setOid(_identifier),
+                                        ExampleMatcher.matchingAny()));
     }
 
     public Collection<Receipt> getReceipts4Balance(final String _key)

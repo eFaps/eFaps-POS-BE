@@ -20,9 +20,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.efaps.pos.dto.PrintTarget;
@@ -76,14 +78,14 @@ public class JobServiceTest
     public void testCreateJobsNoItems()
     {
         final Collection<Job> jobs = jobService.createJobs(null, new Order().setItems(Collections
-                        .emptySet()));
+                        .emptyList()));
         assertTrue(jobs.isEmpty());
     }
 
     @Test
     public void testCreateJobsProductDoesNotExist()
     {
-        final Set<Item> items = new HashSet<>();
+        final List<Item> items = new ArrayList<>();
         items.add(new Item().setProductOid("123.456"));
         final Order order = new Order().setItems(items);
 
@@ -96,7 +98,7 @@ public class JobServiceTest
     {
         mongoTemplate.save(new Product().setOid("productOid"));
 
-        final Set<Item> items = new HashSet<>();
+        final List<Item> items = new ArrayList<>();
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
@@ -110,7 +112,7 @@ public class JobServiceTest
         mongoTemplate.save(new Product().setOid("productOid").setCategories(Collections.singleton(
                         new Product2Category().setCategoryOid("categoryOid"))));
 
-        final Set<Item> items = new HashSet<>();
+        final List<Item> items = new ArrayList<>();
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
@@ -126,7 +128,7 @@ public class JobServiceTest
                         new Product2Category().setCategoryOid("categoryOid"))));
 
         final Workspace workspace = new Workspace();
-        final Set<Item> items = new HashSet<>();
+        final List<Item> items = new ArrayList<>();
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
@@ -142,7 +144,7 @@ public class JobServiceTest
                         new Product2Category().setCategoryOid("categoryOid"))));
 
         final Workspace workspace = new Workspace();
-        final Set<Item> items = new HashSet<>();
+        final List<Item> items = new ArrayList<>();
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
@@ -165,7 +167,7 @@ public class JobServiceTest
                         .setTarget(PrintTarget.JOB)
                         .setTargetOid("categoryOid"));
         workspace.setPrintCmds(printCmds);
-        final Set<Item> items = new HashSet<>();
+        final List<Item> items = new ArrayList<>();
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
@@ -206,7 +208,7 @@ public class JobServiceTest
                         .setTarget(PrintTarget.JOB)
                         .setTargetOid("categoryOid2"));
         workspace.setPrintCmds(printCmds);
-        final Set<Item> items = new HashSet<>();
+        final List<Item> items = new ArrayList<>();
         items.add(new Item().setProductOid("productOid1"));
         items.add(new Item().setProductOid("productOid2"));
         items.add(new Item().setProductOid("productOid3"));
@@ -226,14 +228,14 @@ public class JobServiceTest
     @Test
     public void testGetItems()
     {
-        final Set<Item> items = new HashSet<>();
+        final List<Item> items = new ArrayList<>();
         items.add(new Item().setIndex(1));
         items.add(new Item().setIndex(2));
         items.add(new Item().setIndex(3));
         items.add(new Item().setIndex(4));
         mongoTemplate.save(new Job().setItems(items));
 
-        final Set<Item> orderItems = new HashSet<>();
+        final List<Item> orderItems = new ArrayList<>();
         orderItems.add(new Item().setIndex(1));
         orderItems.add(new Item().setIndex(2));
         orderItems.add(new Item().setIndex(3));

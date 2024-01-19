@@ -17,7 +17,7 @@
 package org.efaps.pos.entity;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.entity.AbstractDocument.Item;
@@ -40,7 +40,7 @@ public class Job
 
     private String reportOid;
 
-    private Set<Item> items;
+    private List<Item> items;
 
     private String shoutout;
 
@@ -75,12 +75,12 @@ public class Job
         return this;
     }
 
-    public Set<Item> getItems()
+    public List<Item> getItems()
     {
         return items;
     }
 
-    public Job setItems(final Set<Item> _items)
+    public Job setItems(final List<Item> _items)
     {
         items = _items;
         return this;

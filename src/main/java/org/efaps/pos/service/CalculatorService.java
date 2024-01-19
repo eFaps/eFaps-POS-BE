@@ -20,8 +20,10 @@ package org.efaps.pos.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.efaps.abacus.api.ITax;
@@ -33,6 +35,8 @@ import org.efaps.pos.dto.CalculatorRequestDto;
 import org.efaps.pos.dto.CalculatorResponseDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.dto.WorkspaceFlag;
+import org.efaps.pos.entity.AbstractDocument;
+import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Identifier;
 import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.Utils;
@@ -126,7 +130,7 @@ public class CalculatorService
     {
         BigDecimal ret = total;
         final var workspace = workspaceService.getWorkspace(workspaceOid);
-        if (Utils.hasFlag(workspace.getFlags(), WorkspaceFlag.ROUNDPAYABLE)) {
+        if (workspace != null && Utils.hasFlag(workspace.getFlags(), WorkspaceFlag.ROUNDPAYABLE)) {
             ret = total.setScale(1, RoundingMode.FLOOR);
         }
         return ret;
@@ -163,4 +167,67 @@ public class CalculatorService
         return map;
     }
 
+    public void calculate(final String workspaceOid,
+                          final AbstractDocument<?> posDoc)
+    {
+        final var calcDocument = new Document();
+        int i = 0;
+        final var taxMap = new HashMap<String, org.efaps.pos.pojo.Tax>();
+        for (final var item : posDoc.getItems()) {
+            final var product = productService.getProduct(item.getProductOid());
+            final var taxes = product.getTaxes().stream().map(tax -> {
+                taxMap.put(tax.getKey(), tax);
+                return (ITax) new Tax()
+                                .setKey(tax.getKey())
+                                .setPercentage(tax.getPercent())
+                                .setAmount(tax.getAmount())
+                                .setType(EnumUtils.getEnum(TaxType.class, tax.getType().name()));
+            }).toList();
+            calcDocument.addPosition(new Position()
+                            .setNetUnitPrice(product.getNetPrice())
+                            .setTaxes(taxes)
+                            .setIndex(i++)
+                            .setProductOid(item.getProductOid())
+                            .setQuantity(item.getQuantity()));
+        }
+        calculate(calcDocument);
+
+        final var calcPosIter = calcDocument.getPositions().iterator();
+        for (final var item : posDoc.getItems()) {
+            final var product = productService.getProduct(item.getProductOid());
+            final var calcPos = calcPosIter.next();
+            item.setNetUnitPrice(calcPos.getNetUnitPrice());
+            item.setNetPrice(calcPos.getNetPrice());
+            item.setCrossPrice(calcPos.getCrossPrice());
+            item.setCrossUnitPrice(calcPos.getCrossUnitPrice());
+
+            final var taxes = product.getTaxes().stream().map(tax -> {
+                final var calcTax = calcPos.getTaxes().stream()
+                                .filter(posTax -> posTax.getKey().equals(tax.getKey())).findFirst().get();
+
+                return new TaxEntry()
+                                .setAmount(calcTax.getAmount())
+                                .setBase(calcTax.getBase())
+                                .setCurrency(posDoc.getCurrency())
+                                .setTax(tax);
+            }).collect(Collectors.toSet());
+            item.setTaxes(taxes);
+        }
+        posDoc.setNetTotal(calcDocument.getNetTotal());
+        posDoc.setCrossTotal(calcDocument.getCrossTotal());
+        posDoc.setPayableAmount(getPayableAmount(workspaceOid, calcDocument.getCrossTotal()));
+
+        final var taxes = new HashSet<TaxEntry>();
+        for (final var entry : taxMap.entrySet()) {
+            final var calcTax = calcDocument.getTaxes().stream()
+                            .filter(posTax -> posTax.getKey().equals(entry.getKey())).findFirst().get();
+
+            taxes.add(new TaxEntry()
+                            .setAmount(calcTax.getAmount())
+                            .setBase(calcTax.getBase())
+                            .setCurrency(posDoc.getCurrency())
+                            .setTax(entry.getValue()));
+        }
+        posDoc.setTaxes(taxes);
+    }
 }

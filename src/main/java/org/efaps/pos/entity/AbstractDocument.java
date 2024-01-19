@@ -19,7 +19,8 @@ package org.efaps.pos.entity;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -44,7 +45,7 @@ public abstract class AbstractDocument<T>
     private String id;
     private String oid;
     private String number;
-    private Set<Item> items;
+    private List<Item> items;
     private DocStatus status;
     private LocalDate date;
     private Currency currency;
@@ -122,13 +123,13 @@ public abstract class AbstractDocument<T>
         return (T) this;
     }
 
-    public Set<Item> getItems()
+    public List<Item> getItems()
     {
-        return this.items == null ? Collections.emptySet() : this.items;
+        return this.items == null ? new ArrayList<>() : this.items;
     }
 
     @SuppressWarnings("unchecked")
-    public T setItems(final Set<Item> _items)
+    public T setItems(final List<Item> _items)
     {
         this.items = _items;
         return (T) this;

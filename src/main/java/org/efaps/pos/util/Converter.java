@@ -1380,9 +1380,8 @@ public final class Converter
 
         entity.setStatus(dto.getStatus());
         entity.setDate(dto.getDate());
-        entity.setItems(
-                        dto.getItems().stream().map(_item -> Converter.toEntity((PosDocItemDto) _item))
-                                        .collect(Collectors.toSet()));
+        entity.setItems(dto.getItems().stream().map(_item -> Converter.toEntity((PosDocItemDto) _item))
+                                        .collect(Collectors.toList()));
         entity.setNetTotal(dto.getNetTotal());
         entity.setCrossTotal(dto.getCrossTotal());
         entity.setExchangeRate(dto.getExchangeRate());

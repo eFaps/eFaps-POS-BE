@@ -20,7 +20,6 @@ package org.efaps.pos.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -72,7 +71,7 @@ public class JobService
     public Collection<Job> createJobs(final Workspace _workspace, final Order _order)
     {
         final List<Job> ret = new ArrayList<>();
-        final Map<String, Set<Item>> map = new HashMap<>();
+        final Map<String, List<Item>> map = new HashMap<>();
         final Map<String, String> reportmap = new HashMap<>();
         for (final Item item : getNewItems(_order)) {
             final Product product = productService.getProduct(item.getProductOid());
@@ -88,11 +87,11 @@ public class JobService
                             final Optional<Printer> printerOpt = printerRepository.findById(cmd.getPrinterOid());
                             if (printerOpt.isPresent()) {
                                 final Printer printer = printerOpt.get();
-                                Set<Item> items;
+                                List<Item> items;
                                 if (map.containsKey(printer.getOid())) {
                                     items = map.get(printer.getOid());
                                 } else {
-                                    items = new HashSet<>();
+                                    items = new ArrayList<>();
                                 }
                                 items.add(item);
                                 map.put(printer.getOid(), items);
@@ -103,7 +102,7 @@ public class JobService
                 }
             }
         }
-        for (final Entry<String, Set<Item>> entry : map.entrySet()) {
+        for (final Entry<String, List<Item>> entry : map.entrySet()) {
             ret.add(jobRepository.save(new Job()
                             .setDocumentId(_order.getId())
                             .setShoutout(_order.getShoutout())
@@ -125,7 +124,7 @@ public class JobService
         final List<Job> jobs = jobRepository.findByDocumentId(_order.getId());
         final Set<Integer> indexes = jobs.stream()
                         .flatMap(job -> job.getItems().stream()
-                                        .map(item -> item.getIndex()))
+                                        .map(Item::getIndex))
                         .collect(Collectors.toSet());
         return _order.getItems().stream()
                         .filter(item -> !indexes.contains(item.getIndex()))
