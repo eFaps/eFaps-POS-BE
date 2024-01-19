@@ -289,10 +289,5 @@
             <artifactId>commons-codec</artifactId>
             <version>1.16.0</version>
         </dependency>
-        <dependency>
-            <groupId>pe.synercom.cashdro</groupId>
-            <artifactId>cashdro-synerpos-be</artifactId>
-            <version>2.3.1</version>
-        </dependency>
     </dependencies>
 </project>
