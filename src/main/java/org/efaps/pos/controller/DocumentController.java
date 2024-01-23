@@ -107,11 +107,33 @@ public class DocumentController
         return Converter.toDto(documentService.createOrder(oid, createOrderDto));
     }
 
+    @PutMapping(path = "workspaces/{oid}/documents/orders/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosOrderDto updateOrder(@PathVariable("oid") final String oid,
+                                   @PathVariable("orderId") final String orderId,
+                                   @RequestBody final CreateDocumentDto createOrderDto)
+    {
+        return Converter.toDto(documentService.updateOrder(oid, orderId, createOrderDto));
+    }
+
+
     @PutMapping(path = "documents/orders/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosOrderDto updateOrder(@PathVariable(name = "orderId") final String _orderId,
                                    @RequestBody final PosOrderDto _orderDto)
     {
         return Converter.toDto(documentService.updateOrder(_orderId, _orderDto));
+    }
+
+    @PutMapping(path = "documents/orders/{orderId}/contact/{contactId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosOrderDto updateOrderWithContact(@PathVariable(name = "orderId") final String orderId,
+                                              @PathVariable(name = "contactId") final String contactId)
+    {
+        return Converter.toDto(documentService.updateOrderWithContact(orderId, contactId));
+    }
+
+    @GetMapping(path = "documents/orders/{orderId}")
+    public PosOrderDto getOrder(@PathVariable(name = "orderId") final String orderId)
+    {
+        return Converter.toDto(documentService.getOrder(orderId));
     }
 
     @DeleteMapping(path = "documents/orders/{orderId}")

@@ -177,6 +177,23 @@ public class DocumentService
         return orderRepository.insert(_order);
     }
 
+    public Order updateOrder(final String workspaceOid,
+                             final String orderId,
+                             final CreateDocumentDto createOrderDto)
+    {
+        final var order = orderRepository.findById(orderId).orElseThrow();
+        final var items = new ArrayList<Item>();
+        final var counter = new AtomicInteger(1);
+        createOrderDto.getItems().forEach(item -> {
+            items.add(new Item().setIndex(counter.getAndIncrement())
+                            .setQuantity(item.getQuantity())
+                            .setProductOid(item.getProductOid()));
+        });
+        order.setItems(items);
+        calculatorService.calculate(workspaceOid, order);
+        return orderRepository.save(order);
+    }
+
     public Order createOrder(final String workspaceOid,
                              final CreateDocumentDto createOrderDto)
     {
@@ -202,6 +219,17 @@ public class DocumentService
     {
         final var order = orderRepository.findById(id).orElseThrow();
         Converter.mapToEntity(dto, order);
+        return orderRepository.save(order);
+    }
+
+    public Order updateOrderWithContact(final String orderId,
+                                        final String contactId)
+    {
+        final var order = orderRepository.findById(orderId).orElseThrow();
+        final var contact = contactService.findContact(contactId);
+        if (contact != null) {
+            order.setContactOid(contact.getOid() == null ? contact.getId() : contact.getOid());
+        }
         return orderRepository.save(order);
     }
 
@@ -645,4 +673,5 @@ public class DocumentService
             }
         };
     }
+
 }
