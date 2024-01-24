@@ -82,6 +82,7 @@ import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
 import org.efaps.pos.entity.AbstractDocument;
+import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
@@ -1381,7 +1382,7 @@ public final class Converter
         entity.setStatus(dto.getStatus());
         entity.setDate(dto.getDate());
         entity.setItems(dto.getItems().stream().map(_item -> Converter.toEntity((PosDocItemDto) _item))
-                                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()));
         entity.setNetTotal(dto.getNetTotal());
         entity.setCrossTotal(dto.getCrossTotal());
         entity.setExchangeRate(dto.getExchangeRate());
@@ -1494,4 +1495,76 @@ public final class Converter
                         .withActions(entity.getActions())
                         .build();
     }
+
+    public static AbstractPayableDocumentDto toDto(final AbstractPayableDocument<?> entity)
+    {
+        if (entity instanceof Receipt) {
+            return toDto((Receipt) entity);
+        } else if (entity instanceof Invoice) {
+            return toDto((Invoice) entity);
+        } else if (entity instanceof Ticket) {
+            return toDto((Ticket) entity);
+        } else if (entity instanceof CreditNote) {
+            return toDto((CreditNote) entity);
+        }
+        return null;
+    }
+
+    public static void clone(final AbstractDocument<?> fromEntity,
+                             final AbstractDocument<?> toEntity)
+    {
+        toEntity.setContactOid(fromEntity.getContactOid())
+                        .setCrossTotal(fromEntity.getCrossTotal())
+                        .setCurrency(fromEntity.getCurrency())
+                        .setDate(fromEntity.getDate())
+                        .setDiscount(fromEntity.getDiscount())
+                        .setEmployeeRelations(fromEntity.getEmployeeRelations())
+                        .setExchangeRate(fromEntity.getExchangeRate())
+                        .setItems(fromEntity.getItems().stream()
+                                        .map(Converter::clone)
+                                        .toList())
+                        .setNetTotal(fromEntity.getNetTotal())
+                        .setNote(fromEntity.getNote())
+                        .setPayableAmount(fromEntity.getPayableAmount())
+                        .setTaxes(fromEntity.getTaxes())
+                        .setWorkspaceOid(fromEntity.getWorkspaceOid());
+
+        if (fromEntity instanceof AbstractPayableDocument<?> && toEntity instanceof AbstractPayableDocument<?>) {
+            ((AbstractPayableDocument<?>) toEntity)
+                            .setPayments(((AbstractPayableDocument<?>) fromEntity).getPayments() == null ? null
+                                            : ((AbstractPayableDocument<?>) fromEntity).getPayments().stream()
+                                                            .map(Converter::clone)
+                                                            .collect(Collectors.toSet()));
+        }
+    }
+
+    public static Item clone(final Item fromItem)
+    {
+        return new Item()
+                        .setCrossPrice(fromItem.getCrossPrice())
+                        .setCrossUnitPrice(fromItem.getCrossUnitPrice())
+                        .setCurrency(fromItem.getCurrency())
+                        .setExchangeRate(fromItem.getExchangeRate())
+                        .setIndex(fromItem.getIndex())
+                        .setNetPrice(fromItem.getNetPrice())
+                        .setNetUnitPrice(fromItem.getNetUnitPrice())
+                        .setParentIdx(fromItem.getParentIdx())
+                        .setProductOid(fromItem.getProductOid())
+                        .setQuantity(fromItem.getQuantity())
+                        .setRemark(fromItem.getRemark())
+                        .setTaxes(fromItem.getTaxes());
+    }
+
+    public static Payment clone(final Payment fromPayment)
+    {
+        return new Payment().setAmount(fromPayment.getAmount())
+                        .setCardLabel(fromPayment.getCardLabel())
+                        .setCardTypeId(fromPayment.getCardTypeId())
+                        .setCollectOrderId(fromPayment.getCollectOrderId())
+                        .setCurrency(fromPayment.getCurrency())
+                        .setExchangeRate(fromPayment.getExchangeRate())
+                        .setMappingKey(fromPayment.getMappingKey())
+                        .setType(fromPayment.getType());
+    }
+
 }

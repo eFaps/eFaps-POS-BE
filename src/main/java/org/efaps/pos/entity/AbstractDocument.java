@@ -38,7 +38,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 
-public abstract class AbstractDocument<T>
+public abstract class AbstractDocument<T extends AbstractDocument<T>>
 {
 
     @Id

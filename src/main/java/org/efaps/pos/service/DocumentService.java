@@ -20,8 +20,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +33,8 @@ import org.efaps.pos.dto.CreateDocumentDto;
 import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.IdentificationType;
+import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
@@ -52,6 +56,7 @@ import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IPos;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
+import org.efaps.pos.pojo.Payment;
 import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.CreditNoteRepository;
@@ -205,6 +210,7 @@ public class DocumentService
                             .setProductOid(item.getProductOid()));
         });
         final var order = new Order()
+                        .setStatus(DocStatus.OPEN)
                         .setDate(LocalDate.now())
                         .setCurrency(createOrderDto.getCurrency())
                         .setWorkspaceOid(workspaceOid);
@@ -674,4 +680,26 @@ public class DocumentService
         };
     }
 
+    public AbstractPayableDocument<?> payAndEmit(final String orderId,
+                                                 final PaymentDto paymentDto)
+        throws PreconditionException
+    {
+        final var order = getOrder(orderId);
+        final var contact = contactService.findContact(order.getContactOid());
+        final AbstractPayableDocument<? extends AbstractPayableDocument<?>> payable;
+        final Set<Payment> payments = new HashSet<>();
+        payments.add(Converter.toEntity(paymentDto));
+        if (IdentificationType.RUC.equals(contact.getIdType())) {
+            final var invoice = new Invoice();
+            Converter.clone(order, invoice);
+            invoice.setPayments(payments);
+            payable = createInvoice(order.getWorkspaceOid(), orderId, invoice);
+        } else {
+            final var receipt = new Receipt();
+            Converter.clone(order, receipt);
+            receipt.setPayments(payments);
+            payable = createReceipt(order.getWorkspaceOid(), orderId, receipt);
+        }
+        return payable;
+    }
 }
