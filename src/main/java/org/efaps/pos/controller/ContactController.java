@@ -31,6 +31,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -78,9 +79,17 @@ public class ContactController
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ContactDto createContact(@RequestBody final ContactDto _posContactDto)
+    public ContactDto createContact(@RequestBody final ContactDto posContactDto)
         throws PreconditionException
     {
-        return Converter.toDto(service.createContact(Converter.toEntity(_posContactDto)));
+        return Converter.toDto(service.createContact(Converter.toEntity(posContactDto)));
+    }
+
+    @PutMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ContactDto updateContact(@PathVariable(name = "id") final String id,
+                                    @RequestBody final ContactDto dto)
+        throws PreconditionException
+    {
+        return Converter.toDto(service.updateContact(id, Converter.toEntity(dto)));
     }
 }

@@ -37,7 +37,8 @@ public class ContactService
     private final ContactRepository contactRepository;
     private final EFapsClient eFapsClient;
 
-    public ContactService(final ContactRepository _contactRepository, final EFapsClient eFapsClient)
+    public ContactService(final ContactRepository _contactRepository,
+                          final EFapsClient eFapsClient)
     {
         contactRepository = _contactRepository;
         this.eFapsClient = eFapsClient;
@@ -73,18 +74,41 @@ public class ContactService
         return contactRepository.findAllVisible(pageable);
     }
 
-    public List<Contact> findContacts(final String _term, final boolean _nameSearch)
+    public List<Contact> findContacts(final String _term,
+                                      final boolean _nameSearch)
     {
         return _nameSearch ? contactRepository.findByNameRegex(_term)
                         : contactRepository.findByIdNumberStartingWith(_term);
     }
 
-    public Contact createContact(final Contact _entity)
+    public Contact createContact(final Contact entity)
         throws PreconditionException
     {
-        if (!contactRepository.findByIdNumber(_entity.getIdNumber()).isEmpty()) {
+        if (!contactRepository.findByIdNumber(entity.getIdNumber()).isEmpty()) {
             throw new PreconditionException("Contact with same IdNumber already exists");
         }
-        return contactRepository.save(_entity);
+        entity.setVisibility(Visibility.VISIBLE);
+        return contactRepository.save(entity);
+    }
+
+    public Contact updateContact(final String id,
+                                 final Contact updateEntity)
+        throws PreconditionException
+    {
+        final var existingEntity = contactRepository.findById(id).orElseThrow();
+        if (!existingEntity.getIdNumber().equals(updateEntity.getIdNumber())) {
+            final var sameIdNumbers = contactRepository.findByIdNumber(updateEntity.getIdNumber());
+            for (final var en :sameIdNumbers) {
+                if (!en.getId().equals(existingEntity.getId())) {
+                    throw new PreconditionException("Contact with same IdNumber already exists");
+                }
+            }
+            existingEntity.setIdNumber(updateEntity.getIdNumber());
+        }
+        existingEntity.setEmail(updateEntity.getEmail());
+        existingEntity.setIdType(updateEntity.getIdType());
+        existingEntity.setName(updateEntity.getName());
+        existingEntity.setVisibility(Visibility.VISIBLE);
+        return contactRepository.save(existingEntity);
     }
 }
