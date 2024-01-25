@@ -680,7 +680,8 @@ public class DocumentService
         };
     }
 
-    public AbstractPayableDocument<?> payAndEmit(final String orderId,
+    public AbstractPayableDocument<?> payAndEmit(final String balanceId,
+                                                 final String orderId,
                                                  final PaymentDto paymentDto)
         throws PreconditionException
     {
@@ -693,11 +694,13 @@ public class DocumentService
             final var invoice = new Invoice();
             Converter.clone(order, invoice);
             invoice.setPayments(payments);
+            invoice.setBalanceOid(balanceId);
             payable = createInvoice(order.getWorkspaceOid(), orderId, invoice);
         } else {
             final var receipt = new Receipt();
             Converter.clone(order, receipt);
             receipt.setPayments(payments);
+            receipt.setBalanceOid(balanceId);
             payable = createReceipt(order.getWorkspaceOid(), orderId, receipt);
         }
         return payable;
