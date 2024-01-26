@@ -102,7 +102,9 @@ public class EFapsClient
         return ret;
     }
 
-    public List<ProductDto> getProducts(int limit, int offset, OffsetDateTime after)
+    public List<ProductDto> getProducts(int limit,
+                                        int offset,
+                                        OffsetDateTime after)
     {
         List<ProductDto> ret = new ArrayList<>();
         try {
@@ -252,7 +254,9 @@ public class EFapsClient
         return ret;
     }
 
-    public List<ContactDto> getContacts(int limit, int offset, OffsetDateTime after)
+    public List<ContactDto> getContacts(int limit,
+                                        int offset,
+                                        OffsetDateTime after)
     {
         List<ContactDto> ret = new ArrayList<>();
         try {
@@ -295,7 +299,7 @@ public class EFapsClient
 
     public List<EmployeeDto> getEmployees()
     {
-      List<EmployeeDto> ret = new ArrayList<>();
+        List<EmployeeDto> ret = new ArrayList<>();
         try {
             final RequestEntity<?> requestEntity = get(getEFapsConfig().getEmployeePath());
             final ResponseEntity<List<EmployeeDto>> response = getRestTemplate().exchange(requestEntity,
@@ -308,7 +312,6 @@ public class EFapsClient
         }
         return ret;
     }
-
 
     public List<ExchangeRateDto> getExchangeRates()
     {
@@ -327,7 +330,8 @@ public class EFapsClient
         return ret;
     }
 
-    public List<Promotion> getPromotions() {
+    public List<Promotion> getPromotions()
+    {
         List<Promotion> ret = null;
         try {
             final var requestEntity = get(getEFapsConfig().getPromotionPath());
@@ -444,7 +448,24 @@ public class EFapsClient
             final ResponseEntity<ContactDto> response = getRestTemplate().exchange(requestEntity, ContactDto.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
-            LOG.error("Catched error during post for Invoices", e);
+            LOG.error("Catched error during post for Contact", e);
+        }
+        return ret;
+    }
+
+    public ContactDto putContact(final ContactDto contact)
+    {
+        ContactDto ret = contact;
+        try {
+            final var uriVariables = new HashMap<String, String>();
+            uriVariables.put("oid", contact.getOid());
+            final RequestEntity<ContactDto> requestEntity = put(
+                            getUriComponent(getEFapsConfig().getContactPath() + "/{oid}", uriVariables, null).toUri(),
+                            contact);
+            final ResponseEntity<ContactDto> response = getRestTemplate().exchange(requestEntity, ContactDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during put for Contact", e);
         }
         return ret;
     }
@@ -478,7 +499,8 @@ public class EFapsClient
         return ret;
     }
 
-    public void postReportToBase(final ReportToBaseDto dto) {
+    public void postReportToBase(final ReportToBaseDto dto)
+    {
         try {
             final RequestEntity<ReportToBaseDto> requestEntity = post(getEFapsConfig().getReportToBasePath(), dto);
             getRestTemplate().exchange(requestEntity, Void.class);
@@ -549,32 +571,37 @@ public class EFapsClient
         return get(getUriComponent(_path).toUri());
     }
 
-    public RequestEntity<?> get(final String _path, MultiValueMap<String, String> params)
+    public RequestEntity<?> get(final String _path,
+                                MultiValueMap<String, String> params)
         throws IdentException
     {
         return get(getUriComponent(_path, params).toUri());
     }
 
-    public <T> RequestEntity<T> post(final String _path, final T _body)
+    public <T> RequestEntity<T> post(final String _path,
+                                     final T _body)
         throws IdentException
     {
         return post(getUriComponent(_path).toUri(), _body);
     }
 
-    public <T> RequestEntity<T> post(final URI _uri, final T _body)
+    public <T> RequestEntity<T> post(final URI _uri,
+                                     final T _body)
         throws IdentException
     {
         return addHeader(RequestEntity.post(_uri))
                         .accept(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN).body(_body);
     }
 
-    public <T> RequestEntity<T> put(final String _path, final T _body)
+    public <T> RequestEntity<T> put(final String _path,
+                                    final T _body)
         throws IdentException
     {
         return put(getUriComponent(_path).toUri(), _body);
     }
 
-    public <T> RequestEntity<T> put(final URI _uri, final T _body)
+    public <T> RequestEntity<T> put(final URI _uri,
+                                    final T _body)
         throws IdentException
     {
         return addHeader(RequestEntity.put(_uri))

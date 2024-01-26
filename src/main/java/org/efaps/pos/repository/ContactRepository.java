@@ -52,4 +52,6 @@ public interface ContactRepository
     Collection<Contact> findByOidIsNull();
 
     List<Contact> findByIdNumber(String _idNumber);
+
+    Collection<Contact> findByUpdatedIsTrue();
 }

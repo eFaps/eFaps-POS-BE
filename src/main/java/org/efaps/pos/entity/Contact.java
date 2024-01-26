@@ -17,9 +17,16 @@
 
 package org.efaps.pos.entity;
 
+import java.time.Instant;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.IdentificationType;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "contacts")
@@ -40,6 +47,23 @@ public class Contact
     private String email;
 
     private Visibility visibility;
+
+    private Boolean updated;
+
+    @CreatedBy
+    private String user;
+
+    @CreatedDate
+    private Instant createdDate;
+
+    @LastModifiedBy
+    private String lastModifiedUser;
+
+    @LastModifiedDate
+    private Instant lastModifiedDate;
+
+    @Version
+    private long version;
 
     public String getId()
     {
@@ -116,6 +140,56 @@ public class Contact
     {
         this.visibility = visibility;
         return this;
+    }
+
+    public boolean isUpdated()
+    {
+        return updated;
+    }
+
+    public void setUpdated(Boolean updated)
+    {
+        this.updated = updated;
+    }
+
+    public String getUser()
+    {
+        return user;
+    }
+
+    public void setUser(final String user)
+    {
+        this.user = user;
+    }
+
+    public Instant getCreatedDate()
+    {
+        return createdDate;
+    }
+
+    public void setCreatedDate(final Instant createdDate)
+    {
+        this.createdDate = createdDate;
+    }
+
+    public String getLastModifiedUser()
+    {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final String lastModifiedUser)
+    {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Instant getLastModifiedDate()
+    {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Instant lastModifiedDate)
+    {
+        this.lastModifiedDate = lastModifiedDate;
     }
 
     @Override

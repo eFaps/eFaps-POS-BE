@@ -899,12 +899,25 @@ public class SyncService
         }
         LOG.info("Syncing Contacts");
         syncContactsUp();
+        syncUpdatedContacts();
         final var lastSync = getSync(StashId.CONTACTSYNC);
         if (lastSync != null) {
             final var after = OffsetDateTime.of(lastSync.getLastSync(), ZoneOffset.of("-5")).minusHours(2);
             syncContactsDown(after);
         }
         registerSync(StashId.CONTACTSYNC);
+    }
+
+    private void syncUpdatedContacts()
+    {
+        final Collection<Contact> tosync = contactRepository.findByUpdatedIsTrue();
+        for (final Contact contact : tosync) {
+            if (contact.getOid() != null) {
+                eFapsClient.putContact(Converter.toDto(contact));
+                contact.setUpdated(null);
+                contactRepository.save(contact);
+            }
+        }
     }
 
     private void syncContactsUp()
@@ -959,8 +972,14 @@ public class SyncService
                 contacts.forEach(entity -> contactRepository.delete(entity));
                 contactRepository.save(contact);
             } else {
-                contact.setId(contacts.get(0).getId());
-                contactRepository.save(contact);
+                final var updatedContact = contacts.get(0);
+                updatedContact
+                    .setEmail(contact.getEmail())
+                    .setIdNumber(contact.getIdNumber())
+                    .setIdType(contact.getIdType())
+                    .setName(contact.getName())
+                    .setVisibility(Visibility.VISIBLE);
+                contactRepository.save(updatedContact);
             }
         }
         if (after == null && !queriedContacts.isEmpty()) {

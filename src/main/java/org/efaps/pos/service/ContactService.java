@@ -109,6 +109,7 @@ public class ContactService
         existingEntity.setIdType(updateEntity.getIdType());
         existingEntity.setName(updateEntity.getName());
         existingEntity.setVisibility(Visibility.VISIBLE);
+        existingEntity.setUpdated(true);
         return contactRepository.save(existingEntity);
     }
 }
