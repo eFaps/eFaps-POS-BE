@@ -34,10 +34,10 @@ import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.IdentificationType;
-import org.efaps.pos.dto.PaymentDto;
 import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
+import org.efaps.pos.dto.PosPaymentDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.AbstractDocument;
@@ -682,7 +682,7 @@ public class DocumentService
 
     public AbstractPayableDocument<?> payAndEmit(final String balanceId,
                                                  final String orderId,
-                                                 final PaymentDto paymentDto)
+                                                 final PosPaymentDto paymentDto)
         throws PreconditionException
     {
         final var order = getOrder(orderId);

@@ -18,7 +18,7 @@ package org.efaps.pos.controller;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.AbstractPayableDocumentDto;
-import org.efaps.pos.dto.PaymentDto;
+import org.efaps.pos.dto.PosPaymentDto;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.error.PreconditionException;
 import org.efaps.pos.service.BalanceService;
@@ -47,7 +47,7 @@ public class PaymentController
 
     @PostMapping
     public AbstractPayableDocumentDto registerPayment(final Authentication authentication,
-                                                      @RequestBody final PaymentDto paymentDto,
+                                                      @RequestBody final PosPaymentDto paymentDto,
                                                       @RequestParam(name = "orderId") final String orderId)
         throws PreconditionException
     {
