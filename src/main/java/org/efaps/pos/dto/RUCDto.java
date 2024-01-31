@@ -17,11 +17,12 @@ package org.efaps.pos.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-@JsonDeserialize(builder = TaxpayerDto.Builder.class)
-public class TaxpayerDto
+@JsonDeserialize(builder = RUCDto.Builder.class)
+public class RUCDto
 {
 
-    private final String id;
+    private final String number;
+
     private final String name;
     private final String state;
     private final String homeState;
@@ -40,33 +41,35 @@ public class TaxpayerDto
     private final String province;
     private final String district;
     private final String address;
+    private final String updated;
 
-    private TaxpayerDto(final Builder _builder)
+    private RUCDto(Builder builder)
     {
-        id = _builder.id;
-        name = _builder.name;
-        state = _builder.state;
-        homeState = _builder.homeState;
-        ubigeo = _builder.ubigeo;
-        streetType = _builder.streetType;
-        street = _builder.street;
-        zoneCode = _builder.zoneCode;
-        zoneType = _builder.zoneType;
-        streetNumber = _builder.streetNumber;
-        streetInterior = _builder.streetInterior;
-        streetBatch = _builder.streetBatch;
-        apartmentNumber = _builder.apartmentNumber;
-        block = _builder.block;
-        kilometer = _builder.kilometer;
-        department = _builder.department;
-        province = _builder.province;
-        district = _builder.district;
-        address = _builder.address;
+        this.number = builder.number;
+        this.name = builder.name;
+        this.state = builder.state;
+        this.homeState = builder.homeState;
+        this.ubigeo = builder.ubigeo;
+        this.streetType = builder.streetType;
+        this.street = builder.street;
+        this.zoneCode = builder.zoneCode;
+        this.zoneType = builder.zoneType;
+        this.streetNumber = builder.streetNumber;
+        this.streetInterior = builder.streetInterior;
+        this.streetBatch = builder.streetBatch;
+        this.apartmentNumber = builder.apartmentNumber;
+        this.block = builder.block;
+        this.kilometer = builder.kilometer;
+        this.department = builder.department;
+        this.province = builder.province;
+        this.district = builder.district;
+        this.address = builder.address;
+        this.updated = builder.updated;
     }
 
-    public String getId()
+    public String getNumber()
     {
-        return id;
+        return number;
     }
 
     public String getName()
@@ -159,15 +162,20 @@ public class TaxpayerDto
         return address;
     }
 
+    public String getUpdated()
+    {
+        return updated;
+    }
+
     public static Builder builder()
     {
         return new Builder();
     }
 
-    public static class Builder
+    public static final class Builder
     {
 
-        private String id;
+        private String number;
         private String name;
         private String state;
         private String homeState;
@@ -186,124 +194,135 @@ public class TaxpayerDto
         private String province;
         private String district;
         private String address;
+        private String updated;
 
-        public Builder withId(final String _id)
+        private Builder()
         {
-            id = _id;
+        }
+
+        public Builder withNumber(String number)
+        {
+            this.number = number;
             return this;
         }
 
-        public Builder withName(final String _name)
+        public Builder withName(String name)
         {
-            name = _name;
+            this.name = name;
             return this;
         }
 
-        public Builder withState(final String _state)
+        public Builder withState(String state)
         {
-            state = _state;
+            this.state = state;
             return this;
         }
 
-        public Builder withHomeState(final String _homeState)
+        public Builder withHomeState(String homeState)
         {
-            homeState = _homeState;
+            this.homeState = homeState;
             return this;
         }
 
-        public Builder withUbigeo(final String _ubigeo)
+        public Builder withUbigeo(String ubigeo)
         {
-            ubigeo = _ubigeo;
+            this.ubigeo = ubigeo;
             return this;
         }
 
-        public Builder withStreetType(final String _streetType)
+        public Builder withStreetType(String streetType)
         {
-            streetType = _streetType;
+            this.streetType = streetType;
             return this;
         }
 
-        public Builder withStreet(final String _street)
+        public Builder withStreet(String street)
         {
-            street = _street;
+            this.street = street;
             return this;
         }
 
-        public Builder withZoneCode(final String _zoneCode)
+        public Builder withZoneCode(String zoneCode)
         {
-            zoneCode = _zoneCode;
+            this.zoneCode = zoneCode;
             return this;
         }
 
-        public Builder withZoneType(final String _zoneType)
+        public Builder withZoneType(String zoneType)
         {
-            zoneType = _zoneType;
+            this.zoneType = zoneType;
             return this;
         }
 
-        public Builder withStreetNumber(final String _streetNumber)
+        public Builder withStreetNumber(String streetNumber)
         {
-            streetNumber = _streetNumber;
+            this.streetNumber = streetNumber;
             return this;
         }
 
-        public Builder withStreetInterior(final String _streetInterior)
+        public Builder withStreetInterior(String streetInterior)
         {
-            streetInterior = _streetInterior;
+            this.streetInterior = streetInterior;
             return this;
         }
 
-        public Builder withStreetBatch(final String _streetBatch)
+        public Builder withStreetBatch(String streetBatch)
         {
-            streetBatch = _streetBatch;
+            this.streetBatch = streetBatch;
             return this;
         }
 
-        public Builder withApartmentNumber(final String _apartmentNumber)
+        public Builder withApartmentNumber(String apartmentNumber)
         {
-            apartmentNumber = _apartmentNumber;
+            this.apartmentNumber = apartmentNumber;
             return this;
         }
 
-        public Builder withBlock(final String _block)
+        public Builder withBlock(String block)
         {
-            block = _block;
+            this.block = block;
             return this;
         }
 
-        public Builder withKilometer(final String _kilometer)
+        public Builder withKilometer(String kilometer)
         {
-            kilometer = _kilometer;
+            this.kilometer = kilometer;
             return this;
         }
 
-        public Builder withDepartment(final String _department)
+        public Builder withDepartment(String department)
         {
-            department = _department;
+            this.department = department;
             return this;
         }
 
-        public Builder withProvince(final String _province)
+        public Builder withProvince(String province)
         {
-            province = _province;
+            this.province = province;
             return this;
         }
 
-        public Builder withDistrict(final String _district)
+        public Builder withDistrict(String district)
         {
-            district = _district;
+            this.district = district;
             return this;
         }
 
-        public Builder withAddress(final String _address)
+        public Builder withAddress(String address)
         {
-            address = _address;
+            this.address = address;
             return this;
         }
 
-        public TaxpayerDto build()
+        public Builder withUpdated(String updated)
         {
-            return new TaxpayerDto(this);
+            this.updated = updated;
+            return this;
+        }
+
+        public RUCDto build()
+        {
+            return new RUCDto(this);
         }
     }
 }

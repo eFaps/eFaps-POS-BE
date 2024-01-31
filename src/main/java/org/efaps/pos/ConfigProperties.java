@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2021 The eFaps Team
+ * Copyright © 2003 - 2024 The eFaps Team (-)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,9 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-
 package org.efaps.pos;
 
 import java.net.URI;
@@ -761,6 +759,17 @@ public class ConfigProperties
 
         private URI baseUrl;
         private String dniPath;
+        private String rucPath;
+
+        public String getRucPath()
+        {
+            return rucPath;
+        }
+
+        public void setRucPath(String rucPath)
+        {
+            this.rucPath = rucPath;
+        }
 
         public String getDniPath()
         {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2023 The eFaps Team
+ * Copyright © 2003 - 2024 The eFaps Team (-)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package org.efaps.pos.client;
 
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.DNIDto;
+import org.efaps.pos.dto.RUCDto;
 import org.efaps.pos.sso.SSOClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,5 +63,27 @@ public class EnquiryClient
         }
         return ret;
     }
+
+    public RUCDto getRUC(final String number)
+    {
+        RUCDto ret = null;
+        try {
+            final var uri = UriComponentsBuilder.fromUri(getConfig().getEnquiry().getBaseUrl())
+                            .pathSegment(getConfig().getEnquiry().getRucPath())
+                            .buildAndExpand(number)
+                            .toUri();
+
+            final var requestEntity = addHeader(RequestEntity.get(uri)).build();
+            final ResponseEntity<RUCDto> response = getRestTemplate()
+                            .exchange(requestEntity, new ParameterizedTypeReference<RUCDto>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of dni", e);
+        }
+        return ret;
+    }
+
 
 }

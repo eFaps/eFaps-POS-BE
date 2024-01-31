@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2023 The eFaps Team
+ * Copyright © 2003 - 2024 The eFaps Team (-)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package org.efaps.pos.controller;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.DNIDto;
+import org.efaps.pos.dto.RUCDto;
 import org.efaps.pos.service.EnquiryService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,8 +38,14 @@ public class EnquiryController
     }
 
     @GetMapping(path = "/dni/{number}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public DNIDto get(@PathVariable("number") final String number)
+    public DNIDto getDNI(@PathVariable("number") final String number)
     {
         return enquiryService.getDNI(number);
+    }
+
+    @GetMapping(path = "/ruc/{number}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public RUCDto getRUC(@PathVariable("number") final String number)
+    {
+        return enquiryService.getRUC(number);
     }
 }
