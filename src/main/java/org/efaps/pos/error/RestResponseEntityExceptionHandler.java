@@ -16,6 +16,8 @@
 package org.efaps.pos.error;
 
 import org.efaps.pos.dto.ErrorResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestResponseEntityExceptionHandler
     extends ResponseEntityExceptionHandler
 {
+    private static final Logger LOG = LoggerFactory.getLogger(RestResponseEntityExceptionHandler.class);
 
     @ExceptionHandler({ NotFoundException.class })
     public ResponseEntity<Object> handleNotFoundException(final Exception ex,
@@ -51,6 +54,7 @@ public class RestResponseEntityExceptionHandler
     public ResponseEntity<Object> handleGenericException(final Exception ex,
                                                           final WebRequest request)
     {
+        LOG.error("handle Generic Exception", ex);
         return new ResponseEntity<>(ErrorResponseDto.builder()
                         .withMessage(ex.getMessage())
                         .build(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
