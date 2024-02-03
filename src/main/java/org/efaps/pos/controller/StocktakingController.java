@@ -96,20 +96,18 @@ public class StocktakingController
                             .collect(Collectors.toMap(Warehouse::getOid, Function.identity()));
             final Map<String, User> userMap = userService.getUsers().stream()
                             .collect(Collectors.toMap(User::getOid, Function.identity()));
-            result = stocktakingService.getStocktakings(pageable).map(stocktaking -> {
-                return Converter.toBuilder(stocktaking)
-                                .withWarehouse(Converter.toDto(warehouseMap.get(stocktaking.getWarehouseOid())))
-                                .withUser(Converter.toDto(userMap.get(stocktaking.getUserOid())))
-                                .build();
-            });
+            result = stocktakingService.getStocktakings(pageable).map(stocktaking -> Converter.toBuilder(stocktaking)
+                            .withWarehouse(Converter.toDto(warehouseMap.get(stocktaking.getWarehouseOid())))
+                            .withUser(Converter.toDto(userMap.get(stocktaking.getUserOid())))
+                            .build());
         } else {
-            result = stocktakingService.getStocktakings(pageable).map(stocktaking -> Converter.toDto(stocktaking));
+            result = stocktakingService.getStocktakings(pageable).map(Converter::toDto);
         }
         return result;
     }
 
     @PutMapping(path = "{stocktakingId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosStocktakingDto closeStocktaking(final @PathVariable String stocktakingId)
+    public PosStocktakingDto closeStocktaking(final @PathVariable("stocktakingId") String stocktakingId)
     {
         final var stocktaking = stocktakingService.closeStocktaking(stocktakingId);
         final var warehouse = inventoryService.getWarehouse(stocktaking.getWarehouseOid());
@@ -124,7 +122,7 @@ public class StocktakingController
     public List<PosStocktakingDto> getOpenStocktakings()
     {
         return stocktakingService.getOpenStocktakings().stream()
-                        .map(stocktaking -> Converter.toDto(stocktaking))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
@@ -139,12 +137,12 @@ public class StocktakingController
     public Page<StockTakingEntryDto> getEntries(final @PathVariable("id") String stocktakingId,
                                                 final Pageable pageable)
     {
-        return stocktakingService.getEntries(stocktakingId, pageable).map(entry -> Converter.toDto(entry));
+        return stocktakingService.getEntries(stocktakingId, pageable).map(Converter::toDto);
     }
 
     @DeleteMapping(path = "{stocktakingId}/entries/{entryId}")
-    public void deleteEntry(final @PathVariable String stocktakingId,
-                            final @PathVariable String entryId)
+    public void deleteEntry(final @PathVariable("stocktakingId") String stocktakingId,
+                            final @PathVariable("entryId") String entryId)
     {
         stocktakingService.deleteEntry(stocktakingId, entryId);
     }

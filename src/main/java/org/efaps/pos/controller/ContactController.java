@@ -58,7 +58,7 @@ public class ContactController
     }
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ContactDto getContact(@PathVariable final String id)
+    public ContactDto getContact(@PathVariable(name="id") final String id)
         throws NotFoundException
     {
         final var contact = service.findContact(id);
