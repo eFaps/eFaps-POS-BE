@@ -537,7 +537,7 @@ public class SyncService
         LOG.info("Syncing Canceled Orders");
         final Collection<Order> tosync = orderRepository.findByOidIsNullAndStatus(DocStatus.CANCELED);
         for (final Order order : tosync) {
-            if (validateContact(order)) {
+            if (order.getContactOid() == null || validateContact(order)) {
                 LOG.debug("Syncing Order: {}", order);
                 final OrderDto recDto = eFapsClient.postOrder(Converter.toOrderDto(order));
                 LOG.debug("received Order: {}", recDto);
@@ -554,7 +554,7 @@ public class SyncService
         LOG.info("Syncing Closed Orders");
         final Collection<Order> tosync2 = orderRepository.findByOidIsNullAndStatus(DocStatus.CLOSED);
         for (final Order order : tosync2) {
-            if (validateContact(order)) {
+            if (order.getContactOid() == null || validateContact(order)) {
                 boolean sync = true;
                 if (order.getPayableOid() != null && !Utils.isOid(order.getPayableOid())) {
                     final AbstractPayableDocument<?> payable = documentService.getPayable(order.getPayableOid());
