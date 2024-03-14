@@ -77,6 +77,6 @@ public class TemplateCustomizer
         } else {
             _restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(_restTemplate.getRequestFactory()));
         }
-        _restTemplate.getInterceptors().add(new RequestResponseLoggingInterceptor());
+        _restTemplate.getInterceptors().add(new ClientRequestLoggingInterceptor());
     }
 }

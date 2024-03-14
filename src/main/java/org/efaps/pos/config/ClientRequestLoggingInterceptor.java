@@ -26,12 +26,12 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
-public class RequestResponseLoggingInterceptor
+public class ClientRequestLoggingInterceptor
     implements ClientHttpRequestInterceptor
 {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(RequestResponseLoggingInterceptor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ClientRequestLoggingInterceptor.class);
 
     @Override
     public ClientHttpResponse intercept(final HttpRequest _request,

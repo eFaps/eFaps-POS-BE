@@ -30,7 +30,7 @@ public class WebConfiguration
     public void addCorsMappings(final CorsRegistry _registry)
     {
         _registry.addMapping("/**")
-            .allowedMethods("GET", "POST", "PUT", "DELETE")
-            .allowedOrigins("*").allowedHeaders("*");
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowedOrigins("*").allowedHeaders("*");
     }
 }

@@ -19,6 +19,7 @@ import org.efaps.pos.ConfigProperties;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 @Configuration
 public class BaseConfig
@@ -35,6 +36,17 @@ public class BaseConfig
     public RestTemplateCustomizer restTemplateCustomizer()
     {
         return new TemplateCustomizer(configProperties);
+    }
+
+    @Bean
+    public CommonsRequestLoggingFilter requestLoggingFilter() {
+        final CommonsRequestLoggingFilter loggingFilter = new CommonsRequestLoggingFilter();
+        loggingFilter.setIncludeClientInfo(false);
+        loggingFilter.setIncludeHeaders(false);
+        loggingFilter.setIncludeQueryString(true);
+        loggingFilter.setIncludePayload(true);
+        loggingFilter.setMaxPayloadLength(1000);
+        return loggingFilter;
     }
 
 }
