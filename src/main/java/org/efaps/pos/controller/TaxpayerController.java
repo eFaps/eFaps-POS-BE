@@ -16,10 +16,8 @@
 package org.efaps.pos.controller;
 
 import org.efaps.pos.config.IApi;
-import org.efaps.pos.dto.TaxpayerDto;
-import org.efaps.pos.service.TaxpayerService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.efaps.pos.dto.RUCDto;
+import org.efaps.pos.service.EnquiryService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,22 +29,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class TaxpayerController
 {
 
-    private final TaxpayerService taxpayerService;
+    private final EnquiryService enquiryService;
 
-    public TaxpayerController(final TaxpayerService _taxpayerService)
+    public TaxpayerController(final EnquiryService enquiryService)
     {
-        taxpayerService = _taxpayerService;
+        this.enquiryService = enquiryService;
     }
 
     @GetMapping(path = "query", produces = MediaType.APPLICATION_JSON_VALUE, params = { "id" })
-    public TaxpayerDto get(@RequestParam(name = "id") final String _id)
+    public RUCDto get(@RequestParam(name = "id") final String _id)
     {
-        return taxpayerService.get(_id);
-    }
-
-    @GetMapping(path = "query", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public Page<TaxpayerDto> find(final Pageable _pageable, @RequestParam(name = "term") final String _term)
-    {
-        return taxpayerService.find(_pageable, _term);
+        return enquiryService.getRUC(_id);
     }
 }

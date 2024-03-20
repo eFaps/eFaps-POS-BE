@@ -34,7 +34,7 @@ public class EnquiryClient
     extends AbstractRestClient
 {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TaxpayerRegistryClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EnquiryClient.class);
 
     public EnquiryClient(final RestTemplateBuilder restTemplateBuilder,
                          final ConfigProperties config,
