@@ -13,8 +13,9 @@ de:
          embedded:
             version: 4.4.18
 
-
-mongoClientURI: mongodb://localhost:27017/efapsPOS
+beInst:
+  mongoClientURI: mongodb://localhost:27017/efapsPOS
+  name: POS-Backend-Test
 
 org:
   quartz:
@@ -27,8 +28,6 @@ org:
         interval: 300
       syncInventory:
         interval: 300
-
-name: POS-Backend-Test
 
 efaps:
   baseUrl: http://localhost:8888/eFaps
