@@ -65,7 +65,7 @@ public class MonitoringService
         }
 
         final var dto = ReportToBaseDto.builder()
-                        .withVersion(configProperties.getVersion())
+                        .withVersion(configProperties.getBeInst().getVersion())
                         .withInstalationId(instalationId)
                         .build();
         if (configProperties.getCompanies().size() > 0) {

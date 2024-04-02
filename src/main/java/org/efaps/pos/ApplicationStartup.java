@@ -62,7 +62,7 @@ public class ApplicationStartup
         if (ArrayUtils.contains(env.getActiveProfiles(), "demo")) {
             service.setDeactivated(true);
             demoService.init();
-        } else if (configProperties.isSyncOnStartup()) {
+        } else if (configProperties.getBeInst().isSyncOnStartup()) {
             if (configProperties.getCompanies().size() > 0) {
                 for (final Company company : configProperties.getCompanies()) {
                     Context.get().setCompany(company);

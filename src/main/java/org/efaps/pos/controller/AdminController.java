@@ -72,6 +72,6 @@ public class AdminController
         final String remote =  configService.getOrDefault("org.efaps.pos.Version", "0.0.0");
         return PosVersionsDto.builder()
                         .withRemote(remote)
-                        .withLocal(properties.getVersion()).build();
+                        .withLocal(properties.getBeInst().getVersion()).build();
     }
 }

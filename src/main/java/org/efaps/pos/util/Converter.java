@@ -1430,7 +1430,7 @@ public final class Converter
     {
         final var product = INSTANCE.productService.getProduct(entity.getProductOid());
         final var createdAt = LocalDateTime.ofInstant(entity.getCreatedDate(),
-                        ZoneId.of(INSTANCE.configProperties.getTimeZone()));
+                        ZoneId.of(INSTANCE.configProperties.getBeInst().getTimeZone()));
         return StockTakingEntryDto.builder()
                         .withId(entity.getId())
                         .withProduct(ProductHeadDto.builder()
@@ -1462,7 +1462,7 @@ public final class Converter
                         .withValue(entity.getValue())
                         .withLevel(entity.getLevel())
                         .withMessage(entity.getMessage())
-                        .withCreatedAt(Utils.toOffset(entity.getCreatedDate(), INSTANCE.configProperties.getTimeZone()))
+                        .withCreatedAt(Utils.toOffset(entity.getCreatedDate(), INSTANCE.configProperties.getBeInst().getTimeZone()))
                         .build();
     }
 

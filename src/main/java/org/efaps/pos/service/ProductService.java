@@ -35,10 +35,10 @@ import jakarta.annotation.PostConstruct;
 @Service
 public class ProductService
 {
+
     private final ConfigProperties configProperties;
     private final MongoTemplate mongoTemplate;
     private final ProductRepository productRepository;
-
 
     @Autowired
     public ProductService(final ConfigProperties _configProperties,
@@ -51,7 +51,8 @@ public class ProductService
     }
 
     @PostConstruct
-    public void init() {
+    public void init()
+    {
         final TextIndexDefinition textIndex = new TextIndexDefinitionBuilder()
                         .named("TextSearch")
                         .onField("description")
@@ -77,9 +78,14 @@ public class ProductService
     public List<Product> findProducts(final String _term,
                                       boolean textSearch)
     {
-        return textSearch ? productRepository.findText(_term, PageRequest.of(0, configProperties.getMaxSearchResult()))
-                        .toList()
-                        : productRepository.find(_term, PageRequest.of(0, configProperties.getMaxSearchResult()))
+        return textSearch
+                        ? productRepository
+                                        .findText(_term, PageRequest.of(0,
+                                                        configProperties.getBeInst().getMaxSearchResult()))
+                                        .toList()
+                        : productRepository
+                                        .find(_term, PageRequest.of(0,
+                                                        configProperties.getBeInst().getMaxSearchResult()))
                                         .toList();
     }
 

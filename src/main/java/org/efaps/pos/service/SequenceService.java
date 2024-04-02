@@ -15,6 +15,8 @@
  */
 package org.efaps.pos.service;
 
+import org.apache.commons.lang3.StringUtils;
+import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Sequence;
@@ -29,20 +31,33 @@ import org.springframework.stereotype.Service;
 @Service
 public class SequenceService
 {
+
+    private static String DEFAULTFORMAT = "%05d";
+
     private final MongoTemplate mongoTemplate;
+    private final ConfigProperties configProperties;
     private final PosService posService;
 
     @Autowired
-    public SequenceService(final MongoTemplate _mongoTemplate, final PosService _posService) {
-        mongoTemplate = _mongoTemplate;
-        posService = _posService;
+    public SequenceService(final MongoTemplate mongoTemplate,
+                           final ConfigProperties configProperties,
+                           final PosService posService)
+    {
+        this.mongoTemplate = mongoTemplate;
+        this.configProperties = configProperties;
+        this.posService = posService;
     }
 
-    public String getNextOrder() {
-        return getNextNumber("Order", false);
+    public String getNextOrder()
+    {
+        final var format = StringUtils.isEmpty(configProperties.getBeInst().getOrderFormat()) ? DEFAULTFORMAT
+                        : configProperties.getBeInst().getOrderFormat();
+        return getNextNumber("Order", format, false);
     }
 
-    public String getNext(final String _workspaceOid, final DocType _docType, final DocType _sourceDocType)
+    public String getNext(final String _workspaceOid,
+                          final DocType _docType,
+                          final DocType _sourceDocType)
     {
         final Pos pos = posService.getPos4Workspace(_workspaceOid);
         final String next;
@@ -70,17 +85,15 @@ public class SequenceService
                 break;
             case CREDITNOTE:
                 if (DocType.INVOICE.equals(_sourceDocType)) {
-                    if (pos.getCreditNote4InvoiceSeqOid()!= null) {
+                    if (pos.getCreditNote4InvoiceSeqOid() != null) {
                         next = getNextNumber(pos.getCreditNote4InvoiceSeqOid(), true);
                     } else {
                         next = getNextNumber("CreditNote4Invoice", false);
                     }
+                } else if (pos.getCreditNote4ReceiptSeqOid() != null) {
+                    next = getNextNumber(pos.getCreditNote4ReceiptSeqOid(), true);
                 } else {
-                    if (pos.getCreditNote4ReceiptSeqOid()!= null) {
-                        next = getNextNumber(pos.getCreditNote4ReceiptSeqOid(), true);
-                    } else {
-                        next = getNextNumber("CreditNote4Receipt", false);
-                    }
+                    next = getNextNumber("CreditNote4Receipt", false);
                 }
                 break;
             default:
@@ -90,20 +103,29 @@ public class SequenceService
         return next;
     }
 
-    public String getNextNumber(final String _key, final boolean _isOid) {
+    public String getNextNumber(final String key,
+                                final boolean isOid)
+    {
+        return getNextNumber(key, DEFAULTFORMAT, isOid);
+    }
+
+    public String getNextNumber(final String key,
+                                final String format,
+                                final boolean isOid)
+    {
         final Sequence sequence = mongoTemplate.findAndModify(
-                        new Query(Criteria.where(_isOid ? "oid" : "_id").is(_key)),
+                        new Query(Criteria.where(isOid ? "oid" : "_id").is(key)),
                         new Update().inc("seq", 1),
                         FindAndModifyOptions.options().returnNew(true),
                         Sequence.class);
         if (sequence == null) {
-            if (_isOid) {
-                mongoTemplate.insert(new Sequence().setOid(_key).setSeq(0));
+            if (isOid) {
+                mongoTemplate.insert(new Sequence().setOid(key).setSeq(0));
             } else {
-                mongoTemplate.insert(new Sequence().setId(_key).setSeq(0));
+                mongoTemplate.insert(new Sequence().setId(key).setSeq(0));
             }
-            return getNextNumber(_key, _isOid);
+            return getNextNumber(key, format, isOid);
         }
-        return String.format(sequence.getFormat() == null ? "%05d" : sequence.getFormat(), sequence.getSeq());
+        return String.format(sequence.getFormat() == null ? format : sequence.getFormat(), sequence.getSeq());
     }
 }

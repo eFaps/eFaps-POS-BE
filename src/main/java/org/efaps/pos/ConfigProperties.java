@@ -27,17 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ConfigProperties
 {
 
-    private String version;
-
-    private String name;
-
-    private String mongoClientURI;
-
-    private boolean syncOnStartup;
-
-    private int maxSearchResult;
-
-    private String timeZone;
+    private final BEInst beInst = new BEInst();
 
     private final SSO sso = new SSO();
 
@@ -49,8 +39,6 @@ public class ConfigProperties
 
     private final StaticWeb staticWeb = new StaticWeb();
 
-    private final TaxpayerRegistry taxpayerRegistry = new TaxpayerRegistry();
-
     private final Enquiry enquiry = new Enquiry();
 
     private final List<Extension> extensions = new ArrayList<>();
@@ -59,39 +47,14 @@ public class ConfigProperties
 
     private final Proxy proxy = new Proxy();
 
+    public BEInst getBeInst()
+    {
+        return beInst;
+    }
+
     public Proxy getProxy()
     {
         return proxy;
-    }
-
-    public String getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion(final String version)
-    {
-        this.version = version;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName(final String _name)
-    {
-        name = _name;
-    }
-
-    public String getTimeZone()
-    {
-        return timeZone;
-    }
-
-    public void setTimeZone(final String timeZone)
-    {
-        this.timeZone = timeZone;
     }
 
     public SSO getSso()
@@ -119,49 +82,14 @@ public class ConfigProperties
         companies = _companies;
     }
 
-    public String getMongoClientURI()
-    {
-        return mongoClientURI;
-    }
-
-    public void setMongoClientURI(final String mongoClientURI)
-    {
-        this.mongoClientURI = mongoClientURI;
-    }
-
     public StaticWeb getStaticWeb()
     {
         return staticWeb;
     }
 
-    public TaxpayerRegistry getTaxpayerRegistry()
-    {
-        return taxpayerRegistry;
-    }
-
     public Enquiry getEnquiry()
     {
         return enquiry;
-    }
-
-    public boolean isSyncOnStartup()
-    {
-        return syncOnStartup;
-    }
-
-    public void setSyncOnStartup(final boolean syncOnStartup)
-    {
-        this.syncOnStartup = syncOnStartup;
-    }
-
-    public int getMaxSearchResult()
-    {
-        return maxSearchResult;
-    }
-
-    public void setMaxSearchResult(final int maxResult)
-    {
-        maxSearchResult = maxResult;
     }
 
     public List<Extension> getExtensions()
@@ -172,6 +100,95 @@ public class ConfigProperties
     public List<LogToken> getLogTokens()
     {
         return logTokens;
+    }
+
+    public static class BEInst
+    {
+
+        private String version;
+
+        private String name;
+
+        private String mongoClientURI;
+
+        private boolean syncOnStartup;
+
+        private int maxSearchResult;
+
+        private String timeZone;
+
+        private String orderFormat;
+
+        public String getOrderFormat()
+        {
+            return orderFormat;
+        }
+
+        public void setOrderFormat(String orderFormat)
+        {
+            this.orderFormat = orderFormat;
+        }
+
+        public String getVersion()
+        {
+            return version;
+        }
+
+        public void setVersion(final String version)
+        {
+            this.version = version;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public void setName(final String _name)
+        {
+            name = _name;
+        }
+
+        public String getTimeZone()
+        {
+            return timeZone;
+        }
+
+        public void setTimeZone(final String timeZone)
+        {
+            this.timeZone = timeZone;
+        }
+
+        public String getMongoClientURI()
+        {
+            return mongoClientURI;
+        }
+
+        public void setMongoClientURI(final String mongoClientURI)
+        {
+            this.mongoClientURI = mongoClientURI;
+        }
+
+        public boolean isSyncOnStartup()
+        {
+            return syncOnStartup;
+        }
+
+        public void setSyncOnStartup(final boolean syncOnStartup)
+        {
+            this.syncOnStartup = syncOnStartup;
+        }
+
+        public int getMaxSearchResult()
+        {
+            return maxSearchResult;
+        }
+
+        public void setMaxSearchResult(final int maxResult)
+        {
+            maxSearchResult = maxResult;
+        }
+
     }
 
     public static class BasicAuth
@@ -632,33 +649,6 @@ public class ConfigProperties
         public List<String> getIgnore()
         {
             return ignore;
-        }
-    }
-
-    public static class TaxpayerRegistry
-    {
-
-        private URI baseUrl;
-        private String queryPath;
-
-        public URI getBaseUrl()
-        {
-            return baseUrl;
-        }
-
-        public void setBaseUrl(final URI _baseUrl)
-        {
-            baseUrl = _baseUrl;
-        }
-
-        public String getQueryPath()
-        {
-            return queryPath;
-        }
-
-        public void setQueryPath(final String _queryPath)
-        {
-            queryPath = _queryPath;
         }
     }
 

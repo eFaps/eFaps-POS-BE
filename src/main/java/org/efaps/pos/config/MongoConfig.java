@@ -69,7 +69,7 @@ public class MongoConfig
     @Primary
     public MongoDatabaseFactory mongoDbFactory()
     {
-        return new MultiTenantMongoDbFactory(configProperties.getMongoClientURI());
+        return new MultiTenantMongoDbFactory(configProperties.getBeInst().getMongoClientURI());
     }
 
     @Bean
@@ -77,7 +77,7 @@ public class MongoConfig
     @Primary
     public MongoClient mongoClient()
     {
-        return MongoClients.create(configProperties.getMongoClientURI());
+        return MongoClients.create(configProperties.getBeInst().getMongoClientURI());
     }
 
     @Bean
