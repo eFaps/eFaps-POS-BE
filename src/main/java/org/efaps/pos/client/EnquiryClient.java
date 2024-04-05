@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -48,7 +50,7 @@ public class EnquiryClient
         DNIDto ret = null;
         try {
             final var uri = UriComponentsBuilder.fromUri(getConfig().getEnquiry().getBaseUrl())
-                            .pathSegment(getConfig().getEnquiry().getDniPath())
+                            .pathSegment(getConfig().getEnquiry().getDniPath(), "{number}")
                             .buildAndExpand(number)
                             .toUri();
 
@@ -69,7 +71,7 @@ public class EnquiryClient
         RUCDto ret = null;
         try {
             final var uri = UriComponentsBuilder.fromUri(getConfig().getEnquiry().getBaseUrl())
-                            .pathSegment(getConfig().getEnquiry().getRucPath())
+                            .pathSegment(getConfig().getEnquiry().getRucPath(), "{number}")
                             .buildAndExpand(number)
                             .toUri();
 
@@ -85,5 +87,29 @@ public class EnquiryClient
         return ret;
     }
 
+    public Page<RUCDto> findRUCs(final Pageable pageable,
+                                 final String term)
+    {
+        Page<RUCDto> ret = null;
+        try {
+            final var uri = UriComponentsBuilder.fromUri(getConfig().getEnquiry().getBaseUrl())
+                            .pathSegment(getConfig().getEnquiry().getRucPath())
+                            .queryParam("term", term)
+                            .queryParam("size", pageable.getPageSize())
+                            .queryParam("page", pageable.getPageNumber())
+                            .build()
+                            .toUri();
 
+            final var requestEntity = addHeader(RequestEntity.get(uri)).build();
+
+            final ResponseEntity<ClientPage<RUCDto>> response = getRestTemplate()
+                            .exchange(requestEntity, new ParameterizedTypeReference<ClientPage<RUCDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of taxpayer", e);
+        }
+        return ret;
+    }
 }

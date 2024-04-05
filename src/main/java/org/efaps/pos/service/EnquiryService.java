@@ -18,6 +18,8 @@ package org.efaps.pos.service;
 import org.efaps.pos.client.EnquiryClient;
 import org.efaps.pos.dto.DNIDto;
 import org.efaps.pos.dto.RUCDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,5 +41,11 @@ public class EnquiryService
     public RUCDto getRUC(final String number)
     {
         return enquiryClient.getRUC(number);
+    }
+
+    public Page<RUCDto> findRUCs(final Pageable pageable,
+                                 final String term)
+    {
+        return enquiryClient.findRUCs(pageable, term);
     }
 }

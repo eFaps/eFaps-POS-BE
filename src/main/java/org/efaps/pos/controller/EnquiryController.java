@@ -19,10 +19,13 @@ import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.DNIDto;
 import org.efaps.pos.dto.RUCDto;
 import org.efaps.pos.service.EnquiryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -47,5 +50,12 @@ public class EnquiryController
     public RUCDto getRUC(@PathVariable("number") final String number)
     {
         return enquiryService.getRUC(number);
+    }
+
+    @GetMapping(path = "/ruc", params = { "term" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Page<RUCDto> findRUCs(final Pageable pageable,
+                                 @RequestParam("term") final String term)
+    {
+        return enquiryService.findRUCs(pageable, term);
     }
 }

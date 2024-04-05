@@ -74,8 +74,8 @@ taxpayerRegistry:
 
 enquiry:
   baseUrl: https://enquiry.synercom.pe/api
-  dniPath: dni/{number}
-  rucPath: ruc/{number}
+  dniPath: dni
+  rucPath: ruc
 
 jwt:
   secret: ThisIsNotVerySecretButItIsAtLeastLongEnoughToHaveMoreThan256Bits
