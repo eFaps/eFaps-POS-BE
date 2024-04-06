@@ -17,13 +17,16 @@ package org.efaps.pos.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.efaps.abacus.api.ICalcPosition;
 import org.efaps.abacus.api.ITax;
 import org.efaps.abacus.api.TaxType;
 import org.efaps.abacus.pojo.Configuration;
@@ -45,6 +48,8 @@ import org.efaps.promotionengine.pojo.Document;
 import org.efaps.promotionengine.pojo.Position;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+
+import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class CalculatorService
@@ -94,7 +99,68 @@ public class CalculatorService
                             .setProductOid(pos.getProductOid())
                             .setQuantity(pos.getQuantity()));
         }
-        final var result = calculate(document);
+        final IDocument result;
+        if (CollectionUtils.isEmpty(calculatorPayloadDto.getPositions())) {
+            result = new IDocument() {
+
+                @Override
+                public Collection<ICalcPosition> getPositions()
+                {
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public BigDecimal getNetTotal()
+                {
+                    return BigDecimal.ZERO;
+                }
+
+                @Override
+                public void setNetTotal(BigDecimal netTotal)
+                {
+                }
+
+                @Override
+                public BigDecimal getTaxTotal()
+                {
+                    return BigDecimal.ZERO;
+                }
+
+                @Override
+                public void setTaxTotal(BigDecimal taxTotal)
+                {
+                }
+
+                @Override
+                public List<ITax> getTaxes()
+                {
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public void setTaxes(List<ITax> taxes)
+                {
+                }
+
+                @Override
+                public BigDecimal getCrossTotal()
+                {
+                    return BigDecimal.ZERO;
+                }
+
+                @Override
+                public void setCrossTotal(BigDecimal crossTotal)
+                {
+                }
+
+                @Override
+                public void setDiscount(BigDecimal discount)
+                {
+                }
+            };
+        } else {
+            result = calculate(document);
+        }
         return CalculatorResponseDto.builder()
                         .withNetTotal(result.getNetTotal())
                         .withTaxTotal(result.getTaxTotal())
