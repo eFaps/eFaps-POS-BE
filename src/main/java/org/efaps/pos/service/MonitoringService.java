@@ -18,6 +18,7 @@ package org.efaps.pos.service;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.OffsetDateTime;
 
 import org.apache.commons.lang3.SystemProperties;
 import org.efaps.pos.ConfigProperties;
@@ -67,6 +68,7 @@ public class MonitoringService
         final var dto = ReportToBaseDto.builder()
                         .withVersion(configProperties.getBeInst().getVersion())
                         .withInstalationId(instalationId)
+                        .withCreatedAt(OffsetDateTime.now())
                         .build();
         if (configProperties.getCompanies().size() > 0) {
             for (final Company company : configProperties.getCompanies()) {
