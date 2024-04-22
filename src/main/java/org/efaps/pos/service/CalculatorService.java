@@ -42,6 +42,7 @@ import org.efaps.pos.entity.Identifier;
 import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.Utils;
 import org.efaps.promotionengine.Calculator;
+import org.efaps.promotionengine.PromotionsConfiguration;
 import org.efaps.promotionengine.api.IDocument;
 import org.efaps.promotionengine.condition.StoreCondition;
 import org.efaps.promotionengine.pojo.Document;
@@ -101,7 +102,8 @@ public class CalculatorService
         }
         final IDocument result;
         if (CollectionUtils.isEmpty(calculatorPayloadDto.getPositions())) {
-            result = new IDocument() {
+            result = new IDocument()
+            {
 
                 @Override
                 public Collection<ICalcPosition> getPositions()
@@ -157,6 +159,13 @@ public class CalculatorService
                 public void setDiscount(BigDecimal discount)
                 {
                 }
+
+                @Override
+                public IDocument clone()
+                {
+                    return null;
+                }
+
             };
         } else {
             result = calculate(document);
@@ -185,7 +194,7 @@ public class CalculatorService
     public IDocument calculate(final IDocument document)
     {
         final var calculator = new Calculator(getConfig());
-        calculator.calc(document, promotionService.getPromotions(), evalData());
+        calculator.calc(document, promotionService.getPromotions(), evalData(), getPromotionsConfig());
         return document;
     }
 
@@ -203,6 +212,11 @@ public class CalculatorService
     protected Configuration getConfig()
     {
         return configService.getCalculatorConfig();
+    }
+
+    protected PromotionsConfiguration getPromotionsConfig()
+    {
+        return configService.getPromotionsConfig();
     }
 
     protected List<TaxEntryDto> toDto(final Map<String, org.efaps.pos.pojo.Tax> taxMap,

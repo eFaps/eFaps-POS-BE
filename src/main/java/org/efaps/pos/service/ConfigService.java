@@ -26,6 +26,8 @@ import org.efaps.abacus.pojo.Configuration;
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.ConfigProperties.Extension;
 import org.efaps.pos.entity.Config;
+import org.efaps.promotionengine.PromotionsConfiguration;
+import org.efaps.promotionengine.process.EngineRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -38,6 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ConfigService
 {
     public static String CALCULATOR_CONFIG = "org.efaps.sales.Calculator.Config";
+    public static String PROMOTIONS_CONFIG = "org.efaps.sales.Calculator.Config";
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigService.class);
 
@@ -88,6 +91,31 @@ public class ConfigService
                             break;
                         case "CrossTotalFlow":
                             config.setCrossTotalFlow(EnumUtils.getEnum(CrossTotalFlow.class, entry.getValue()));
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Unexpected value: " + entry.getKey());
+                    }
+                });
+            } catch (final JsonProcessingException e) {
+                LOG.error("Catched", e);
+            }
+        }
+        return config;
+    }
+
+    public PromotionsConfiguration getPromotionsConfig()
+    {
+        final var conf = getSystemConfig(PROMOTIONS_CONFIG);
+        final var config = new PromotionsConfiguration().setEngineRule(EngineRule.PRIORITY);
+        if (conf != null) {
+            final var objectMapper = new ObjectMapper();
+            try {
+                @SuppressWarnings("unchecked")
+                final Map<String, String> map = objectMapper.readValue(conf, HashMap.class);
+                map.entrySet().forEach(entry -> {
+                    switch (entry.getKey()) {
+                        case "EngineRule":
+                            config.setEngineRule(EnumUtils.getEnum(EngineRule.class, entry.getValue()));
                             break;
                         default:
                             throw new IllegalArgumentException("Unexpected value: " + entry.getKey());
