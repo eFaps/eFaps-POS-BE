@@ -100,6 +100,14 @@ public class ProductController
                         .collect(Collectors.toList());
     }
 
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "sku" })
+    public List<ProductDto> getProductsBySku(@RequestParam(name = "sku") final String sku)
+    {
+        return service.findProductsBySku(sku).stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "type" })
     public List<ProductDto> getProductsByType(@RequestParam(name = "type") final ProductType type)
     {

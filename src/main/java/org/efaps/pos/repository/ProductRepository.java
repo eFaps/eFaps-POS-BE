@@ -27,23 +27,27 @@ import org.springframework.data.mongodb.repository.Query;
 public interface ProductRepository
     extends MongoRepository<Product, String>
 {
-    @Query("{ '$or' : ["
-        + "{ 'description' : { '$regularExpression' : { 'pattern' : '?0', 'options' : 'i'}}}, "
-        + "{ 'sku' : { '$regularExpression' : { 'pattern' : '?0', 'options' : 'i'}}},"
-        + "{ 'barcodes.code' : '?0'}"
-        + "]} ")
+    @Query("""
+        { '$or' : [\
+        { 'description' : { '$regularExpression' : { 'pattern' : '?0', 'options' : 'i'}}}, \
+        { 'sku' : { '$regularExpression' : { 'pattern' : '?0', 'options' : 'i'}}},\
+        { 'barcodes.code' : '?0'}\
+        ]} """)
     Page<Product> find(String term, Pageable pageable);
 
-    @Query(value = "{ "
-        + "$text : { $search: '?0' }"
-        + "}", sort=" { score: { $meta: 'textScore' }}")
+    @Query(value = """
+        { \
+        $text : { $search: '?0' }\
+        }""", sort=" { score: { $meta: 'textScore' }}")
     Page<Product> findText(String term, Pageable pageable);
 
     @Query("{'categories.categoryOid':'?0'}")
-    List<Product> findByCategoryOid(String _oid);
+    List<Product> findByCategoryOid(String oid);
 
     @Query("{'barcodes.code':'?0'}")
-    List<Product> findByBarcode(String _barcode);
+    List<Product> findByBarcode(String barcode);
 
-    List<Product> findByType( ProductType type);
+    List<Product> findByType(ProductType type);
+
+    List<Product> findBySku(String sku);
 }

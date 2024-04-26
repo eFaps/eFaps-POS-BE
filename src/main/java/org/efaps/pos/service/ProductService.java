@@ -99,6 +99,11 @@ public class ProductService
         return productRepository.findByBarcode(_barcode);
     }
 
+    public List<Product> findProductsBySku(final String sku)
+    {
+        return productRepository.findBySku(sku);
+    }
+
     public List<Product> findProductsByType(final ProductType _type)
     {
         return productRepository.findByType(_type);
