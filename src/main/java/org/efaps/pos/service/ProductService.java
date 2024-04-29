@@ -15,9 +15,12 @@
  */
 package org.efaps.pos.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.dto.ProductRelationType;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.repository.ProductRepository;
@@ -107,5 +110,25 @@ public class ProductService
     public List<Product> findProductsByType(final ProductType _type)
     {
         return productRepository.findByType(_type);
+    }
+
+    public Pair<BigDecimal, BigDecimal> evalPrices(final Product product)
+    {
+
+        var netPrice = product.getNetPrice();
+        var crossPrice = product.getCrossPrice();
+        if (ProductType.BATCH.equals(product.getType()) && product.getRelations() != null) {
+            final var relOpt = product.getRelations().stream()
+                            .filter(relation -> ProductRelationType.BATCH.equals(relation.getType()))
+                            .findFirst();
+            if (relOpt.isPresent()) {
+                final var baseProduct = getProduct(relOpt.get().getProductOid());
+                if (baseProduct != null) {
+                    netPrice = baseProduct.getNetPrice();
+                    crossPrice = baseProduct.getCrossPrice();
+                }
+            }
+        }
+        return Pair.of(netPrice, crossPrice);
     }
 }

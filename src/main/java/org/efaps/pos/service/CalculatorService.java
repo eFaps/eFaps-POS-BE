@@ -94,7 +94,7 @@ public class CalculatorService
                                 .setType(EnumUtils.getEnum(TaxType.class, tax.getType().name()));
             }).toList();
             document.addPosition(new Position()
-                            .setNetUnitPrice(product.getNetPrice())
+                            .setNetUnitPrice(productService.evalPrices(product).getLeft())
                             .setTaxes(taxes)
                             .setIndex(i++)
                             .setProductOid(pos.getProductOid())

@@ -70,8 +70,6 @@ import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ProductHeadDto;
 import org.efaps.pos.dto.ProductRelationDto;
-import org.efaps.pos.dto.ProductRelationType;
-import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.SpotDto;
@@ -384,20 +382,7 @@ public final class Converter
 
     public static ProductDto toDto(final Product entity)
     {
-        var netPrice = entity.getNetPrice();
-        var crossPrice = entity.getCrossPrice();
-        if (ProductType.BATCH.equals(entity.getType()) && entity.getRelations() != null) {
-            final var relOpt = entity.getRelations().stream()
-                            .filter(relation -> ProductRelationType.BATCH.equals(relation.getType()))
-                            .findFirst();
-            if (relOpt.isPresent()) {
-                final var baseProduct = INSTANCE.productService.getProduct(relOpt.get().getProductOid());
-                if (baseProduct != null) {
-                    netPrice = baseProduct.getNetPrice();
-                    crossPrice = baseProduct.getCrossPrice();
-                }
-            }
-        }
+        final var prices = INSTANCE.productService.evalPrices(entity);
         return entity == null ? null
                         : ProductDto.builder()
                                         .withSKU(entity.getSKU())
@@ -406,8 +391,8 @@ public final class Converter
                                         .withNote(entity.getNote())
                                         .withImageOid(entity.getImageOid())
                                         .withOID(entity.getOid())
-                                        .withNetPrice(netPrice)
-                                        .withCrossPrice(crossPrice)
+                                        .withNetPrice(prices.getLeft())
+                                        .withCrossPrice(prices.getRight())
                                         .withCurrency(entity.getCurrency())
                                         .withCategories(entity.getCategories() == null ? null
                                                         : entity.getCategories().stream()
