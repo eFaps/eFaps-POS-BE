@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.Currency;
+import org.efaps.pos.dto.ProductIndividual;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.pojo.BOMGroupConfig;
 import org.efaps.pos.pojo.Barcode;
@@ -56,6 +57,7 @@ public class Product
     private Set<Barcode> barcodes;
     private Set<BOMGroupConfig> bomGroupConfigs;
     private Set<ConfigurationBOM> configurationBOMs;
+    private ProductIndividual individual;
 
     public String getOid()
     {
@@ -253,6 +255,17 @@ public class Product
     public Product setConfigurationBOMs(Set<ConfigurationBOM> configurationBOMs)
     {
         this.configurationBOMs = configurationBOMs;
+        return this;
+    }
+
+    public ProductIndividual getIndividual()
+    {
+        return individual;
+    }
+
+    public Product setIndividual(ProductIndividual individual)
+    {
+        this.individual = individual;
         return this;
     }
 

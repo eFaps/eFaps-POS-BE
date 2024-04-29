@@ -70,6 +70,8 @@ import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ProductHeadDto;
 import org.efaps.pos.dto.ProductRelationDto;
+import org.efaps.pos.dto.ProductRelationType;
+import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.SpotDto;
@@ -288,7 +290,8 @@ public final class Converter
                         .setBomGroupConfigs(_dto.getBomGroupConfigs().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()))
                         .setConfigurationBOMs(_dto.getConfigurationBOMs().stream().map(Converter::toEntity)
-                                        .collect(Collectors.toSet()));
+                                        .collect(Collectors.toSet()))
+                        .setIndividual(_dto.getIndividual());
         return ret;
     }
 
@@ -379,48 +382,62 @@ public final class Converter
                         .build();
     }
 
-    public static ProductDto toDto(final Product _entity)
+    public static ProductDto toDto(final Product entity)
     {
-        return _entity == null ? null
+        var netPrice = entity.getNetPrice();
+        var crossPrice = entity.getCrossPrice();
+        if (ProductType.BATCH.equals(entity.getType()) && entity.getRelations() != null) {
+            final var relOpt = entity.getRelations().stream()
+                            .filter(relation -> ProductRelationType.BATCH.equals(relation.getType()))
+                            .findFirst();
+            if (relOpt.isPresent()) {
+                final var baseProduct = INSTANCE.productService.getProduct(relOpt.get().getProductOid());
+                if (baseProduct != null) {
+                    netPrice = baseProduct.getNetPrice();
+                    crossPrice = baseProduct.getCrossPrice();
+                }
+            }
+        }
+        return entity == null ? null
                         : ProductDto.builder()
-                                        .withSKU(_entity.getSKU())
-                                        .withType(_entity.getType())
-                                        .withDescription(_entity.getDescription())
-                                        .withNote(_entity.getNote())
-                                        .withImageOid(_entity.getImageOid())
-                                        .withOID(_entity.getOid())
-                                        .withNetPrice(_entity.getNetPrice())
-                                        .withCrossPrice(_entity.getCrossPrice())
-                                        .withCurrency(_entity.getCurrency())
-                                        .withCategories(_entity.getCategories() == null ? null
-                                                        : _entity.getCategories().stream()
+                                        .withSKU(entity.getSKU())
+                                        .withType(entity.getType())
+                                        .withDescription(entity.getDescription())
+                                        .withNote(entity.getNote())
+                                        .withImageOid(entity.getImageOid())
+                                        .withOID(entity.getOid())
+                                        .withNetPrice(netPrice)
+                                        .withCrossPrice(crossPrice)
+                                        .withCurrency(entity.getCurrency())
+                                        .withCategories(entity.getCategories() == null ? null
+                                                        : entity.getCategories().stream()
                                                                         .map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
 
-                                        .withTaxes(_entity.getTaxes() == null ? null
-                                                        : _entity.getTaxes().stream().map(Converter::toDto)
+                                        .withTaxes(entity.getTaxes() == null ? null
+                                                        : entity.getTaxes().stream().map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
-                                        .withUoM(_entity.getUoM())
-                                        .withUoMCode(_entity.getUoMCode())
-                                        .withRelations(_entity.getRelations() == null ? null
-                                                        : _entity.getRelations().stream().map(Converter::toDto)
+                                        .withUoM(entity.getUoM())
+                                        .withUoMCode(entity.getUoMCode())
+                                        .withRelations(entity.getRelations() == null ? null
+                                                        : entity.getRelations().stream().map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
-                                        .withIndicationSets(_entity.getIndicationSets() == null ? null
-                                                        : _entity.getIndicationSets().stream().map(Converter::toDto)
+                                        .withIndicationSets(entity.getIndicationSets() == null ? null
+                                                        : entity.getIndicationSets().stream().map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
-                                        .withBarcodes(_entity.getBarcodes() == null ? null
-                                                        : _entity.getBarcodes().stream().map(Converter::toDto)
+                                        .withBarcodes(entity.getBarcodes() == null ? null
+                                                        : entity.getBarcodes().stream().map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
-                                        .withBomGroupConfigs(_entity.getBomGroupConfigs() == null ? null
-                                                        : _entity.getBomGroupConfigs().stream()
+                                        .withBomGroupConfigs(entity.getBomGroupConfigs() == null ? null
+                                                        : entity.getBomGroupConfigs().stream()
                                                                         .sorted((arg,
                                                                                  arg1) -> Integer.valueOf(
                                                                                                  arg.getWeight())
                                                                                                  .compareTo(arg1.getWeight()))
                                                                         .map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
-                                        .withConfigurationBOMs(_entity.getConfigurationBOMs() == null ? null
-                                                        : _entity.getConfigurationBOMs()
+                                        .withConfigurationBOMs(entity.getConfigurationBOMs() == null ? null
+                                                        : entity.getConfigurationBOMs()
                                                                         .stream()
                                                                         .sorted((arg,
                                                                                  arg1) -> Integer.valueOf(
@@ -428,6 +445,7 @@ public final class Converter
                                                                                                  .compareTo(arg1.getPosition()))
                                                                         .map(Converter::toDto)
                                                                         .collect(Collectors.toSet()))
+                                        .withIndividual(entity.getIndividual())
                                         .build();
     }
 
@@ -1462,7 +1480,8 @@ public final class Converter
                         .withValue(entity.getValue())
                         .withLevel(entity.getLevel())
                         .withMessage(entity.getMessage())
-                        .withCreatedAt(Utils.toOffset(entity.getCreatedDate(), INSTANCE.configProperties.getBeInst().getTimeZone()))
+                        .withCreatedAt(Utils.toOffset(entity.getCreatedDate(),
+                                        INSTANCE.configProperties.getBeInst().getTimeZone()))
                         .build();
     }
 
