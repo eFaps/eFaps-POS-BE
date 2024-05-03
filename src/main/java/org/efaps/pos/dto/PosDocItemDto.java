@@ -30,16 +30,23 @@ public class PosDocItemDto
 {
 
     private final ProductDto product;
+    private final ProductDto standIn;
 
     public PosDocItemDto(final Builder _builder)
     {
         super(_builder);
         product = _builder.product;
+        standIn = _builder.standIn;
     }
 
     public ProductDto getProduct()
     {
         return product;
+    }
+
+    public ProductDto getStandIn()
+    {
+        return standIn;
     }
 
     @Override
@@ -51,13 +58,13 @@ public class PosDocItemDto
     @Override
     public String getSku()
     {
-        return  getProduct() == null ? "Missing Product" : getProduct().getSku();
+        return getProduct() == null ? "Missing Product" : getProduct().getSku();
     }
 
     @Override
     public String getUoMCode()
     {
-        return  getProduct() == null ? "Missing Product" : getProduct().getUoMCode();
+        return getProduct() == null ? "Missing Product" : getProduct().getUoMCode();
     }
 
     public static Builder builder()
@@ -71,9 +78,17 @@ public class PosDocItemDto
     {
 
         private ProductDto product;
+        private ProductDto standIn;
 
-        public Builder withProduct(final ProductDto _productDto) {
-            product =_productDto;
+        public Builder withProduct(final ProductDto _productDto)
+        {
+            product = _productDto;
+            return this;
+        }
+
+        public Builder withStandIn(final ProductDto standIn)
+        {
+            this.standIn = standIn;
             return this;
         }
 

@@ -331,6 +331,7 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>>
         private Integer index;
         private Integer parentIdx;
         private String productOid;
+        private String standInOid;
         private BigDecimal quantity;
         private BigDecimal netUnitPrice;
         private BigDecimal crossUnitPrice;
@@ -382,6 +383,17 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>>
         public Item setProductOid(final String _productOid)
         {
             productOid = _productOid;
+            return this;
+        }
+
+        public String getStandInOid()
+        {
+            return standInOid;
+        }
+
+        public Item setStandInOid(final String standInOid)
+        {
+            this.standInOid = standInOid;
             return this;
         }
 

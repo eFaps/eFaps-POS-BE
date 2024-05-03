@@ -258,6 +258,7 @@ public final class Converter
                         .setQuantity(_dto.getQuantity())
                         .setRemark(_dto.getRemark())
                         .setProductOid(_dto.getProduct() == null ? _dto.getProductOid() : _dto.getProduct().getOid())
+                        .setStandInOid(_dto.getStandIn() == null ? _dto.getStandInOid() : _dto.getStandIn().getOid())
                         .setTaxes(_dto.getTaxes() == null ? null
                                         : _dto.getTaxes().stream().map(Converter::toEntity)
                                                         .collect(Collectors.toSet()));
@@ -769,6 +770,8 @@ public final class Converter
                         .withRemark(_entity.getRemark())
                         .withProduct(_entity.getProductOid() == null ? null
                                         : Converter.toDto(INSTANCE.productService.getProduct(_entity.getProductOid())))
+                        .withStandIn(_entity.getStandInOid() == null ? null
+                                        : Converter.toDto(INSTANCE.productService.getProduct(_entity.getStandInOid())))
                         .withTaxes(_entity.getTaxes() == null ? null
                                         : _entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
@@ -1553,6 +1556,7 @@ public final class Converter
                         .setNetUnitPrice(fromItem.getNetUnitPrice())
                         .setParentIdx(fromItem.getParentIdx())
                         .setProductOid(fromItem.getProductOid())
+                        .setStandInOid(fromItem.getStandInOid())
                         .setQuantity(fromItem.getQuantity())
                         .setRemark(fromItem.getRemark())
                         .setTaxes(fromItem.getTaxes());
