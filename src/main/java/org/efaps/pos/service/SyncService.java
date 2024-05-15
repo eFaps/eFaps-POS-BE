@@ -288,7 +288,7 @@ public class SyncService
         LOG.info("Syncing Products");
         final var lastSync = getSync(StashId.PRODUCTSYNC);
         if (lastSync != null) {
-            final var after = OffsetDateTime.of(lastSync.getLastSync(), ZoneOffset.of("-5")).minusHours(2);
+            final var after = OffsetDateTime.of(lastSync.getLastSync(), ZoneOffset.of("-5")).minusMinutes(10);
             final var limit = configProperties.getEFaps().getProductLimit();
             var next = true;
             var i = 0;
@@ -900,7 +900,7 @@ public class SyncService
         syncUpdatedContacts();
         final var lastSync = getSync(StashId.CONTACTSYNC);
         if (lastSync != null) {
-            final var after = OffsetDateTime.of(lastSync.getLastSync(), ZoneOffset.of("-5")).minusHours(2);
+            final var after = OffsetDateTime.of(lastSync.getLastSync(), ZoneOffset.of("-5")).minusMinutes(10);
             syncContactsDown(after);
         }
         registerSync(StashId.CONTACTSYNC);
