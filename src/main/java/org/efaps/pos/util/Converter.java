@@ -1082,23 +1082,24 @@ public final class Converter
                         .build();
     }
 
-    public static DocItemDto toItemDto(final AbstractDocument.Item _entity)
+    public static DocItemDto toItemDto(final AbstractDocument.Item entity)
     {
         return DocItemDto.builder()
-                        .withOID(_entity.getOid())
-                        .withIndex(_entity.getIndex())
-                        .withParentIdx(_entity.getParentIdx())
-                        .withCrossPrice(_entity.getCrossPrice())
-                        .withCrossUnitPrice(_entity.getCrossUnitPrice())
-                        .withNetPrice(_entity.getNetPrice())
-                        .withNetUnitPrice(_entity.getNetUnitPrice())
-                        .withCurrency(_entity.getCurrency())
-                        .withExchangeRate(_entity.getExchangeRate())
-                        .withQuantity(_entity.getQuantity())
-                        .withProductOid(_entity.getProductOid())
-                        .withRemark(_entity.getRemark())
-                        .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(Converter::toDto)
+                        .withOID(entity.getOid())
+                        .withIndex(entity.getIndex())
+                        .withParentIdx(entity.getParentIdx())
+                        .withCrossPrice(entity.getCrossPrice())
+                        .withCrossUnitPrice(entity.getCrossUnitPrice())
+                        .withNetPrice(entity.getNetPrice())
+                        .withNetUnitPrice(entity.getNetUnitPrice())
+                        .withCurrency(entity.getCurrency())
+                        .withExchangeRate(entity.getExchangeRate())
+                        .withQuantity(entity.getQuantity())
+                        .withProductOid(entity.getProductOid())
+                        .withStandInOid(entity.getStandInOid())
+                        .withRemark(entity.getRemark())
+                        .withTaxes(entity.getTaxes() == null ? null
+                                        : entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
