@@ -39,6 +39,8 @@ import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosPaymentDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
+import org.efaps.pos.dto.ProductRelationType;
+import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.AbstractPayableDocument;
@@ -89,6 +91,7 @@ public class DocumentService
     private final ContactService contactService;
     private final InventoryService inventoryService;
     private final CalculatorService calculatorService;
+    private final ProductService productService;
     private final OrderRepository orderRepository;
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
@@ -110,6 +113,7 @@ public class DocumentService
                            final ContactService _contactService,
                            final InventoryService _inventoryService,
                            final CalculatorService calculatorService,
+                           final ProductService productService,
                            final OrderRepository _orderRepository,
                            final ReceiptRepository _receiptRepository,
                            final InvoiceRepository _invoiceRepository,
@@ -123,6 +127,7 @@ public class DocumentService
     {
         mongoTemplate = _mongoTemplate;
         this.configService = configService;
+        this.productService = productService;
         posService = _posService;
         sequenceService = _sequenceService;
         orderRepository = _orderRepository;
@@ -204,9 +209,23 @@ public class DocumentService
         final var items = new ArrayList<Item>();
         final var counter = new AtomicInteger(1);
         createOrderDto.getItems().forEach(item -> {
+            var productOid = item.getProductOid();
+            String standInOid = null;
+            final var product = productService.getProduct(item.getProductOid());
+            if ((product.getType().equals(ProductType.BATCH) || product.getType().equals(ProductType.INDIVIDUAL))
+                            && product.getRelations() != null) {
+                final var relOpt = product.getRelations().stream()
+                                .filter(relation -> ProductRelationType.BATCH.equals(relation.getType()))
+                                .findFirst();
+                if (relOpt.isPresent()) {
+                    productOid = relOpt.get().getProductOid();
+                    standInOid = item.getProductOid();
+                }
+            }
             items.add(new Item().setIndex(counter.getAndIncrement())
                             .setQuantity(item.getQuantity())
-                            .setProductOid(item.getProductOid()));
+                            .setProductOid(productOid)
+                            .setStandInOid(standInOid));
         });
         final var order = new Order()
                         .setStatus(DocStatus.OPEN)
