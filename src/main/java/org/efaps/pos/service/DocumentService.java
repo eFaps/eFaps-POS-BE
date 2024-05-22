@@ -191,20 +191,12 @@ public class DocumentService
                              final CreateDocumentDto createOrderDto)
     {
         final var order = orderRepository.findById(orderId).orElseThrow();
-        final var items = new ArrayList<Item>();
-        final var counter = new AtomicInteger(1);
-        createOrderDto.getItems().forEach(item -> {
-            items.add(new Item().setIndex(counter.getAndIncrement())
-                            .setQuantity(item.getQuantity())
-                            .setProductOid(item.getProductOid()));
-        });
-        order.setItems(items);
+        order.setItems(getItems(createOrderDto));
         calculatorService.calculate(workspaceOid, order);
         return orderRepository.save(order);
     }
 
-    public Order createOrder(final String workspaceOid,
-                             final CreateDocumentDto createOrderDto)
+    private ArrayList<Item> getItems(final CreateDocumentDto createOrderDto)
     {
         final var items = new ArrayList<Item>();
         final var counter = new AtomicInteger(1);
@@ -227,13 +219,19 @@ public class DocumentService
                             .setProductOid(productOid)
                             .setStandInOid(standInOid));
         });
+        return items;
+    }
+
+    public Order createOrder(final String workspaceOid,
+                             final CreateDocumentDto createOrderDto)
+    {
         final var order = new Order()
                         .setStatus(DocStatus.OPEN)
                         .setDate(LocalDate.now())
                         .setCurrency(createOrderDto.getCurrency())
                         .setWorkspaceOid(workspaceOid);
         order.setNumber(sequenceService.getNextOrder());
-        order.setItems(items);
+        order.setItems(getItems(createOrderDto));
         calculatorService.calculate(workspaceOid, order);
         return orderRepository.insert(order);
     }
