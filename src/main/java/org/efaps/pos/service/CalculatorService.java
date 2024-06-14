@@ -34,6 +34,8 @@ import org.efaps.abacus.pojo.Tax;
 import org.efaps.pos.dto.CalculatorPositionResponseDto;
 import org.efaps.pos.dto.CalculatorRequestDto;
 import org.efaps.pos.dto.CalculatorResponseDto;
+import org.efaps.pos.dto.PromoDetailDto;
+import org.efaps.pos.dto.PromoInfoDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.dto.WorkspaceFlag;
 import org.efaps.pos.entity.AbstractDocument;
@@ -194,7 +196,30 @@ public class CalculatorService
                                                         .withTaxes(toDto(taxMap, pos.getTaxes()))
                                                         .build())
                                         .toList())
+                        .withPromotionInfo(getPromoInfo(result))
                         .build();
+    }
+
+    public PromoInfoDto getPromoInfo(final IDocument result)
+    {
+        PromoInfoDto ret = null;
+        if (result != null && result instanceof Document) {
+            final var info = ((Document) result).getPromotionInfo();
+            if (info != null) {
+                ret = PromoInfoDto.builder()
+                                .withTotalDiscount(info.getTotalDiscount())
+                                .withPromotionOids(info.getPromotionOids())
+                                .withDetails(info.getDetails().stream()
+                                                .map(pos -> PromoDetailDto.builder()
+                                                                .withIndex(pos.getIndex())
+                                                                .withDiscount(pos.getDiscount())
+                                                                .withPromotionOid(pos.getPromotionOid())
+                                                                .build())
+                                                .toList())
+                                .build();
+            }
+        }
+        return ret;
     }
 
     public IDocument calculate(final IDocument document)
