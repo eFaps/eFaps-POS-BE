@@ -156,12 +156,18 @@ public class CalculatorService
                 }
 
                 @Override
-                public void setDiscount(BigDecimal discount)
+                public IDocument clone()
+                {
+                    return null;
+                }
+
+                @Override
+                public void addDocDiscount(BigDecimal discount)
                 {
                 }
 
                 @Override
-                public IDocument clone()
+                public BigDecimal getDocDiscount()
                 {
                     return null;
                 }
