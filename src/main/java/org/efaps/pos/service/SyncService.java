@@ -204,7 +204,7 @@ public class SyncService
 
     public void syncPromotions()
     {
-        LOG.debug("Syncing Promotions");
+        LOG.info("Syncing Promotions");
         final var promotions = eFapsClient.getPromotions();
         final List<PromotionEntity> existingPromotions = promotionRepository.findAll();
         existingPromotions.forEach(existing -> {
@@ -220,6 +220,7 @@ public class SyncService
 
     public void syncLogs()
     {
+        LOG.info("Syncing Logs");
         for (final LogEntry entry : logService.getEntriesToBeSynced()) {
             LOG.debug("Syncing LogEntry: {}", entry);
             final var oid = eFapsClient.postLogEntry(Converter.toDto(entry));
