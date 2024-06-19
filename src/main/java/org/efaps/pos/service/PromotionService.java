@@ -57,10 +57,10 @@ public class PromotionService
         return promotionRepository.findById(promotionOid).orElseThrow(PromotionNotFoundException::new);
     }
 
-    public void registerInfo(final String documentIdent,
+    public void registerInfo(final String documentId,
                              final PromotionInfoDto promoInfo)
     {
-        final var infoEntityOpt = promotionInfoRepository.findOneByDocumentOid(documentIdent);
+        final var infoEntityOpt = promotionInfoRepository.findOneByDocumentId(documentId);
         if (infoEntityOpt.isPresent()) {
             if (promoInfo == null) {
                 promotionInfoRepository.delete(infoEntityOpt.get());
@@ -71,13 +71,13 @@ public class PromotionService
             }
         } else if (promoInfo != null) {
             promotionInfoRepository.save(new PromotionInfo()
-                            .setDocumentOid(documentIdent)
+                            .setDocumentId(documentId)
                             .setPromoInfo(Converter.toDto(promoInfo))
                             .setPromotions(getPromotions(promoInfo)));
         }
     }
 
-    private List<PromotionEntity> getPromotions(PromotionInfoDto promoInfo)
+    private List<PromotionEntity> getPromotions(final PromotionInfoDto promoInfo)
     {
         final Set<String> promotionOids = new HashSet<>();
         promotionOids.addAll(promoInfo.getPromotionOids());
@@ -85,14 +85,27 @@ public class PromotionService
         return promotionRepository.findAllById(promotionOids);
     }
 
-    public PromoInfoDto getPromotionInfoForDocument(String documentOid)
+    public PromoInfoDto getPromotionInfoForDocument(final String documentId)
     {
         PromoInfoDto ret = null;
-        final var infoEntityOpt = promotionInfoRepository.findOneByDocumentOid(documentOid);
+        final var infoEntityOpt = promotionInfoRepository.findOneByDocumentId(documentId);
         if (infoEntityOpt.isPresent()) {
             ret = infoEntityOpt.get().getPromoInfo();
         }
         return ret;
+    }
+
+    public void copyPromotionInfo(final String sourceDocumentId,
+                                  final String targetDocumentId)
+    {
+        final var infoEntityOpt = promotionInfoRepository.findOneByDocumentId(sourceDocumentId);
+        if (infoEntityOpt.isPresent()) {
+            final var info = infoEntityOpt.get();
+            promotionInfoRepository.save(new PromotionInfo()
+                            .setDocumentId(targetDocumentId)
+                            .setPromoInfo(info.getPromoInfo())
+                            .setPromotions(info.getPromotions()));
+        }
     }
 
 }

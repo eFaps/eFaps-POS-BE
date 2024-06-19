@@ -23,5 +23,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface PromotionInfoRepository
     extends MongoRepository<PromotionInfo, String>
 {
-    Optional<PromotionInfo> findOneByDocumentOid(String documentOid);
+    Optional<PromotionInfo> findOneByDocumentId(String documentId);
 }

@@ -35,7 +35,7 @@ public class PromotionInfo
     @Id
     private String id;
     private String oid;
-    private String documentOid;
+    private String documentId;
     private PromoInfoDto promoInfo;
     private List<PromotionEntity> promotions;
 
@@ -70,14 +70,14 @@ public class PromotionInfo
         return this;
     }
 
-    public String getDocumentOid()
+    public String getDocumentId()
     {
-        return documentOid;
+        return documentId;
     }
 
-    public PromotionInfo setDocumentOid(final String documentOid)
+    public PromotionInfo setDocumentId(final String documentId)
     {
-        this.documentOid = documentOid;
+        this.documentId = documentId;
         return this;
     }
 

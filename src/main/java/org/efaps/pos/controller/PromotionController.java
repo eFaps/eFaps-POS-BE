@@ -48,9 +48,9 @@ public class PromotionController
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/info")
-    public PromoInfoDto getPromotionInfoForDocument(@RequestParam(name = "documentOid") final String documentOid)
+    public PromoInfoDto getPromotionInfoForDocument(@RequestParam(name = "documentId") final String documentId)
         throws PromotionNotFoundException
     {
-        return promotionService.getPromotionInfoForDocument(documentOid);
+        return promotionService.getPromotionInfoForDocument(documentId);
     }
 }

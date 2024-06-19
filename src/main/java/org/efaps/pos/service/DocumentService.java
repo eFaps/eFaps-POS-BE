@@ -280,20 +280,20 @@ public class DocumentService
         }
     }
 
-    public Receipt createReceipt(final String _workspaceOid,
-                                 final String _orderId,
-                                 final Receipt _receipt)
+    public Receipt createReceipt(final String workspaceOid,
+                                 final String orderId,
+                                 final Receipt receipt)
         throws PreconditionException
     {
-        validateOrder(_orderId);
-        validateContact(_workspaceOid, _receipt);
-        _receipt.setNumber(sequenceService.getNext(_workspaceOid, DocType.RECEIPT, null));
-        Receipt ret = receiptRepository.insert(_receipt);
+        validateOrder(orderId);
+        validateContact(workspaceOid, receipt);
+        receipt.setNumber(sequenceService.getNext(workspaceOid, DocType.RECEIPT, null));
+        Receipt ret = receiptRepository.insert(receipt);
         try {
             if (!receiptListeners.isEmpty()) {
                 PosReceiptDto dto = Converter.toDto(ret);
                 for (final IReceiptListener listener : receiptListeners) {
-                    dto = (PosReceiptDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
+                    dto = (PosReceiptDto) listener.onCreate(getPos(posService.getPos4Workspace(workspaceOid)), dto,
                                     configService.getProperties());
                 }
                 ret = receiptRepository.save(Converter.mapToEntity(dto, ret));
@@ -301,25 +301,26 @@ public class DocumentService
         } catch (final Exception e) {
             LOG.error("Wow that should not happen", e);
         }
-        closeOrder(_orderId, ret.getId());
-        inventoryService.removeFromInventory(_workspaceOid, ret);
+        promotionService.copyPromotionInfo(orderId, ret.getId());
+        closeOrder(orderId, ret.getId());
+        inventoryService.removeFromInventory(workspaceOid, ret);
         return ret;
     }
 
-    public Invoice createInvoice(final String _workspaceOid,
-                                 final String _orderId,
-                                 final Invoice _invoice)
+    public Invoice createInvoice(final String workspaceOid,
+                                 final String orderId,
+                                 final Invoice invoice)
         throws PreconditionException
     {
-        validateOrder(_orderId);
-        validateContact(_workspaceOid, _invoice);
-        _invoice.setNumber(sequenceService.getNext(_workspaceOid, DocType.INVOICE, null));
-        Invoice ret = invoiceRepository.insert(_invoice);
+        validateOrder(orderId);
+        validateContact(workspaceOid, invoice);
+        invoice.setNumber(sequenceService.getNext(workspaceOid, DocType.INVOICE, null));
+        Invoice ret = invoiceRepository.insert(invoice);
         try {
             if (!invoiceListeners.isEmpty()) {
                 PosInvoiceDto dto = Converter.toDto(ret);
                 for (final IInvoiceListener listener : invoiceListeners) {
-                    dto = (PosInvoiceDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
+                    dto = (PosInvoiceDto) listener.onCreate(getPos(posService.getPos4Workspace(workspaceOid)), dto,
                                     configService.getProperties());
                 }
                 ret = invoiceRepository.save(Converter.mapToEntity(dto, ret));
@@ -327,25 +328,26 @@ public class DocumentService
         } catch (final Exception e) {
             LOG.error("Wow that should not happen", e);
         }
-        closeOrder(_orderId, ret.getId());
-        inventoryService.removeFromInventory(_workspaceOid, ret);
+        promotionService.copyPromotionInfo(orderId, ret.getId());
+        closeOrder(orderId, ret.getId());
+        inventoryService.removeFromInventory(workspaceOid, ret);
         return ret;
     }
 
-    public Ticket createTicket(final String _workspaceOid,
-                               final String _orderId,
-                               final Ticket _ticket)
+    public Ticket createTicket(final String workspaceOid,
+                               final String orderId,
+                               final Ticket ticket)
         throws PreconditionException
     {
-        validateOrder(_orderId);
-        validateContact(_workspaceOid, _ticket);
-        _ticket.setNumber(sequenceService.getNext(_workspaceOid, DocType.TICKET, null));
-        Ticket ret = ticketRepository.insert(_ticket);
+        validateOrder(orderId);
+        validateContact(workspaceOid, ticket);
+        ticket.setNumber(sequenceService.getNext(workspaceOid, DocType.TICKET, null));
+        Ticket ret = ticketRepository.insert(ticket);
         try {
             if (!ticketListeners.isEmpty()) {
                 PosTicketDto dto = Converter.toDto(ret);
                 for (final ITicketListener listener : ticketListeners) {
-                    dto = (PosTicketDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
+                    dto = (PosTicketDto) listener.onCreate(getPos(posService.getPos4Workspace(workspaceOid)), dto,
                                     configService.getProperties());
                 }
                 ret = ticketRepository.save(Converter.mapToEntity(dto, ret));
@@ -353,8 +355,9 @@ public class DocumentService
         } catch (final Exception e) {
             LOG.error("Wow that should not happen", e);
         }
-        closeOrder(_orderId, ret.getId());
-        inventoryService.removeFromInventory(_workspaceOid, ret);
+        promotionService.copyPromotionInfo(orderId, ret.getId());
+        closeOrder(orderId, ret.getId());
+        inventoryService.removeFromInventory(workspaceOid, ret);
         return ret;
     }
 
