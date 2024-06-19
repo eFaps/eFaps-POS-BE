@@ -70,6 +70,8 @@ import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ProductHeadDto;
 import org.efaps.pos.dto.ProductRelationDto;
+import org.efaps.pos.dto.PromoDetailDto;
+import org.efaps.pos.dto.PromoInfoDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.SpotDto;
@@ -131,6 +133,8 @@ import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.service.ProductService;
 import org.efaps.pos.service.UserService;
+import org.efaps.promotionengine.api.IPromotionDetail;
+import org.efaps.promotionengine.dto.PromotionInfoDto;
 import org.efaps.promotionengine.promotion.Promotion;
 import org.springframework.stereotype.Component;
 
@@ -1575,4 +1579,21 @@ public final class Converter
                         .setType(fromPayment.getType());
     }
 
+    public static PromoInfoDto toDto(final PromotionInfoDto promoInfo)
+    {
+        return PromoInfoDto.builder()
+                        .withTotalDiscount(promoInfo.getTotalDiscount())
+                        .withPromotionOids(promoInfo.getPromotionOids())
+                        .withDetails(promoInfo.getDetails().stream().map(Converter::toDto).toList())
+                        .build();
+    }
+
+    public static PromoDetailDto toDto(final IPromotionDetail detail)
+    {
+        return PromoDetailDto.builder()
+                        .withDiscount(detail.getDiscount())
+                        .withIndex(detail.getIndex())
+                        .withPromotionOid(detail.getPromotionOid())
+                        .build();
+    }
 }

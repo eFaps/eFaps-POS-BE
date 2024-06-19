@@ -39,7 +39,8 @@ public class BaseConfig
     }
 
     @Bean
-    public CommonsRequestLoggingFilter requestLoggingFilter() {
+    public CommonsRequestLoggingFilter requestLoggingFilter()
+    {
         final CommonsRequestLoggingFilter loggingFilter = new CommonsRequestLoggingFilter();
         loggingFilter.setIncludeClientInfo(false);
         loggingFilter.setIncludeHeaders(false);
@@ -48,5 +49,4 @@ public class BaseConfig
         loggingFilter.setMaxPayloadLength(1000);
         return loggingFilter;
     }
-
 }

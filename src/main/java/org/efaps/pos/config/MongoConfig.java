@@ -15,14 +15,20 @@
  */
 package org.efaps.pos.config;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.bson.BsonRegularExpression;
+import org.bson.Document;
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.context.MultiTenantMongoDbFactory;
+import org.efaps.pos.dto.PromoDetailDto;
+import org.efaps.pos.dto.PromoInfoDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -102,6 +108,7 @@ public class MongoConfig
         converterConfigurationAdapter.registerConverter(new RegexConverter());
         converterConfigurationAdapter.registerConverter(new OffsetDateTimeWriteConverter());
         converterConfigurationAdapter.registerConverter(new OffsetDateTimeReadConverter());
+        converterConfigurationAdapter.registerConverter(new PromoInfoDtoReadConverter());
     }
 
     public static class RegexConverter
@@ -137,4 +144,29 @@ public class MongoConfig
         }
     }
 
+    public static class PromoInfoDtoReadConverter
+        implements Converter<Document, PromoInfoDto>
+    {
+
+        @Override
+        public PromoInfoDto convert(Document source)
+        {
+            final List<PromoDetailDto> details = new ArrayList<>();
+            for (final var detailDoc : source.getList("details", Document.class)) {
+                details.add(PromoDetailDto.builder()
+                                .withIndex(detailDoc.getInteger("index"))
+                                .withDiscount(detailDoc.getString("discount") == null ? null
+                                                : new BigDecimal(detailDoc.getString("discount")))
+                                .withPromotionOid(detailDoc.getString("promotionOid"))
+                                .build());
+
+            }
+            return PromoInfoDto.builder()
+                            .withTotalDiscount(source.getString("totalDiscount") == null ? null
+                                            : new BigDecimal(source.getString("totalDiscount")))
+                            .withPromotionOids(source.getList("promotionOids", String.class))
+                            .withDetails(details)
+                            .build();
+        }
+    }
 }

@@ -59,45 +59,257 @@ public class DocumentController
         documentService = _service;
     }
 
-    @PostMapping(path = "workspaces/{oid}/documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosReceiptDto createReceipt(@PathVariable("oid") final String _oid,
-                                       @RequestParam(name = "orderId") final String _orderId,
-                                       @RequestBody final PosReceiptDto _receiptDto)
+    @PostMapping(path = "receipts", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosReceiptDto createReceipt(@RequestParam(name = "orderId") final String orderId,
+                                       @RequestParam(name = "workspaceOid") final String workspaceOid,
+                                       @RequestBody final PosReceiptDto receiptDto)
         throws PreconditionException
     {
-        return Converter.toDto(documentService.createReceipt(_oid, _orderId, Converter.toEntity(_receiptDto)));
+        return Converter.toDto(documentService.createReceipt(workspaceOid, orderId, Converter.toEntity(receiptDto)));
     }
 
-    @PostMapping(path = "workspaces/{oid}/documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosInvoiceDto createInvoice(@PathVariable("oid") final String _oid,
-                                       @RequestParam(name = "orderId") final String _orderId,
-                                       @RequestBody final PosInvoiceDto _invoiceDto)
+    @PostMapping(path = "invoices", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosInvoiceDto createInvoice(@RequestParam(name = "orderId") final String orderId,
+                                       @RequestParam(name = "workspaceOid") final String workspaceOid,
+                                       @RequestBody final PosInvoiceDto invoiceDto)
         throws PreconditionException
     {
-        return Converter.toDto(documentService.createInvoice(_oid, _orderId, Converter.toEntity(_invoiceDto)));
+        return Converter.toDto(documentService.createInvoice(workspaceOid, orderId, Converter.toEntity(invoiceDto)));
     }
 
-    @PostMapping(path = "workspaces/{oid}/documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosTicketDto createTicket(@PathVariable("oid") final String _oid,
-                                     @RequestParam(name = "orderId") final String _orderId,
-                                     @RequestBody final PosTicketDto _ticketDto)
+    @PostMapping(path = "tickets", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosTicketDto createTicket(@RequestParam(name = "orderId") final String orderId,
+                                     @RequestParam(name = "workspaceOid") final String workspaceOid,
+                                     @RequestBody final PosTicketDto ticketDto)
         throws PreconditionException
     {
-        return Converter.toDto(documentService.createTicket(_oid, _orderId, Converter.toEntity(_ticketDto)));
+        return Converter.toDto(documentService.createTicket(workspaceOid, orderId, Converter.toEntity(ticketDto)));
     }
 
-    @PostMapping(path = "workspaces/{oid}/documents/creditnotes", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosCreditNoteDto createCreditNote(@PathVariable("oid") final String _oid,
-                                             @RequestBody final PosCreditNoteDto _ticketDto)
+    @PostMapping(path = "creditnotes", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosCreditNoteDto createCreditNote(@RequestParam(name = "workspaceOid") final String workspaceOid,
+                                             @RequestBody final PosCreditNoteDto ticketDto)
     {
-        return Converter.toDto(documentService.createCreditNote(_oid, Converter.toEntity(_ticketDto)));
+        return Converter.toDto(documentService.createCreditNote(workspaceOid, Converter.toEntity(ticketDto)));
     }
 
-    @PostMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosOrderDto createOrder(@RequestBody final PosOrderDto _orderDto)
+    @PostMapping(path = "orders", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosOrderDto createOrder(@RequestParam(name = "workspaceOid") final String workspaceOid,
+                                   @RequestBody final PosOrderDto orderDto)
     {
-        return Converter.toDto(documentService.createOrder(Converter.toEntity(_orderDto)));
+        return Converter.toDto(documentService.createOrder(workspaceOid, Converter.toEntity(orderDto)));
     }
+
+    @PutMapping(path = "orders/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosOrderDto updateOrder(@PathVariable(name = "orderId") final String orderId,
+                                   @RequestParam(name = "workspaceOid") final String workspaceOid,
+                                   @RequestBody final PosOrderDto orderDto)
+    {
+        return Converter.toDto(documentService.updateOrder(workspaceOid, orderId, orderDto));
+    }
+
+    @PutMapping(path = { "orders/{orderId}/contact/{contactId}",
+                    "documents/orders/{orderId}/contact/{contactId}" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosOrderDto updateOrderWithContact(@PathVariable(name = "orderId") final String orderId,
+                                              @PathVariable(name = "contactId") final String contactId)
+    {
+        return Converter.toDto(documentService.updateOrderWithContact(orderId, contactId));
+    }
+
+    @GetMapping(path = { "orders/{orderId}", "documents/orders/{orderId}" })
+    public PosOrderDto getOrder(@PathVariable(name = "orderId") final String orderId)
+    {
+        return Converter.toDto(documentService.getOrder(orderId));
+    }
+
+    @DeleteMapping(path = { "orders/{orderId}", "documents/orders/{orderId}" })
+    public void deleteOrder(@PathVariable(name = "orderId") final String orderId)
+    {
+        documentService.deleteOrder(orderId);
+    }
+
+    @GetMapping(path = { "orders", "documents/orders" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PosOrderDto> getOrders(@RequestParam(name = "spot", required = false) final boolean _spots)
+    {
+        final Collection<Order> orders = _spots
+                        ? documentService.getOrders4Spots()
+                        : documentService.getOrders();
+        return orders.stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "orders", "documents/orders" }, produces = MediaType.APPLICATION_JSON_VALUE, params = {
+                    "status" })
+    public List<PosOrderDto> getOrders(@RequestParam(name = "status") final DocStatus _status)
+    {
+        return documentService.getOrders(_status).stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "orders", "documents/orders" }, produces = MediaType.APPLICATION_JSON_VALUE, params = {
+                    "term" })
+    public List<PosOrderDto> findOrders(@RequestParam(name = "term") final String _term)
+    {
+        return documentService.findOrders(_term).stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "receipts", "documents/receipts" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PayableHeadDto> getReceipts4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
+    {
+        final Collection<PayableHead> receipts = documentService.getReceiptHeads4Balance(_balanceOid);
+        return receipts.stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "receipts", "documents/receipts" }, produces = MediaType.APPLICATION_JSON_VALUE, params = {
+                    "term" })
+    public List<PayableHeadDto> findReceipts(@RequestParam(name = "term") final String _term)
+    {
+        final Collection<PayableHead> receipts = documentService.findReceipts(_term);
+        return receipts.stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "receipts", "documents/receipts" }, produces = MediaType.APPLICATION_JSON_VALUE, params = {
+                    "ident" })
+    public PosReceiptDto getReceiptByIdent(@RequestParam(name = "ident") final String ident)
+        throws NotFoundException
+    {
+        final var receipt = documentService.findReceipt(ident)
+                        .orElseThrow(() -> new NotFoundException("Receipt not found"));
+        return Converter.toDto(receipt);
+    }
+
+    @GetMapping(path = { "receipts/{id}", "documents/receipts/{id}" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosReceiptDto getReceipt(@PathVariable("id") final String _id)
+        throws NotFoundException
+    {
+        final var receipt = documentService.getReceipt(_id);
+        if (receipt == null) {
+            throw new NotFoundException("Receipt not found");
+        }
+        return Converter.toDto(receipt);
+    }
+
+    @GetMapping(path = { "invoices/{id}", "documents/invoices/{id}" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosInvoiceDto getInvoice(@PathVariable("id") final String _id)
+        throws NotFoundException
+    {
+        final var invoice = documentService.getInvoice(_id);
+        if (invoice == null) {
+            throw new NotFoundException("Invoice not found");
+        }
+        return Converter.toDto(invoice);
+    }
+
+    @GetMapping(path = { "invoices", "documents/invoices" }, produces = MediaType.APPLICATION_JSON_VALUE, params = {
+                    "ident" })
+    public PosInvoiceDto getInvoiceByIdent(@RequestParam(name = "ident") final String ident)
+        throws NotFoundException
+    {
+        final var invoice = documentService.findInvoice(ident)
+                        .orElseThrow(() -> new NotFoundException("Receipt not found"));
+        return Converter.toDto(invoice);
+    }
+
+    @GetMapping(path = { "tickets/{id}", "documents/tickets/{id}" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosTicketDto getTicket(@PathVariable("id") final String _id)
+        throws NotFoundException
+    {
+        final Ticket ticket = documentService.getTicket(_id);
+        if (ticket == null) {
+            throw new NotFoundException("Ticket not found");
+        }
+        return Converter.toDto(ticket);
+    }
+
+    @GetMapping(path = { "creditnotes/{id}",
+                    "documents/creditnotes/{id}" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosCreditNoteDto getCreditNote(@PathVariable("id") final String _id)
+        throws NotFoundException
+    {
+        final var creditNote = documentService.getCreditNote(_id);
+        if (creditNote == null) {
+            throw new NotFoundException("CreditNote not found");
+        }
+        return Converter.toDto(creditNote);
+    }
+
+    @GetMapping(path = { "invoices", "documents/invoices" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PayableHeadDto> getInvoices4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
+    {
+        final Collection<PayableHead> receipts = documentService.getInvoiceHeads4Balance(_balanceOid);
+        return receipts.stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "invoices", "documents/invoices" }, produces = MediaType.APPLICATION_JSON_VALUE, params = {
+                    "term" })
+    public List<PayableHeadDto> findInvoices(@RequestParam(name = "term") final String _term)
+    {
+        final Collection<PayableHead> invoices = documentService.findInvoices(_term);
+        return invoices.stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "tickets", "documents/tickets" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PayableHeadDto> getTickets4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
+    {
+        final Collection<PayableHead> receipts = documentService.getTicketHeads4Balance(_balanceOid);
+        return receipts.stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "tickets", "documents/tickets" }, produces = MediaType.APPLICATION_JSON_VALUE, params = {
+                    "term" })
+    public List<PayableHeadDto> findTickets(@RequestParam(name = "term") final String _term)
+    {
+        final Collection<PayableHead> tickets = documentService.findTickets(_term);
+        return tickets.stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "creditnotes",
+                    "documents/creditnotes" }, produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
+    public List<PayableHeadDto> findCreditNotes(@RequestParam(name = "term") final String _term)
+    {
+        final var creditNotes = documentService.findCreditNotes(_term);
+        return creditNotes.stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "creditnotes",
+                    "documents/creditnotes" }, produces = MediaType.APPLICATION_JSON_VALUE, params = { "balanceOid" })
+    public List<PayableHeadDto> getCreditNotes4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
+    {
+        final Collection<PayableHead> receipts = documentService.getCreditNoteHeads4Balance(_balanceOid);
+        return receipts.stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "creditnotes",
+                    "documents/creditnotes" }, produces = MediaType.APPLICATION_JSON_VALUE, params = { "sourceDocOid" })
+    public List<PosCreditNoteDto> getCreditNotes4SourceDocument(@RequestParam(name = "sourceDocOid") final String _sourceDocOid)
+    {
+        final Collection<CreditNote> creditnotes = documentService.getCreditNotes4SourceDocument(_sourceDocOid);
+        return creditnotes.stream()
+                        .map(Converter::toDto)
+                        .collect(Collectors.toList());
+    }
+
+    // mobile
 
     @PostMapping(path = "workspaces/{oid}/documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)
     public PosOrderDto createOrder(@PathVariable("oid") final String oid,
@@ -114,201 +326,4 @@ public class DocumentController
         return Converter.toDto(documentService.updateOrder(oid, orderId, createOrderDto));
     }
 
-
-    @PutMapping(path = "documents/orders/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosOrderDto updateOrder(@PathVariable(name = "orderId") final String _orderId,
-                                   @RequestBody final PosOrderDto _orderDto)
-    {
-        return Converter.toDto(documentService.updateOrder(_orderId, _orderDto));
-    }
-
-    @PutMapping(path = "documents/orders/{orderId}/contact/{contactId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosOrderDto updateOrderWithContact(@PathVariable(name = "orderId") final String orderId,
-                                              @PathVariable(name = "contactId") final String contactId)
-    {
-        return Converter.toDto(documentService.updateOrderWithContact(orderId, contactId));
-    }
-
-    @GetMapping(path = "documents/orders/{orderId}")
-    public PosOrderDto getOrder(@PathVariable(name = "orderId") final String orderId)
-    {
-        return Converter.toDto(documentService.getOrder(orderId));
-    }
-
-    @DeleteMapping(path = "documents/orders/{orderId}")
-    public void deleteOrder(@PathVariable(name = "orderId") final String _orderId)
-    {
-        documentService.deleteOrder(_orderId);
-    }
-
-    @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PosOrderDto> getOrders(@RequestParam(name = "spot", required = false) final boolean _spots)
-    {
-        final Collection<Order> orders = _spots
-                        ? documentService.getOrders4Spots()
-                        : documentService.getOrders();
-        return orders.stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE, params = { "status" })
-    public List<PosOrderDto> getOrders(@RequestParam(name = "status") final DocStatus _status)
-    {
-        return documentService.getOrders(_status).stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/orders", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public List<PosOrderDto> findOrders(@RequestParam(name = "term") final String _term)
-    {
-        return documentService.findOrders(_term).stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PayableHeadDto> getReceipts4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
-    {
-        final Collection<PayableHead> receipts = documentService.getReceiptHeads4Balance(_balanceOid);
-        return receipts.stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public List<PayableHeadDto> findReceipts(@RequestParam(name = "term") final String _term)
-    {
-        final Collection<PayableHead> receipts = documentService.findReceipts(_term);
-        return receipts.stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/receipts", produces = MediaType.APPLICATION_JSON_VALUE, params = { "ident" })
-    public PosReceiptDto getReceiptByIdent(@RequestParam(name = "ident") final String ident)
-        throws NotFoundException
-    {
-        final var receipt = documentService.findReceipt(ident)
-                        .orElseThrow(() -> new NotFoundException("Receipt not found"));
-        return Converter.toDto(receipt);
-    }
-
-    @GetMapping(path = "documents/receipts/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosReceiptDto getReceipt(@PathVariable("id") final String _id)
-        throws NotFoundException
-    {
-        final var receipt = documentService.getReceipt(_id);
-        if (receipt == null) {
-            throw new NotFoundException("Receipt not found");
-        }
-        return Converter.toDto(receipt);
-    }
-
-    @GetMapping(path = "documents/invoices/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosInvoiceDto getInvoice(@PathVariable("id") final String _id)
-        throws NotFoundException
-    {
-        final var invoice = documentService.getInvoice(_id);
-        if (invoice == null) {
-            throw new NotFoundException("Invoice not found");
-        }
-        return Converter.toDto(invoice);
-    }
-
-    @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE, params = { "ident" })
-    public PosInvoiceDto getInvoiceByIdent(@RequestParam(name = "ident") final String ident)
-        throws NotFoundException
-    {
-        final var invoice = documentService.findInvoice(ident)
-                        .orElseThrow(() -> new NotFoundException("Receipt not found"));
-        return Converter.toDto(invoice);
-    }
-
-    @GetMapping(path = "documents/tickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosTicketDto getTicket(@PathVariable("id") final String _id)
-        throws NotFoundException
-    {
-        final Ticket ticket = documentService.getTicket(_id);
-        if (ticket == null) {
-            throw new NotFoundException("Ticket not found");
-        }
-        return Converter.toDto(ticket);
-    }
-
-    @GetMapping(path = "documents/creditnotes/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosCreditNoteDto getCreditNote(@PathVariable("id") final String _id)
-        throws NotFoundException
-    {
-        final var creditNote = documentService.getCreditNote(_id);
-        if (creditNote == null) {
-            throw new NotFoundException("CreditNote not found");
-        }
-        return Converter.toDto(creditNote);
-    }
-
-    @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PayableHeadDto> getInvoices4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
-    {
-        final Collection<PayableHead> receipts = documentService.getInvoiceHeads4Balance(_balanceOid);
-        return receipts.stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/invoices", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public List<PayableHeadDto> findInvoices(@RequestParam(name = "term") final String _term)
-    {
-        final Collection<PayableHead> invoices = documentService.findInvoices(_term);
-        return invoices.stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PayableHeadDto> getTickets4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
-    {
-        final Collection<PayableHead> receipts = documentService.getTicketHeads4Balance(_balanceOid);
-        return receipts.stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/tickets", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public List<PayableHeadDto> findTickets(@RequestParam(name = "term") final String _term)
-    {
-        final Collection<PayableHead> tickets = documentService.findTickets(_term);
-        return tickets.stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/creditnotes", produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
-    public List<PayableHeadDto> findCreditNotes(@RequestParam(name = "term") final String _term)
-    {
-        final var creditNotes = documentService.findCreditNotes(_term);
-        return creditNotes.stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/creditnotes", produces = MediaType.APPLICATION_JSON_VALUE, params = { "balanceOid" })
-    public List<PayableHeadDto> getCreditNotes4Balance(@RequestParam(name = "balanceOid") final String _balanceOid)
-    {
-        final Collection<PayableHead> receipts = documentService.getCreditNoteHeads4Balance(_balanceOid);
-        return receipts.stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "documents/creditnotes", produces = MediaType.APPLICATION_JSON_VALUE, params = {
-                    "sourceDocOid" })
-    public List<PosCreditNoteDto> getCreditNotes4SourceDocument(@RequestParam(name = "sourceDocOid") final String _sourceDocOid)
-    {
-        final Collection<CreditNote> creditnotes = documentService.getCreditNotes4SourceDocument(_sourceDocOid);
-        return creditnotes.stream()
-                        .map(Converter::toDto)
-                        .collect(Collectors.toList());
-    }
 }

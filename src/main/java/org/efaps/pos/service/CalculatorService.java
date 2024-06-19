@@ -47,6 +47,7 @@ import org.efaps.promotionengine.Calculator;
 import org.efaps.promotionengine.PromotionsConfiguration;
 import org.efaps.promotionengine.api.IDocument;
 import org.efaps.promotionengine.condition.StoreCondition;
+import org.efaps.promotionengine.dto.PromotionInfoDto;
 import org.efaps.promotionengine.pojo.Document;
 import org.efaps.promotionengine.pojo.Position;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -276,8 +277,8 @@ public class CalculatorService
         return map;
     }
 
-    public void calculate(final String workspaceOid,
-                          final AbstractDocument<?> posDoc)
+    public PromotionInfoDto calculate(final String workspaceOid,
+                                      final AbstractDocument<?> posDoc)
     {
         final var calcDocument = new Document();
         int i = 0;
@@ -338,5 +339,6 @@ public class CalculatorService
                             .setTax(entry.getValue()));
         }
         posDoc.setTaxes(taxes);
+        return (PromotionInfoDto) calcDocument.getPromotionInfo();
     }
 }

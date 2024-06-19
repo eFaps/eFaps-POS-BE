@@ -63,6 +63,7 @@ import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.CreditNoteRepository;
 import org.efaps.pos.repository.InvoiceRepository;
 import org.efaps.pos.repository.OrderRepository;
+import org.efaps.pos.repository.PromotionInfoRepository;
 import org.efaps.pos.repository.ReceiptRepository;
 import org.efaps.pos.repository.TicketRepository;
 import org.efaps.pos.util.Converter;
@@ -92,6 +93,7 @@ public class DocumentService
     private final InventoryService inventoryService;
     private final CalculatorService calculatorService;
     private final ProductService productService;
+    private final PromotionService promotionService;
     private final OrderRepository orderRepository;
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
@@ -114,12 +116,14 @@ public class DocumentService
                            final InventoryService _inventoryService,
                            final CalculatorService calculatorService,
                            final ProductService productService,
+                           final PromotionService promotionService,
                            final OrderRepository _orderRepository,
                            final ReceiptRepository _receiptRepository,
                            final InvoiceRepository _invoiceRepository,
                            final TicketRepository _ticketRepository,
                            final CreditNoteRepository _creditNoteRepository,
                            final BalanceRepository _balanceRepository,
+                           final PromotionInfoRepository promotionInfoRepository,
                            final Optional<List<IReceiptListener>> _receiptListeners,
                            final Optional<List<IInvoiceListener>> _invoiceListeners,
                            final Optional<List<ITicketListener>> _ticketListeners,
@@ -135,6 +139,7 @@ public class DocumentService
         this.calculatorService = calculatorService;
         receiptRepository = _receiptRepository;
         contactService = _contactService;
+        this.promotionService = promotionService;
         invoiceRepository = _invoiceRepository;
         ticketRepository = _ticketRepository;
         creditNoteRepository = _creditNoteRepository;
@@ -180,10 +185,25 @@ public class DocumentService
         return orderRepository.findByNumberLikeIgnoreCase(_term);
     }
 
-    public Order createOrder(final Order _order)
+    public Order createOrder(final String workspaceOid,
+                             final Order order)
     {
-        _order.setNumber(sequenceService.getNextOrder());
-        return orderRepository.insert(_order);
+        final var promoInfo = calculatorService.calculate(workspaceOid, order);
+        order.setNumber(sequenceService.getNextOrder());
+        final var storedOrder = orderRepository.insert(order);
+        promotionService.registerInfo(storedOrder.getId(), promoInfo);
+        return storedOrder;
+    }
+
+    public Order updateOrder(final String workspaceOid,
+                             final String id,
+                             final PosOrderDto dto)
+    {
+        final var order = orderRepository.findById(id).orElseThrow();
+        Converter.mapToEntity(dto, order);
+        final var promoInfo = calculatorService.calculate(workspaceOid, order);
+        promotionService.registerInfo(order.getId(), promoInfo);
+        return orderRepository.save(order);
     }
 
     public Order updateOrder(final String workspaceOid,
@@ -234,14 +254,6 @@ public class DocumentService
         order.setItems(getItems(createOrderDto));
         calculatorService.calculate(workspaceOid, order);
         return orderRepository.insert(order);
-    }
-
-    public Order updateOrder(final String id,
-                             final PosOrderDto dto)
-    {
-        final var order = orderRepository.findById(id).orElseThrow();
-        Converter.mapToEntity(dto, order);
-        return orderRepository.save(order);
     }
 
     public Order updateOrderWithContact(final String orderId,

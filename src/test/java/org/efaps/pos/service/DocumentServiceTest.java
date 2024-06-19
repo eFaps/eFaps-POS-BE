@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.efaps.pos.dto.DocStatus;
-import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Invoice;
@@ -127,36 +126,6 @@ public class DocumentServiceTest
         final Collection<Order> orders = documentService.getOrders4Spots();
         assertEquals(1, orders.size());
         assertEquals("1.2", orders.iterator().next().getOid());
-    }
-
-    // @Test
-    public void testCreateOrder()
-    {
-        final Order newOrder = new Order();
-        newOrder.setNetTotal(new BigDecimal("123.45869"));
-        newOrder.setTaxes(Collections.emptySet());
-
-        final Order order = documentService.createOrder(newOrder);
-        assertNotNull(order.getNumber());
-        assertNotNull(order.getId());
-        assertEquals(new BigDecimal("123.46"), order.getNetTotal());
-        assertEquals(new BigDecimal("123.46"), order.getCrossTotal());
-        assertEquals(1, mongoTemplate.findAll(Order.class).size());
-    }
-
-    // @Test
-    public void testUpdateOrder()
-    {
-        mongoTemplate.save(new Order());
-        final Order updateOrder = mongoTemplate.findAll(Order.class).get(0);
-        updateOrder.setNetTotal(new BigDecimal("123.45869"));
-        updateOrder.setTaxes(Collections.singleton(new TaxEntry().setAmount(new BigDecimal(100))));
-
-        final Order order = documentService.updateOrder("asda", null);
-        assertNotNull(order.getId());
-        assertEquals(new BigDecimal("123.46"), order.getNetTotal());
-        assertEquals(new BigDecimal("223.46"), order.getCrossTotal());
-        assertEquals(1, mongoTemplate.findAll(Order.class).size());
     }
 
     @Test
