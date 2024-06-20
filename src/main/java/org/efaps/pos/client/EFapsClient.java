@@ -39,6 +39,7 @@ import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.PromoInfoSyncDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.ReportToBaseDto;
 import org.efaps.pos.dto.SequenceDto;
@@ -506,6 +507,19 @@ public class EFapsClient
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for ReportToBase", e);
         }
+    }
+
+    public String postPromotionInfo(final PromoInfoSyncDto dto)
+    {
+        String ret = null;
+        try {
+            final RequestEntity<PromoInfoSyncDto> requestEntity = post(getEFapsConfig().getPromotionInfoPath(), dto);
+            final ResponseEntity<String> response = getRestTemplate().exchange(requestEntity, String.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during post for ReportToBase", e);
+        }
+        return ret;
     }
 
     public Checkout checkout(final String _oid)

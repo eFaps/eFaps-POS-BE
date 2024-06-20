@@ -15,35 +15,55 @@
  */
 package org.efaps.pos.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.PromoInfoDto;
+import org.efaps.pos.dto.PromoInfoSyncDto;
 import org.efaps.pos.entity.PromotionEntity;
 import org.efaps.pos.entity.PromotionInfo;
 import org.efaps.pos.repository.PromotionInfoRepository;
 import org.efaps.pos.repository.PromotionRepository;
 import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.PromotionNotFoundException;
+import org.efaps.pos.util.Utils;
 import org.efaps.promotionengine.api.IPromotionDetail;
 import org.efaps.promotionengine.dto.PromotionInfoDto;
 import org.efaps.promotionengine.promotion.Promotion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class PromotionService
 {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PromotionService.class);
+
+    private final ObjectMapper objectMapper;
     private final PromotionRepository promotionRepository;
     private final PromotionInfoRepository promotionInfoRepository;
+    private final EFapsClient eFapsClient;
+    private final DocumentHelperService documentHelperService;
 
-    public PromotionService(final PromotionRepository promotionRepository,
-                            final PromotionInfoRepository promotionInfoRepository)
+    public PromotionService(final ObjectMapper objectMapper,
+                            final PromotionRepository promotionRepository,
+                            final PromotionInfoRepository promotionInfoRepository,
+                            final EFapsClient eFapsClient,
+                            final DocumentHelperService documentHelperService)
     {
+        this.objectMapper = objectMapper;
         this.promotionRepository = promotionRepository;
         this.promotionInfoRepository = promotionInfoRepository;
+        this.eFapsClient = eFapsClient;
+        this.documentHelperService = documentHelperService;
     }
 
     protected List<Promotion> getPromotions()
@@ -108,4 +128,50 @@ public class PromotionService
         }
     }
 
+    public void syncPromotions()
+    {
+        final var promotions = eFapsClient.getPromotions();
+        final List<PromotionEntity> existingPromotions = promotionRepository.findAll();
+        existingPromotions.forEach(existing -> {
+            if (!promotions.stream()
+                            .filter(promotion -> promotion.getOid().equals(existing.getOid())).findFirst()
+                            .isPresent()) {
+                promotionRepository.delete(existing);
+            }
+        });
+        promotions.forEach(promotion -> promotionRepository.save(Converter.toEntity(promotion)));
+    }
+
+    public void syncPromotionInfos()
+    {
+        for (final var infoToBeSynced : promotionInfoRepository.findByOidIsNull()) {
+            LOG.debug("Syncing promotionInfo {}", infoToBeSynced);
+            final var doc = documentHelperService.getDocument(infoToBeSynced.getDocumentId());
+            if (doc.isPresent() && doc.get().getOid() != null) {
+                try {
+                    final List<String> promotionStr = new ArrayList<>();
+                    final List<String> promotionOids = new ArrayList<>();
+                    for (final var promotionEntity : infoToBeSynced.getPromotions()) {
+                        promotionOids.add(promotionEntity.getOid());
+                        final var promotion = Converter.toDto(promotionEntity);
+                        promotionStr.add(objectMapper.writeValueAsString(promotion));
+                    }
+
+                    final var dto = PromoInfoSyncDto.builder()
+                                    .withDocumentOid(doc.get().getOid())
+                                    .withPromoInfo(infoToBeSynced.getPromoInfo())
+                                    .withPromotions(promotionStr)
+                                    .withPromotionOids(promotionOids)
+                                    .build();
+                    final var oid = eFapsClient.postPromotionInfo(dto);
+                    if (Utils.isOid(oid)) {
+                        infoToBeSynced.setOid(oid);
+                        promotionInfoRepository.save(infoToBeSynced);
+                    }
+                } catch (final JsonProcessingException e) {
+                    LOG.error("Catched", e);
+                }
+            }
+        }
+    }
 }

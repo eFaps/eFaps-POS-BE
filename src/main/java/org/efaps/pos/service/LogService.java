@@ -23,24 +23,33 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.efaps.pos.ConfigProperties.LogToken;
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.LogEntryDto;
 import org.efaps.pos.dto.LogLevel;
 import org.efaps.pos.entity.LogEntry;
 import org.efaps.pos.listener.ILogListener;
 import org.efaps.pos.repository.LogEntryRepository;
+import org.efaps.pos.util.Converter;
+import org.efaps.pos.util.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LogService
 {
 
+    private static final Logger LOG = LoggerFactory.getLogger(LogService.class);
     private final LogEntryRepository logEntryRepository;
+    private final EFapsClient eFapsClient;
     private final List<ILogListener> logListeners;
 
     public LogService(final LogEntryRepository logEntryRepository,
+                      final EFapsClient eFapsClient,
                       final Optional<List<ILogListener>> logListeners)
     {
         this.logEntryRepository = logEntryRepository;
+        this.eFapsClient = eFapsClient;
         this.logListeners = logListeners.isPresent() ? logListeners.get() : Collections.emptyList();
     }
 
@@ -68,7 +77,8 @@ public class LogService
                         .setValue(value));
     }
 
-    public void error(final CollectorException e) {
+    public void error(final CollectorException e)
+    {
         logEntryRepository.save(new LogEntry()
                         .setIdent(e.getIdent())
                         .setKey(e.getKey())
@@ -96,5 +106,18 @@ public class LogService
     public LogEntry save(final LogEntry entry)
     {
         return logEntryRepository.save(entry);
+    }
+
+    public void syncLogs()
+    {
+        for (final LogEntry entry : getEntriesToBeSynced()) {
+            LOG.debug("Syncing LogEntry: {}", entry);
+            final var oid = eFapsClient.postLogEntry(Converter.toDto(entry));
+            LOG.debug("received oid: {}", oid);
+            if (Utils.isOid(oid)) {
+                entry.setOid(oid);
+                save(entry);
+            }
+        }
     }
 }

@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.repository;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import org.efaps.pos.entity.PromotionInfo;
@@ -24,4 +25,6 @@ public interface PromotionInfoRepository
     extends MongoRepository<PromotionInfo, String>
 {
     Optional<PromotionInfo> findOneByDocumentId(String documentId);
+
+    Collection<PromotionInfo> findByOidIsNull();
 }

@@ -148,4 +148,5 @@ efaps:
   stocktakingPath: /api/pos/{identifier}/stocktakings
   logEntryPath: /api/pos/{identifier}/log-entries
   promotionPath: /api/pos/{identifier}/promotions
+  promotionInfoPath: /api/pos/{identifier}/promotion-infos
   reportToBasePath: /api/pos/{identifier}/report-to-base

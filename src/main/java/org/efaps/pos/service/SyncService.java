@@ -54,12 +54,10 @@ import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Employee;
 import org.efaps.pos.entity.InventoryEntry;
 import org.efaps.pos.entity.Invoice;
-import org.efaps.pos.entity.LogEntry;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
-import org.efaps.pos.entity.PromotionEntity;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.SyncInfo;
@@ -80,7 +78,6 @@ import org.efaps.pos.repository.InvoiceRepository;
 import org.efaps.pos.repository.OrderRepository;
 import org.efaps.pos.repository.PrinterRepository;
 import org.efaps.pos.repository.ProductRepository;
-import org.efaps.pos.repository.PromotionRepository;
 import org.efaps.pos.repository.ReceiptRepository;
 import org.efaps.pos.repository.SequenceRepository;
 import org.efaps.pos.repository.TicketRepository;
@@ -128,12 +125,11 @@ public class SyncService
     private final BalanceRepository balanceRepository;
     private final OrderRepository orderRepository;
     private final CategoryRepository categoryRepository;
-    private final PromotionRepository promotionRepository;
     private final ConfigProperties configProperties;
     private final DocumentService documentService;
     private final ExchangeRateService exchangeRateService;
     private final LogService logService;
-
+    private final PromotionService promotionService;
     private boolean deactivated;
 
     @Autowired
@@ -154,12 +150,12 @@ public class SyncService
                        final BalanceRepository _balanceRepository,
                        final OrderRepository _orderRepository,
                        final CategoryRepository _categoryRepository,
-                       final PromotionRepository promotionRepository,
                        final EFapsClient _eFapsClient,
                        final ConfigProperties _configProperties,
                        final DocumentService _documentService,
                        final ExchangeRateService _exchangeRateService,
-                       final LogService logService)
+                       final LogService logService,
+                       final PromotionService promotionService)
     {
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
@@ -178,12 +174,12 @@ public class SyncService
         balanceRepository = _balanceRepository;
         orderRepository = _orderRepository;
         categoryRepository = _categoryRepository;
-        this.promotionRepository = promotionRepository;
         eFapsClient = _eFapsClient;
         configProperties = _configProperties;
         documentService = _documentService;
         exchangeRateService = _exchangeRateService;
         this.logService = logService;
+        this.promotionService = promotionService;
     }
 
     public void runSyncJob(final String _methodName)
@@ -202,34 +198,22 @@ public class SyncService
         }
     }
 
-    public void syncPromotions()
-    {
+    public void syncPromotionInfos() {
+        LOG.info("Syncing PromotionInfos");
+        promotionService.syncPromotionInfos();
+        registerSync(StashId.PROMOTIONINFOSYNC);
+    }
+
+    public void syncPromotions() {
         LOG.info("Syncing Promotions");
-        final var promotions = eFapsClient.getPromotions();
-        final List<PromotionEntity> existingPromotions = promotionRepository.findAll();
-        existingPromotions.forEach(existing -> {
-            if (!promotions.stream()
-                            .filter(promotion -> promotion.getOid().equals(existing.getOid())).findFirst()
-                            .isPresent()) {
-                promotionRepository.delete(existing);
-            }
-        });
-        promotions.forEach(promotion -> promotionRepository.save(Converter.toEntity(promotion)));
-        registerSync(StashId.CATEGORYSYNC);
+        promotionService.syncPromotions();
+        registerSync(StashId.PROMOTIONSYNC);
     }
 
     public void syncLogs()
     {
         LOG.info("Syncing Logs");
-        for (final LogEntry entry : logService.getEntriesToBeSynced()) {
-            LOG.debug("Syncing LogEntry: {}", entry);
-            final var oid = eFapsClient.postLogEntry(Converter.toDto(entry));
-            LOG.debug("received oid: {}", oid);
-            if (oid != null) {
-                entry.setOid(oid);
-                logService.save(entry);
-            }
-        }
+        logService.syncLogs();
     }
 
     public void syncProperties()
@@ -1017,7 +1001,7 @@ public class SyncService
         registerSync(StashId.EMPLOYEESYNC);
     }
 
-    private void registerSync(final StashId _stashId)
+    public void registerSync(final StashId _stashId)
     {
         registerSync(_stashId.getKey());
     }
