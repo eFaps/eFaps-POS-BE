@@ -20,6 +20,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -155,16 +156,24 @@ public class MongoConfig
             for (final var detailDoc : source.getList("details", Document.class)) {
                 details.add(PromoDetailDto.builder()
                                 .withIndex(detailDoc.getInteger("index"))
-                                .withDiscount(detailDoc.getString("discount") == null ? null
-                                                : new BigDecimal(detailDoc.getString("discount")))
+                                .withNetUnitDiscount(detailDoc.getString("netUnitDiscount") == null ? null
+                                                : new BigDecimal(detailDoc.getString("netUnitDiscount")))
+                                .withNetDiscount(detailDoc.getString("netDiscount") == null ? null
+                                                : new BigDecimal(detailDoc.getString("netDiscount")))
+                                .withCrossUnitDiscount(detailDoc.getString("crossUnitDiscount") == null ? null
+                                                : new BigDecimal(detailDoc.getString("crossUnitDiscount")))
+                                .withCrossDiscount(detailDoc.getString("crossDiscount") == null ? null
+                                                : new BigDecimal(detailDoc.getString("crossDiscount")))
                                 .withPromotionOid(detailDoc.getString("promotionOid"))
                                 .build());
 
             }
             return PromoInfoDto.builder()
-                            .withTotalDiscount(source.getString("totalDiscount") == null ? null
-                                            : new BigDecimal(source.getString("totalDiscount")))
-                            .withPromotionOids(source.getList("promotionOids", String.class))
+                            .withNetTotalDiscount(source.getString("netTotalDiscount") == null ? null
+                                            : new BigDecimal(source.getString("netTotalDiscount")))
+                            .withCrossTotalDiscount(source.getString("crossTotalDiscount") == null ? null
+                                            : new BigDecimal(source.getString("crossTotalDiscount")))
+                            .withPromotionOids(new HashSet<>(source.getList("promotionOids", String.class)))
                             .withDetails(details)
                             .build();
         }
