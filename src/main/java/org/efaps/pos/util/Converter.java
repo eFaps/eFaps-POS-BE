@@ -1582,7 +1582,8 @@ public final class Converter
     public static PromoInfoDto toDto(final PromotionInfoDto promoInfo)
     {
         return PromoInfoDto.builder()
-                        .withTotalDiscount(promoInfo.getTotalDiscount())
+                        .withNetTotalDiscount(promoInfo.getNetTotalDiscount())
+                        .withCrossTotalDiscount(promoInfo.getCrossTotalDiscount())
                         .withPromotionOids(promoInfo.getPromotionOids())
                         .withDetails(promoInfo.getDetails().stream().map(Converter::toDto).toList())
                         .build();
@@ -1591,7 +1592,10 @@ public final class Converter
     public static PromoDetailDto toDto(final IPromotionDetail detail)
     {
         return PromoDetailDto.builder()
-                        .withDiscount(detail.getDiscount())
+                        .withNetUnitDiscount(detail.getNetUnitDiscount())
+                        .withNetDiscount(detail.getNetDiscount())
+                        .withCrossUnitDiscount(detail.getCrossUnitDiscount())
+                        .withCrossDiscount(detail.getCrossDiscount())
                         .withIndex(detail.getIndex())
                         .withPromotionOid(detail.getPromotionOid())
                         .build();

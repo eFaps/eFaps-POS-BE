@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.efaps.abacus.api.ICalcDocument;
 import org.efaps.abacus.api.ICalcPosition;
 import org.efaps.abacus.api.ITax;
 import org.efaps.abacus.api.TaxType;
@@ -46,6 +47,7 @@ import org.efaps.pos.util.Utils;
 import org.efaps.promotionengine.Calculator;
 import org.efaps.promotionengine.PromotionsConfiguration;
 import org.efaps.promotionengine.api.IDocument;
+import org.efaps.promotionengine.api.IPromotionInfo;
 import org.efaps.promotionengine.condition.StoreCondition;
 import org.efaps.promotionengine.dto.PromotionInfoDto;
 import org.efaps.promotionengine.pojo.Document;
@@ -175,6 +177,28 @@ public class CalculatorService
                     return null;
                 }
 
+                @Override
+                public ICalcDocument updateWith(ICalcDocument position)
+                {
+                    return null;
+                }
+
+                @Override
+                public void setPromotionInfo(IPromotionInfo info)
+                {
+                }
+
+                @Override
+                public void addPromotionOid(String oid)
+                {
+                }
+
+                @Override
+                public List<String> getPromotionOids()
+                {
+                    return null;
+                }
+
             };
         } else {
             result = calculate(document);
@@ -208,12 +232,16 @@ public class CalculatorService
             final var info = ((Document) result).getPromotionInfo();
             if (info != null) {
                 ret = PromoInfoDto.builder()
-                                .withTotalDiscount(info.getTotalDiscount())
+                                .withNetTotalDiscount(info.getNetTotalDiscount())
+                                .withCrossTotalDiscount(info.getCrossTotalDiscount())
                                 .withPromotionOids(info.getPromotionOids())
                                 .withDetails(info.getDetails().stream()
                                                 .map(pos -> PromoDetailDto.builder()
                                                                 .withIndex(pos.getIndex())
-                                                                .withDiscount(pos.getDiscount())
+                                                                .withNetUnitDiscount(pos.getNetUnitDiscount())
+                                                                .withNetDiscount(pos.getNetDiscount())
+                                                                .withCrossUnitDiscount(pos.getCrossUnitDiscount())
+                                                                .withCrossDiscount(pos.getCrossDiscount())
                                                                 .withPromotionOid(pos.getPromotionOid())
                                                                 .build())
                                                 .toList())
