@@ -36,6 +36,9 @@ public class PromotionEntity
 
     private String description;
 
+    private String label;
+
+
     private int priority;
 
     private OffsetDateTime startDateTime;
@@ -84,6 +87,17 @@ public class PromotionEntity
     public PromotionEntity setDescription(String description)
     {
         this.description = description;
+        return this;
+    }
+
+    public String getLabel()
+    {
+        return label;
+    }
+
+    public PromotionEntity setLabel(String label)
+    {
+        this.label = label;
         return this;
     }
 
