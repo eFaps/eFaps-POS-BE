@@ -195,6 +195,22 @@ public class DocumentService
         return storedOrder;
     }
 
+    public Order createOrder(final String workspaceOid,
+                             final CreateDocumentDto createOrderDto)
+    {
+        final var order = new Order()
+                        .setStatus(DocStatus.OPEN)
+                        .setDate(LocalDate.now())
+                        .setCurrency(createOrderDto.getCurrency())
+                        .setWorkspaceOid(workspaceOid);
+        order.setNumber(sequenceService.getNextOrder());
+        order.setItems(getItems(createOrderDto));
+        final var promoInfo = calculatorService.calculate(workspaceOid, order);
+        final var storedOrder = orderRepository.insert(order);
+        promotionService.registerInfo(storedOrder.getId(), promoInfo);
+        return storedOrder;
+    }
+
     public Order updateOrder(final String workspaceOid,
                              final String id,
                              final PosOrderDto dto)
@@ -212,7 +228,8 @@ public class DocumentService
     {
         final var order = orderRepository.findById(orderId).orElseThrow();
         order.setItems(getItems(createOrderDto));
-        calculatorService.calculate(workspaceOid, order);
+        final var promoInfo = calculatorService.calculate(workspaceOid, order);
+        promotionService.registerInfo(order.getId(), promoInfo);
         return orderRepository.save(order);
     }
 
@@ -240,20 +257,6 @@ public class DocumentService
                             .setStandInOid(standInOid));
         });
         return items;
-    }
-
-    public Order createOrder(final String workspaceOid,
-                             final CreateDocumentDto createOrderDto)
-    {
-        final var order = new Order()
-                        .setStatus(DocStatus.OPEN)
-                        .setDate(LocalDate.now())
-                        .setCurrency(createOrderDto.getCurrency())
-                        .setWorkspaceOid(workspaceOid);
-        order.setNumber(sequenceService.getNextOrder());
-        order.setItems(getItems(createOrderDto));
-        calculatorService.calculate(workspaceOid, order);
-        return orderRepository.insert(order);
     }
 
     public Order updateOrderWithContact(final String orderId,
