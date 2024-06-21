@@ -161,7 +161,6 @@ public class PromotionService
                                     .withDocumentOid(doc.get().getOid())
                                     .withPromoInfo(infoToBeSynced.getPromoInfo())
                                     .withPromotions(promotionStr)
-                                    .withPromotionOids(promotionOids)
                                     .build();
                     final var oid = eFapsClient.postPromotionInfo(dto);
                     if (Utils.isOid(oid)) {
