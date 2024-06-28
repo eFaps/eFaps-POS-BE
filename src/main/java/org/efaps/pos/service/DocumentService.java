@@ -17,6 +17,7 @@ package org.efaps.pos.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ import org.efaps.pos.dto.CreateDocumentDto;
 import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.EmployeeRelationType;
 import org.efaps.pos.dto.IdentificationType;
 import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.PosInvoiceDto;
@@ -41,6 +43,7 @@ import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.ProductRelationType;
 import org.efaps.pos.dto.ProductType;
+import org.efaps.pos.dto.WorkspaceFlag;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.AbstractPayableDocument;
@@ -51,12 +54,14 @@ import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Ticket;
+import org.efaps.pos.entity.User;
 import org.efaps.pos.error.PreconditionException;
 import org.efaps.pos.interfaces.ICreditNoteListener;
 import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IPos;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
+import org.efaps.pos.pojo.EmployeeRelation;
 import org.efaps.pos.pojo.Payment;
 import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.repository.BalanceRepository;
@@ -94,6 +99,7 @@ public class DocumentService
     private final CalculatorService calculatorService;
     private final ProductService productService;
     private final PromotionService promotionService;
+    private final WorkspaceService workspaceService;
     private final OrderRepository orderRepository;
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
@@ -117,6 +123,7 @@ public class DocumentService
                            final CalculatorService calculatorService,
                            final ProductService productService,
                            final PromotionService promotionService,
+                           final WorkspaceService workspaceService,
                            final OrderRepository _orderRepository,
                            final ReceiptRepository _receiptRepository,
                            final InvoiceRepository _invoiceRepository,
@@ -140,6 +147,7 @@ public class DocumentService
         receiptRepository = _receiptRepository;
         contactService = _contactService;
         this.promotionService = promotionService;
+        this.workspaceService = workspaceService;
         invoiceRepository = _invoiceRepository;
         ticketRepository = _ticketRepository;
         creditNoteRepository = _creditNoteRepository;
@@ -195,7 +203,8 @@ public class DocumentService
         return storedOrder;
     }
 
-    public Order createOrder(final String workspaceOid,
+    public Order createOrder(final User user,
+                             final String workspaceOid,
                              final CreateDocumentDto createOrderDto)
     {
         final var order = new Order()
@@ -205,6 +214,7 @@ public class DocumentService
                         .setWorkspaceOid(workspaceOid);
         order.setNumber(sequenceService.getNextOrder());
         order.setItems(getItems(createOrderDto));
+        assignSeller(user, workspaceOid, order);
         final var promoInfo = calculatorService.calculate(workspaceOid, order);
         final var storedOrder = orderRepository.insert(order);
         promotionService.registerInfo(storedOrder.getId(), promoInfo);
@@ -222,12 +232,14 @@ public class DocumentService
         return orderRepository.save(order);
     }
 
-    public Order updateOrder(final String workspaceOid,
+    public Order updateOrder(final User user,
+                             final String workspaceOid,
                              final String orderId,
                              final CreateDocumentDto createOrderDto)
     {
         final var order = orderRepository.findById(orderId).orElseThrow();
         order.setItems(getItems(createOrderDto));
+        assignSeller(user, workspaceOid, order);
         final var promoInfo = calculatorService.calculate(workspaceOid, order);
         promotionService.registerInfo(order.getId(), promoInfo);
         return orderRepository.save(order);
@@ -738,5 +750,23 @@ public class DocumentService
             payable = createReceipt(order.getWorkspaceOid(), orderId, receipt);
         }
         return payable;
+    }
+
+    protected void assignSeller(final User user,
+                                final String workspaceOid,
+                                final Order order)
+    {
+        final var workspace = workspaceService.getWorkspace(workspaceOid);
+        if (workspace != null && user.getEmployeeOid() != null
+                        && Utils.hasFlag(workspace.getFlags(), WorkspaceFlag.ASSIGNSELLER)) {
+            if (order.getEmployeeRelations() == null) {
+                order.setEmployeeRelations(new HashSet<>(Arrays.asList(new EmployeeRelation()
+                                .setEmployeeOid(user.getEmployeeOid()).setType(EmployeeRelationType.SELLER))));
+            } else if (order.getEmployeeRelations().stream()
+                            .noneMatch(relation -> relation.getType().equals(EmployeeRelationType.SELLER))) {
+                order.getEmployeeRelations().add(new EmployeeRelation()
+                                .setEmployeeOid(user.getEmployeeOid()).setType(EmployeeRelationType.SELLER));
+            }
+        }
     }
 }

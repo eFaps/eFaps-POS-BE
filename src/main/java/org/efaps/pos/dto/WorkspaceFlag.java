@@ -15,14 +15,15 @@
  */
 package org.efaps.pos.dto;
 
-public enum WorkspaceFlag {
+public enum WorkspaceFlag
+{
 
+    ROUNDPAYABLE(2), ASSIGNSELLER(3);
 
-  ROUNDPAYABLE(2);
+    public int bitIndex;
 
-  public int bitIndex;
-
-  WorkspaceFlag(int bitIndex) {
-    this.bitIndex = bitIndex;
-  }
+    WorkspaceFlag(int bitIndex)
+    {
+        this.bitIndex = bitIndex;
+    }
 }

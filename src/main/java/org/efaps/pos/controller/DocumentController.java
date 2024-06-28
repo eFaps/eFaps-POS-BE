@@ -31,12 +31,14 @@ import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Ticket;
+import org.efaps.pos.entity.User;
 import org.efaps.pos.error.NotFoundException;
 import org.efaps.pos.error.PreconditionException;
 import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -310,20 +312,22 @@ public class DocumentController
     }
 
     // mobile
-
     @PostMapping(path = "workspaces/{oid}/documents/orders", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosOrderDto createOrder(@PathVariable("oid") final String oid,
+    public PosOrderDto createOrder(final Authentication authentication,
+                                   @PathVariable("oid") final String oid,
                                    @RequestBody final CreateDocumentDto createOrderDto)
     {
-        return Converter.toDto(documentService.createOrder(oid, createOrderDto));
+        return Converter.toDto(documentService.createOrder((User) authentication.getPrincipal(), oid, createOrderDto));
     }
 
     @PutMapping(path = "workspaces/{oid}/documents/orders/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public PosOrderDto updateOrder(@PathVariable("oid") final String oid,
+    public PosOrderDto updateOrder(final Authentication authentication,
+                                   @PathVariable("oid") final String oid,
                                    @PathVariable("orderId") final String orderId,
                                    @RequestBody final CreateDocumentDto createOrderDto)
     {
-        return Converter.toDto(documentService.updateOrder(oid, orderId, createOrderDto));
+        return Converter.toDto(documentService.updateOrder((User) authentication.getPrincipal(), oid, orderId,
+                        createOrderDto));
     }
 
 }
