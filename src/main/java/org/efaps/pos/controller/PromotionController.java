@@ -17,6 +17,7 @@ package org.efaps.pos.controller;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PromoInfoDto;
+import org.efaps.pos.dto.PromotionHeaderDto;
 import org.efaps.pos.service.PromotionService;
 import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.PromotionNotFoundException;
@@ -45,6 +46,13 @@ public class PromotionController
         throws PromotionNotFoundException
     {
         return Converter.toDto(promotionService.getPromotion(promotionOid));
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "{promotionOid}", params = {"headerOnly"})
+    public PromotionHeaderDto getPromotionHeader(@PathVariable(name = "promotionOid") final String promotionOid)
+        throws PromotionNotFoundException
+    {
+        return Converter.toHeaderDto(promotionService.getPromotion(promotionOid));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/info")

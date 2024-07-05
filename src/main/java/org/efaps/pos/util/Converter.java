@@ -72,6 +72,7 @@ import org.efaps.pos.dto.ProductHeadDto;
 import org.efaps.pos.dto.ProductRelationDto;
 import org.efaps.pos.dto.PromoDetailDto;
 import org.efaps.pos.dto.PromoInfoDto;
+import org.efaps.pos.dto.PromotionHeaderDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.SpotDto;
@@ -1506,6 +1507,19 @@ public final class Converter
                         .withSourceConditions(entity.getSourceConditions())
                         .withTargetConditions(entity.getTargetConditions())
                         .withActions(entity.getActions())
+                        .build();
+    }
+
+    public static PromotionHeaderDto toHeaderDto(final PromotionEntity entity)
+    {
+        return PromotionHeaderDto.builder()
+                        .withOid(entity.getOid())
+                        .withName(entity.getName())
+                        .withDescription(entity.getDescription())
+                        .withLabel(entity.getLabel())
+                        .withPriority(entity.getPriority())
+                        .withStartDateTime(entity.getStartDateTime())
+                        .withEndDateTime(entity.getEndDateTime())
                         .build();
     }
 
