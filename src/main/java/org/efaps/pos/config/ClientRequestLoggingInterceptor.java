@@ -18,6 +18,8 @@ package org.efaps.pos.config;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpRequest;
@@ -39,9 +41,12 @@ public class ClientRequestLoggingInterceptor
                                         final ClientHttpRequestExecution _execution)
         throws IOException
     {
+        final var watch = new StopWatch();
         logRequest(_request, _body);
+        watch.start();
         final ClientHttpResponse response = _execution.execute(_request, _body);
-        logResponse(response);
+        watch.stop();
+        logResponse(response, watch.getTime());
         return response;
     }
 
@@ -58,15 +63,18 @@ public class ClientRequestLoggingInterceptor
         }
     }
 
-    private void logResponse(final ClientHttpResponse _response)
+    private void logResponse(final ClientHttpResponse _response,
+                             long timeElapsed)
         throws IOException
     {
         if (LOG.isDebugEnabled()) {
             LOG.debug("============================response begin===========================================");
-            LOG.debug("Status code  : {}", _response.getStatusCode());
-            LOG.debug("Status text  : {}", _response.getStatusText());
-            LOG.debug("Headers      : {}", _response.getHeaders());
-            LOG.debug("Response body: {}", StreamUtils.copyToString(_response.getBody(), StandardCharsets.UTF_8));
+            LOG.debug("Time Elapsed  : {}ms", timeElapsed);
+            LOG.debug("Status code   : {}", _response.getStatusCode());
+            LOG.debug("Status text   : {}", _response.getStatusText());
+            LOG.debug("Headers       : {}", _response.getHeaders());
+            LOG.debug("Response body : {}", StringUtils
+                            .truncate(StreamUtils.copyToString(_response.getBody(), StandardCharsets.UTF_8), 2000));
             LOG.debug("=======================response end===================================================");
         }
     }
