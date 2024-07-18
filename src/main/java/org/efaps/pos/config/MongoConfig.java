@@ -17,6 +17,7 @@ package org.efaps.pos.config;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
@@ -105,11 +106,12 @@ public class MongoConfig
     @Override
     protected void configureConverters(final MongoConverterConfigurationAdapter converterConfigurationAdapter)
     {
-
         converterConfigurationAdapter.registerConverter(new RegexConverter());
         converterConfigurationAdapter.registerConverter(new OffsetDateTimeWriteConverter());
         converterConfigurationAdapter.registerConverter(new OffsetDateTimeReadConverter());
         converterConfigurationAdapter.registerConverter(new PromoInfoDtoReadConverter());
+        converterConfigurationAdapter.registerConverter(new OffsetTimeWriteConverter());
+        converterConfigurationAdapter.registerConverter(new OffsetTimeReadConverter());
     }
 
     public static class RegexConverter
@@ -142,6 +144,28 @@ public class MongoConfig
         public OffsetDateTime convert(Date source)
         {
             return source.toInstant().atOffset(ZoneOffset.UTC);
+        }
+    }
+
+    public static class OffsetTimeWriteConverter
+        implements Converter<OffsetTime, String>
+    {
+
+        @Override
+        public String convert(OffsetTime source)
+        {
+            return source.toString();
+        }
+    }
+
+    public static class OffsetTimeReadConverter
+        implements Converter<String, OffsetTime>
+    {
+
+        @Override
+        public OffsetTime convert(String source)
+        {
+            return OffsetTime.parse(source);
         }
     }
 
