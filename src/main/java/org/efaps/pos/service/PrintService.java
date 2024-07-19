@@ -88,6 +88,7 @@ public class PrintService
     private final ConfigProperties configProperties;
     private final GridFsService gridFsService;
     private final DocumentService documentService;
+    private final PromotionService promotionService;
     private final List<IPrintListener> printListeners;
 
     public PrintService(final ObjectMapper _jacksonObjectMapper,
@@ -95,6 +96,7 @@ public class PrintService
                         final ConfigProperties _configProperties,
                         final PrinterRepository _printerRepository,
                         final DocumentService _documentService,
+                        final PromotionService promotionService,
                         final Optional<List<IPrintListener>> _printListeners)
     {
         jacksonObjectMapper = _jacksonObjectMapper;
@@ -102,6 +104,7 @@ public class PrintService
         configProperties = _configProperties;
         printerRepository = _printerRepository;
         documentService = _documentService;
+        this.promotionService = promotionService;
         printListeners = _printListeners.isPresent() ? _printListeners.get() : Collections.emptyList();
         LOG.info("Discovered {} IPrintListener", printListeners.size());
     }
@@ -152,78 +155,51 @@ public class PrintService
         return queue(_job.getPrinterOid(), _job.getReportOid(), Converter.toDto(_job));
     }
 
-    public Optional<PrintResponseDto> queue(final PrintCmd _printCmd,
-                                            final AbstractDocument<?> _document)
+    public Optional<PrintResponseDto> queue(final PrintCmd printCmd,
+                                            final AbstractDocument<?> document)
     {
         Object content;
-        if (_document instanceof Order) {
-            content = Converter.toDto((Order) _document);
-        } else if (_document instanceof Receipt) {
-            final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
+        if (document instanceof Order) {
+            content = Converter.toDto((Order) document);
+        } else if (document instanceof AbstractPayableDocument) {
             final Map<String, Object> additionalInfo = new HashMap<>();
             for (final IPrintListener listener : printListeners) {
-                listener.addAdditionalInfo2Document(_document, additionalInfo);
+                listener.addAdditionalInfo2Document(document, additionalInfo);
             }
-            content = PrintPayableDto.builder()
-                            .withPayableType(DocType.RECEIPT)
-                            .withTime(LocalTime.ofInstant(
-                                            _document.getCreatedDate() == null ? Instant.now()
-                                                            : _document.getCreatedDate(),
-                                            ZoneId.of(configProperties.getBeInst().getTimeZone())))
-                            .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
-                            .withPayable(Converter.toDto((Receipt) _document))
-                            .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
-                            .withAdditionalInfo(additionalInfo)
-                            .build();
-        } else if (_document instanceof Invoice) {
-            final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
-            final Map<String, Object> additionalInfo = new HashMap<>();
-            for (final IPrintListener listener : printListeners) {
-                listener.addAdditionalInfo2Document(_document, additionalInfo);
-            }
+            final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) document);
+            final var promoInfo = promotionService.getPromotionInfoForDocument(document.getId());
 
-            content = PrintPayableDto.builder()
-                            .withPayableType(DocType.INVOICE)
-                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(),
+            final var bldr = PrintPayableDto.builder()
+                            .withTime(LocalTime.ofInstant(
+                                            document.getCreatedDate() == null ? Instant.now()
+                                                            : document.getCreatedDate(),
                                             ZoneId.of(configProperties.getBeInst().getTimeZone())))
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
-                            .withPayable(Converter.toDto((Invoice) _document))
-                            .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
-                            .withAdditionalInfo(additionalInfo)
-                            .build();
-        } else if (_document instanceof Ticket) {
-            final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) _document);
-            final Map<String, Object> additionalInfo = new HashMap<>();
-            for (final IPrintListener listener : printListeners) {
-                listener.addAdditionalInfo2Document(_document, additionalInfo);
+                            .withPromoInfo(promoInfo)
+                            .withAmountInWords(getWordsForAmount(document.getCrossTotal()))
+                            .withAdditionalInfo(additionalInfo);
+            if (document instanceof Receipt) {
+                bldr.withPayableType(DocType.RECEIPT)
+                                .withPayable(Converter.toDto((Receipt) document));
+            } else if (document instanceof Invoice) {
+                bldr.withPayableType(DocType.INVOICE)
+                                .withPayable(Converter.toDto((Invoice) document));
+            } else if (document instanceof Ticket) {
+                bldr.withPayableType(DocType.TICKET)
+                                .withPayable(Converter.toDto((Ticket) document));
+
+            } else if (document instanceof CreditNote) {
+                bldr.withPayableType(DocType.CREDITNOTE)
+                                .withPayable(Converter.toDto((CreditNote) document));
             }
-            content = PrintPayableDto.builder()
-                            .withPayableType(DocType.TICKET)
-                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(),
-                                            ZoneId.of(configProperties.getBeInst().getTimeZone())))
-                            .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
-                            .withPayable(Converter.toDto((Ticket) _document))
-                            .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
-                            .withAdditionalInfo(additionalInfo)
-                            .build();
-        } else if (_document instanceof CreditNote) {
-            final Map<String, Object> additionalInfo = new HashMap<>();
-            for (final IPrintListener listener : printListeners) {
-                listener.addAdditionalInfo2Document(_document, additionalInfo);
-            }
-            content = PrintPayableDto.builder()
-                            .withPayableType(DocType.CREDITNOTE)
-                            .withTime(LocalTime.ofInstant(_document.getCreatedDate(),
-                                            ZoneId.of(configProperties.getBeInst().getTimeZone())))
-                            .withPayable(Converter.toDto((CreditNote) _document))
-                            .withAmountInWords(getWordsForAmount(_document.getCrossTotal()))
-                            .withAdditionalInfo(additionalInfo)
-                            .build();
+            content = bldr.build();
         } else {
-            content = _document;
+            content = document;
         }
-        return queue(_printCmd.getPrinterOid(), _printCmd.getReportOid(), content);
+        return queue(printCmd.getPrinterOid(), printCmd.getReportOid(), content);
     }
+
+
 
     protected String getWordsForAmount(final BigDecimal amount)
     {

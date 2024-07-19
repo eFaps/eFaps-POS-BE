@@ -26,6 +26,7 @@ public class PrintPayableDto
 {
 
     private final DocType payableType;
+
     private final AbstractPayableDocumentDto payable;
 
     private final PosOrderDto order;
@@ -33,16 +34,20 @@ public class PrintPayableDto
     private final Map<String, Object> additionalInfo;
 
     private final String amountInWords;
+
     private final LocalTime time;
 
-    private PrintPayableDto(final Builder builder)
+    private final PromoInfoDto promoInfo;
+
+    private PrintPayableDto(Builder builder)
     {
-        payableType = builder.payableType;
-        payable = builder.payable;
-        order = builder.order;
-        additionalInfo = builder.additionalInfo;
-        amountInWords = builder.amountInWords;
-        time = builder.time;
+        this.payableType = builder.payableType;
+        this.payable = builder.payable;
+        this.order = builder.order;
+        this.additionalInfo = builder.additionalInfo;
+        this.amountInWords = builder.amountInWords;
+        this.time = builder.time;
+        this.promoInfo = builder.promoInfo;
     }
 
     public DocType getPayableType()
@@ -75,64 +80,70 @@ public class PrintPayableDto
         return time;
     }
 
-    /**
-     * Creates builder to build {@link PrintPayableDto}.
-     * @return created builder
-     */
+    public PromoInfoDto getPromoInfo()
+    {
+        return promoInfo;
+    }
+
     public static Builder builder()
     {
         return new Builder();
     }
 
-    /**
-     * Builder to build {@link PrintPayableDto}.
-     */
     public static final class Builder
     {
+
         private DocType payableType;
         private AbstractPayableDocumentDto payable;
         private PosOrderDto order;
         private Map<String, Object> additionalInfo = Collections.emptyMap();
         private String amountInWords;
         private LocalTime time;
+        private PromoInfoDto promoInfo;
 
         private Builder()
         {
         }
 
-        public Builder withPayableType(final DocType payableType)
+        public Builder withPayableType(DocType payableType)
         {
             this.payableType = payableType;
             return this;
         }
 
-
-        public Builder withPayable(final AbstractPayableDocumentDto payable)
+        public Builder withPayable(AbstractPayableDocumentDto payable)
         {
             this.payable = payable;
             return this;
         }
 
-        public Builder withOrder(final PosOrderDto order)
+        public Builder withOrder(PosOrderDto order)
         {
             this.order = order;
             return this;
         }
 
-        public Builder withAdditionalInfo(final Map<String, Object> additionalInfo)
+        public Builder withAdditionalInfo(Map<String, Object> additionalInfo)
         {
             this.additionalInfo = additionalInfo;
             return this;
         }
 
-        public Builder withAmountInWords(final String amountInWords)
+        public Builder withAmountInWords(String amountInWords)
         {
             this.amountInWords = amountInWords;
             return this;
         }
 
-        public Builder withTime(final LocalTime time) {
+        public Builder withTime(LocalTime time)
+        {
             this.time = time;
+            return this;
+        }
+
+        public Builder withPromoInfo(PromoInfoDto promoInfo)
+        {
+            this.promoInfo = promoInfo;
             return this;
         }
 
