@@ -250,6 +250,7 @@ public class SyncService
             allProducts.addAll(products);
             i++;
             next = !(products.size() < limit);
+            products.forEach(product -> mongoTemplate.save(product));
         }
         if (!allProducts.isEmpty()) {
             final List<Product> existingProducts = mongoTemplate.findAll(Product.class);
@@ -259,7 +260,6 @@ public class SyncService
                     mongoTemplate.remove(existing);
                 }
             });
-            allProducts.forEach(product -> mongoTemplate.save(product));
         }
         registerSync(StashId.PRODUCTSYNC);
     }

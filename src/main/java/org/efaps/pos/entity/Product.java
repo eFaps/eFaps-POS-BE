@@ -16,6 +16,7 @@
 package org.efaps.pos.entity;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ import org.efaps.pos.pojo.Product2Category;
 import org.efaps.pos.pojo.ProductRelation;
 import org.efaps.pos.pojo.Tax;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "products")
@@ -58,6 +60,9 @@ public class Product
     private Set<BOMGroupConfig> bomGroupConfigs;
     private Set<ConfigurationBOM> configurationBOMs;
     private ProductIndividual individual;
+
+    @LastModifiedDate
+    private Instant lastModifiedDate;
 
     public String getOid()
     {
@@ -267,6 +272,16 @@ public class Product
     {
         this.individual = individual;
         return this;
+    }
+
+    public Instant getLastModifiedDate()
+    {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(Instant lastModifiedDate)
+    {
+        this.lastModifiedDate = lastModifiedDate;
     }
 
     @Override
