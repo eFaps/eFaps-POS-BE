@@ -198,16 +198,18 @@ public class SyncService
         }
     }
 
-    public void syncPromotionInfos() {
-        LOG.info("Syncing PromotionInfos");
-        promotionService.syncPromotionInfos();
-        registerSync(StashId.PROMOTIONINFOSYNC);
+    public void syncPromotionInfos()
+    {
+        if (promotionService.syncPromotionInfos()) {
+            registerSync(StashId.PROMOTIONINFOSYNC);
+        }
     }
 
-    public void syncPromotions() {
-        LOG.info("Syncing Promotions");
-        promotionService.syncPromotions();
-        registerSync(StashId.PROMOTIONSYNC);
+    public void syncPromotions()
+    {
+        if (promotionService.syncPromotions()) {
+            registerSync(StashId.PROMOTIONSYNC);
+        }
     }
 
     public void syncLogs()
@@ -957,11 +959,11 @@ public class SyncService
             } else {
                 final var updatedContact = contacts.get(0);
                 updatedContact
-                    .setEmail(contact.getEmail())
-                    .setIdNumber(contact.getIdNumber())
-                    .setIdType(contact.getIdType())
-                    .setName(contact.getName())
-                    .setVisibility(Visibility.VISIBLE);
+                                .setEmail(contact.getEmail())
+                                .setIdNumber(contact.getIdNumber())
+                                .setIdType(contact.getIdType())
+                                .setName(contact.getName())
+                                .setVisibility(Visibility.VISIBLE);
                 contactRepository.save(updatedContact);
             }
         }

@@ -40,7 +40,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ConfigService
 {
     public static String CALCULATOR_CONFIG = "org.efaps.sales.Calculator.Config";
+    public static String PROMOTIONS_ACTIVATE = "org.efaps.promotions.Activate";
     public static String PROMOTIONS_CONFIG = "org.efaps.promotions.Engine.Config";
+
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigService.class);
 

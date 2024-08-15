@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.PromoInfoDto;
 import org.efaps.pos.dto.PromoInfoSyncDto;
@@ -51,18 +52,21 @@ public class PromotionService
     private final PromotionRepository promotionRepository;
     private final PromotionInfoRepository promotionInfoRepository;
     private final EFapsClient eFapsClient;
+    private final ConfigService configService;
     private final DocumentHelperService documentHelperService;
 
     public PromotionService(final ObjectMapper objectMapper,
                             final PromotionRepository promotionRepository,
                             final PromotionInfoRepository promotionInfoRepository,
                             final EFapsClient eFapsClient,
+                            final ConfigService configService,
                             final DocumentHelperService documentHelperService)
     {
         this.objectMapper = objectMapper;
         this.promotionRepository = promotionRepository;
         this.promotionInfoRepository = promotionInfoRepository;
         this.eFapsClient = eFapsClient;
+        this.configService = configService;
         this.documentHelperService = documentHelperService;
     }
 
@@ -128,49 +132,59 @@ public class PromotionService
         }
     }
 
-    public void syncPromotions()
+    public boolean syncPromotions()
     {
-        final var promotions = eFapsClient.getPromotions();
-        final List<PromotionEntity> existingPromotions = promotionRepository.findAll();
-        existingPromotions.forEach(existing -> {
-            if (!promotions.stream()
-                            .filter(promotion -> promotion.getOid().equals(existing.getOid())).findFirst()
-                            .isPresent()) {
-                promotionRepository.delete(existing);
-            }
-        });
-        promotions.forEach(promotion -> promotionRepository.save(Converter.toEntity(promotion)));
+        final var active = BooleanUtils.toBoolean(configService.getSystemConfig(ConfigService.PROMOTIONS_ACTIVATE));
+        if (active) {
+            LOG.info("Syncing Promotions");
+            final var promotions = eFapsClient.getPromotions();
+            final List<PromotionEntity> existingPromotions = promotionRepository.findAll();
+            existingPromotions.forEach(existing -> {
+                if (!promotions.stream()
+                                .filter(promotion -> promotion.getOid().equals(existing.getOid())).findFirst()
+                                .isPresent()) {
+                    promotionRepository.delete(existing);
+                }
+            });
+            promotions.forEach(promotion -> promotionRepository.save(Converter.toEntity(promotion)));
+        }
+        return active;
     }
 
-    public void syncPromotionInfos()
+    public boolean syncPromotionInfos()
     {
-        for (final var infoToBeSynced : promotionInfoRepository.findByOidIsNull()) {
-            LOG.debug("Syncing promotionInfo {}", infoToBeSynced);
-            final var doc = documentHelperService.getDocument(infoToBeSynced.getDocumentId());
-            if (doc.isPresent() && doc.get().getOid() != null) {
-                try {
-                    final List<String> promotionStr = new ArrayList<>();
-                    final List<String> promotionOids = new ArrayList<>();
-                    for (final var promotionEntity : infoToBeSynced.getPromotions()) {
-                        promotionOids.add(promotionEntity.getOid());
-                        final var promotion = Converter.toDto(promotionEntity);
-                        promotionStr.add(objectMapper.writeValueAsString(promotion));
-                    }
+        final var active = BooleanUtils.toBoolean(configService.getSystemConfig(ConfigService.PROMOTIONS_ACTIVATE));
+        if (active) {
+            LOG.info("Syncing PromotionInfos");
+            for (final var infoToBeSynced : promotionInfoRepository.findByOidIsNull()) {
+                LOG.debug("Syncing promotionInfo {}", infoToBeSynced);
+                final var doc = documentHelperService.getDocument(infoToBeSynced.getDocumentId());
+                if (doc.isPresent() && doc.get().getOid() != null) {
+                    try {
+                        final List<String> promotionStr = new ArrayList<>();
+                        final List<String> promotionOids = new ArrayList<>();
+                        for (final var promotionEntity : infoToBeSynced.getPromotions()) {
+                            promotionOids.add(promotionEntity.getOid());
+                            final var promotion = Converter.toDto(promotionEntity);
+                            promotionStr.add(objectMapper.writeValueAsString(promotion));
+                        }
 
-                    final var dto = PromoInfoSyncDto.builder()
-                                    .withDocumentOid(doc.get().getOid())
-                                    .withPromoInfo(infoToBeSynced.getPromoInfo())
-                                    .withPromotions(promotionStr)
-                                    .build();
-                    final var oid = eFapsClient.postPromotionInfo(dto);
-                    if (Utils.isOid(oid)) {
-                        infoToBeSynced.setOid(oid);
-                        promotionInfoRepository.save(infoToBeSynced);
+                        final var dto = PromoInfoSyncDto.builder()
+                                        .withDocumentOid(doc.get().getOid())
+                                        .withPromoInfo(infoToBeSynced.getPromoInfo())
+                                        .withPromotions(promotionStr)
+                                        .build();
+                        final var oid = eFapsClient.postPromotionInfo(dto);
+                        if (Utils.isOid(oid)) {
+                            infoToBeSynced.setOid(oid);
+                            promotionInfoRepository.save(infoToBeSynced);
+                        }
+                    } catch (final JsonProcessingException e) {
+                        LOG.error("Catched", e);
                     }
-                } catch (final JsonProcessingException e) {
-                    LOG.error("Catched", e);
                 }
             }
         }
+        return active;
     }
 }

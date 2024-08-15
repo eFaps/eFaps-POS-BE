@@ -83,6 +83,7 @@ public class ApplicationStartup
                 if (company != null) {
                     Context.get().setCompany(company);
                 }
+                service.syncProperties();
                 service.syncUsers();
                 service.syncExchangeRates();
                 service.syncPOSs();
@@ -98,7 +99,6 @@ public class ApplicationStartup
                 service.syncWarehouses();
                 service.syncInventory();
                 service.syncPrinters();
-                service.syncProperties();
                 service.syncImages();
                 service.syncReports();
                 service.syncOrders();
