@@ -308,6 +308,13 @@ public class CalculatorService
     public PromotionInfoDto calculate(final String workspaceOid,
                                       final AbstractDocument<?> posDoc)
     {
+        if (posDoc.getItems().isEmpty()) {
+            posDoc.setNetTotal(BigDecimal.ZERO);
+            posDoc.setCrossTotal(BigDecimal.ZERO);
+            posDoc.setPayableAmount(BigDecimal.ZERO);
+            posDoc.setTaxes(Collections.emptySet());
+            return null;
+        }
         final var calcDocument = new Document();
         int i = 0;
         final var taxMap = new HashMap<String, org.efaps.pos.pojo.Tax>();
