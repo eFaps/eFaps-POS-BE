@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.client;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.http.MediaType;
 
 public class Checkout
@@ -52,5 +53,11 @@ public class Checkout
     public void setFilename(final String _filename)
     {
         this.filename = _filename;
+    }
+
+    @Override
+    public String toString()
+    {
+        return ReflectionToStringBuilder.toString(this);
     }
 }

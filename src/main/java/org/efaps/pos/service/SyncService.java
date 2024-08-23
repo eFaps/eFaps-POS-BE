@@ -130,6 +130,7 @@ public class SyncService
     private final ExchangeRateService exchangeRateService;
     private final LogService logService;
     private final PromotionService promotionService;
+    private final ProductService productService;
     private boolean deactivated;
 
     @Autowired
@@ -155,7 +156,8 @@ public class SyncService
                        final DocumentService _documentService,
                        final ExchangeRateService _exchangeRateService,
                        final LogService logService,
-                       final PromotionService promotionService)
+                       final PromotionService promotionService,
+                       final ProductService productService)
     {
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
@@ -180,6 +182,7 @@ public class SyncService
         exchangeRateService = _exchangeRateService;
         this.logService = logService;
         this.promotionService = promotionService;
+        this.productService = productService;
     }
 
     public void runSyncJob(final String _methodName)
@@ -238,31 +241,7 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing All Products");
-        final var allProducts = new ArrayList<Product>();
-        final var limit = configProperties.getEFaps().getProductLimit();
-        var next = true;
-        var i = 0;
-        while (next) {
-            final var offset = i * limit;
-            LOG.info("    Products Batch {} - {}", offset, offset + limit);
-            final List<Product> products = eFapsClient.getProducts(limit, offset, null).stream()
-                            .map(Converter::toEntity)
-                            .collect(Collectors.toList());
-            allProducts.addAll(products);
-            i++;
-            next = !(products.size() < limit);
-            products.forEach(product -> mongoTemplate.save(product));
-        }
-        if (!allProducts.isEmpty()) {
-            final List<Product> existingProducts = mongoTemplate.findAll(Product.class);
-            existingProducts.forEach(existing -> {
-                if (!allProducts.stream().filter(product -> product.getOid().equals(existing.getOid())).findFirst()
-                                .isPresent()) {
-                    mongoTemplate.remove(existing);
-                }
-            });
-        }
+        productService.syncAllProducts();
         registerSync(StashId.PRODUCTSYNC);
     }
 
@@ -272,27 +251,9 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Products");
-        final var lastSync = getSync(StashId.PRODUCTSYNC);
-        if (lastSync != null) {
-            final var after = OffsetDateTime.of(lastSync.getLastSync(), ZoneOffset.of("-5")).minusMinutes(10);
-            final var limit = configProperties.getEFaps().getProductLimit();
-            var next = true;
-            var i = 0;
-            while (next) {
-                final var offset = i * limit;
-                LOG.info("    Products Batch {} - {}", offset, offset + limit);
-                final List<Product> products = eFapsClient.getProducts(limit, offset, after).stream()
-                                .map(Converter::toEntity)
-                                .collect(Collectors.toList());
-                i++;
-                next = !(products.size() < limit);
-                for (final var product : products) {
-                    mongoTemplate.save(product);
-                }
-            }
+        if (productService.syncProducts(getSync(StashId.PRODUCTSYNC))) {
+            registerSync(StashId.PRODUCTSYNC);
         }
-        registerSync(StashId.PRODUCTSYNC);
     }
 
     public void syncCategories()

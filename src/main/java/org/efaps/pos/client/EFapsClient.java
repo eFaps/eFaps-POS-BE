@@ -30,6 +30,7 @@ import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.CreditNoteDto;
+import org.efaps.pos.dto.DumpDto;
 import org.efaps.pos.dto.EmployeeDto;
 import org.efaps.pos.dto.ExchangeRateDto;
 import org.efaps.pos.dto.InventoryEntryDto;
@@ -58,6 +59,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -120,6 +122,22 @@ public class EFapsClient
                             {
                             });
             ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of products", e);
+        }
+        return ret;
+    }
+
+    public DumpDto getProductDump()
+    {
+        DumpDto ret = null;
+        try {
+
+            final RequestEntity<?> requestEntity = get(getEFapsConfig().getProductPath() + "/dump");
+            final ResponseEntity<DumpDto> response = getRestTemplate().exchange(requestEntity, DumpDto.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                ret = response.getBody();
+            }
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of products", e);
         }

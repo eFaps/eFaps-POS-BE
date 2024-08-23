@@ -15,15 +15,30 @@
  */
 package org.efaps.pos.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.ProductRelationType;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.repository.ProductRepository;
+import org.efaps.pos.util.Converter;
+import org.efaps.pos.util.SyncServiceDeactivatedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,24 +48,35 @@ import org.springframework.data.mongodb.core.index.TextIndexDefinition;
 import org.springframework.data.mongodb.core.index.TextIndexDefinition.TextIndexDefinitionBuilder;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.annotation.PostConstruct;
 
 @Service
 public class ProductService
 {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ProductService.class);
+
+    private final ObjectMapper objectMapper;
     private final ConfigProperties configProperties;
     private final MongoTemplate mongoTemplate;
     private final ProductRepository productRepository;
+    private final EFapsClient eFapsClient;
 
     @Autowired
-    public ProductService(final ConfigProperties _configProperties,
+    public ProductService(final ObjectMapper objectMapper,
+                          final ConfigProperties _configProperties,
                           final MongoTemplate mongoTemplate,
-                          final ProductRepository _productRepository)
+                          final ProductRepository _productRepository,
+                          final EFapsClient eFapsClient)
     {
+        this.objectMapper = objectMapper;
         configProperties = _configProperties;
         this.mongoTemplate = mongoTemplate;
         productRepository = _productRepository;
+        this.eFapsClient = eFapsClient;
     }
 
     @PostConstruct
@@ -131,4 +157,87 @@ public class ProductService
         }
         return Pair.of(netPrice, crossPrice);
     }
+
+    public void syncAllProducts()
+    {
+        final var dumpDto = eFapsClient.getProductDump();
+        if (dumpDto != null) {
+            LOG.info("Syncing All Products using dump");
+            final var checkout = eFapsClient.checkout(dumpDto.getOid());
+            try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(checkout.getContent()))) {
+                var zipEntry = zis.getNextEntry();
+                var i = 0;
+                while (zipEntry != null) {
+                    LOG.info("Reading products from: {}", zipEntry.getName());
+                    final var writer = new StringWriter();
+                    IOUtils.copy(zis, writer, "UTF-8");
+                    final var products = objectMapper.readValue(writer.toString(), new TypeReference<List<Product>>()
+                    {
+                    });
+                    LOG.info("Loaded products {} - {} ", i, i + products.size());
+                    i += products.size();
+                    products.forEach(product -> productRepository.save(product));
+                    zipEntry = zis.getNextEntry();
+                }
+                zis.closeEntry();
+                zis.close();
+            } catch (final IOException e) {
+                LOG.error("Catched", e);
+            }
+        } else {
+            LOG.info("Syncing All Products");
+            final var allProducts = new ArrayList<Product>();
+            final var limit = configProperties.getEFaps().getProductLimit();
+            var next = true;
+            var i = 0;
+            while (next) {
+                final var offset = i * limit;
+                LOG.info("    Products Batch {} - {}", offset, offset + limit);
+                final List<Product> products = eFapsClient.getProducts(limit, offset, null).stream()
+                                .map(Converter::toEntity)
+                                .collect(Collectors.toList());
+                allProducts.addAll(products);
+                i++;
+                next = !(products.size() < limit);
+                products.forEach(product -> mongoTemplate.save(product));
+            }
+            if (!allProducts.isEmpty()) {
+                final List<Product> existingProducts = mongoTemplate.findAll(Product.class);
+                existingProducts.forEach(existing -> {
+                    if (!allProducts.stream().filter(product -> product.getOid().equals(existing.getOid())).findFirst()
+                                    .isPresent()) {
+                        mongoTemplate.remove(existing);
+                    }
+                });
+            }
+        }
+    }
+
+    public boolean syncProducts(final SyncInfo syncInfo)
+        throws SyncServiceDeactivatedException
+    {
+        LOG.info("Syncing Products");
+        boolean ret = false;
+        if (syncInfo != null) {
+            final var after = OffsetDateTime.of(syncInfo.getLastSync(), ZoneOffset.of("-5")).minusMinutes(10);
+            final var limit = configProperties.getEFaps().getProductLimit();
+            var next = true;
+            var i = 0;
+            while (next) {
+                final var offset = i * limit;
+                LOG.info("    Products Batch {} - {}", offset, offset + limit);
+                final List<Product> products = eFapsClient.getProducts(limit, offset, after).stream()
+                                .map(Converter::toEntity)
+                                .collect(Collectors.toList());
+                i++;
+                next = !(products.size() < limit);
+                for (final var product : products) {
+                    mongoTemplate.save(product);
+                }
+            }
+            ret = true;
+        }
+        return ret;
+    }
+
 }
