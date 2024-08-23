@@ -36,7 +36,7 @@ import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.repository.ProductRepository;
 import org.efaps.pos.util.Converter;
-import org.efaps.pos.util.SyncServiceDeactivatedException;
+import org.efaps.pos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,6 +184,7 @@ public class ProductService
             } catch (final IOException e) {
                 LOG.error("Catched", e);
             }
+            syncProducts(new SyncInfo().setLastSync(Utils.toLocal(dumpDto.getUpdateAt())));
         } else {
             LOG.info("Syncing All Products");
             final var allProducts = new ArrayList<Product>();
@@ -214,7 +215,6 @@ public class ProductService
     }
 
     public boolean syncProducts(final SyncInfo syncInfo)
-        throws SyncServiceDeactivatedException
     {
         LOG.info("Syncing Products");
         boolean ret = false;

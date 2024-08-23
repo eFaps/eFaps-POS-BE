@@ -43,8 +43,9 @@ public class SyncInfo
         return this.lastSync;
     }
 
-    public void setLastSync(final LocalDateTime _lastSync)
+    public SyncInfo setLastSync(final LocalDateTime _lastSync)
     {
         this.lastSync = _lastSync;
+        return this;
     }
 }
