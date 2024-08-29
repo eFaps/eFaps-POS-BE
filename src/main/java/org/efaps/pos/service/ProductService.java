@@ -43,15 +43,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.index.TextIndexDefinition;
-import org.springframework.data.mongodb.core.index.TextIndexDefinition.TextIndexDefinitionBuilder;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.annotation.PostConstruct;
 
 @Service
 public class ProductService
@@ -61,37 +56,19 @@ public class ProductService
 
     private final ObjectMapper objectMapper;
     private final ConfigProperties configProperties;
-    private final MongoTemplate mongoTemplate;
     private final ProductRepository productRepository;
     private final EFapsClient eFapsClient;
 
     @Autowired
     public ProductService(final ObjectMapper objectMapper,
                           final ConfigProperties _configProperties,
-                          final MongoTemplate mongoTemplate,
                           final ProductRepository _productRepository,
                           final EFapsClient eFapsClient)
     {
         this.objectMapper = objectMapper;
         configProperties = _configProperties;
-        this.mongoTemplate = mongoTemplate;
         productRepository = _productRepository;
         this.eFapsClient = eFapsClient;
-    }
-
-    @PostConstruct
-    public void init()
-    {
-        final TextIndexDefinition textIndex = new TextIndexDefinitionBuilder()
-                        .named("TextSearch")
-                        .onField("description")
-                        .onField("note")
-                        .onField("sku")
-                        .onField("barcodes.code")
-                        .withDefaultLanguage("spanish")
-                        .build();
-
-        mongoTemplate.indexOps(Product.class).ensureIndex(textIndex);
     }
 
     public Page<Product> getProducts(Pageable pageable)
@@ -200,14 +177,14 @@ public class ProductService
                 allProducts.addAll(products);
                 i++;
                 next = !(products.size() < limit);
-                products.forEach(product -> mongoTemplate.save(product));
+                products.forEach(product -> productRepository.save(product));
             }
             if (!allProducts.isEmpty()) {
-                final List<Product> existingProducts = mongoTemplate.findAll(Product.class);
+                final List<Product> existingProducts = productRepository.findAll();
                 existingProducts.forEach(existing -> {
                     if (!allProducts.stream().filter(product -> product.getOid().equals(existing.getOid())).findFirst()
                                     .isPresent()) {
-                        mongoTemplate.remove(existing);
+                        productRepository.delete(existing);
                     }
                 });
             }
@@ -218,6 +195,7 @@ public class ProductService
     {
         LOG.info("Syncing Products");
         boolean ret = false;
+        final List<Product> allProducts = new ArrayList<>();
         if (syncInfo != null) {
             final var after = OffsetDateTime.of(syncInfo.getLastSync(), ZoneOffset.of("-5")).minusMinutes(10);
             final var limit = configProperties.getEFaps().getProductLimit();
@@ -229,15 +207,37 @@ public class ProductService
                 final List<Product> products = eFapsClient.getProducts(limit, offset, after).stream()
                                 .map(Converter::toEntity)
                                 .collect(Collectors.toList());
+                allProducts.addAll(products);
                 i++;
                 next = !(products.size() < limit);
                 for (final var product : products) {
-                    mongoTemplate.save(product);
+                    productRepository.save(product);
                 }
             }
             ret = true;
         }
+        allProducts.forEach(this::validateParent);
         return ret;
     }
 
+    private void validateParent(final Product product)
+    {
+        if (ProductType.BATCH.equals(product.getType())) {
+            final var parentProductOpt = product.getRelations().stream()
+                            .filter(rel -> ProductRelationType.BATCH.equals(rel.getType())).findFirst();
+            if (parentProductOpt.isPresent()) {
+                final var parent = getProduct(parentProductOpt.get().getProductOid());
+                if (parent != null) {
+                    if (parent.getRelations().stream()
+                                    .filter(rel -> (ProductRelationType.BATCH.equals(rel.getType())
+                                                    && rel.getProductOid().equals(product.getOid())))
+                                    .findAny().isEmpty()) {
+                        final var updatedProduct = eFapsClient.getProduct(parent.getOid());
+                        productRepository.save(Converter.toEntity(updatedProduct));
+                    }
+                }
+            }
+        }
+
+    }
 }

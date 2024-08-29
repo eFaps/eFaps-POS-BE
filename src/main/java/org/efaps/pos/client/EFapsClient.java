@@ -128,6 +128,20 @@ public class EFapsClient
         return ret;
     }
 
+    public ProductDto getProduct(final String productOid)
+    {
+        ProductDto ret = null;
+        try {
+            final var requestEntity = get(getEFapsConfig().getProductPath() + "/" + productOid);
+            final var response = getRestTemplate().exchange(requestEntity, ProductDto.class);
+            ret = response.getBody();
+
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of a product", e);
+        }
+        return ret;
+    }
+
     public DumpDto getProductDump()
     {
         DumpDto ret = null;
