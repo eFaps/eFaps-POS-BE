@@ -18,6 +18,9 @@ package org.efaps.pos.dto;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -39,6 +42,8 @@ public class PrintPayableDto
 
     private final PromoInfoDto promoInfo;
 
+    private final Set<PrintEmployeeRelationDto> employees;
+
     private PrintPayableDto(Builder builder)
     {
         this.payableType = builder.payableType;
@@ -48,6 +53,7 @@ public class PrintPayableDto
         this.amountInWords = builder.amountInWords;
         this.time = builder.time;
         this.promoInfo = builder.promoInfo;
+        this.employees = builder.employees;
     }
 
     public DocType getPayableType()
@@ -85,6 +91,17 @@ public class PrintPayableDto
         return promoInfo;
     }
 
+    public Set<PrintEmployeeRelationDto> getEmployees()
+    {
+        return employees;
+    }
+
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -100,6 +117,7 @@ public class PrintPayableDto
         private String amountInWords;
         private LocalTime time;
         private PromoInfoDto promoInfo;
+        private Set<PrintEmployeeRelationDto> employees = Collections.emptySet();
 
         private Builder()
         {
@@ -144,6 +162,12 @@ public class PrintPayableDto
         public Builder withPromoInfo(PromoInfoDto promoInfo)
         {
             this.promoInfo = promoInfo;
+            return this;
+        }
+
+        public Builder withEmployees(Set<PrintEmployeeRelationDto> employees)
+        {
+            this.employees = employees;
             return this;
         }
 

@@ -30,8 +30,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.print.PrintServiceLookup;
@@ -41,6 +44,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.PrintEmployeeRelationDto;
 import org.efaps.pos.dto.PrintPayableDto;
 import org.efaps.pos.dto.PrintResponseDto;
 import org.efaps.pos.entity.AbstractDocument;
@@ -89,6 +93,7 @@ public class PrintService
     private final GridFsService gridFsService;
     private final DocumentService documentService;
     private final PromotionService promotionService;
+    private final EmployeeService employeeService;
     private final List<IPrintListener> printListeners;
 
     public PrintService(final ObjectMapper _jacksonObjectMapper,
@@ -97,6 +102,7 @@ public class PrintService
                         final PrinterRepository _printerRepository,
                         final DocumentService _documentService,
                         final PromotionService promotionService,
+                        final EmployeeService employeeService,
                         final Optional<List<IPrintListener>> _printListeners)
     {
         jacksonObjectMapper = _jacksonObjectMapper;
@@ -105,6 +111,7 @@ public class PrintService
         printerRepository = _printerRepository;
         documentService = _documentService;
         this.promotionService = promotionService;
+        this.employeeService = employeeService;
         printListeners = _printListeners.isPresent() ? _printListeners.get() : Collections.emptyList();
         LOG.info("Discovered {} IPrintListener", printListeners.size());
     }
@@ -177,7 +184,9 @@ public class PrintService
                             .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
                             .withPromoInfo(promoInfo)
                             .withAmountInWords(getWordsForAmount(document.getCrossTotal()))
-                            .withAdditionalInfo(additionalInfo);
+                            .withAdditionalInfo(additionalInfo)
+                            .withEmployees(evalEmloyees(document));
+
             if (document instanceof Receipt) {
                 bldr.withPayableType(DocType.RECEIPT)
                                 .withPayable(Converter.toDto((Receipt) document));
@@ -199,7 +208,31 @@ public class PrintService
         return queue(printCmd.getPrinterOid(), printCmd.getReportOid(), content);
     }
 
-
+    protected Set<PrintEmployeeRelationDto> evalEmloyees(AbstractDocument<?> document)
+    {
+        Set<PrintEmployeeRelationDto> ret;
+        if (document.getEmployeeRelations() != null && !document.getEmployeeRelations().isEmpty()) {
+            ret = document.getEmployeeRelations().stream()
+                            .map(entry -> {
+                                final var employeeOpt = employeeService.getEmployee(entry.getEmployeeOid());
+                                PrintEmployeeRelationDto dto;
+                                if (employeeOpt.isPresent()) {
+                                    dto = PrintEmployeeRelationDto.builder()
+                                                    .withType(entry.getType())
+                                                    .withEmployee(Converter.toDto(employeeOpt.get()))
+                                                    .build();
+                                } else {
+                                    dto = null;
+                                }
+                                return dto;
+                            })
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toSet());
+        } else {
+            ret = Collections.emptySet();
+        }
+        return ret;
+    }
 
     protected String getWordsForAmount(final BigDecimal amount)
     {

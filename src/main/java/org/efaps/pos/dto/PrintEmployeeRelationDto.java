@@ -15,32 +15,39 @@
  */
 package org.efaps.pos.dto;
 
-import java.time.OffsetDateTime;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-@JsonDeserialize(builder = DumpDto.Builder.class)
-public class DumpDto
+@JsonDeserialize(builder = PrintEmployeeRelationDto.Builder.class)
+public class PrintEmployeeRelationDto
 {
 
-    private final String oid;
-    private final OffsetDateTime updateAt;
+    private final EmployeeRelationType type;
+    private final EmployeeDto employee;
 
-    private DumpDto(Builder builder)
+    private PrintEmployeeRelationDto(final Builder builder)
     {
-        this.oid = builder.oid;
-        this.updateAt = builder.updateAt;
+        type = builder.type;
+        employee = builder.employee;
     }
 
-    public String getOid()
+    public EmployeeRelationType getType()
     {
-        return oid;
+        return type;
     }
 
-    public OffsetDateTime getUpdateAt()
+    public EmployeeDto getEmployee()
     {
-        return updateAt;
+        return employee;
     }
+
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
 
     public static Builder builder()
     {
@@ -50,28 +57,28 @@ public class DumpDto
     public static final class Builder
     {
 
-        private String oid;
-        private OffsetDateTime updateAt;
+        private EmployeeRelationType type;
+        private EmployeeDto employee;
 
         private Builder()
         {
         }
 
-        public Builder withOid(String oid)
+        public Builder withType(final EmployeeRelationType type)
         {
-            this.oid = oid;
+            this.type = type;
             return this;
         }
 
-        public Builder withUpdateAt(OffsetDateTime updateAt)
+        public Builder withEmployee(final EmployeeDto employee)
         {
-            this.updateAt = updateAt;
+            this.employee = employee;
             return this;
         }
 
-        public DumpDto build()
+        public PrintEmployeeRelationDto build()
         {
-            return new DumpDto(this);
+            return new PrintEmployeeRelationDto(this);
         }
     }
 }
