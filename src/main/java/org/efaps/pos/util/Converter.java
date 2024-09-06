@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.dto.AbstractDocumentDto;
 import org.efaps.pos.dto.AbstractPayableDocumentDto;
+import org.efaps.pos.dto.BOMActionDto;
 import org.efaps.pos.dto.BOMGroupConfigDto;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BarcodeDto;
@@ -114,6 +115,7 @@ import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.Card;
 import org.efaps.pos.entity.Workspace.Floor;
 import org.efaps.pos.entity.Workspace.PrintCmd;
+import org.efaps.pos.pojo.BOMAction;
 import org.efaps.pos.pojo.BOMGroupConfig;
 import org.efaps.pos.pojo.Barcode;
 import org.efaps.pos.pojo.ConfigurationBOM;
@@ -306,7 +308,14 @@ public final class Converter
                         .setPosition(dto.getPosition())
                         .setBomGroupOid(dto.getBomGroupOid())
                         .setQuantity(dto.getQuantity())
-                        .setUoM(dto.getUoM());
+                        .setUoM(dto.getUoM())
+                        .setActions(dto.getActions() == null ? null
+                                        : dto.getActions().stream().map(Converter::toEntity).toList());
+    }
+
+    public static BOMAction toEntity(final BOMActionDto dto)
+    {
+        return new BOMAction().setType(dto.getType()).setAmount(dto.getAmount());
     }
 
     public static BOMGroupConfig toEntity(final BOMGroupConfigDto dto)
@@ -461,6 +470,17 @@ public final class Converter
                         .withQuantity(entity.getQuantity())
                         .withUoM(entity.getUoM())
                         .withToProductOid(entity.getToProductOid())
+                        .withActions(entity.getActions() == null ? Collections.emptyList()
+                                        : entity.getActions()
+                                                        .stream().map(Converter::toDto).toList())
+                        .build();
+    }
+
+    public static BOMActionDto toDto(final BOMAction entity)
+    {
+        return BOMActionDto.builder()
+                        .withType(entity.getType())
+                        .withAmount(entity.getAmount())
                         .build();
     }
 

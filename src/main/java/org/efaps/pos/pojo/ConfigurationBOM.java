@@ -16,6 +16,7 @@
 package org.efaps.pos.pojo;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -26,9 +27,9 @@ public class ConfigurationBOM
     private String toProductOid;
     private String bomGroupOid;
     private int position;
-
     private BigDecimal quantity;
     private String uoM;
+    private List<BOMAction> actions;
 
     public String getOid()
     {
@@ -93,6 +94,17 @@ public class ConfigurationBOM
     public ConfigurationBOM setUoM(String uoM)
     {
         this.uoM = uoM;
+        return this;
+    }
+
+    public List<BOMAction> getActions()
+    {
+        return actions;
+    }
+
+    public ConfigurationBOM setActions(List<BOMAction> actions)
+    {
+        this.actions = actions;
         return this;
     }
 
