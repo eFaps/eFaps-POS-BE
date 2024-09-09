@@ -239,6 +239,7 @@ public class DocumentService
     {
         final var order = orderRepository.findById(orderId).orElseThrow();
         order.setItems(getItems(createOrderDto));
+        order.setDate(LocalDate.now());
         assignSeller(user, workspaceOid, order);
         final var promoInfo = calculatorService.calculate(workspaceOid, order);
         promotionService.registerInfo(order.getId(), promoInfo);
