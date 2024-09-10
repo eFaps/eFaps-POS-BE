@@ -19,9 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.ConfigProperties.Company;
@@ -38,7 +34,6 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BalanceStatus;
-import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.OrderDto;
@@ -63,7 +58,6 @@ import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
-import org.efaps.pos.entity.Visibility;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.Floor;
@@ -71,7 +65,6 @@ import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.pojo.StashId;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.CategoryRepository;
-import org.efaps.pos.repository.ContactRepository;
 import org.efaps.pos.repository.CreditNoteRepository;
 import org.efaps.pos.repository.InventoryRepository;
 import org.efaps.pos.repository.InvoiceRepository;
@@ -116,7 +109,6 @@ public class SyncService
     private final CreditNoteRepository creditNoteRepository;
     private final ProductRepository productRepository;
     private final SequenceRepository sequenceRepository;
-    private final ContactRepository contactRepository;
     private final UserRepository userRepository;
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
@@ -126,6 +118,7 @@ public class SyncService
     private final OrderRepository orderRepository;
     private final CategoryRepository categoryRepository;
     private final ConfigProperties configProperties;
+    private final ContactService contactService;
     private final DocumentService documentService;
     private final ExchangeRateService exchangeRateService;
     private final LogService logService;
@@ -142,7 +135,6 @@ public class SyncService
                        final CreditNoteRepository _creditNoteRepository,
                        final ProductRepository _productRepository,
                        final SequenceRepository _sequenceRepository,
-                       final ContactRepository _contactRepository,
                        final UserRepository _userRepository,
                        final WarehouseRepository _warehouseRepository,
                        final InventoryRepository _inventoryRepository,
@@ -153,7 +145,8 @@ public class SyncService
                        final CategoryRepository _categoryRepository,
                        final EFapsClient _eFapsClient,
                        final ConfigProperties _configProperties,
-                       final DocumentService _documentService,
+                       final ContactService contactService,
+                       final DocumentService documentService,
                        final ExchangeRateService _exchangeRateService,
                        final LogService logService,
                        final PromotionService promotionService,
@@ -167,7 +160,6 @@ public class SyncService
         creditNoteRepository = _creditNoteRepository;
         productRepository = _productRepository;
         sequenceRepository = _sequenceRepository;
-        contactRepository = _contactRepository;
         userRepository = _userRepository;
         warehouseRepository = _warehouseRepository;
         inventoryRepository = _inventoryRepository;
@@ -178,7 +170,8 @@ public class SyncService
         categoryRepository = _categoryRepository;
         eFapsClient = _eFapsClient;
         configProperties = _configProperties;
-        documentService = _documentService;
+        this.contactService = contactService;
+        this.documentService = documentService;
         exchangeRateService = _exchangeRateService;
         this.logService = logService;
         this.promotionService = promotionService;
@@ -412,7 +405,8 @@ public class SyncService
     public void syncPayables()
         throws SyncServiceDeactivatedException
     {
-        syncContactsUp();
+        final var syncedContacts = contactService.syncContactsUp();
+        documentService.updateContactOid(syncedContacts);
         syncBalance();
         syncReceipts();
         syncInvoices();
@@ -694,9 +688,9 @@ public class SyncService
     {
         boolean ret = false;
         if (Utils.isOid(entity.getContactOid())) {
-            ret = contactRepository.findOneByOid(entity.getContactOid()).isPresent();
+            ret = contactService.findOneByOid(entity.getContactOid()).isPresent();
         } else if (entity.getContactOid() != null) {
-            final Optional<Contact> optContact = contactRepository.findById(entity.getContactOid());
+            final Optional<Contact> optContact = contactService.findById(entity.getContactOid());
             if (optContact.isPresent()) {
                 final String contactOid = optContact.get().getOid();
                 if (Utils.isOid(contactOid)) {
@@ -833,8 +827,9 @@ public class SyncService
             throw new SyncServiceDeactivatedException();
         }
         LOG.info("Syncing All Contacts");
-        syncContactsUp();
-        syncContactsDown(null);
+        final var syncedContacts = contactService.syncContactsUp();
+        documentService.updateContactOid(syncedContacts);
+        contactService.syncContacts(null);
     }
 
     public void syncContacts()
@@ -844,100 +839,10 @@ public class SyncService
             throw new SyncServiceDeactivatedException();
         }
         LOG.info("Syncing Contacts");
-        syncContactsUp();
-        syncUpdatedContacts();
-        final var lastSync = getSync(StashId.CONTACTSYNC);
-        if (lastSync != null) {
-            final var after = OffsetDateTime.of(lastSync.getLastSync(), ZoneOffset.of("-5")).minusMinutes(10);
-            syncContactsDown(after);
-        }
-        registerSync(StashId.CONTACTSYNC);
-    }
-
-    private void syncUpdatedContacts()
-    {
-        final Collection<Contact> tosync = contactRepository.findByUpdatedIsTrue();
-        for (final Contact contact : tosync) {
-            if (contact.getOid() != null) {
-                eFapsClient.putContact(Converter.toDto(contact));
-                contact.setUpdated(null);
-                contactRepository.save(contact);
-            }
-        }
-    }
-
-    private void syncContactsUp()
-    {
-        final Collection<Contact> tosync = contactRepository.findByOidIsNull();
-        for (final Contact contact : tosync) {
-            LOG.debug("Syncing Contact: {}", contact);
-            final ContactDto recDto = eFapsClient.postContact(Converter.toDto(contact));
-            LOG.debug("received Contact: {}", recDto);
-            if (recDto.getOid() != null) {
-                contact.setOid(recDto.getOid());
-                contactRepository.save(contact);
-                receiptRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
-                    doc.setContactOid(contact.getOid());
-                    receiptRepository.save(doc);
-                });
-                invoiceRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
-                    doc.setContactOid(contact.getOid());
-                    invoiceRepository.save(doc);
-                });
-                ticketRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
-                    doc.setContactOid(contact.getOid());
-                    ticketRepository.save(doc);
-                });
-            }
-        }
-    }
-
-    private void syncContactsDown(OffsetDateTime after)
-    {
-        final var queriedContacts = new ArrayList<Contact>();
-        final var limit = configProperties.getEFaps().getContactLimit();
-        var next = true;
-        var i = 0;
-        while (next) {
-            final var offset = i * limit;
-            LOG.info("    Contact Batch {} - {}", offset, offset + limit);
-            final List<Contact> recievedContacts = eFapsClient.getContacts(limit, i * limit, after)
-                            .stream()
-                            .map(Converter::toEntity)
-                            .collect(Collectors.toList());
-            queriedContacts.addAll(recievedContacts);
-            i++;
-            next = !(recievedContacts.size() < limit);
-        }
-        for (final Contact contact : queriedContacts) {
-            contact.setVisibility(Visibility.VISIBLE);
-            final List<Contact> contacts = contactRepository.findByOid(contact.getOid());
-            if (CollectionUtils.isEmpty(contacts)) {
-                contactRepository.save(contact);
-            } else if (contacts.size() > 1) {
-                contacts.forEach(entity -> contactRepository.delete(entity));
-                contactRepository.save(contact);
-            } else {
-                final var updatedContact = contacts.get(0);
-                updatedContact
-                                .setEmail(contact.getEmail())
-                                .setIdNumber(contact.getIdNumber())
-                                .setIdType(contact.getIdType())
-                                .setName(contact.getName())
-                                .setVisibility(Visibility.VISIBLE);
-                contactRepository.save(updatedContact);
-            }
-        }
-        if (after == null && !queriedContacts.isEmpty()) {
-            for (final Contact contact : contactRepository.findAllVisible()) {
-                if (contact.getOid() != null && !queriedContacts.stream()
-                                .filter(recieved -> recieved.getOid().equals(contact.getOid()))
-                                .findFirst()
-                                .isPresent()) {
-                    contact.setVisibility(Visibility.HIDDEN);
-                    contactRepository.save(contact);
-                }
-            }
+        final var syncedContacts = contactService.syncContactsUp();
+        documentService.updateContactOid(syncedContacts);
+        if (contactService.syncContacts(getSync(StashId.CONTACTSYNC))) {
+            registerSync(StashId.CONTACTSYNC);
         }
     }
 

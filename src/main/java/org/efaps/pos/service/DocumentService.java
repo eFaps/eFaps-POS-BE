@@ -48,6 +48,7 @@ import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
+import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
@@ -768,6 +769,24 @@ public class DocumentService
                 order.getEmployeeRelations().add(new EmployeeRelation()
                                 .setEmployeeOid(user.getEmployeeOid()).setType(EmployeeRelationType.SELLER));
             }
+        }
+    }
+
+    public void updateContactOid(final List<Contact> syncedContacts)
+    {
+        for (final var contact : syncedContacts) {
+            receiptRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
+                doc.setContactOid(contact.getOid());
+                receiptRepository.save(doc);
+            });
+            invoiceRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
+                doc.setContactOid(contact.getOid());
+                invoiceRepository.save(doc);
+            });
+            ticketRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
+                doc.setContactOid(contact.getOid());
+                ticketRepository.save(doc);
+            });
         }
     }
 }
