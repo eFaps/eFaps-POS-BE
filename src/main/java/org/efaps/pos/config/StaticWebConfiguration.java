@@ -37,40 +37,47 @@ public class StaticWebConfiguration
 
     private static final Logger LOG = LoggerFactory.getLogger(StaticWebConfiguration.class);
 
-    public StaticWebConfiguration(final ConfigProperties _configProperties)
+    public StaticWebConfiguration(final ConfigProperties configProperties)
     {
-        configProperties = _configProperties;
+        this.configProperties = configProperties;
     }
 
     @Override
-    public void addCorsMappings(final CorsRegistry _registry)
+    public void addCorsMappings(final CorsRegistry registry)
     {
-        _registry.addMapping("/**")
+        registry.addMapping("/**")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedOrigins("*").allowedHeaders("*");
     }
 
     @Override
-    public void addResourceHandlers(final ResourceHandlerRegistry _registry)
+    public void addResourceHandlers(final ResourceHandlerRegistry registry)
     {
         for (final Entry<String, String> resource : configProperties.getStaticWeb().getResources().entrySet()) {
             LOG.info("Adding resource '{}' : '{}'", resource.getKey(), resource.getValue());
-            _registry.addResourceHandler(resource.getKey())
-                .addResourceLocations(resource.getValue());
+            registry.addResourceHandler(resource.getKey())
+                            .addResourceLocations(resource.getValue());
+        }
+
+        if (configProperties.getBeInst().getFileConfig().getLocationUri() != null
+                        && configProperties.getBeInst().getFileConfig().getPathPattern() != null) {
+            registry.addResourceHandler(configProperties.getBeInst().getFileConfig().getPathPattern())
+                            .addResourceLocations(
+                                            configProperties.getBeInst().getFileConfig().getLocationUri().toString());
         }
     }
 
     @Override
-    public void addViewControllers(final ViewControllerRegistry _registry)
+    public void addViewControllers(final ViewControllerRegistry registry)
     {
-        _registry.addViewController("/pos").setViewName("redirect:/index.html");
-        _registry.addViewController("/login").setViewName("redirect:/index.html");
-        _registry.addViewController("/products").setViewName("redirect:/index.html");
-        _registry.addViewController("/workspaces").setViewName("redirect:/index.html");
+        registry.addViewController("/pos").setViewName("redirect:/index.html");
+        registry.addViewController("/login").setViewName("redirect:/index.html");
+        registry.addViewController("/products").setViewName("redirect:/index.html");
+        registry.addViewController("/workspaces").setViewName("redirect:/index.html");
 
         for (final Entry<String, String> view : configProperties.getStaticWeb().getViews().entrySet()) {
             LOG.info("Adding view '{}' : '{}'", view.getKey(), view.getValue());
-            _registry.addViewController(view.getKey()).setViewName(view.getValue());
+            registry.addViewController(view.getKey()).setViewName(view.getValue());
         }
     }
 }

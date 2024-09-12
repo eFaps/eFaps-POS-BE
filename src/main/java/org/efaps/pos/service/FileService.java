@@ -15,8 +15,15 @@
  */
 package org.efaps.pos.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
 import org.apache.commons.lang3.BooleanUtils;
+import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.dto.FileDto;
+import org.efaps.pos.entity.PosFile;
 import org.efaps.pos.repository.PosFileRepository;
 import org.efaps.pos.util.Converter;
 import org.slf4j.Logger;
@@ -29,14 +36,17 @@ public class FileService
 
     private static final Logger LOG = LoggerFactory.getLogger(FileService.class);
 
+    private final ConfigProperties configProperties;
     private final PosFileRepository posFileRepository;
     private final EFapsClient eFapsClient;
     private final ConfigService configService;
 
-    public FileService(final PosFileRepository posFileRepository,
+    public FileService(final ConfigProperties configProperties,
+                       final PosFileRepository posFileRepository,
                        final EFapsClient eFapsClient,
                        final ConfigService configService)
     {
+        this.configProperties = configProperties;
         this.posFileRepository = posFileRepository;
         this.eFapsClient = eFapsClient;
         this.configService = configService;
@@ -48,9 +58,35 @@ public class FileService
         if (active) {
             LOG.info("Syncing Files");
             final var files = eFapsClient.getFiles();
-            files.forEach(file -> posFileRepository.save(Converter.toEntity(file)));
+            files.forEach(this::ensureFile);
         }
-
     }
 
+    protected void ensureFile(final FileDto dto)
+    {
+        final var posFile = posFileRepository.save(Converter.toEntity(dto));
+        if (configProperties.getBeInst().getFileConfig().getLocationUri() != null) {
+            final var fileName = evalFileName(posFile);
+            final var folderUri = configProperties.getBeInst().getFileConfig().getLocationUri();
+            try {
+                final var localFile = new File(folderUri.toURL().getFile() + fileName);
+                LOG.debug("Checking file: {}", localFile);
+                if (!localFile.exists()) {
+                    final var checkout = eFapsClient.checkout(posFile.getOid());
+                    if (checkout != null) {
+                        Files.createFile(localFile.toPath());
+                        Files.write(localFile.toPath(), checkout.getContent());
+                    }
+                }
+            } catch (final IOException e) {
+                LOG.error("Something went wrong", e);
+            }
+        }
+    }
+
+    public String evalFileName(final PosFile posFile)
+    {
+        final var prefix = posFile.getOid().split("\\.")[1];
+        return prefix + "_" + posFile.getFileName();
+    }
 }

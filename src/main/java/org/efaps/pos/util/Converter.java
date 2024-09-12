@@ -1646,7 +1646,7 @@ public final class Converter
                         .setOid(dto.getOid())
                         .setName(dto.getName())
                         .setDescription(dto.getDescription())
-                        .setFileName(dto.getFileName())
+                        .setFileName(dto.getFileName().trim())
                         .setTags(dto.getTags());
     }
 }

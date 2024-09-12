@@ -119,6 +119,18 @@ public class ConfigProperties
 
         private String orderFormat;
 
+        private FileConfig fileConfig = new FileConfig();
+
+        public FileConfig getFileConfig()
+        {
+            return fileConfig;
+        }
+
+        public void setFileConfig(FileConfig fileConfig)
+        {
+            this.fileConfig = fileConfig;
+        }
+
         public String getOrderFormat()
         {
             return orderFormat;
@@ -802,6 +814,33 @@ public class ConfigProperties
         public void setBaseUrl(final URI _baseUrl)
         {
             baseUrl = _baseUrl;
+        }
+    }
+
+    public static class FileConfig
+    {
+
+        private URI locationUri;
+        private String pathPattern;
+
+        public String getPathPattern()
+        {
+            return pathPattern;
+        }
+
+        public void setPathPattern(String pathPattern)
+        {
+            this.pathPattern = pathPattern;
+        }
+
+        public URI getLocationUri()
+        {
+            return locationUri;
+        }
+
+        public void setLocationUri(URI locationUri)
+        {
+            this.locationUri = locationUri;
         }
     }
 
