@@ -821,16 +821,16 @@ public class ConfigProperties
     {
 
         private URI locationUri;
-        private String pathPattern;
+        private String path;
 
-        public String getPathPattern()
+        public String getPath()
         {
-            return pathPattern;
+            return path;
         }
 
-        public void setPathPattern(String pathPattern)
+        public void setPath(String path)
         {
-            this.pathPattern = pathPattern;
+            this.path = path;
         }
 
         public URI getLocationUri()

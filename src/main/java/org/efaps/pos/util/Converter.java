@@ -57,6 +57,7 @@ import org.efaps.pos.dto.PosBalanceDto;
 import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.PosDocItemDto;
 import org.efaps.pos.dto.PosDto;
+import org.efaps.pos.dto.PosFileDto;
 import org.efaps.pos.dto.PosInventoryEntryDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
@@ -135,6 +136,7 @@ import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.service.CollectorService;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.service.DocumentService;
+import org.efaps.pos.service.FileService;
 import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.service.ProductService;
 import org.efaps.pos.service.UserService;
@@ -1648,5 +1650,19 @@ public final class Converter
                         .setDescription(dto.getDescription())
                         .setFileName(dto.getFileName().trim())
                         .setTags(dto.getTags());
+    }
+
+    public static PosFileDto toDto(final PosFile entity)
+    {
+        final var fileName = FileService.evalFileName(entity);
+        final var path = INSTANCE.configProperties.getBeInst().getFileConfig().getPath();
+        return PosFileDto.builder()
+                        .withOid(entity.getOid())
+                        .withName(entity.getName())
+                        .withDescription(entity.getDescription())
+                        .withFileName(entity.getFileName())
+                        .withPath(path + fileName)
+                        .withTags(entity.getTags())
+                        .build();
     }
 }

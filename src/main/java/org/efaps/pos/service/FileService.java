@@ -84,7 +84,7 @@ public class FileService
         }
     }
 
-    public String evalFileName(final PosFile posFile)
+    public static String evalFileName(final PosFile posFile)
     {
         final var prefix = posFile.getOid().split("\\.")[1];
         return prefix + "_" + posFile.getFileName();

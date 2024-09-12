@@ -139,8 +139,8 @@ public class SecurityConfig
     private List<String> getIgnorePatterns()
     {
         final var ret = new ArrayList<>(configProperties.getStaticWeb().getIgnore());
-        if (configProperties.getBeInst().getFileConfig().getPathPattern() != null) {
-            ret.add(configProperties.getBeInst().getFileConfig().getPathPattern());
+        if (configProperties.getBeInst().getFileConfig().getPath() != null) {
+            ret.add(configProperties.getBeInst().getFileConfig().getPath() + "**");
         }
         return ret;
     }

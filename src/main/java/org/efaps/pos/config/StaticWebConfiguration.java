@@ -60,8 +60,8 @@ public class StaticWebConfiguration
         }
 
         if (configProperties.getBeInst().getFileConfig().getLocationUri() != null
-                        && configProperties.getBeInst().getFileConfig().getPathPattern() != null) {
-            registry.addResourceHandler(configProperties.getBeInst().getFileConfig().getPathPattern())
+                        && configProperties.getBeInst().getFileConfig().getPath() != null) {
+            registry.addResourceHandler(configProperties.getBeInst().getFileConfig().getPath() + "**")
                             .addResourceLocations(
                                             configProperties.getBeInst().getFileConfig().getLocationUri().toString());
         }
