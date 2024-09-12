@@ -124,6 +124,7 @@ public class SyncService
     private final LogService logService;
     private final PromotionService promotionService;
     private final ProductService productService;
+    private final FileService fileService;
     private boolean deactivated;
 
     @Autowired
@@ -150,7 +151,8 @@ public class SyncService
                        final ExchangeRateService _exchangeRateService,
                        final LogService logService,
                        final PromotionService promotionService,
-                       final ProductService productService)
+                       final ProductService productService,
+                       final FileService fileService)
     {
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
@@ -176,6 +178,7 @@ public class SyncService
         this.logService = logService;
         this.promotionService = promotionService;
         this.productService = productService;
+        this.fileService = fileService;
     }
 
     public void runSyncJob(final String _methodName)
@@ -867,6 +870,11 @@ public class SyncService
             employees.forEach(product -> mongoTemplate.save(product));
         }
         registerSync(StashId.EMPLOYEESYNC);
+    }
+
+    public void syncFiles()
+    {
+        fileService.syncFiles();
     }
 
     public void registerSync(final StashId _stashId)

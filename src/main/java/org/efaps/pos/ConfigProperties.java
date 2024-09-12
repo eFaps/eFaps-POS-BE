@@ -249,8 +249,19 @@ public class ConfigProperties
         private String logEntryPath;
         private String promotionPath;
         private String promotionInfoPath;
+        private String filePath;
 
         private String reportToBasePath;
+
+        public String getFilePath()
+        {
+            return filePath;
+        }
+
+        public void setFilePath(String filePath)
+        {
+            this.filePath = filePath;
+        }
 
         public String getPromotionInfoPath()
         {

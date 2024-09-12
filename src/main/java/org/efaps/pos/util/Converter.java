@@ -42,6 +42,7 @@ import org.efaps.pos.dto.DocumentHeadDto;
 import org.efaps.pos.dto.DocumentHeadDto.Builder;
 import org.efaps.pos.dto.EmployeeDto;
 import org.efaps.pos.dto.EmployeeRelationDto;
+import org.efaps.pos.dto.FileDto;
 import org.efaps.pos.dto.FloorDto;
 import org.efaps.pos.dto.IndicationDto;
 import org.efaps.pos.dto.IndicationSetDto;
@@ -101,6 +102,7 @@ import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.LogEntry;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
+import org.efaps.pos.entity.PosFile;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.PromotionEntity;
@@ -1635,5 +1637,16 @@ public final class Converter
                         .withIndex(detail.getIndex())
                         .withPromotionOid(detail.getPromotionOid())
                         .build();
+    }
+
+    public static PosFile toEntity(final FileDto dto)
+    {
+        return new PosFile()
+                        .setId(dto.getOid())
+                        .setOid(dto.getOid())
+                        .setName(dto.getName())
+                        .setDescription(dto.getDescription())
+                        .setFileName(dto.getFileName())
+                        .setTags(dto.getTags());
     }
 }

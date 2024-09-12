@@ -42,7 +42,7 @@ public class ConfigService
     public static String CALCULATOR_CONFIG = "org.efaps.sales.Calculator.Config";
     public static String PROMOTIONS_ACTIVATE = "org.efaps.promotions.Activate";
     public static String PROMOTIONS_CONFIG = "org.efaps.promotions.Engine.Config";
-
+    public static String FILE_ACTIVATE = "org.efaps.pos.File.Activate";
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigService.class);
 

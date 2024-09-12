@@ -99,10 +99,11 @@ public class ApplicationStartup
                 service.syncWarehouses();
                 service.syncInventory();
                 service.syncPrinters();
-                service.syncImages();
+                //service.syncImages();
                 service.syncReports();
                 service.syncOrders();
                 service.syncAllContacts();
+                service.syncFiles();
             } catch (final Exception e) {
                 LOG.error("Catched error during startup sync", e);
             }

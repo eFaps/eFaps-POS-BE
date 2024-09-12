@@ -33,6 +33,7 @@ import org.efaps.pos.dto.CreditNoteDto;
 import org.efaps.pos.dto.DumpDto;
 import org.efaps.pos.dto.EmployeeDto;
 import org.efaps.pos.dto.ExchangeRateDto;
+import org.efaps.pos.dto.FileDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.LogEntryDto;
@@ -370,6 +371,23 @@ public class EFapsClient
 
             final var response = getRestTemplate().exchange(requestEntity,
                             new ParameterizedTypeReference<List<Promotion>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final IdentException e) {
+            LOG.error("Catched error during get for ExchangeRateDto", e);
+        }
+        return ret;
+    }
+
+    public List<FileDto> getFiles()
+    {
+        List<FileDto> ret = null;
+        try {
+            final var requestEntity = get(getEFapsConfig().getFilePath());
+
+            final var response = getRestTemplate().exchange(requestEntity,
+                            new ParameterizedTypeReference<List<FileDto>>()
                             {
                             });
             ret = response.getBody();
