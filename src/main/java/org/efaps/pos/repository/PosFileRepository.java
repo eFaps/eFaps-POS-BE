@@ -15,11 +15,15 @@
  */
 package org.efaps.pos.repository;
 
+import java.util.List;
+
 import org.efaps.pos.entity.PosFile;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 public interface PosFileRepository
     extends MongoRepository<PosFile, String>
 {
-
+    @Query(value ="{'tags.?0' : { $regex : '?1'}}")
+    List<PosFile> findByTag(String tagKey, String valueRegex);
 }

@@ -136,7 +136,7 @@ import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.service.CollectorService;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.service.DocumentService;
-import org.efaps.pos.service.FileService;
+import org.efaps.pos.service.PosFileService;
 import org.efaps.pos.service.InventoryService;
 import org.efaps.pos.service.ProductService;
 import org.efaps.pos.service.UserService;
@@ -1654,7 +1654,7 @@ public final class Converter
 
     public static PosFileDto toDto(final PosFile entity)
     {
-        final var fileName = FileService.evalFileName(entity);
+        final var fileName = PosFileService.evalFileName(entity);
         final var path = INSTANCE.configProperties.getBeInst().getFileConfig().getPath();
         return PosFileDto.builder()
                         .withOid(entity.getOid())

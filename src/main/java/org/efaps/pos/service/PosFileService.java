@@ -18,6 +18,8 @@ package org.efaps.pos.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.efaps.pos.ConfigProperties;
@@ -31,20 +33,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FileService
+public class PosFileService
 {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FileService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PosFileService.class);
 
     private final ConfigProperties configProperties;
     private final PosFileRepository posFileRepository;
     private final EFapsClient eFapsClient;
     private final ConfigService configService;
 
-    public FileService(final ConfigProperties configProperties,
-                       final PosFileRepository posFileRepository,
-                       final EFapsClient eFapsClient,
-                       final ConfigService configService)
+    public PosFileService(final ConfigProperties configProperties,
+                          final PosFileRepository posFileRepository,
+                          final EFapsClient eFapsClient,
+                          final ConfigService configService)
     {
         this.configProperties = configProperties;
         this.posFileRepository = posFileRepository;
@@ -82,6 +84,17 @@ public class FileService
                 LOG.error("Something went wrong", e);
             }
         }
+    }
+
+    public Optional<PosFile> getFile(String oid)
+    {
+        return posFileRepository.findById(oid);
+    }
+
+    public List<PosFile> findByTag(final String tag,
+                                   final String valueRegex)
+    {
+        return posFileRepository.findByTag(tag, valueRegex);
     }
 
     public static String evalFileName(final PosFile posFile)

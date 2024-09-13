@@ -103,7 +103,7 @@ public class ApplicationStartup
                 service.syncReports();
                 service.syncOrders();
                 service.syncAllContacts();
-                service.syncFiles();
+                service.syncPosFiles();
             } catch (final Exception e) {
                 LOG.error("Catched error during startup sync", e);
             }

@@ -124,7 +124,7 @@ public class SyncService
     private final LogService logService;
     private final PromotionService promotionService;
     private final ProductService productService;
-    private final FileService fileService;
+    private final PosFileService posFileService;
     private boolean deactivated;
 
     @Autowired
@@ -152,7 +152,7 @@ public class SyncService
                        final LogService logService,
                        final PromotionService promotionService,
                        final ProductService productService,
-                       final FileService fileService)
+                       final PosFileService posFileService)
     {
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
@@ -178,7 +178,7 @@ public class SyncService
         this.logService = logService;
         this.promotionService = promotionService;
         this.productService = productService;
-        this.fileService = fileService;
+        this.posFileService = posFileService;
     }
 
     public void runSyncJob(final String _methodName)
@@ -872,9 +872,9 @@ public class SyncService
         registerSync(StashId.EMPLOYEESYNC);
     }
 
-    public void syncFiles()
+    public void syncPosFiles()
     {
-        fileService.syncFiles();
+        posFileService.syncFiles();
     }
 
     public void registerSync(final StashId _stashId)

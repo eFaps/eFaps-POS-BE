@@ -106,12 +106,18 @@ public class SecurityConfig
     public WebSecurityCustomizer webSecurityCustomizer()
     {
         return web -> web.ignoring()
-                        .requestMatchers(HttpMethod.POST, IApi.BASEPATH + "authenticate", IApi.BASEPATH + "refreshauth",
+                        .requestMatchers(HttpMethod.POST,
+                                        IApi.BASEPATH + "authenticate",
+                                        IApi.BASEPATH + "refreshauth",
                                         IApi.BASEPATH + "logs")
                         .and()
                         .ignoring()
-                        .requestMatchers(HttpMethod.GET, IApi.BASEPATH + "users", IApi.BASEPATH + "companies",
-                                        IApi.BASEPATH + "health")
+                        .requestMatchers(HttpMethod.GET,
+                                        IApi.BASEPATH + "users",
+                                        IApi.BASEPATH + "companies",
+                                        IApi.BASEPATH + "health",
+                                        IApi.BASEPATH + "pos-files",
+                                        IApi.BASEPATH + "pos-files/*")
                         .and()
                         .ignoring()
                         .requestMatchers(HttpMethod.GET, getIgnorePaths())
