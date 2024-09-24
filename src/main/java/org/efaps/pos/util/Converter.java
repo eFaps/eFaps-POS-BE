@@ -136,8 +136,8 @@ import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.service.CollectorService;
 import org.efaps.pos.service.ContactService;
 import org.efaps.pos.service.DocumentService;
-import org.efaps.pos.service.PosFileService;
 import org.efaps.pos.service.InventoryService;
+import org.efaps.pos.service.PosFileService;
 import org.efaps.pos.service.ProductService;
 import org.efaps.pos.service.UserService;
 import org.efaps.promotionengine.api.IPromotionDetail;
@@ -1632,6 +1632,8 @@ public final class Converter
     public static PromoDetailDto toDto(final IPromotionDetail detail)
     {
         return PromoDetailDto.builder()
+                        .withNetBase(detail.getNetBase())
+                        .withNetUnitBase(detail.getNetUnitBase())
                         .withNetUnitDiscount(detail.getNetUnitDiscount())
                         .withNetDiscount(detail.getNetDiscount())
                         .withCrossUnitDiscount(detail.getCrossUnitDiscount())
