@@ -197,10 +197,16 @@ public class DocumentService
     public Order createOrder(final String workspaceOid,
                              final Order order)
     {
-        final var promoInfo = calculatorService.calculate(workspaceOid, order);
-        order.setNumber(sequenceService.getNextOrder());
-        final var storedOrder = orderRepository.insert(order);
-        promotionService.registerInfo(storedOrder.getId(), promoInfo);
+        Order storedOrder;
+        if (configService.getInstProperties().getOrder().isSkipCalcOnCreate()) {
+            order.setNumber(sequenceService.getNextOrder());
+            storedOrder = orderRepository.insert(order);
+        } else {
+            final var promoInfo = calculatorService.calculate(workspaceOid, order);
+            order.setNumber(sequenceService.getNextOrder());
+            storedOrder = orderRepository.insert(order);
+            promotionService.registerInfo(storedOrder.getId(), promoInfo);
+        }
         return storedOrder;
     }
 

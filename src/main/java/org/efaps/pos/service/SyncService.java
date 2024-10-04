@@ -27,10 +27,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.efaps.pos.ConfigProperties;
-import org.efaps.pos.ConfigProperties.Company;
 import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
+import org.efaps.pos.config.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BalanceStatus;

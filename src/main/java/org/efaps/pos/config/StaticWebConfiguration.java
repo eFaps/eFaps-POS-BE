@@ -17,7 +17,6 @@ package org.efaps.pos.config;
 
 import java.util.Map.Entry;
 
-import org.efaps.pos.ConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;

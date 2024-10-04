@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.efaps.pos.ConfigProperties;
-import org.efaps.pos.ConfigProperties.EFaps;
+import org.efaps.pos.config.ConfigProperties;
+import org.efaps.pos.config.ConfigProperties.EFaps;
 import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;

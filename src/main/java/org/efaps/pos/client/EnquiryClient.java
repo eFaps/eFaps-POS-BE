@@ -15,7 +15,7 @@
  */
 package org.efaps.pos.client;
 
-import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DNIDto;
 import org.efaps.pos.dto.RUCDto;
 import org.efaps.pos.sso.SSOClient;

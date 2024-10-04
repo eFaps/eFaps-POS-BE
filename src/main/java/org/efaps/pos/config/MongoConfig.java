@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 
 import org.bson.BsonRegularExpression;
 import org.bson.Document;
-import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.context.MultiTenantMongoDbFactory;
 import org.efaps.pos.dto.PromoDetailDto;
 import org.efaps.pos.dto.PromoInfoDto;

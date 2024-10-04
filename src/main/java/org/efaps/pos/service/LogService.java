@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.efaps.pos.ConfigProperties.LogToken;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties.LogToken;
 import org.efaps.pos.dto.LogEntryDto;
 import org.efaps.pos.dto.LogLevel;
 import org.efaps.pos.entity.LogEntry;

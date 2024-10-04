@@ -17,6 +17,7 @@ package org.efaps.pos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.efaps.pos.config.ConfigProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

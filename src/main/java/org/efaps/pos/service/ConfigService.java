@@ -23,8 +23,9 @@ import org.apache.commons.lang3.EnumUtils;
 import org.efaps.abacus.api.CrossTotalFlow;
 import org.efaps.abacus.api.TaxCalcFlow;
 import org.efaps.abacus.pojo.Configuration;
-import org.efaps.pos.ConfigProperties;
-import org.efaps.pos.ConfigProperties.Extension;
+import org.efaps.pos.config.ConfigProperties;
+import org.efaps.pos.config.ConfigProperties.BEInst;
+import org.efaps.pos.config.ConfigProperties.Extension;
 import org.efaps.pos.entity.Config;
 import org.efaps.promotionengine.PromotionsConfiguration;
 import org.efaps.promotionengine.process.EngineRule;
@@ -140,5 +141,9 @@ public class ConfigService
     public Map<String, String> getProperties()
     {
         return mongoTemplate.findById(Config.KEY, Config.class).getProperties();
+    }
+
+    public BEInst getInstProperties() {
+        return configProperties.getBeInst();
     }
 }

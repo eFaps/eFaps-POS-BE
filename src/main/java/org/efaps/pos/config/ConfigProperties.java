@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.efaps.pos;
+package org.efaps.pos.config;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -21,11 +21,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 @ConfigurationProperties
 public class ConfigProperties
 {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigProperties.class);
 
     private final BEInst beInst = new BEInst();
 
@@ -117,9 +123,14 @@ public class ConfigProperties
 
         private String timeZone;
 
-        private String orderFormat;
+        private Order order = new Order();
 
         private FileConfig fileConfig = new FileConfig();
+
+        public void setOrderFormat(String orderFormat) {
+            LOG.error("Property 'beInst.orderFormat' was moved to 'beInst.order.numberFormat'");
+            throw new RuntimeException();
+        }
 
         public FileConfig getFileConfig()
         {
@@ -131,14 +142,14 @@ public class ConfigProperties
             this.fileConfig = fileConfig;
         }
 
-        public String getOrderFormat()
+        public Order getOrder()
         {
-            return orderFormat;
+            return order;
         }
 
-        public void setOrderFormat(String orderFormat)
+        public void setOrder(Order order)
         {
-            this.orderFormat = orderFormat;
+            this.order = order;
         }
 
         public String getVersion()
@@ -200,7 +211,33 @@ public class ConfigProperties
         {
             maxSearchResult = maxResult;
         }
+    }
 
+    public static class Order
+    {
+
+        private String numberFormat;
+        private boolean skipCalcOnCreate;
+
+        public String getNumberFormat()
+        {
+            return numberFormat;
+        }
+
+        public void setNumberFormat(String numberFormat)
+        {
+            this.numberFormat = numberFormat;
+        }
+
+        public boolean isSkipCalcOnCreate()
+        {
+            return skipCalcOnCreate;
+        }
+
+        public void setSkipCalcOnCreate(boolean skipCalcOnCreate)
+        {
+            this.skipCalcOnCreate = skipCalcOnCreate;
+        }
     }
 
     public static class BasicAuth

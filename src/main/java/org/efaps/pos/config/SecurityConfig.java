@@ -18,7 +18,6 @@ package org.efaps.pos.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.context.ContextFilter;
 import org.efaps.pos.controller.JwtAuthenticationEntryPoint;
 import org.efaps.pos.filters.JwtAuthorizationTokenFilter;

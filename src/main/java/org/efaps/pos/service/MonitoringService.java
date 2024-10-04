@@ -21,9 +21,9 @@ import java.net.UnknownHostException;
 import java.time.OffsetDateTime;
 
 import org.apache.commons.lang3.SystemProperties;
-import org.efaps.pos.ConfigProperties;
-import org.efaps.pos.ConfigProperties.Company;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
+import org.efaps.pos.config.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.ReportToBaseDto;
 import org.slf4j.Logger;

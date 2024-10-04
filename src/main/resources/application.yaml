@@ -4,7 +4,9 @@ beInst:
   syncOnStartup: true
   maxSearchResult: 100
   timeZone: America/Lima
-  orderFormat:
+  order:
+    numberFormat:
+    skipCalcOnCreate: false
 
 spring:
   autoconfigure:

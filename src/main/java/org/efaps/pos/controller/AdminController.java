@@ -15,7 +15,7 @@
  */
 package org.efaps.pos.controller;
 
-import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PosVersionsDto;
 import org.efaps.pos.service.ConfigService;

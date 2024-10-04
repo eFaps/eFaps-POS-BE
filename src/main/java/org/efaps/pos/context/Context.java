@@ -15,7 +15,7 @@
  */
 package org.efaps.pos.context;
 
-import org.efaps.pos.ConfigProperties.Company;
+import org.efaps.pos.config.ConfigProperties.Company;
 
 public class Context
 {

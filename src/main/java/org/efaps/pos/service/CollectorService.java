@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.map.PassiveExpiringMap;
-import org.efaps.pos.ConfigProperties.Company;
+import org.efaps.pos.config.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.dto.CollectStartOrderDto;
 import org.efaps.pos.dto.CollectStartResponseDto;

@@ -42,7 +42,7 @@ import javax.print.attribute.HashPrintServiceAttributeSet;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PrintEmployeeRelationDto;
 import org.efaps.pos.dto.PrintPayableDto;

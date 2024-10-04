@@ -16,7 +16,7 @@
 package org.efaps.pos.service;
 
 import org.apache.commons.lang3.StringUtils;
-import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Sequence;
@@ -50,8 +50,9 @@ public class SequenceService
 
     public String getNextOrder()
     {
-        final var format = StringUtils.isEmpty(configProperties.getBeInst().getOrderFormat()) ? DEFAULTFORMAT
-                        : configProperties.getBeInst().getOrderFormat();
+        final var format = StringUtils.isEmpty(configProperties.getBeInst().getOrder().getNumberFormat())
+                        ? DEFAULTFORMAT
+                        : configProperties.getBeInst().getOrder().getNumberFormat();
         return getNextNumber("Order", format, false);
     }
 

@@ -24,8 +24,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.SyncInfo;

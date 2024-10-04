@@ -37,7 +37,7 @@ import java.time.Duration;
 import java.util.Base64;
 
 import org.apache.commons.lang3.StringUtils;
-import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.sso.SSOClient;
 import org.springframework.boot.web.client.RestTemplateBuilder;

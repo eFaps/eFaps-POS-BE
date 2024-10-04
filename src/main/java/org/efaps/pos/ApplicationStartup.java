@@ -16,7 +16,8 @@
 package org.efaps.pos;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.efaps.pos.ConfigProperties.Company;
+import org.efaps.pos.config.ConfigProperties;
+import org.efaps.pos.config.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.service.DemoService;
 import org.efaps.pos.service.SyncService;
@@ -42,17 +43,17 @@ public class ApplicationStartup
     private final Environment env;
     private final ConfigProperties configProperties;
     private final TaskExecutor taskExecutor;
-    private final SyncService service;
+    private final SyncService syncService;
     private DemoService demoService;
 
-    public ApplicationStartup(final Environment _env,
-                              final ConfigProperties _configProperties,
+    public ApplicationStartup(final Environment env,
+                              final ConfigProperties configProperties,
                               final TaskExecutor taskExecutor,
-                              final SyncService _service)
+                              final SyncService syncService)
     {
-        env = _env;
-        configProperties = _configProperties;
-        service = _service;
+        this.env = env;
+        this.configProperties = configProperties;
+        this.syncService = syncService;
         this.taskExecutor = taskExecutor;
     }
 
@@ -60,7 +61,7 @@ public class ApplicationStartup
     public void onApplicationEvent(final ApplicationReadyEvent _event)
     {
         if (ArrayUtils.contains(env.getActiveProfiles(), "demo")) {
-            service.setDeactivated(true);
+            syncService.setDeactivated(true);
             demoService.init();
         } else if (configProperties.getBeInst().isSyncOnStartup()) {
             if (configProperties.getCompanies().size() > 0) {
@@ -83,27 +84,27 @@ public class ApplicationStartup
                 if (company != null) {
                     Context.get().setCompany(company);
                 }
-                service.syncProperties();
-                service.syncUsers();
-                service.syncExchangeRates();
-                service.syncPOSs();
-                service.syncWorkspaces();
-                service.syncAllProducts();
-                service.syncCategories();
-                service.syncPromotions();
-                service.syncBalance();
-                service.syncReceipts();
-                service.syncInvoices();
-                service.syncTickets();
-                service.syncSequences();
-                service.syncWarehouses();
-                service.syncInventory();
-                service.syncPrinters();
-                service.syncImages();
-                service.syncReports();
-                service.syncOrders();
-                service.syncAllContacts();
-                service.syncPosFiles();
+                syncService.syncProperties();
+                syncService.syncUsers();
+                syncService.syncExchangeRates();
+                syncService.syncPOSs();
+                syncService.syncWorkspaces();
+                syncService.syncAllProducts();
+                syncService.syncCategories();
+                syncService.syncPromotions();
+                syncService.syncBalance();
+                syncService.syncReceipts();
+                syncService.syncInvoices();
+                syncService.syncTickets();
+                syncService.syncSequences();
+                syncService.syncWarehouses();
+                syncService.syncInventory();
+                syncService.syncPrinters();
+                syncService.syncImages();
+                syncService.syncReports();
+                syncService.syncOrders();
+                syncService.syncAllContacts();
+                syncService.syncPosFiles();
             } catch (final Exception e) {
                 LOG.error("Catched error during startup sync", e);
             }

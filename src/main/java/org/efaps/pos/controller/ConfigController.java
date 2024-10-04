@@ -17,8 +17,8 @@ package org.efaps.pos.controller;
 
 import java.util.List;
 
-import org.efaps.pos.ConfigProperties.Extension;
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.config.ConfigProperties.Extension;
 import org.efaps.pos.service.ConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

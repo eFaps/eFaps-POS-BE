@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.efaps.pos.ConfigProperties;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.FileDto;
 import org.efaps.pos.entity.PosFile;
 import org.efaps.pos.repository.PosFileRepository;

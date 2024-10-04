@@ -18,7 +18,7 @@ package org.efaps.pos.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.efaps.pos.ConfigProperties;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.PosCompanyDto;
 import org.springframework.stereotype.Service;
 
