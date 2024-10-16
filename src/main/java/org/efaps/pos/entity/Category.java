@@ -30,6 +30,8 @@ public class Category
 
     private String name;
 
+    private String description;
+
     private int weight;
 
     private String imageOid;
@@ -56,6 +58,17 @@ public class Category
     public Category setName(final String _name)
     {
         name = _name;
+        return this;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public Category setDescription(String description)
+    {
+        this.description = description;
         return this;
     }
 

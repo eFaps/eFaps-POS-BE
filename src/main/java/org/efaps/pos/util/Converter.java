@@ -625,24 +625,26 @@ public final class Converter
         return ret;
     }
 
-    public static CategoryDto toDto(final Category _entity)
+    public static CategoryDto toDto(final Category entity)
     {
         return CategoryDto.builder()
-                        .withOID(_entity.getOid())
-                        .withName(_entity.getName())
-                        .withWeight(_entity.getWeight())
-                        .withImageOid(_entity.getImageOid())
-                        .withParentOid(_entity.getParentOid())
+                        .withOID(entity.getOid())
+                        .withName(entity.getName())
+                        .withDescription(entity.getDescription())
+                        .withWeight(entity.getWeight())
+                        .withImageOid(entity.getImageOid())
+                        .withParentOid(entity.getParentOid())
                         .build();
     }
 
-    public static Category toEntity(final CategoryDto _dto)
+    public static Category toEntity(final CategoryDto dto)
     {
-        return new Category().setName(_dto.getName())
-                        .setOid(_dto.getOid())
-                        .setWeight(_dto.getWeight())
-                        .setImageOid(_dto.getImageOid())
-                        .setParentOid(_dto.getParentOid());
+        return new Category().setName(dto.getName())
+                        .setDescription(dto.getDescription())
+                        .setOid(dto.getOid())
+                        .setWeight(dto.getWeight())
+                        .setImageOid(dto.getImageOid())
+                        .setParentOid(dto.getParentOid());
     }
 
     public static Contact toEntity(final ContactDto _dto)
