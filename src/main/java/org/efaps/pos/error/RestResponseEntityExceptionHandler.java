@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -30,6 +31,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestResponseEntityExceptionHandler
     extends ResponseEntityExceptionHandler
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(RestResponseEntityExceptionHandler.class);
 
     @ExceptionHandler({ NotFoundException.class })
@@ -50,9 +52,19 @@ public class RestResponseEntityExceptionHandler
                         .build(), new HttpHeaders(), HttpStatus.PRECONDITION_FAILED);
     }
 
+    @ExceptionHandler({ BadCredentialsException.class })
+    public ResponseEntity<Object> handleBadCredentialsException(final Exception ex,
+                                                                final WebRequest request)
+    {
+        LOG.error("handle BadCredentialsException Exception", ex);
+        return new ResponseEntity<>(ErrorResponseDto.builder()
+                        .withMessage(ex.getMessage())
+                        .build(), new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleGenericException(final Exception ex,
-                                                          final WebRequest request)
+                                                         final WebRequest request)
     {
         LOG.error("handle Generic Exception", ex);
         return new ResponseEntity<>(ErrorResponseDto.builder()
