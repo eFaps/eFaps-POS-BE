@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.efaps.abacus.api.ICalcDocument;
 import org.efaps.abacus.api.ICalcPosition;
@@ -96,7 +97,8 @@ public class CalculatorService
                                 .setKey(tax.getKey())
                                 .setPercentage(tax.getPercent())
                                 .setAmount(tax.getAmount())
-                                .setType(EnumUtils.getEnum(TaxType.class, tax.getType().name()));
+                                .setType(EnumUtils.getEnum(TaxType.class, tax.getType().name()))
+                                .setFreeOfCharge(isFreeOfCharge(tax.getKey()));
             }).toList();
             document.addPosition(new Position()
                             .setNetUnitPrice(productService.evalPrices(product).getLeft())
@@ -329,7 +331,8 @@ public class CalculatorService
                                 .setKey(tax.getKey())
                                 .setPercentage(tax.getPercent())
                                 .setAmount(tax.getAmount())
-                                .setType(EnumUtils.getEnum(TaxType.class, tax.getType().name()));
+                                .setType(EnumUtils.getEnum(TaxType.class, tax.getType().name()))
+                                .setFreeOfCharge(isFreeOfCharge(tax.getKey()));
             }).toList();
             calcDocument.addPosition(new Position()
                             .setNetUnitPrice(product.getNetPrice())
@@ -378,5 +381,11 @@ public class CalculatorService
         }
         posDoc.setTaxes(taxes);
         return (PromotionInfoDto) calcDocument.getPromotionInfo();
+    }
+
+    private boolean isFreeOfCharge(final String taxUuid)
+    {
+        final var taxmap = configService.getTaxMapping();
+        return BooleanUtils.toBoolean(taxmap.getOrDefault("tax." + taxUuid + ".freeOfCharge", "false"));
     }
 }
