@@ -32,13 +32,16 @@ public class PosOrderDto
 
     private final String shoutout;
 
-    public PosOrderDto(final Builder _builder)
+    private final String orderOptionKey;
+
+    public PosOrderDto(final Builder builder)
     {
-        super(_builder);
-        spot = _builder.spot;
-        discount = _builder.discount;
-        payableOid = _builder.payableOid;
-        shoutout = _builder.shoutout;
+        super(builder);
+        this.spot = builder.spot;
+        this.discount = builder.discount;
+        this.payableOid = builder.payableOid;
+        this.shoutout = builder.shoutout;
+        this.orderOptionKey = builder.orderOptionKey;
     }
 
     public PosSpotDto getSpot()
@@ -61,6 +64,11 @@ public class PosOrderDto
         return shoutout;
     }
 
+    public String getOrderOptionKey()
+    {
+        return orderOptionKey;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -74,6 +82,7 @@ public class PosOrderDto
         private DiscountDto discount;
         private String payableOid;
         private String shoutout;
+        private String orderOptionKey;
 
         public Builder withSpot(final PosSpotDto _spot)
         {
@@ -102,6 +111,12 @@ public class PosOrderDto
         public Builder withShoutout(final String _shoutout)
         {
             shoutout = _shoutout;
+            return this;
+        }
+
+        public Builder withOrderOptionKey(final String orderOptionKey)
+        {
+            this.orderOptionKey = orderOptionKey;
             return this;
         }
 

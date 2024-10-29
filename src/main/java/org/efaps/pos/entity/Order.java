@@ -26,6 +26,7 @@ public class Order
     private Spot spot;
     private String payableOid;
     private String shoutout;
+    private String orderOptionKey;
 
     public Spot getSpot()
     {
@@ -57,6 +58,17 @@ public class Order
     public Order setShoutout(final String shoutout)
     {
         this.shoutout = shoutout;
+        return this;
+    }
+
+    public String getOrderOptionKey()
+    {
+        return orderOptionKey;
+    }
+
+    public Order setOrderOptionKey(final String orderOptionKey)
+    {
+        this.orderOptionKey = orderOptionKey;
         return this;
     }
 }
