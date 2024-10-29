@@ -121,13 +121,16 @@ public class ConfigProperties
 
         private int maxSearchResult;
 
+        private boolean skipProductsMissingPrice = false;
+
         private String timeZone;
 
         private Order order = new Order();
 
         private FileConfig fileConfig = new FileConfig();
 
-        public void setOrderFormat(String orderFormat) {
+        public void setOrderFormat(String orderFormat)
+        {
             LOG.error("Property 'beInst.orderFormat' was moved to 'beInst.order.numberFormat'");
             throw new RuntimeException();
         }
@@ -211,6 +214,17 @@ public class ConfigProperties
         {
             maxSearchResult = maxResult;
         }
+
+        public boolean isSkipProductsMissingPrice()
+        {
+            return skipProductsMissingPrice;
+        }
+
+        public void setSkipProductsMissingPrice(boolean skipProductsMissingPrice)
+        {
+            this.skipProductsMissingPrice = skipProductsMissingPrice;
+        }
+
     }
 
     public static class Order

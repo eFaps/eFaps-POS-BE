@@ -17,6 +17,7 @@ package org.efaps.pos.config;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -46,7 +47,7 @@ public class ClientRequestLoggingInterceptor
         watch.start();
         final ClientHttpResponse response = _execution.execute(_request, _body);
         watch.stop();
-        logResponse(response, watch.getTime());
+        logResponse(response, watch.getTime(TimeUnit.MILLISECONDS));
         return response;
     }
 

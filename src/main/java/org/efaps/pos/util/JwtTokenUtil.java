@@ -133,7 +133,7 @@ public class JwtTokenUtil
 
     public String generateRefreshToken(final UserDetails _userDetails)
     {
-        final String ret = RandomStringUtils.randomAlphanumeric(128);
+        final String ret = RandomStringUtils.secure().nextAlphanumeric(128);
         getRefreshTokenStore().put(ret, _userDetails.getUsername());
         return ret;
     }

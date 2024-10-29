@@ -253,7 +253,7 @@ public class PrintService
             switch (printerOpt.get().getType()) {
                 case PREVIEW: {
                     final byte[] data = print2Image(_content, _reportOid, parameters);
-                    final String key = RandomStringUtils.randomAlphabetic(12);
+                    final String key = RandomStringUtils.insecure().nextAlphabetic(12);
                     CACHE.put(key, data);
                     ret = Optional.of(PrintResponseDto.builder()
                                     .withKey(key)

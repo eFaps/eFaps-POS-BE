@@ -153,7 +153,7 @@ public class ProductService
                     });
                     LOG.info("Loaded products {} - {} ", i, i + products.size());
                     i += products.size();
-                    products.forEach(product -> productRepository.save(product));
+                    products.forEach(this::saveToDatabase);
                     zipEntry = zis.getNextEntry();
                 }
                 zis.closeEntry();
@@ -177,7 +177,7 @@ public class ProductService
                 allProducts.addAll(products);
                 i++;
                 next = !(products.size() < limit);
-                products.forEach(product -> productRepository.save(product));
+                products.forEach(this::saveToDatabase);
             }
             if (!allProducts.isEmpty()) {
                 final List<Product> existingProducts = productRepository.findAll();
@@ -211,13 +211,25 @@ public class ProductService
                 i++;
                 next = !(products.size() < limit);
                 for (final var product : products) {
-                    productRepository.save(product);
+                    saveToDatabase(product);
                 }
             }
             ret = true;
         }
         allProducts.forEach(this::validateParent);
         return ret;
+    }
+
+    private void saveToDatabase(final Product product)
+    {
+        if (configProperties.getBeInst().isSkipProductsMissingPrice()) {
+            final var netPrice = evalPrices(product).getLeft();
+            if (netPrice != null && BigDecimal.ZERO.compareTo(netPrice) < 0) {
+                productRepository.save(product);
+            }
+        } else {
+            productRepository.save(product);
+        }
     }
 
     private void validateParent(final Product product)
