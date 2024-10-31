@@ -22,6 +22,7 @@ import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ProductType;
+import org.efaps.pos.error.NotFoundException;
 import org.efaps.pos.service.ProductService;
 import org.efaps.pos.util.Converter;
 import org.springframework.data.domain.Page;
@@ -56,9 +57,14 @@ public class ProductController
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "{productOid}")
-    public ProductDto getProduct(@PathVariable(name = "productOid") final String _productOid)
+    public ProductDto getProduct(@PathVariable(name = "productOid") final String productOid)
+        throws NotFoundException
     {
-        return Converter.toDto(service.getProduct(_productOid));
+        final var product = service.getProduct(productOid);
+        if (product == null) {
+            throw new NotFoundException("Coudl not find product with oid: " + productOid);
+        }
+        return Converter.toDto(product);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
