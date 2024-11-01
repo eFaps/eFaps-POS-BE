@@ -22,7 +22,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-import org.efaps.pos.dto.WorkspaceFlag;
+import org.efaps.pos.flags.IFlag;
 
 public final class Utils
 {
@@ -59,8 +59,8 @@ public final class Utils
     }
 
     public static boolean hasFlag(int value,
-                                  WorkspaceFlag flag)
+                                  IFlag flag)
     {
-        return (value & 1 << flag.bitIndex) != 0;
+        return (value & 1 << flag.getBitIndex()) != 0;
     }
 }

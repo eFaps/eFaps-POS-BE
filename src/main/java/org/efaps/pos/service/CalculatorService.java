@@ -41,10 +41,11 @@ import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.dto.PromoDetailDto;
 import org.efaps.pos.dto.PromoInfoDto;
 import org.efaps.pos.dto.TaxEntryDto;
-import org.efaps.pos.dto.WorkspaceFlag;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Identifier;
+import org.efaps.pos.flags.BOMGroupConfigFlag;
+import org.efaps.pos.flags.WorkspaceFlag;
 import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.Utils;
 import org.efaps.promotionengine.Calculator;
@@ -113,12 +114,22 @@ public class CalculatorService
                                 .filter(bom -> bom.getOid().equals(pos.getBomOid()))
                                 .findFirst();
                 if (bomOpt.isPresent()) {
-                    final var priceAdjustment = bomOpt.get().getActions().stream()
+                    final var bom = bomOpt.get();
+                    final var priceAdjustment = bom.getActions().stream()
                                     .filter(action -> BOMActionType.PRICEADJUSTMENT.equals(action.getType()))
                                     .findFirst();
                     if (priceAdjustment.isPresent()) {
                         netUnitPrice = priceAdjustment.get().getAmount();
+                    } else {
+                        final var confOpt = partList.getBomGroupConfigs().stream()
+                                        .filter(conf -> conf.getOid().equals(bom.getBomGroupOid()))
+                                        .findFirst();
+                        if (confOpt.isPresent()
+                                        && Utils.hasFlag(confOpt.get().getFlags(), BOMGroupConfigFlag.CHARGEABLE)) {
+                            netUnitPrice = productService.evalPrices(product).getLeft();
+                        }
                     }
+
                 } else {
                     LOG.warn("BomOid {} could not be find", pos.getBomOid());
                 }

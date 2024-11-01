@@ -13,17 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.efaps.pos.dto;
+package org.efaps.pos.flags;
 
-public enum WorkspaceFlag
+
+public interface IFlag
 {
-
-    ROUNDPAYABLE(2), ASSIGNSELLER(3);
-
-    public int bitIndex;
-
-    WorkspaceFlag(int bitIndex)
-    {
-        this.bitIndex = bitIndex;
-    }
+    int getBitIndex();
 }
