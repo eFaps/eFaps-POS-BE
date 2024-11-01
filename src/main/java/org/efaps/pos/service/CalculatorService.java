@@ -33,9 +33,11 @@ import org.efaps.abacus.api.ITax;
 import org.efaps.abacus.api.TaxType;
 import org.efaps.abacus.pojo.Configuration;
 import org.efaps.abacus.pojo.Tax;
+import org.efaps.pos.dto.BOMActionType;
 import org.efaps.pos.dto.CalculatorPositionResponseDto;
 import org.efaps.pos.dto.CalculatorRequestDto;
 import org.efaps.pos.dto.CalculatorResponseDto;
+import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.dto.PromoDetailDto;
 import org.efaps.pos.dto.PromoInfoDto;
 import org.efaps.pos.dto.TaxEntryDto;
@@ -53,6 +55,8 @@ import org.efaps.promotionengine.condition.StoreCondition;
 import org.efaps.promotionengine.dto.PromotionInfoDto;
 import org.efaps.promotionengine.pojo.Document;
 import org.efaps.promotionengine.pojo.Position;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +65,7 @@ import io.jsonwebtoken.lang.Collections;
 @Service
 public class CalculatorService
 {
-
+    private static final Logger LOG = LoggerFactory.getLogger(CalculatorService.class);
     private final MongoTemplate mongoTemplate;
     private final ConfigService configService;
     private final WorkspaceService workspaceService;
@@ -84,7 +88,6 @@ public class CalculatorService
     public CalculatorResponseDto calculate(final String workspaceOid,
                                            final CalculatorRequestDto calculatorPayloadDto)
     {
-
         final var document = new Document();
         int i = 0;
         final var taxMap = new HashMap<String, org.efaps.pos.pojo.Tax>();
@@ -100,8 +103,31 @@ public class CalculatorService
                                 .setType(EnumUtils.getEnum(TaxType.class, tax.getType().name()))
                                 .setFreeOfCharge(isFreeOfCharge(tax.getKey()));
             }).toList();
+            BigDecimal netUnitPrice= BigDecimal.ZERO;
+            if (pos.getBomOid() != null) {
+                final var partList = productService.getProductByBomOid(pos.getBomOid());
+                if (!ProductType.PARTLIST.equals(partList.getType())) {
+                    LOG.warn("BomOid {} send to Calculator leads to a product that is not a partlist", pos.getBomOid());
+                }
+                final var bomOpt = partList.getConfigurationBOMs().stream()
+                                .filter(bom -> bom.getOid().equals(pos.getBomOid()))
+                                .findFirst();
+                if (bomOpt.isPresent()) {
+                    final var priceAdjustment = bomOpt.get().getActions().stream()
+                                    .filter(action -> BOMActionType.PRICEADJUSTMENT.equals(action.getType()))
+                                    .findFirst();
+                    if (priceAdjustment.isPresent()) {
+                        netUnitPrice = priceAdjustment.get().getAmount();
+                    }
+                } else {
+                    LOG.warn("BomOid {} could not be find", pos.getBomOid());
+                }
+            } else {
+                netUnitPrice = productService.evalPrices(product).getLeft();
+            }
+
             document.addPosition(new Position()
-                            .setNetUnitPrice(productService.evalPrices(product).getLeft())
+                            .setNetUnitPrice(netUnitPrice)
                             .setTaxes(taxes)
                             .setIndex(i++)
                             .setProductOid(pos.getProductOid())

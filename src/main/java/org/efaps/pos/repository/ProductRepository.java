@@ -50,4 +50,7 @@ public interface ProductRepository
     List<Product> findByType(ProductType type);
 
     List<Product> findBySku(String sku);
+
+    @Query("{'configurationBOMs.oid':'?0'}")
+    List<Product> findByBomOid(String bomOid);
 }

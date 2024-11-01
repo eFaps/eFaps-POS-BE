@@ -115,6 +115,19 @@ public class ProductService
         return productRepository.findByType(_type);
     }
 
+    public Product getProductByBomOid(final String bomOid)
+    {
+        Product ret = null;
+        final var products = productRepository.findByBomOid(bomOid);
+        if (!products.isEmpty()) {
+            ret = products.get(0);
+            if (products.size() > 1) {
+                LOG.warn("Found more than one product for bomOid: {}", bomOid);
+            }
+        }
+        return ret;
+    }
+
     public Pair<BigDecimal, BigDecimal> evalPrices(final Product product)
     {
 
