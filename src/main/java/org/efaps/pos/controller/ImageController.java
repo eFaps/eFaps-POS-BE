@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.error.NotFoundException;
 import org.efaps.pos.service.GridFsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
@@ -45,7 +46,7 @@ public class ImageController
     @GetMapping(path = "/{oid}",
                     produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
     public ResponseEntity<byte[]> getImage(@PathVariable("oid") final String _oid)
-        throws IllegalStateException, IOException
+        throws IllegalStateException, IOException, NotFoundException
     {
         final Object[] image = this.gridFsService.getBlob(_oid);
         return ResponseEntity.ok()

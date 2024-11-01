@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.efaps.pos.error.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -50,26 +51,29 @@ public class GridFsService
         dbFactory = _dbFactory;
     }
 
-    public InputStream getContent(final String _oid)
+    public InputStream getContent(final String oid)
         throws IllegalStateException, IOException
     {
-        final GridFSFile imageFile = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(_oid)));
+        final GridFSFile imageFile = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(oid)));
         return new GridFsResource(imageFile, getGridFs().openDownloadStream(imageFile.getId()))
                                 .getInputStream();
     }
 
-    public Object[] getBlob(final String _oid)
-        throws IllegalStateException, IOException
+    public Object[] getBlob(final String oid)
+        throws IllegalStateException, IOException, NotFoundException
     {
-        final GridFSFile imageFile = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(_oid)));
+        final GridFSFile imageFile = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(oid)));
+        if (imageFile == null) {
+            throw new NotFoundException("Coould not get image for oid: " + oid);
+        }
         final InputStream resource = new GridFsResource(imageFile, getGridFs().openDownloadStream(imageFile.getId()))
                         .getInputStream();
         return new Object[] { imageFile.getMetadata().getString("contentType"), IOUtils.toByteArray(resource) };
     }
 
-    public GridFSFile getGridFSFileByName(final String _fileName)
+    public GridFSFile getGridFSFileByName(final String fileName)
     {
-        return gridFsTemplate.findOne(query(whereFilename().is(_fileName)));
+        return gridFsTemplate.findOne(query(whereFilename().is(fileName)));
     }
 
     private GridFSBucket getGridFs()
