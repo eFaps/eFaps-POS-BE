@@ -66,6 +66,7 @@ import io.jsonwebtoken.lang.Collections;
 @Service
 public class CalculatorService
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(CalculatorService.class);
     private final MongoTemplate mongoTemplate;
     private final ConfigService configService;
@@ -93,6 +94,12 @@ public class CalculatorService
         int i = 0;
         final var taxMap = new HashMap<String, org.efaps.pos.pojo.Tax>();
 
+        final boolean usesIndex = calculatorPayloadDto.getPositions().stream()
+                        .anyMatch(pos -> (pos.getIndex() != null));
+        if (usesIndex) {
+            i = i + 1000;
+        }
+
         for (final var pos : calculatorPayloadDto.getPositions()) {
             final var product = productService.getProduct(pos.getProductOid());
             final var taxes = product.getTaxes().stream().map(tax -> {
@@ -104,7 +111,7 @@ public class CalculatorService
                                 .setType(EnumUtils.getEnum(TaxType.class, tax.getType().name()))
                                 .setFreeOfCharge(isFreeOfCharge(tax.getKey()));
             }).toList();
-            BigDecimal netUnitPrice= BigDecimal.ZERO;
+            BigDecimal netUnitPrice = BigDecimal.ZERO;
             if (pos.getBomOid() != null) {
                 final var partList = productService.getProductByBomOid(pos.getBomOid());
                 if (!ProductType.PARTLIST.equals(partList.getType())) {
@@ -136,11 +143,22 @@ public class CalculatorService
             } else {
                 netUnitPrice = productService.evalPrices(product).getLeft();
             }
+            var index = 0;
+            if (usesIndex) {
+                if (pos.getIndex() == null) {
+                    LOG.warn("Mixed index for calculator", pos.getBomOid());
+                    index = i++;
+                } else {
+                    index = pos.getIndex();
+                }
+            } else {
+                index = i++;
+            }
 
             document.addPosition(new Position()
                             .setNetUnitPrice(netUnitPrice)
                             .setTaxes(taxes)
-                            .setIndex(i++)
+                            .setIndex(index)
                             .setProductOid(pos.getProductOid())
                             .setQuantity(pos.getQuantity()));
         }
@@ -242,6 +260,7 @@ public class CalculatorService
         } else {
             result = calculate(document);
         }
+
         return CalculatorResponseDto.builder()
                         .withNetTotal(result.getNetTotal())
                         .withTaxTotal(result.getTaxTotal())
@@ -250,6 +269,9 @@ public class CalculatorService
                         .withTaxes(toDto(taxMap, result.getTaxes()))
                         .withPositions(result.getPositions().stream()
                                         .map(pos -> CalculatorPositionResponseDto.builder()
+                                                        .withIndex(evalIndex(usesIndex, pos))
+                                                        .withParentIdx(evalParentIndex(usesIndex, pos,
+                                                                        calculatorPayloadDto))
                                                         .withQuantity(pos.getQuantity())
                                                         .withProductOid(pos.getProductOid())
                                                         .withNetUnitPrice(pos.getNetUnitPrice())
@@ -258,10 +280,52 @@ public class CalculatorService
                                                         .withCrossPrice(pos.getCrossPrice())
                                                         .withTaxAmount(pos.getTaxAmount())
                                                         .withTaxes(toDto(taxMap, pos.getTaxes()))
+                                                        .withBomOid(evalBomOid(usesIndex, pos, calculatorPayloadDto))
                                                         .build())
                                         .toList())
                         .withPromotionInfo(getPromoInfo(result))
                         .build();
+    }
+
+    private Integer evalIndex(boolean usesIndex,
+                              ICalcPosition pos)
+    {
+        Integer ret = null;
+        if (usesIndex) {
+            ret = pos.getIndex();
+        }
+        return ret;
+    }
+
+    private Integer evalParentIndex(boolean usesIndex,
+                                    ICalcPosition pos,
+                                    final CalculatorRequestDto calculatorPayloadDto)
+    {
+        Integer ret = null;
+        if (usesIndex) {
+            final var reqPos = calculatorPayloadDto.getPositions().stream()
+                            .filter(p -> p.getIndex().equals(pos.getIndex()))
+                            .findFirst();
+            if (reqPos.isPresent()) {
+                ret = reqPos.get().getParentIdx();
+            }
+        }
+        return ret;
+    }
+
+    private String evalBomOid(boolean usesIndex,
+                              ICalcPosition pos,
+                              final CalculatorRequestDto calculatorPayloadDto)
+    {
+        String ret = null;
+        if (usesIndex) {
+            final var reqPos = calculatorPayloadDto.getPositions().stream()
+                            .filter(p -> p.getIndex().equals(pos.getIndex())).findFirst();
+            if (reqPos.isPresent()) {
+                ret = reqPos.get().getBomOid();
+            }
+        }
+        return ret;
     }
 
     public PromoInfoDto getPromoInfo(final IDocument result)
