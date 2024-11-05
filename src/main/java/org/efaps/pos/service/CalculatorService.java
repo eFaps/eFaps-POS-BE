@@ -17,7 +17,9 @@ package org.efaps.pos.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +44,7 @@ import org.efaps.pos.dto.PromoDetailDto;
 import org.efaps.pos.dto.PromoInfoDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.entity.AbstractDocument;
+import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Identifier;
 import org.efaps.pos.flags.BOMGroupConfigFlag;
@@ -164,99 +167,7 @@ public class CalculatorService
         }
         final IDocument result;
         if (CollectionUtils.isEmpty(calculatorPayloadDto.getPositions())) {
-            result = new IDocument()
-            {
-
-                @Override
-                public Collection<ICalcPosition> getPositions()
-                {
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public BigDecimal getNetTotal()
-                {
-                    return BigDecimal.ZERO;
-                }
-
-                @Override
-                public void setNetTotal(BigDecimal netTotal)
-                {
-                }
-
-                @Override
-                public BigDecimal getTaxTotal()
-                {
-                    return BigDecimal.ZERO;
-                }
-
-                @Override
-                public void setTaxTotal(BigDecimal taxTotal)
-                {
-                }
-
-                @Override
-                public List<ITax> getTaxes()
-                {
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public void setTaxes(List<ITax> taxes)
-                {
-                }
-
-                @Override
-                public BigDecimal getCrossTotal()
-                {
-                    return BigDecimal.ZERO;
-                }
-
-                @Override
-                public void setCrossTotal(BigDecimal crossTotal)
-                {
-                }
-
-                @Override
-                public IDocument clone()
-                {
-                    return null;
-                }
-
-                @Override
-                public void addDocDiscount(BigDecimal discount)
-                {
-                }
-
-                @Override
-                public BigDecimal getDocDiscount()
-                {
-                    return null;
-                }
-
-                @Override
-                public ICalcDocument updateWith(ICalcDocument position)
-                {
-                    return null;
-                }
-
-                @Override
-                public void setPromotionInfo(IPromotionInfo info)
-                {
-                }
-
-                @Override
-                public void addPromotionOid(String oid)
-                {
-                }
-
-                @Override
-                public List<String> getPromotionOids()
-                {
-                    return null;
-                }
-
-            };
+            result = new EmptyDoc();
         } else {
             result = calculate(document);
         }
@@ -421,10 +332,13 @@ public class CalculatorService
             posDoc.setTaxes(Collections.emptySet());
             return null;
         }
+        final var sortedItems = posDoc.getItems();
+        sortedItems.sort(Comparator.comparing(Item::getIndex));
+
         final var calcDocument = new Document();
         int i = 0;
         final var taxMap = new HashMap<String, org.efaps.pos.pojo.Tax>();
-        for (final var item : posDoc.getItems()) {
+        for (final var item : sortedItems) {
             final var product = productService.getProduct(item.getProductOid());
             final var taxes = product.getTaxes().stream().map(tax -> {
                 taxMap.put(tax.getKey(), tax);
@@ -442,10 +356,13 @@ public class CalculatorService
                             .setProductOid(item.getProductOid())
                             .setQuantity(item.getQuantity()));
         }
+        // apply discount selected in the UI
+        applyDiscount(posDoc, calcDocument);
+
         calculate(calcDocument);
 
         final var calcPosIter = calcDocument.getPositions().iterator();
-        for (final var item : posDoc.getItems()) {
+        for (final var item : sortedItems) {
             final var product = productService.getProduct(item.getProductOid());
             final var calcPos = calcPosIter.next();
             item.setNetUnitPrice(calcPos.getNetUnitPrice());
@@ -484,9 +401,145 @@ public class CalculatorService
         return (PromotionInfoDto) calcDocument.getPromotionInfo();
     }
 
+    private void applyDiscount(final AbstractDocument<?> posDoc,
+                               final Document calcDocument)
+    {
+        if (posDoc.getDiscount() != null) {
+            final var discountPositionOpt = calcDocument.getPositions().stream()
+                            .filter(pos -> pos.getProductOid().equals(posDoc.getDiscount().getProductOid()))
+                            .findFirst();
+            if (discountPositionOpt.isPresent()) {
+                final var discountPosition = discountPositionOpt.get();
+                // calculate first the normal positions
+                final var normalPositions = new ArrayList<ICalcPosition>();
+                normalPositions.addAll(calcDocument.getPositions().stream()
+                                .filter(pos -> !pos.equals(discountPosition))
+                                .toList());
+                calcDocument.setPositions(normalPositions);
+                calculate(calcDocument);
+
+                final var posNetUnitPrice = switch (posDoc.getDiscount().getType()) {
+                    case PERCENT -> {
+                        final var factor = posDoc.getDiscount().getValue().setScale(4, RoundingMode.HALF_UP)
+                                        .divide(new BigDecimal(100), RoundingMode.HALF_UP);
+                        yield calcDocument.getNetTotal().multiply(factor);
+                    }
+                    case AMOUNT -> {
+                        final var targetCross = calcDocument.getCrossTotal().subtract(posDoc.getDiscount().getValue());
+                        final var percentage = new BigDecimal(100).setScale(4).multiply(
+                                        BigDecimal.ONE.subtract(
+                                                        targetCross.setScale(4).divide(calcDocument.getCrossTotal(),
+                                                                        RoundingMode.HALF_UP)));
+                        LOG.debug("percentage: {}", percentage);
+                        final var factor2 = percentage.setScale(4, RoundingMode.HALF_UP)
+                                        .divide(new BigDecimal(100), RoundingMode.HALF_UP);
+                        yield calcDocument.getNetTotal().multiply(factor2);
+                    }
+                };
+                discountPosition.setNetUnitPrice(posNetUnitPrice.negate());
+                calcDocument.addPosition(discountPosition);
+            }
+        }
+    }
+
     private boolean isFreeOfCharge(final String taxUuid)
     {
         final var taxmap = configService.getTaxMapping();
         return BooleanUtils.toBoolean(taxmap.getOrDefault("tax." + taxUuid + ".freeOfCharge", "false"));
     }
+
+    public static class EmptyDoc
+        implements IDocument
+    {
+
+        @Override
+        public Collection<ICalcPosition> getPositions()
+        {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public BigDecimal getNetTotal()
+        {
+            return BigDecimal.ZERO;
+        }
+
+        @Override
+        public void setNetTotal(BigDecimal netTotal)
+        {
+        }
+
+        @Override
+        public BigDecimal getTaxTotal()
+        {
+            return BigDecimal.ZERO;
+        }
+
+        @Override
+        public void setTaxTotal(BigDecimal taxTotal)
+        {
+        }
+
+        @Override
+        public List<ITax> getTaxes()
+        {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public void setTaxes(List<ITax> taxes)
+        {
+        }
+
+        @Override
+        public BigDecimal getCrossTotal()
+        {
+            return BigDecimal.ZERO;
+        }
+
+        @Override
+        public void setCrossTotal(BigDecimal crossTotal)
+        {
+        }
+
+        @Override
+        public IDocument clone()
+        {
+            return null;
+        }
+
+        @Override
+        public void addDocDiscount(BigDecimal discount)
+        {
+        }
+
+        @Override
+        public BigDecimal getDocDiscount()
+        {
+            return null;
+        }
+
+        @Override
+        public ICalcDocument updateWith(ICalcDocument position)
+        {
+            return null;
+        }
+
+        @Override
+        public void setPromotionInfo(IPromotionInfo info)
+        {
+        }
+
+        @Override
+        public void addPromotionOid(String oid)
+        {
+        }
+
+        @Override
+        public List<String> getPromotionOids()
+        {
+            return null;
+        }
+    }
+
 }
