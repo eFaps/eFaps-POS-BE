@@ -187,7 +187,7 @@ public class MongoConfig
                                                 : new BigDecimal(detailDoc.getString("crossUnitDiscount")))
                                 .withCrossDiscount(detailDoc.getString("crossDiscount") == null ? null
                                                 : new BigDecimal(detailDoc.getString("crossDiscount")))
-                                .withPromotionOid(detailDoc.getString("promotionOid"))
+                                .withPromotionOids(detailDoc.getList("promotionOids", String.class))
                                 .build());
 
             }

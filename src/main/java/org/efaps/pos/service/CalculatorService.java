@@ -259,7 +259,7 @@ public class CalculatorService
                                                                 .withNetDiscount(pos.getNetDiscount())
                                                                 .withCrossUnitDiscount(pos.getCrossUnitDiscount())
                                                                 .withCrossDiscount(pos.getCrossDiscount())
-                                                                .withPromotionOid(pos.getPromotionOid())
+                                                                .withPromotionOids(pos.getPromotionOids())
                                                                 .build())
                                                 .toList())
                                 .build();

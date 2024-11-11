@@ -32,7 +32,6 @@ import org.efaps.pos.repository.PromotionRepository;
 import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.PromotionNotFoundException;
 import org.efaps.pos.util.Utils;
-import org.efaps.promotionengine.api.IPromotionDetail;
 import org.efaps.promotionengine.dto.PromotionInfoDto;
 import org.efaps.promotionengine.promotion.Promotion;
 import org.slf4j.Logger;
@@ -105,7 +104,9 @@ public class PromotionService
     {
         final Set<String> promotionOids = new HashSet<>();
         promotionOids.addAll(promoInfo.getPromotionOids());
-        promotionOids.addAll(promoInfo.getDetails().stream().map(IPromotionDetail::getPromotionOid).toList());
+        promoInfo.getDetails().forEach(detail -> {
+            promotionOids.addAll(detail.getPromotionOids());
+        });
         return promotionRepository.findAllById(promotionOids);
     }
 

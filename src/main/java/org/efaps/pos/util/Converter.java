@@ -1644,7 +1644,7 @@ public final class Converter
                         .withCrossUnitDiscount(detail.getCrossUnitDiscount())
                         .withCrossDiscount(detail.getCrossDiscount())
                         .withIndex(detail.getIndex())
-                        .withPromotionOid(detail.getPromotionOid())
+                        .withPromotionOids(detail.getPromotionOids())
                         .build();
     }
 
