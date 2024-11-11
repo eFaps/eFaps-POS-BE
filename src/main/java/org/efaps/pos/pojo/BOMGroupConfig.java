@@ -25,7 +25,6 @@ public class BOMGroupConfig
     private String name;
     private String description;
     private int weight;
-
     private int flags;
 
     public String getOid()

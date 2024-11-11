@@ -314,6 +314,7 @@ public final class Converter
                         .setBomGroupOid(dto.getBomGroupOid())
                         .setQuantity(dto.getQuantity())
                         .setUoM(dto.getUoM())
+                        .setFlags(dto.getFlags())
                         .setActions(dto.getActions() == null ? null
                                         : dto.getActions().stream().map(Converter::toEntity).toList());
     }
@@ -475,6 +476,7 @@ public final class Converter
                         .withQuantity(entity.getQuantity())
                         .withUoM(entity.getUoM())
                         .withToProductOid(entity.getToProductOid())
+                        .withFlags(entity.getFlags())
                         .withActions(entity.getActions() == null ? Collections.emptyList()
                                         : entity.getActions()
                                                         .stream().map(Converter::toDto).toList())

@@ -29,6 +29,7 @@ public class ConfigurationBOM
     private int position;
     private BigDecimal quantity;
     private String uoM;
+    private int flags;
     private List<BOMAction> actions;
 
     public String getOid()
@@ -94,6 +95,17 @@ public class ConfigurationBOM
     public ConfigurationBOM setUoM(String uoM)
     {
         this.uoM = uoM;
+        return this;
+    }
+
+    public int getFlags()
+    {
+        return flags;
+    }
+
+    public ConfigurationBOM setFlags(int flags)
+    {
+        this.flags = flags;
         return this;
     }
 
