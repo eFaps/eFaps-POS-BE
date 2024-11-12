@@ -15,6 +15,8 @@
  */
 package org.efaps.pos.controller;
 
+import java.util.List;
+
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.AbstractPayableDocumentDto;
 import org.efaps.pos.dto.PosPaymentDto;
@@ -46,12 +48,12 @@ public class PaymentController
 
     @PostMapping
     public AbstractPayableDocumentDto registerPayment(final Authentication authentication,
-                                                      @RequestBody final PosPaymentDto paymentDto,
+                                                      @RequestBody final List<PosPaymentDto> paymentDtos,
                                                       @RequestParam(name = "orderId") final String orderId)
         throws PreconditionException
     {
         final var balanceId = balanceService.getCurrent((User) authentication.getPrincipal(), true).get().getId();
-        return Converter.toDto(documentService.payAndEmit(balanceId, orderId, paymentDto));
+        return Converter.toDto(documentService.payAndEmit(balanceId, orderId, paymentDtos));
     }
 
 }

@@ -736,14 +736,14 @@ public class DocumentService
 
     public AbstractPayableDocument<?> payAndEmit(final String balanceId,
                                                  final String orderId,
-                                                 final PosPaymentDto paymentDto)
+                                                 final List<PosPaymentDto> paymentDtos)
         throws PreconditionException
     {
         final var order = getOrder(orderId);
         final var contact = contactService.findContact(order.getContactOid());
         final AbstractPayableDocument<? extends AbstractPayableDocument<?>> payable;
         final Set<Payment> payments = new HashSet<>();
-        payments.add(Converter.toEntity(paymentDto));
+        payments.addAll(paymentDtos.stream().map(Converter::toEntity).toList());
         if (IdentificationType.RUC.equals(contact.getIdType())) {
             final var invoice = new Invoice();
             Converter.clone(order, invoice);
