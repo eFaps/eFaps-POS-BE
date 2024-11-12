@@ -32,7 +32,7 @@
     <properties>
         <spring.boot.version>3.3.5</spring.boot.version>
         <junit.jupiter.version>5.11.2</junit.jupiter.version>
-        <junit.platform.version>1.11.1</junit.platform.version>
+        <junit.platform.version>1.11.3</junit.platform.version>
     </properties>
     <build>
         <plugins>
