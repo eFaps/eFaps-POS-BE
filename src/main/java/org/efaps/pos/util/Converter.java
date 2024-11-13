@@ -331,7 +331,9 @@ public final class Converter
                         .setName(dto.getName())
                         .setDescription(dto.getDescription())
                         .setWeight(dto.getWeight())
-                        .setFlags(dto.getFlags());
+                        .setFlags(dto.getFlags())
+                        .setMinQuantity(dto.getMinQuantity())
+                        .setMaxQuantity(dto.getMaxQuantity());
     }
 
     public static Product2Category toEntity(final Product2CategoryDto _dto)
@@ -464,6 +466,8 @@ public final class Converter
                         .withProductOid(entity.getProductOid())
                         .withWeight(entity.getWeight())
                         .withFlags(entity.getFlags())
+                        .withMinQuantity(entity.getMinQuantity())
+                        .withMaxQuantity(entity.getMaxQuantity())
                         .build();
     }
 

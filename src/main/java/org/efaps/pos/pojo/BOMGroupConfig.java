@@ -15,6 +15,8 @@
  */
 package org.efaps.pos.pojo;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 public class BOMGroupConfig
@@ -26,6 +28,8 @@ public class BOMGroupConfig
     private String description;
     private int weight;
     private int flags;
+    private BigDecimal minQuantity;
+    private BigDecimal maxQuantity;
 
     public String getOid()
     {
@@ -90,6 +94,28 @@ public class BOMGroupConfig
     public BOMGroupConfig setFlags(int flags)
     {
         this.flags = flags;
+        return this;
+    }
+
+    public BigDecimal getMinQuantity()
+    {
+        return minQuantity;
+    }
+
+    public BOMGroupConfig setMinQuantity(final BigDecimal minQuantity)
+    {
+        this.minQuantity = minQuantity;
+        return this;
+    }
+
+    public BigDecimal getMaxQuantity()
+    {
+        return maxQuantity;
+    }
+
+    public BOMGroupConfig setMaxQuantity(final BigDecimal maxQuantity)
+    {
+        this.maxQuantity = maxQuantity;
         return this;
     }
 
