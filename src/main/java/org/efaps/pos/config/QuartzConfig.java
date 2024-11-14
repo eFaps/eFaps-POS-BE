@@ -17,6 +17,8 @@ package org.efaps.pos.config;
 
 import org.efaps.pos.service.MonitoringService;
 import org.efaps.pos.service.SyncService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -30,6 +32,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 @Profile(value = { "!demo" })
 public class QuartzConfig
 {
+    private static final Logger LOG = LoggerFactory.getLogger(QuartzConfig.class);
 
     private final SyncService syncService;
 
@@ -39,34 +42,64 @@ public class QuartzConfig
     @Value("${org.quartz.jobs.syncPayables.interval}")
     private Integer syncPayablesInterval;
 
+    @Value("${org.quartz.jobs.syncPayables.delay:180}")
+    private Integer syncPayablesDelay;
+
     /** The sync interval for contacts. */
     @Value("${org.quartz.jobs.syncContacts.interval}")
     private Integer syncContactsInterval;
+
+    @Value("${org.quartz.jobs.syncContacts.delay:180}")
+    private Integer syncContactsDelay;
 
     /** The sync interval for contacts. */
     @Value("${org.quartz.jobs.syncInventory.interval}")
     private Integer syncInventoryInterval;
 
+    @Value("${org.quartz.jobs.syncInventory.delay:180}")
+    private Integer syncInventoryDelay;
+
     @Value("${org.quartz.jobs.syncExchangeRates.interval:0}")
     private Integer syncExchangeRatesInterval;
+
+    @Value("${org.quartz.jobs.syncExchangeRates.delay:240}")
+    private Integer syncExchangeRatesDelay;
 
     @Value("${org.quartz.jobs.syncEmployees.interval:0}")
     private Integer syncEmployeesInterval;
 
+    @Value("${org.quartz.jobs.syncEmployees.delay:360}")
+    private Integer syncEmployeesDelay;
+
     @Value("${org.quartz.jobs.syncProducts.interval:0}")
     private Integer syncProductsInterval;
+
+    @Value("${org.quartz.jobs.syncProducts.delay:240}")
+    private Integer syncProductsDelay;
 
     @Value("${org.quartz.jobs.syncLogs.interval:0}")
     private Integer syncLogsInterval;
 
+    @Value("${org.quartz.jobs.syncLogs.delay:360}")
+    private Integer syncLogsDelay;
+
     @Value("${org.quartz.jobs.syncPromotions.interval:0}")
     private Integer syncPromotionsInterval;
+
+    @Value("${org.quartz.jobs.syncPromotions.delay:240}")
+    private Integer syncPromotionsDelay;
 
     @Value("${org.quartz.jobs.syncPromotionInfos.interval:0}")
     private Integer syncPromotionInfosInterval;
 
+    @Value("${org.quartz.jobs.syncPromotionInfos.delay:360}")
+    private Integer syncPromotionInfosDelay;
+
     @Value("${org.quartz.jobs.reportToBase.interval:3600}")
     private Integer reportToBaseInterval;
+
+    @Value("${org.quartz.jobs.reportToBase.delay:420}")
+    private Integer reportToBaseDelay;
 
     @Autowired
     public QuartzConfig(final SyncService _syncService,
@@ -92,9 +125,11 @@ public class QuartzConfig
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncPayables.interval} > 0}")
     public SimpleTriggerFactoryBean syncPayablesTriggerFactoryBean()
     {
+        LOG.info("Registering Quartz trigger 'syncPayables' with delay: {}s, interval: {}s",
+                        syncPayablesDelay, syncPayablesInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncPayablesJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(180 * 1000);
+        stFactory.setStartDelay(syncPayablesDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncPayablesInterval) * 1000);
         return stFactory;
     }
@@ -115,9 +150,11 @@ public class QuartzConfig
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncContacts.interval} > 0}")
     public SimpleTriggerFactoryBean syncContactsTriggerFactoryBean()
     {
+        LOG.info("Registering Quartz trigger 'syncContacts' with delay: {}s, interval: {}s",
+                        syncContactsDelay, syncContactsInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncContactsJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(180 * 1000);
+        stFactory.setStartDelay(syncContactsDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncContactsInterval) * 1000);
         return stFactory;
     }
@@ -138,9 +175,11 @@ public class QuartzConfig
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncInventory.interval} > 0}")
     public SimpleTriggerFactoryBean syncInventoryTriggerFactoryBean()
     {
+        LOG.info("Registering Quartz trigger 'syncInventory' with delay: {}s, interval: {}s",
+                        syncInventoryDelay, syncInventoryInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncInventoryJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(180 * 1000);
+        stFactory.setStartDelay(syncInventoryDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncInventoryInterval) * 1000);
         return stFactory;
     }
@@ -161,9 +200,11 @@ public class QuartzConfig
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncExchangeRates.interval:0} > 0}")
     public SimpleTriggerFactoryBean syncExchangeRatesTriggerFactoryBean()
     {
+        LOG.info("Registering Quartz trigger 'syncExchangeRates' with delay: {}s, interval: {}s",
+                        syncExchangeRatesDelay, syncExchangeRatesInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncExchangeRatesJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(180 * 1000);
+        stFactory.setStartDelay(syncExchangeRatesDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncExchangeRatesInterval) * 1000);
         return stFactory;
     }
@@ -184,9 +225,11 @@ public class QuartzConfig
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncEmployees.interval:0} > 0}")
     public SimpleTriggerFactoryBean syncEmployeesTriggerFactoryBean()
     {
+        LOG.info("Registering Quartz trigger 'syncEmployees' with delay: {}s, interval: {}s",
+                        syncEmployeesDelay, syncEmployeesInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncEmployeesJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(180 * 1000);
+        stFactory.setStartDelay(syncEmployeesDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncEmployeesInterval) * 1000);
         return stFactory;
     }
@@ -207,9 +250,11 @@ public class QuartzConfig
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncProducts.interval:0} > 0}")
     public SimpleTriggerFactoryBean syncProductsTriggerFactoryBean()
     {
+        LOG.info("Registering Quartz trigger 'syncProducts' with delay: {}s, interval: {}s",
+                        syncProductsDelay, syncProductsInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncProductsJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(240 * 1000);
+        stFactory.setStartDelay(syncProductsDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncProductsInterval) * 1000);
         return stFactory;
     }
@@ -230,9 +275,11 @@ public class QuartzConfig
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncLogs.interval:0} > 0}")
     public SimpleTriggerFactoryBean syncLogsTriggerFactoryBean()
     {
+        LOG.info("Registering Quartz trigger 'syncLogs' with delay: {}s, interval: {}s",
+                        syncLogsDelay, syncLogsInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncLogsJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(240 * 1000);
+        stFactory.setStartDelay(syncLogsDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncLogsInterval) * 1000);
         return stFactory;
     }
@@ -253,9 +300,11 @@ public class QuartzConfig
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncPromotions.interval:0} > 0}")
     public SimpleTriggerFactoryBean syncPromotionsTriggerFactoryBean()
     {
+        LOG.info("Registering Quartz trigger 'syncPromotions' with delay: {}s, interval: {}s",
+                        syncPromotionsDelay, syncPromotionsInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncPromotionsJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(240 * 1000);
+        stFactory.setStartDelay(syncPromotionsDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncPromotionsInterval) * 1000);
         return stFactory;
     }
@@ -276,9 +325,11 @@ public class QuartzConfig
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncPromotionInfos.interval:0} > 0}")
     public SimpleTriggerFactoryBean syncPromotionInfosTriggerFactoryBean()
     {
+        LOG.info("Registering Quartz trigger 'syncPromotionInfos' with delay: {}s, interval: {}s",
+                        syncPromotionInfosDelay, syncPromotionInfosInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(syncPromotionInfosJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(240 * 1000);
+        stFactory.setStartDelay(syncPromotionInfosDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncPromotionInfosInterval) * 1000);
         return stFactory;
     }
@@ -298,9 +349,12 @@ public class QuartzConfig
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.reportToBase.interval:3600} > 0}")
     public SimpleTriggerFactoryBean reportToBaseTriggerFactoryBean()
     {
+        LOG.info("Registering Quartz trigger 'reportToBase' with delay: {}s, interval: {}s",
+                        reportToBaseDelay, reportToBaseInterval);
+
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
         stFactory.setJobDetail(reportToBaseJobDetailFactoryBean().getObject());
-        stFactory.setStartDelay(240 * 1000);
+        stFactory.setStartDelay(reportToBaseDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(reportToBaseInterval) * 1000);
         return stFactory;
     }
