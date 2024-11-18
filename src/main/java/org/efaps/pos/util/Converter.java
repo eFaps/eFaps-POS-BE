@@ -990,6 +990,7 @@ public final class Converter
                                         : entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withOrderOptionKey(entity.getOrderOptionKey())
+                        .withShoutout(entity.getShoutout())
                         .build();
     }
 
