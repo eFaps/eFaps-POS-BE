@@ -138,6 +138,8 @@ public class ContactService
             final var after = OffsetDateTime.of(syncInfo.getLastSync(), ZoneOffset.of("-5")).minusMinutes(10);
             syncContactsDown(after);
             ret = true;
+        } else {
+            syncContactsDown(null);
         }
         return ret;
     }
@@ -171,7 +173,7 @@ public class ContactService
         }
     }
 
-    private void syncContactsDown(OffsetDateTime after)
+    private void syncContactsDown(final OffsetDateTime after)
     {
         final var queriedContacts = new ArrayList<Contact>();
         final var limit = configProperties.getEFaps().getContactLimit();
