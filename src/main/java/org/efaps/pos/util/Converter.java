@@ -256,23 +256,24 @@ public final class Converter
         return SpotDto.builder().withOID(_entity.getId()).withLabel(_entity.getLabel()).build();
     }
 
-    public static AbstractDocument.Item toEntity(final PosDocItemDto _dto)
+    public static AbstractDocument.Item toEntity(final PosDocItemDto dto)
     {
-        return new AbstractDocument.Item().setOid(_dto.getOid())
-                        .setIndex(_dto.getIndex())
-                        .setParentIdx(_dto.getParentIdx())
-                        .setCrossPrice(_dto.getCrossPrice())
-                        .setCrossUnitPrice(_dto.getCrossUnitPrice())
-                        .setNetPrice(_dto.getNetPrice())
-                        .setNetUnitPrice(_dto.getNetUnitPrice())
-                        .setExchangeRate(_dto.getExchangeRate())
-                        .setCurrency(_dto.getCurrency())
-                        .setQuantity(_dto.getQuantity())
-                        .setRemark(_dto.getRemark())
-                        .setProductOid(_dto.getProduct() == null ? _dto.getProductOid() : _dto.getProduct().getOid())
-                        .setStandInOid(_dto.getStandIn() == null ? _dto.getStandInOid() : _dto.getStandIn().getOid())
-                        .setTaxes(_dto.getTaxes() == null ? null
-                                        : _dto.getTaxes().stream().map(Converter::toEntity)
+        return new AbstractDocument.Item().setOid(dto.getOid())
+                        .setIndex(dto.getIndex())
+                        .setParentIdx(dto.getParentIdx())
+                        .setCrossPrice(dto.getCrossPrice())
+                        .setCrossUnitPrice(dto.getCrossUnitPrice())
+                        .setNetPrice(dto.getNetPrice())
+                        .setNetUnitPrice(dto.getNetUnitPrice())
+                        .setExchangeRate(dto.getExchangeRate())
+                        .setCurrency(dto.getCurrency())
+                        .setQuantity(dto.getQuantity())
+                        .setRemark(dto.getRemark())
+                        .setBomOid(dto.getBomOid())
+                        .setProductOid(dto.getProduct() == null ? dto.getProductOid() : dto.getProduct().getOid())
+                        .setStandInOid(dto.getStandIn() == null ? dto.getStandInOid() : dto.getStandIn().getOid())
+                        .setTaxes(dto.getTaxes() == null ? null
+                                        : dto.getTaxes().stream().map(Converter::toEntity)
                                                         .collect(Collectors.toSet()));
     }
 
@@ -792,27 +793,28 @@ public final class Converter
         return _spot == null ? null : PosSpotDto.builder().withId(_spot.getId()).withLabel(_spot.getLabel()).build();
     }
 
-    public static PosDocItemDto toDto(final AbstractDocument.Item _entity)
+    public static PosDocItemDto toDto(final AbstractDocument.Item entity)
     {
         return PosDocItemDto.builder()
-                        .withOID(_entity.getOid())
-                        .withIndex(_entity.getIndex())
-                        .withParentIdx(_entity.getParentIdx())
-                        .withCrossPrice(_entity.getCrossPrice())
-                        .withCrossUnitPrice(_entity.getCrossUnitPrice())
-                        .withNetPrice(_entity.getNetPrice())
-                        .withNetUnitPrice(_entity.getNetUnitPrice())
-                        .withCurrency(_entity.getCurrency())
-                        .withExchangeRate(_entity.getExchangeRate())
-                        .withQuantity(_entity.getQuantity())
-                        .withProductOid(_entity.getProductOid())
-                        .withRemark(_entity.getRemark())
-                        .withProduct(_entity.getProductOid() == null ? null
-                                        : Converter.toDto(INSTANCE.productService.getProduct(_entity.getProductOid())))
-                        .withStandIn(_entity.getStandInOid() == null ? null
-                                        : Converter.toDto(INSTANCE.productService.getProduct(_entity.getStandInOid())))
-                        .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(Converter::toDto)
+                        .withOID(entity.getOid())
+                        .withIndex(entity.getIndex())
+                        .withParentIdx(entity.getParentIdx())
+                        .withCrossPrice(entity.getCrossPrice())
+                        .withCrossUnitPrice(entity.getCrossUnitPrice())
+                        .withNetPrice(entity.getNetPrice())
+                        .withNetUnitPrice(entity.getNetUnitPrice())
+                        .withCurrency(entity.getCurrency())
+                        .withExchangeRate(entity.getExchangeRate())
+                        .withQuantity(entity.getQuantity())
+                        .withProductOid(entity.getProductOid())
+                        .withRemark(entity.getRemark())
+                        .withBomOid(entity.getBomOid())
+                        .withProduct(entity.getProductOid() == null ? null
+                                        : Converter.toDto(INSTANCE.productService.getProduct(entity.getProductOid())))
+                        .withStandIn(entity.getStandInOid() == null ? null
+                                        : Converter.toDto(INSTANCE.productService.getProduct(entity.getStandInOid())))
+                        .withTaxes(entity.getTaxes() == null ? null
+                                        : entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }
@@ -1139,6 +1141,7 @@ public final class Converter
                         .withProductOid(entity.getProductOid())
                         .withStandInOid(entity.getStandInOid())
                         .withRemark(entity.getRemark())
+                        .withBomOid(entity.getBomOid())
                         .withTaxes(entity.getTaxes() == null ? null
                                         : entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
@@ -1616,6 +1619,7 @@ public final class Converter
                         .setStandInOid(fromItem.getStandInOid())
                         .setQuantity(fromItem.getQuantity())
                         .setRemark(fromItem.getRemark())
+                        .setBomOid(fromItem.getBomOid())
                         .setTaxes(fromItem.getTaxes());
     }
 

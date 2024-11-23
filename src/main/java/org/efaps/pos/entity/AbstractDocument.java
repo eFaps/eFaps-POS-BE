@@ -341,6 +341,7 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>>
         private BigDecimal exchangeRate;
         private Set<TaxEntry> taxes;
         private String remark;
+        private String bomOid;
 
         public Integer getIndex()
         {
@@ -493,6 +494,17 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>>
         public Item setRemark(final String remark)
         {
             this.remark = remark;
+            return this;
+        }
+
+        public String getBomOid()
+        {
+            return bomOid;
+        }
+
+        public Item setBomOid(String bomOid)
+        {
+            this.bomOid = bomOid;
             return this;
         }
 
