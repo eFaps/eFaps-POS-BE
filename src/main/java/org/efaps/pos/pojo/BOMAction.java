@@ -24,7 +24,8 @@ public class BOMAction
 {
 
     private BOMActionType type;
-    private BigDecimal amount;
+    private BigDecimal netAmount;
+    private BigDecimal crossAmount;
 
     public BOMActionType getType()
     {
@@ -37,14 +38,25 @@ public class BOMAction
         return this;
     }
 
-    public BigDecimal getAmount()
+    public BigDecimal getNetAmount()
     {
-        return amount;
+        return netAmount;
     }
 
-    public BOMAction setAmount(BigDecimal amount)
+    public BOMAction setNetAmount(BigDecimal netAmount)
     {
-        this.amount = amount;
+        this.netAmount = netAmount;
+        return this;
+    }
+
+    public BigDecimal getCrossAmount()
+    {
+        return crossAmount;
+    }
+
+    public BOMAction setCrossAmount(BigDecimal crossAmount)
+    {
+        this.crossAmount = crossAmount;
         return this;
     }
 

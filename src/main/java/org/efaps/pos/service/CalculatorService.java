@@ -129,7 +129,7 @@ public class CalculatorService
                                     .filter(action -> BOMActionType.PRICEADJUSTMENT.equals(action.getType()))
                                     .findFirst();
                     if (priceAdjustment.isPresent()) {
-                        netUnitPrice = priceAdjustment.get().getAmount();
+                        netUnitPrice = priceAdjustment.get().getNetAmount();
                     } else {
                         final var confOpt = partList.getBomGroupConfigs().stream()
                                         .filter(conf -> conf.getOid().equals(bom.getBomGroupOid()))

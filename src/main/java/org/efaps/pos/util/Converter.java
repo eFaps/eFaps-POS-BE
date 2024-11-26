@@ -322,7 +322,8 @@ public final class Converter
 
     public static BOMAction toEntity(final BOMActionDto dto)
     {
-        return new BOMAction().setType(dto.getType()).setAmount(dto.getAmount());
+        return new BOMAction().setType(dto.getType()).setNetAmount(dto.getNetAmount())
+                        .setCrossAmount(dto.getCrossAmount());
     }
 
     public static BOMGroupConfig toEntity(final BOMGroupConfigDto dto)
@@ -492,7 +493,8 @@ public final class Converter
     {
         return BOMActionDto.builder()
                         .withType(entity.getType())
-                        .withAmount(entity.getAmount())
+                        .withNetAmount(entity.getNetAmount())
+                        .withCrossAmount(entity.getCrossAmount())
                         .build();
     }
 
