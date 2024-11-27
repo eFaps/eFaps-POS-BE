@@ -30,7 +30,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
@@ -122,7 +121,6 @@ public class Application
         return serviceListFactoryBean;
     }
 
-    @Primary
     @Bean
     public TaskExecutor taskExecutor() {
         return new SimpleAsyncTaskExecutor();
