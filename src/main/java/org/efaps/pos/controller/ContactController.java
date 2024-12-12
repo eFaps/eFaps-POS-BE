@@ -78,10 +78,10 @@ public class ContactController
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ContactDto createContact(@RequestBody final ContactDto posContactDto)
+    public ContactDto createContact(@RequestBody final ContactDto dto)
         throws PreconditionException
     {
-        return Converter.toDto(service.createContact(Converter.toEntity(posContactDto)));
+        return Converter.toDto(service.createContact(Converter.toEntity(dto)));
     }
 
     @PutMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)

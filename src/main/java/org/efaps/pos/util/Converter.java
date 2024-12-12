@@ -657,14 +657,16 @@ public final class Converter
                         .setParentOid(dto.getParentOid());
     }
 
-    public static Contact toEntity(final ContactDto _dto)
+    public static Contact toEntity(final ContactDto dto)
     {
-        return new Contact().setId(_dto.getId())
-                        .setOid(_dto.getOid())
-                        .setName(_dto.getName())
-                        .setIdType(_dto.getIdType())
-                        .setIdNumber(_dto.getIdNumber())
-                        .setEmail(_dto.getEmail());
+        return new Contact().setId(dto.getId())
+                        .setOid(dto.getOid())
+                        .setName(dto.getName())
+                        .setIdType(dto.getIdType())
+                        .setIdNumber(dto.getIdNumber())
+                        .setEmail(dto.getEmail())
+                        .setFirstName(dto.getFirstName())
+                        .setLastName(dto.getLastName());
     }
 
     public static TaxDto toDto(final Tax _entity)
@@ -954,16 +956,18 @@ public final class Converter
                         .build();
     }
 
-    public static ContactDto toDto(final Contact _entity)
+    public static ContactDto toDto(final Contact entity)
     {
-        return _entity == null ? null
+        return entity == null ? null
                         : ContactDto.builder()
-                                        .withId(_entity.getId())
-                                        .withOID(_entity.getOid())
-                                        .withName(_entity.getName())
-                                        .withIdType(_entity.getIdType())
-                                        .withIdNumber(_entity.getIdNumber())
-                                        .withEmail(_entity.getEmail())
+                                        .withId(entity.getId())
+                                        .withOID(entity.getOid())
+                                        .withName(entity.getName())
+                                        .withIdType(entity.getIdType())
+                                        .withIdNumber(entity.getIdNumber())
+                                        .withEmail(entity.getEmail())
+                                        .withFirstName(entity.getFirstName())
+                                        .withLastName(entity.getLastName())
                                         .build();
     }
 

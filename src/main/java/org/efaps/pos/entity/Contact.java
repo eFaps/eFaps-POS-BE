@@ -44,6 +44,10 @@ public class Contact
 
     private String email;
 
+    private String firstName;
+
+    private String lastName;
+
     private Visibility visibility;
 
     private Boolean updated;
@@ -126,6 +130,28 @@ public class Contact
     public Contact setEmail(final String _email)
     {
         email = _email;
+        return this;
+    }
+
+    public String getFirstName()
+    {
+        return firstName;
+    }
+
+    public Contact setFirstName(final String firstName)
+    {
+        this.firstName = firstName;
+        return this;
+    }
+
+    public String getLastName()
+    {
+        return lastName;
+    }
+
+    public Contact setLastName(final String lastName)
+    {
+        this.lastName = lastName;
         return this;
     }
 
