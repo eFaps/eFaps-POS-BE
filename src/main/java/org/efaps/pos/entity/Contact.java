@@ -44,9 +44,11 @@ public class Contact
 
     private String email;
 
-    private String firstName;
+    private String forename;
 
-    private String lastName;
+    private String firstLastName;
+
+    private String secondLastName;
 
     private Visibility visibility;
 
@@ -133,25 +135,36 @@ public class Contact
         return this;
     }
 
-    public String getFirstName()
+    public String getForename()
     {
-        return firstName;
+        return forename;
     }
 
-    public Contact setFirstName(final String firstName)
+    public Contact setForename(String forename)
     {
-        this.firstName = firstName;
+        this.forename = forename;
         return this;
     }
 
-    public String getLastName()
+    public String getFirstLastName()
     {
-        return lastName;
+        return firstLastName;
     }
 
-    public Contact setLastName(final String lastName)
+    public Contact setFirstLastName(String firstLastName)
     {
-        this.lastName = lastName;
+        this.firstLastName = firstLastName;
+        return this;
+    }
+
+    public String getSecondLastName()
+    {
+        return secondLastName;
+    }
+
+    public Contact setSecondLastName(String secondLastName)
+    {
+        this.secondLastName = secondLastName;
         return this;
     }
 

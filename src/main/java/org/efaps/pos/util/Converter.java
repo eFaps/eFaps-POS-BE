@@ -665,8 +665,9 @@ public final class Converter
                         .setIdType(dto.getIdType())
                         .setIdNumber(dto.getIdNumber())
                         .setEmail(dto.getEmail())
-                        .setFirstName(dto.getFirstName())
-                        .setLastName(dto.getLastName());
+                        .setForename(dto.getForename())
+                        .setFirstLastName(dto.getFirstLastName())
+                        .setSecondLastName(dto.getSecondLastName());
     }
 
     public static TaxDto toDto(final Tax _entity)
@@ -966,8 +967,9 @@ public final class Converter
                                         .withIdType(entity.getIdType())
                                         .withIdNumber(entity.getIdNumber())
                                         .withEmail(entity.getEmail())
-                                        .withFirstName(entity.getFirstName())
-                                        .withLastName(entity.getLastName())
+                                        .withForename(entity.getForename())
+                                        .withFirstLastName(entity.getFirstLastName())
+                                        .withSecondLastName(entity.getSecondLastName())
                                         .build();
     }
 
