@@ -349,8 +349,40 @@ public class CalculatorService
                                 .setType(EnumUtils.getEnum(TaxType.class, tax.getType().name()))
                                 .setFreeOfCharge(isFreeOfCharge(tax.getKey()));
             }).toList();
+
+            BigDecimal netUnitPrice = BigDecimal.ZERO;
+            if (item.getBomOid() != null) {
+                final var partList = productService.getProductByBomOid(item.getBomOid());
+                if (!ProductType.PARTLIST.equals(partList.getType())) {
+                    LOG.warn("BomOid {} send to Calculator leads to a product that is not a partlist", item.getBomOid());
+                }
+                final var bomOpt = partList.getConfigurationBOMs().stream()
+                                .filter(bom -> bom.getOid().equals(item.getBomOid()))
+                                .findFirst();
+                if (bomOpt.isPresent()) {
+                    final var bom = bomOpt.get();
+                    final var priceAdjustment = bom.getActions().stream()
+                                    .filter(action -> BOMActionType.PRICEADJUSTMENT.equals(action.getType()))
+                                    .findFirst();
+                    if (priceAdjustment.isPresent()) {
+                        netUnitPrice = priceAdjustment.get().getNetAmount();
+                    } else {
+                        final var confOpt = partList.getBomGroupConfigs().stream()
+                                        .filter(conf -> conf.getOid().equals(bom.getBomGroupOid()))
+                                        .findFirst();
+                        if (confOpt.isPresent()
+                                        && Utils.hasFlag(confOpt.get().getFlags(), BOMGroupConfigFlag.CHARGEABLE)) {
+                            netUnitPrice = productService.evalPrices(product).getLeft();
+                        }
+                    }
+                } else {
+                    LOG.warn("BomOid {} could not be find", item.getBomOid());
+                }
+            } else {
+                netUnitPrice = productService.evalPrices(product).getLeft();
+            }
             calcDocument.addPosition(new Position()
-                            .setNetUnitPrice(product.getNetPrice())
+                            .setNetUnitPrice(netUnitPrice)
                             .setTaxes(taxes)
                             .setIndex(i++)
                             .setProductOid(item.getProductOid())
