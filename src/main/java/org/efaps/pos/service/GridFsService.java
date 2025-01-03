@@ -24,61 +24,49 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.efaps.pos.error.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.gridfs.GridFsResource;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.gridfs.GridFSBucket;
-import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 @Service
 public class GridFsService
 {
 
-    private final MongoDatabaseFactory dbFactory;
     private final GridFsTemplate gridFsTemplate;
+    private final GridFsOperations operations;
 
     @Autowired
-    public GridFsService(final GridFsTemplate _gridFsTemplate,
-                        final MongoDatabaseFactory _dbFactory)
+    public GridFsService(final GridFsTemplate gridFsTemplate,
+                         final GridFsOperations operations)
     {
-        gridFsTemplate = _gridFsTemplate;
-        dbFactory = _dbFactory;
+        this.gridFsTemplate = gridFsTemplate;
+        this.operations = operations;
     }
 
     public InputStream getContent(final String oid)
         throws IllegalStateException, IOException
     {
-        final GridFSFile imageFile = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(oid)));
-        return new GridFsResource(imageFile, getGridFs().openDownloadStream(imageFile.getId()))
-                                .getInputStream();
+        final var file = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(oid)));
+        return operations.getResource(file).getInputStream();
     }
 
     public Object[] getBlob(final String oid)
         throws IllegalStateException, IOException, NotFoundException
     {
-        final GridFSFile imageFile = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(oid)));
-        if (imageFile == null) {
+        final GridFSFile file = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(oid)));
+        if (file == null) {
             throw new NotFoundException("Coould not get image for oid: " + oid);
         }
-        final InputStream resource = new GridFsResource(imageFile, getGridFs().openDownloadStream(imageFile.getId()))
-                        .getInputStream();
-        return new Object[] { imageFile.getMetadata().getString("contentType"), IOUtils.toByteArray(resource) };
+        final InputStream resource = operations.getResource(file).getInputStream();
+        return new Object[] { file.getMetadata().getString("contentType"), IOUtils.toByteArray(resource) };
     }
 
     public GridFSFile getGridFSFileByName(final String fileName)
     {
         return gridFsTemplate.findOne(query(whereFilename().is(fileName)));
-    }
-
-    private GridFSBucket getGridFs()
-    {
-        final MongoDatabase db = dbFactory.getMongoDatabase();
-        return GridFSBuckets.create(db);
     }
 }
