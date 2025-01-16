@@ -29,6 +29,10 @@ public class Indication
 
     private String imageOid;
 
+    private boolean defaultSelected;
+
+    private int weight;
+
     public String getDescription()
     {
         return description;
@@ -70,6 +74,28 @@ public class Indication
     public Indication setValue(final String _value)
     {
         value = _value;
+        return this;
+    }
+
+    public boolean isDefaultSelected()
+    {
+        return defaultSelected;
+    }
+
+    public Indication setDefaultSelected(boolean defaultSelected)
+    {
+        this.defaultSelected = defaultSelected;
+        return this;
+    }
+
+    public int getWeight()
+    {
+        return weight;
+    }
+
+    public Indication setWeight(int weight)
+    {
+        this.weight = weight;
         return this;
     }
 }

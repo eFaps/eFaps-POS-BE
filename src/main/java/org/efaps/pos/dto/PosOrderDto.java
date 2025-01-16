@@ -75,7 +75,7 @@ public class PosOrderDto
     }
 
     public static class Builder
-        extends AbstractDocumentDto.Builder<Builder, PosOrderDto>
+        extends AbstractDocumentDto.Builder<Builder>
     {
 
         private PosSpotDto spot;
@@ -120,7 +120,7 @@ public class PosOrderDto
             return this;
         }
 
-        @Override
+
         public PosOrderDto build()
         {
             return new PosOrderDto(this);

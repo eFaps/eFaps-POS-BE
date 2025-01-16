@@ -41,7 +41,7 @@ import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
-import org.efaps.pos.pojo.Payment;
+import org.efaps.pos.pojo.IPayment;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.CashEntryRepository;
 import org.efaps.pos.util.Converter;
@@ -115,9 +115,7 @@ public class BalanceService
         final PosUserDto user = Converter.toDto(userService.getUserByOid(balance.getUserOid()));
 
         final var cashEntries = cashEntryRepository.findByBalanceOidIn(balance.getId(), balance.getOid()).stream()
-                        .map(entity -> {
-                            return Converter.toDto(entity);
-                        }).collect(Collectors.toList());
+                        .map(Converter::toDto).collect(Collectors.toList());
 
         final Collection<Invoice> invoices = documentService.getInvoices4Balance(balance.getOid() == null
                         ? balance.getId()
@@ -139,7 +137,7 @@ public class BalanceService
               tax.setAmount(tax.getAmount().negate());
            });
         });
-        
+
         final List<AbstractPayableDocument<?>> all = new ArrayList<>();
         all.addAll(invoices);
         all.addAll(receipts);
@@ -166,20 +164,20 @@ public class BalanceService
 
     protected BalanceSummaryDetailDto getDetail(final Collection<? extends AbstractPayableDocument<?>> _payable)
     {
-        final List<Payment> pay = _payable.stream()
-                        .map(invoice -> invoice.getPayments())
+        final List<IPayment> pay = _payable.stream()
+                        .map(AbstractPayableDocument::getPayments)
                         .flatMap(Collection::stream)
                         .collect(Collectors.toList());
         final int count = pay.size();
 
         final Map<PaymentGroup, Long> counted = pay.stream()
-                        .collect(Collectors.groupingBy(payment -> getPaymentGroup(payment), Collectors.counting()));
+                        .collect(Collectors.groupingBy(this::getPaymentGroup, Collectors.counting()));
 
         final Map<PaymentGroup, BigDecimal> summed = pay.stream()
-                        .collect(Collectors.groupingBy(payment -> getPaymentGroup(payment),
+                        .collect(Collectors.groupingBy(this::getPaymentGroup,
                                         Collectors.reducing(
                                                         BigDecimal.ZERO,
-                                                        Payment::getAmount,
+                                                        IPayment::getAmount,
                                                         BigDecimal::add)));
 
         final Map<PaymentGroup, PaymentInfoDto> infos = new HashMap<>();
@@ -197,26 +195,22 @@ public class BalanceService
         }
 
         final BigDecimal netTotal = _payable.stream()
-                        .map(document -> {
-                            return negate(document, document.getNetTotal());
-                        })
+                        .map(document -> negate(document, document.getNetTotal()))
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         final BigDecimal crossTotal = _payable.stream()
-                        .map(document -> {
-                            return negate(document, document.getCrossTotal());
-                        })
+                        .map(document -> negate(document, document.getCrossTotal()))
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         final List<TaxEntry> taxes = _payable.stream()
-                        .map(invoice -> invoice.getTaxes())
+                        .map(AbstractPayableDocument::getTaxes)
                         .flatMap(Collection::stream)
                         .collect(Collectors.toList());
 
         taxes.stream().collect(Collectors.groupingBy(tax -> tax.getTax().getKey()));
 
         final Collection<List<TaxEntry>> taxmap = _payable.stream()
-                        .map(invoice -> invoice.getTaxes())
+                        .map(AbstractPayableDocument::getTaxes)
                         .flatMap(Collection::stream)
                         .collect(Collectors.groupingBy(tax -> tax.getTax().getKey()))
                         .values();
@@ -252,8 +246,8 @@ public class BalanceService
     {
         return value;
     }
-        
-    protected PaymentGroup getPaymentGroup(final Payment _payment)
+
+    protected PaymentGroup getPaymentGroup(final IPayment _payment)
     {
         String label = null;
         if (_payment.getCollectOrderId() != null) {
@@ -264,7 +258,7 @@ public class BalanceService
         }
         return PaymentGroup.builder()
                         .withType(_payment.getType())
-                        .withLabel(label ==null ? _payment.getCardLabel() : label)
+                        .withLabel(label ==null ? _payment.getLabel() : label)
                         .build();
     }
 
@@ -277,7 +271,7 @@ public class BalanceService
     {
         final var entities = cashEntries.stream()
                         .filter(dto -> dto.getAmount() != null)
-                        .map(dto -> Converter.toEntity(dto))
+                        .map(Converter::toEntity)
                         .collect(Collectors.toList());
         cashEntryRepository.saveAll(entities);
     }

@@ -20,7 +20,8 @@ import java.math.BigDecimal;
 import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.PaymentType;
 
-public class Payment
+@Deprecated
+public class Payment implements IPayment
 {
 
     private String oid;
@@ -44,6 +45,7 @@ public class Payment
         return this;
     }
 
+    @Override
     public PaymentType getType()
     {
         return type;
@@ -121,6 +123,7 @@ public class Payment
         return this;
     }
 
+    @Override
     public String getCollectOrderId() {
       return collectOrderId;
     }
@@ -128,5 +131,11 @@ public class Payment
     public Payment setCollectOrderId(String collectOrderId) {
       this.collectOrderId = collectOrderId;
       return this;
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return getCardLabel();
     }
 }

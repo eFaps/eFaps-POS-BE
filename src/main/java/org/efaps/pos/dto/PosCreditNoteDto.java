@@ -78,7 +78,7 @@ public class PosCreditNoteDto
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder
-        extends AbstractPayableDocumentDto.Builder<Builder, PosCreditNoteDto>
+        extends AbstractPayableDocumentDto.Builder<Builder>
     {
 
         private DiscountDto discount;
@@ -102,17 +102,14 @@ public class PosCreditNoteDto
             return this;
         }
 
-        public Builder withPayments(final Set<PosPaymentDto> _payments)
+        public Builder withPayments(final Set<IPosPaymentDto> payments)
         {
-            if (_payments == null) {
-              setPayments(null);
-            } else {
-              setPayments(_payments.stream().map(posDto -> (PaymentDto) posDto).collect(Collectors.toSet()));
+            if (payments != null) {
+                setPayments(payments.stream().map(payment -> (IPaymentDto) payment).toList());
             }
             return this;
         }
 
-        @Override
         public PosCreditNoteDto build()
         {
             return new PosCreditNoteDto(this);

@@ -44,6 +44,8 @@ import org.efaps.pos.dto.EmployeeDto;
 import org.efaps.pos.dto.EmployeeRelationDto;
 import org.efaps.pos.dto.FileDto;
 import org.efaps.pos.dto.FloorDto;
+import org.efaps.pos.dto.IPaymentDto;
+import org.efaps.pos.dto.IPosPaymentDto;
 import org.efaps.pos.dto.IndicationDto;
 import org.efaps.pos.dto.IndicationSetDto;
 import org.efaps.pos.dto.InventoryEntryDto;
@@ -52,7 +54,13 @@ import org.efaps.pos.dto.JobDto;
 import org.efaps.pos.dto.LogEntryDto;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PayableHeadDto;
-import org.efaps.pos.dto.PaymentDto;
+import org.efaps.pos.dto.PaymentAbstractDto;
+import org.efaps.pos.dto.PaymentCardDto;
+import org.efaps.pos.dto.PaymentCashDto;
+import org.efaps.pos.dto.PaymentChangeDto;
+import org.efaps.pos.dto.PaymentElectronicDto;
+import org.efaps.pos.dto.PaymentFreeDto;
+import org.efaps.pos.dto.PaymentLoyaltyPointsDto;
 import org.efaps.pos.dto.PosBalanceDto;
 import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.PosDocItemDto;
@@ -61,7 +69,12 @@ import org.efaps.pos.dto.PosFileDto;
 import org.efaps.pos.dto.PosInventoryEntryDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
-import org.efaps.pos.dto.PosPaymentDto;
+import org.efaps.pos.dto.PosPaymentCardDto;
+import org.efaps.pos.dto.PosPaymentCashDto;
+import org.efaps.pos.dto.PosPaymentChangeDto;
+import org.efaps.pos.dto.PosPaymentElectronicDto;
+import org.efaps.pos.dto.PosPaymentFreeDto;
+import org.efaps.pos.dto.PosPaymentLoyaltyPointsDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosSpotDto;
 import org.efaps.pos.dto.PosStocktakingDto;
@@ -118,15 +131,23 @@ import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.Card;
 import org.efaps.pos.entity.Workspace.Floor;
 import org.efaps.pos.entity.Workspace.PrintCmd;
+import org.efaps.pos.pojo.AbstractPayment;
 import org.efaps.pos.pojo.BOMAction;
 import org.efaps.pos.pojo.BOMGroupConfig;
 import org.efaps.pos.pojo.Barcode;
 import org.efaps.pos.pojo.ConfigurationBOM;
 import org.efaps.pos.pojo.Discount;
 import org.efaps.pos.pojo.EmployeeRelation;
+import org.efaps.pos.pojo.IPayment;
 import org.efaps.pos.pojo.Indication;
 import org.efaps.pos.pojo.IndicationSet;
 import org.efaps.pos.pojo.Payment;
+import org.efaps.pos.pojo.PaymentCard;
+import org.efaps.pos.pojo.PaymentCash;
+import org.efaps.pos.pojo.PaymentChange;
+import org.efaps.pos.pojo.PaymentElectronic;
+import org.efaps.pos.pojo.PaymentFree;
+import org.efaps.pos.pojo.PaymentLoyaltyPoints;
 import org.efaps.pos.pojo.Product2Category;
 import org.efaps.pos.pojo.ProductRelation;
 import org.efaps.pos.pojo.Spot;
@@ -387,21 +408,25 @@ public final class Converter
                         .build();
     }
 
-    public static Indication toEntity(final IndicationDto _dto)
+    public static Indication toEntity(final IndicationDto dto)
     {
-        return new Indication().setId(_dto.getOid())
-                        .setValue(_dto.getValue())
-                        .setDescription(_dto.getDescription())
-                        .setImageOid(_dto.getImageOid());
+        return new Indication().setId(dto.getOid())
+                        .setValue(dto.getValue())
+                        .setDescription(dto.getDescription())
+                        .setImageOid(dto.getImageOid())
+                        .setDefaultSelected(dto.isDefaultSelected())
+                        .setWeight(dto.getWeight());
     }
 
-    public static IndicationDto toDto(final Indication _entity)
+    public static IndicationDto toDto(final Indication entity)
     {
         return IndicationDto.builder()
-                        .withOID(_entity.getId())
-                        .withValue(_entity.getValue())
-                        .withDescription(_entity.getDescription())
-                        .withImageOid(_entity.getImageOid())
+                        .withOID(entity.getId())
+                        .withValue(entity.getValue())
+                        .withDescription(entity.getDescription())
+                        .withImageOid(entity.getImageOid())
+                        .withDefaultSelected(entity.isDefaultSelected())
+                        .withWeight(entity.getWeight())
                         .build();
     }
 
@@ -519,7 +544,6 @@ public final class Converter
                         .setSurName(_dto.getSurName())
                         .setVisible(_dto.isVisible())
                         .setWorkspaceOids(_dto.getWorkspaceOids())
-                        .setRoles(_dto.getRoles())
                         .setPermissions(_dto.getPermissions());
     }
 
@@ -694,50 +718,216 @@ public final class Converter
                         .setAmount(_dto.getAmount());
     }
 
-    public static Payment toEntity(final PaymentDto _dto)
+    public static IPayment toEntity(final IPaymentDto dto)
     {
-        final var payment = new Payment().setOid(_dto.getOid())
-                        .setType(_dto.getType())
-                        .setAmount(_dto.getAmount())
-                        .setCurrency(_dto.getCurrency())
-                        .setExchangeRate(_dto.getExchangeRate())
-                        .setCardTypeId(_dto.getCardTypeId())
-                        .setCardLabel(_dto.getCardLabel())
-                        .setMappingKey(_dto.getMappingKey());
-        if (_dto instanceof PosPaymentDto) {
-            payment.setCollectOrderId(((PosPaymentDto) _dto).getCollectOrderId());
+        final AbstractPayment payment = switch (dto.getType()) {
+            case CASH -> {
+                yield new PaymentCash();
+            }
+            case CARD -> {
+                yield new PaymentCard();
+            }
+            case CHANGE -> {
+                yield new PaymentChange();
+            }
+            case ELECTRONIC -> {
+                yield new PaymentElectronic();
+            }
+            case FREE -> {
+                yield new PaymentFree();
+            }
+            case LOYALTY_POINTS -> {
+                yield new PaymentLoyaltyPoints();
+            }
+        };
+        final var paymentDto = (PaymentAbstractDto) dto;
+
+        payment.setOid(paymentDto.getOid())
+                        .setAmount(paymentDto.getAmount())
+                        .setCurrency(paymentDto.getCurrency());
+        if (dto instanceof IPosPaymentDto) {
+            payment.setCollectOrderId(((IPosPaymentDto) dto).getCollectOrderId());
         }
         return payment;
     }
 
-    public static PosPaymentDto toPosDto(final Payment _entity)
+    public static IPosPaymentDto toPosDto(final IPayment entity)
     {
-        final org.efaps.pos.dto.PosPaymentDto.Builder builder = (org.efaps.pos.dto.PosPaymentDto.Builder) PosPaymentDto
-                        .builder()
-                        .withOID(_entity.getOid())
-                        .withType(_entity.getType())
-                        .withAmount(_entity.getAmount())
-                        .withCurrency(_entity.getCurrency())
-                        .withExchangeRate(_entity.getExchangeRate())
-                        .withCardTypeId(_entity.getCardTypeId())
-                        .withCardLabel(_entity.getCardLabel())
-                        .withMappingKey(_entity.getMappingKey());
-        return builder.withCollectOrderId(_entity.getCollectOrderId()).build();
+        return switch (entity.getType()) {
+            case CASH -> {
+                final var posEntity = (PaymentCash) entity;
+                yield PosPaymentCashDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
+                                .withCollectOrderId(posEntity.getCollectOrderId())
+                                .withInfo(posEntity.getInfo())
+                                .build();
+            }
+            case CARD -> {
+                final var posEntity = (PaymentCard) entity;
+                yield PosPaymentCardDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
+                                .withCollectOrderId(posEntity.getCollectOrderId())
+                                .withInfo(posEntity.getInfo())
+                                .build();
+            }
+            case CHANGE -> {
+                final var posEntity = (PaymentChange) entity;
+                yield PosPaymentChangeDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
+                                .withCollectOrderId(posEntity.getCollectOrderId())
+                                .withInfo(posEntity.getInfo())
+                                .build();
+            }
+            case ELECTRONIC -> {
+                final var posEntity = (PaymentElectronic) entity;
+                yield PosPaymentElectronicDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
+                                .withCollectOrderId(posEntity.getCollectOrderId())
+                                .withInfo(posEntity.getInfo())
+                                .withAuthorization(posEntity.getAuthorization())
+                                .withCardLabel(posEntity.getCardLabel())
+                                .withCardNumber(posEntity.getCardLabel())
+                                .withEquipmentIdent(posEntity.getEquipmentIdent())
+                                .withOperationDateTime(posEntity.getOperationDateTime())
+                                .withServiceProvider(posEntity.getServiceProvider())
+                                .withMappingKey(posEntity.getMappingKey())
+                                .build();
+            }
+            case FREE -> {
+                final var posEntity = (PaymentFree) entity;
+                yield PosPaymentFreeDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withCollectOrderId(posEntity.getCollectOrderId())
+                                .withInfo(posEntity.getInfo())
+                                .build();
+            }
+            case LOYALTY_POINTS -> {
+                final var posEntity = (PaymentLoyaltyPoints) entity;
+                yield PosPaymentLoyaltyPointsDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
+                                .withCollectOrderId(posEntity.getCollectOrderId())
+                                .withInfo(posEntity.getInfo())
+                                .withAuthorization(posEntity.getAuthorization())
+                                .withOperationId(posEntity.getOperationId())
+                                .withPointsAmount(posEntity.getPointsAmount())
+                                .withOperationDateTime(posEntity.getOperationDateTime())
+                                .withMappingKey(posEntity.getMappingKey())
+                                .build();
+            }
+        };
     }
 
-    public static PaymentDto toDto(final Payment _entity)
+    public static IPosPaymentDto toPosDto(final Payment _entity)
     {
-        final var builder = PaymentDto.builder()
-                        .withOID(_entity.getOid())
-                        .withType(_entity.getType())
-                        .withAmount(_entity.getAmount())
-                        .withCurrency(_entity.getCurrency())
-                        .withExchangeRate(_entity.getExchangeRate())
-                        .withCardTypeId(_entity.getCardTypeId())
-                        .withCardLabel(_entity.getCardLabel())
-                        .withMappingKey(_entity.getMappingKey());
-        INSTANCE.collectorService.add2PaymentDto(builder, _entity);
-        return builder.build();
+        return null;
+    }
+
+    public static IPaymentDto toDto(final IPayment entity)
+    {
+        return switch (entity.getType()) {
+            case CASH -> {
+                final var posEntity = (PaymentCash) entity;
+                yield PaymentCashDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withInfo(posEntity.getInfo())
+                                .build();
+            }
+            case CARD -> {
+                final var posEntity = (PaymentCard) entity;
+                yield PaymentCardDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withInfo(posEntity.getInfo())
+                                .build();
+            }
+            case CHANGE -> {
+                final var posEntity = (PaymentChange) entity;
+                yield PaymentChangeDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withInfo(posEntity.getInfo())
+                                .build();
+            }
+            case ELECTRONIC -> {
+                final var posEntity = (PaymentElectronic) entity;
+                yield PaymentElectronicDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
+                                .withInfo(posEntity.getInfo())
+                                .withAuthorization(posEntity.getAuthorization())
+                                .withCardLabel(posEntity.getCardLabel())
+                                .withCardNumber(posEntity.getCardLabel())
+                                .withEquipmentIdent(posEntity.getEquipmentIdent())
+                                .withOperationDateTime(posEntity.getOperationDateTime())
+                                .withServiceProvider(posEntity.getServiceProvider())
+                                .withMappingKey(posEntity.getMappingKey())
+                                .build();
+            }
+            case FREE -> {
+                final var posEntity = (PaymentFree) entity;
+                yield PaymentFreeDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withInfo(posEntity.getInfo())
+                                .build();
+            }
+            case LOYALTY_POINTS -> {
+                final var posEntity = (PaymentLoyaltyPoints) entity;
+                yield PaymentLoyaltyPointsDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
+                                .withInfo(posEntity.getInfo())
+                                .withAuthorization(posEntity.getAuthorization())
+                                .withOperationId(posEntity.getOperationId())
+                                .withPointsAmount(posEntity.getPointsAmount())
+                                .withOperationDateTime(posEntity.getOperationDateTime())
+                                .withMappingKey(posEntity.getMappingKey())
+                                .build();
+            }
+        };
+    }
+
+    public static IPaymentDto toDto(final Payment _entity)
+    {
+        return null;
     }
 
     public static TaxEntry toEntity(final TaxEntryDto _dto)
@@ -1325,9 +1515,9 @@ public final class Converter
                         .setType(_dto.getType());
     }
 
-    public static ContactDto getContactDto(final String _key)
+    public static ContactDto getContactDto(final String key)
     {
-        return Converter.toDto(INSTANCE.contactService.findContact(_key, true));
+        return key == null ? null : Converter.toDto(INSTANCE.contactService.findContact(key, true));
     }
 
     public static CollectOrderDto toDto(final CollectOrder _entity)
@@ -1629,6 +1819,67 @@ public final class Converter
                         .setRemark(fromItem.getRemark())
                         .setBomOid(fromItem.getBomOid())
                         .setTaxes(fromItem.getTaxes());
+    }
+
+    public static IPayment clone(final IPayment fromPayment)
+    {
+        return switch (fromPayment.getType()) {
+            case CARD -> {
+                final var from = (PaymentCard) fromPayment;
+                yield new PaymentCard()
+                                .setOid(from.getOid())
+                                .setAmount(from.getAmount())
+                                .setCollectOrderId(from.getCollectOrderId())
+                                .setCurrency(from.getCurrency())
+                                .setType(from.getType());
+            }
+
+            case CASH -> {
+                final var from = (PaymentCash) fromPayment;
+                yield new PaymentCash()
+                                .setOid(from.getOid())
+                                .setAmount(from.getAmount())
+                                .setCollectOrderId(from.getCollectOrderId())
+                                .setCurrency(from.getCurrency())
+                                .setType(from.getType());
+            }
+            case CHANGE -> {
+                final var from = (PaymentChange) fromPayment;
+                yield new PaymentChange()
+                                .setOid(from.getOid())
+                                .setAmount(from.getAmount())
+                                .setCollectOrderId(from.getCollectOrderId())
+                                .setCurrency(from.getCurrency())
+                                .setType(from.getType());
+            }
+            case ELECTRONIC -> {
+                final var from = (PaymentElectronic) fromPayment;
+                yield new PaymentElectronic()
+                                .setOid(from.getOid())
+                                .setAmount(from.getAmount())
+                                .setCollectOrderId(from.getCollectOrderId())
+                                .setCurrency(from.getCurrency())
+                                .setType(from.getType());
+            }
+            case FREE -> {
+                final var from = (PaymentFree) fromPayment;
+                yield new PaymentFree()
+                                .setOid(from.getOid())
+                                .setAmount(from.getAmount())
+                                .setCollectOrderId(from.getCollectOrderId())
+                                .setCurrency(from.getCurrency())
+                                .setType(from.getType());
+            }
+            case LOYALTY_POINTS -> {
+                final var from = (PaymentLoyaltyPoints) fromPayment;
+                yield new PaymentLoyaltyPoints()
+                                .setOid(from.getOid())
+                                .setAmount(from.getAmount())
+                                .setCollectOrderId(from.getCollectOrderId())
+                                .setCurrency(from.getCurrency())
+                                .setType(from.getType());
+            }
+        };
     }
 
     public static Payment clone(final Payment fromPayment)

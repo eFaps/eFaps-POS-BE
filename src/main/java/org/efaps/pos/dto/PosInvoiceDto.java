@@ -16,6 +16,7 @@
 package org.efaps.pos.dto;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.interfaces.IInvoice;
@@ -62,7 +63,7 @@ public class PosInvoiceDto
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder
-        extends AbstractPayableDocumentDto.Builder<Builder, PosInvoiceDto>
+        extends AbstractPayableDocumentDto.Builder<Builder>
     {
         private DiscountDto discount;
 
@@ -78,17 +79,14 @@ public class PosInvoiceDto
             return this;
         }
 
-        public Builder withPayments(final Collection<PosPaymentDto> _payments)
+        public Builder withPayments(final Set<IPosPaymentDto> payments)
         {
-            if (_payments == null) {
-              setPayments(null);
-            } else {
-              setPayments(_payments.stream().map(posDto -> (PaymentDto) posDto).collect(Collectors.toSet()));
+            if (payments != null) {
+                setPayments(payments.stream().map(payment -> (IPaymentDto) payment).toList());
             }
             return this;
         }
 
-        @Override
         public PosInvoiceDto build()
         {
             return new PosInvoiceDto(this);

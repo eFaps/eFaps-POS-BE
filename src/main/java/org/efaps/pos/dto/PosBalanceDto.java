@@ -82,7 +82,7 @@ public class PosBalanceDto
     }
 
     public static final class Builder
-        extends AbstractObjectDto.Builder<Builder, PosBalanceDto>
+        extends AbstractObjectDto.Builder<Builder>
     {
 
         private String id;
@@ -136,7 +136,6 @@ public class PosBalanceDto
             return this;
         }
 
-        @Override
         public PosBalanceDto build()
         {
             return new PosBalanceDto(this);

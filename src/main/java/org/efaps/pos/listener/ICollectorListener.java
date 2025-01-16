@@ -20,10 +20,10 @@ import java.util.Map;
 
 import org.efaps.pos.dto.CollectStartOrderDto;
 import org.efaps.pos.dto.CollectorDto;
-import org.efaps.pos.dto.PaymentDto;
+import org.efaps.pos.dto.PaymentAbstractDto;
 import org.efaps.pos.entity.CollectOrder;
 import org.efaps.pos.pojo.CollectorState;
-import org.efaps.pos.pojo.Payment;
+import org.efaps.pos.pojo.IPayment;
 import org.efaps.pos.service.CollectorException;
 
 public interface ICollectorListener
@@ -47,8 +47,8 @@ public interface ICollectorListener
     {
     }
 
-    default void add2PaymentDto(final PaymentDto.Builder builder,
-                                final Payment payment)
+    default void add2PaymentDto(final PaymentAbstractDto.Builder<?> builder,
+                                final IPayment payment)
     {
     }
 

@@ -42,7 +42,9 @@ import org.efaps.pos.dto.PosInventoryEntryDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosLayout;
 import org.efaps.pos.dto.PosOrderDto;
-import org.efaps.pos.dto.PosPaymentDto;
+import org.efaps.pos.dto.PosPaymentCardDto;
+import org.efaps.pos.dto.PosPaymentCashDto;
+import org.efaps.pos.dto.PosPaymentChangeDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
@@ -54,7 +56,6 @@ import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ProductRelationDto;
 import org.efaps.pos.dto.ReceiptDto;
-import org.efaps.pos.dto.Roles;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.SpotConfig;
 import org.efaps.pos.dto.SpotDto;
@@ -285,7 +286,7 @@ public class ConverterTest
                         .withStatus(DocStatus.CLOSED)
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))
                         .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
-                        .withPayments(Collections.singleton(PosPaymentDto.builder().build()))
+                        .withPayments(Collections.singleton(PosPaymentCardDto.builder().build()))
                         .build();
 
         final Receipt entity = Converter.toEntity(dto);
@@ -303,7 +304,7 @@ public class ConverterTest
                         .withStatus(DocStatus.CLOSED)
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))
                         .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
-                        .withPayments(Collections.singleton(PosPaymentDto.builder().build()))
+                        .withPayments(Collections.singleton(PosPaymentCashDto.builder().build()))
                         .build();
 
         final Invoice entity = Converter.toEntity(dto);
@@ -321,7 +322,7 @@ public class ConverterTest
                         .withStatus(DocStatus.CLOSED)
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))
                         .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
-                        .withPayments(Collections.singleton(PosPaymentDto.builder().build()))
+                        .withPayments(Collections.singleton(PosPaymentChangeDto.builder().build()))
                         .build();
 
         final Ticket entity = Converter.toEntity(dto);
@@ -516,7 +517,6 @@ public class ConverterTest
                         .withFirstName("First Name")
                         .withSurName("Last Name")
                         .withPassword("thats secret")
-                        .withRoles(Collections.singleton(Roles.ADMIN))
                         .withWorkspaceOids(Collections.singleton("123.4"))
                         .build();
         final User entity = Converter.toEntity(dto);

@@ -34,11 +34,11 @@ import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.EmployeeRelationType;
+import org.efaps.pos.dto.IPosPaymentDto;
 import org.efaps.pos.dto.IdentificationType;
 import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
-import org.efaps.pos.dto.PosPaymentDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.ProductRelationType;
@@ -63,7 +63,7 @@ import org.efaps.pos.interfaces.IPos;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
 import org.efaps.pos.pojo.EmployeeRelation;
-import org.efaps.pos.pojo.Payment;
+import org.efaps.pos.pojo.IPayment;
 import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.CreditNoteRepository;
@@ -736,13 +736,13 @@ public class DocumentService
 
     public AbstractPayableDocument<?> payAndEmit(final String balanceId,
                                                  final String orderId,
-                                                 final List<PosPaymentDto> paymentDtos)
+                                                 final List<IPosPaymentDto> paymentDtos)
         throws PreconditionException
     {
         final var order = getOrder(orderId);
         final var contact = contactService.findContact(order.getContactOid());
         final AbstractPayableDocument<? extends AbstractPayableDocument<?>> payable;
-        final Set<Payment> payments = new HashSet<>();
+        final Set<IPayment> payments = new HashSet<>();
         payments.addAll(paymentDtos.stream().map(Converter::toEntity).toList());
         if (IdentificationType.RUC.equals(contact.getIdType())) {
             final var invoice = new Invoice();

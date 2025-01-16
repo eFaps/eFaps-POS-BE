@@ -74,7 +74,7 @@ public class PosDocItemDto
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder
-        extends AbstractDocItemDto.Builder<Builder, PosDocItemDto>
+        extends AbstractDocItemDto.Builder<Builder>
     {
 
         private ProductDto product;
@@ -92,7 +92,6 @@ public class PosDocItemDto
             return this;
         }
 
-        @Override
         public PosDocItemDto build()
         {
             return new PosDocItemDto(this);
