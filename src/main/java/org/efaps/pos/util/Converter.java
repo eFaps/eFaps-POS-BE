@@ -58,8 +58,10 @@ import org.efaps.pos.dto.PaymentAbstractDto;
 import org.efaps.pos.dto.PaymentCardDto;
 import org.efaps.pos.dto.PaymentCashDto;
 import org.efaps.pos.dto.PaymentChangeDto;
+import org.efaps.pos.dto.PaymentElectronicAbstractDto;
 import org.efaps.pos.dto.PaymentElectronicDto;
 import org.efaps.pos.dto.PaymentFreeDto;
+import org.efaps.pos.dto.PaymentLoyaltyPointsAbstractDto;
 import org.efaps.pos.dto.PaymentLoyaltyPointsDto;
 import org.efaps.pos.dto.PosBalanceDto;
 import org.efaps.pos.dto.PosCreditNoteDto;
@@ -731,20 +733,38 @@ public final class Converter
                 yield new PaymentChange();
             }
             case ELECTRONIC -> {
-                yield new PaymentElectronic();
+                final var paymentDto = (PaymentElectronicAbstractDto) dto;
+                final var entity = new PaymentElectronic()
+                                .setMappingKey(paymentDto.getMappingKey())
+                                .setCardLabel(paymentDto.getCardLabel())
+                                .setServiceProvider(paymentDto.getServiceProvider())
+                                .setAuthorization(paymentDto.getAuthorization())
+                                .setOperationId(paymentDto.getOperationId())
+                                .setCardNumber(paymentDto.getCardNumber())
+                                .setEquipmentIdent(paymentDto.getEquipmentIdent());
+                yield entity;
             }
             case FREE -> {
                 yield new PaymentFree();
             }
             case LOYALTY_POINTS -> {
-                yield new PaymentLoyaltyPoints();
+                final var paymentDto = (PaymentLoyaltyPointsAbstractDto) dto;
+                final var entity = new PaymentLoyaltyPoints()
+                                .setMappingKey(paymentDto.getMappingKey())
+                                .setAuthorization(paymentDto.getAuthorization())
+                                .setOperationId(paymentDto.getOperationId())
+                                .setPointsAmount(paymentDto.getPointsAmount());
+                yield entity;
             }
         };
         final var paymentDto = (PaymentAbstractDto) dto;
 
         payment.setOid(paymentDto.getOid())
                         .setAmount(paymentDto.getAmount())
-                        .setCurrency(paymentDto.getCurrency());
+                        .setCurrency(paymentDto.getCurrency())
+                        .setExchangeRate(paymentDto.getExchangeRate())
+                        .setInfo(paymentDto.getInfo())
+                        .setOperationDateTime(paymentDto.getOperationDateTime());
         if (dto instanceof IPosPaymentDto) {
             payment.setCollectOrderId(((IPosPaymentDto) dto).getCollectOrderId());
         }
