@@ -38,7 +38,7 @@ import org.efaps.pos.entity.Order;
 import org.efaps.pos.listener.ICollectorListener;
 import org.efaps.pos.pojo.Collector;
 import org.efaps.pos.pojo.CollectorState;
-import org.efaps.pos.pojo.Payment;
+import org.efaps.pos.pojo.IPayment;
 import org.efaps.pos.repository.CollectOrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -230,7 +230,7 @@ public class CollectorService
     }
 
     public void add2PaymentDto(final PaymentAbstractDto.Builder<?> builder,
-                               final Payment payment)
+                               final IPayment payment)
     {
         for (final ICollectorListener listener : collectorListener) {
             listener.add2PaymentDto(builder, payment);

@@ -776,43 +776,46 @@ public final class Converter
         return switch (entity.getType()) {
             case CASH -> {
                 final var posEntity = (PaymentCash) entity;
-                yield PosPaymentCashDto.builder()
+                final var builder = PosPaymentCashDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
                                 .withExchangeRate(posEntity.getExchangeRate())
                                 .withCollectOrderId(posEntity.getCollectOrderId())
-                                .withInfo(posEntity.getInfo())
-                                .build();
+                                .withInfo(posEntity.getInfo());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
             case CARD -> {
                 final var posEntity = (PaymentCard) entity;
-                yield PosPaymentCardDto.builder()
+                final var builder = PosPaymentCardDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
                                 .withExchangeRate(posEntity.getExchangeRate())
                                 .withCollectOrderId(posEntity.getCollectOrderId())
-                                .withInfo(posEntity.getInfo())
-                                .build();
+                                .withInfo(posEntity.getInfo());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
             case CHANGE -> {
                 final var posEntity = (PaymentChange) entity;
-                yield PosPaymentChangeDto.builder()
+                final var builder = PosPaymentChangeDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
                                 .withExchangeRate(posEntity.getExchangeRate())
                                 .withCollectOrderId(posEntity.getCollectOrderId())
-                                .withInfo(posEntity.getInfo())
-                                .build();
+                                .withInfo(posEntity.getInfo());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
             case ELECTRONIC -> {
                 final var posEntity = (PaymentElectronic) entity;
-                yield PosPaymentElectronicDto.builder()
+                final var builder = PosPaymentElectronicDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -826,23 +829,25 @@ public final class Converter
                                 .withEquipmentIdent(posEntity.getEquipmentIdent())
                                 .withOperationDateTime(posEntity.getOperationDateTime())
                                 .withServiceProvider(posEntity.getServiceProvider())
-                                .withMappingKey(posEntity.getMappingKey())
-                                .build();
+                                .withMappingKey(posEntity.getMappingKey());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
             case FREE -> {
                 final var posEntity = (PaymentFree) entity;
-                yield PosPaymentFreeDto.builder()
+                final var builder = PosPaymentFreeDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
                                 .withCollectOrderId(posEntity.getCollectOrderId())
-                                .withInfo(posEntity.getInfo())
-                                .build();
+                                .withInfo(posEntity.getInfo());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
             case LOYALTY_POINTS -> {
                 final var posEntity = (PaymentLoyaltyPoints) entity;
-                yield PosPaymentLoyaltyPointsDto.builder()
+                final var builder = PosPaymentLoyaltyPointsDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -854,15 +859,12 @@ public final class Converter
                                 .withOperationId(posEntity.getOperationId())
                                 .withPointsAmount(posEntity.getPointsAmount())
                                 .withOperationDateTime(posEntity.getOperationDateTime())
-                                .withMappingKey(posEntity.getMappingKey())
-                                .build();
+                                .withMappingKey(posEntity.getMappingKey());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
         };
-    }
 
-    public static IPosPaymentDto toPosDto(final Payment _entity)
-    {
-        return null;
     }
 
     public static IPaymentDto toDto(final IPayment entity)
@@ -870,37 +872,40 @@ public final class Converter
         return switch (entity.getType()) {
             case CASH -> {
                 final var posEntity = (PaymentCash) entity;
-                yield PaymentCashDto.builder()
+                final var builder = PaymentCashDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
-                                .withInfo(posEntity.getInfo())
-                                .build();
+                                .withInfo(posEntity.getInfo());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
             case CARD -> {
                 final var posEntity = (PaymentCard) entity;
-                yield PaymentCardDto.builder()
+                final var builder = PaymentCardDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
-                                .withInfo(posEntity.getInfo())
-                                .build();
+                                .withInfo(posEntity.getInfo());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
             case CHANGE -> {
                 final var posEntity = (PaymentChange) entity;
-                yield PaymentChangeDto.builder()
+                final var builder = PaymentChangeDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
-                                .withInfo(posEntity.getInfo())
-                                .build();
+                                .withInfo(posEntity.getInfo());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
             case ELECTRONIC -> {
                 final var posEntity = (PaymentElectronic) entity;
-                yield PaymentElectronicDto.builder()
+                final var builder = PaymentElectronicDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -913,22 +918,24 @@ public final class Converter
                                 .withEquipmentIdent(posEntity.getEquipmentIdent())
                                 .withOperationDateTime(posEntity.getOperationDateTime())
                                 .withServiceProvider(posEntity.getServiceProvider())
-                                .withMappingKey(posEntity.getMappingKey())
-                                .build();
+                                .withMappingKey(posEntity.getMappingKey());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
             case FREE -> {
                 final var posEntity = (PaymentFree) entity;
-                yield PaymentFreeDto.builder()
+                final var builder = PaymentFreeDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
-                                .withInfo(posEntity.getInfo())
-                                .build();
+                                .withInfo(posEntity.getInfo());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
             case LOYALTY_POINTS -> {
                 final var posEntity = (PaymentLoyaltyPoints) entity;
-                yield PaymentLoyaltyPointsDto.builder()
+                final var builder = PaymentLoyaltyPointsDto.builder()
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -939,15 +946,11 @@ public final class Converter
                                 .withOperationId(posEntity.getOperationId())
                                 .withPointsAmount(posEntity.getPointsAmount())
                                 .withOperationDateTime(posEntity.getOperationDateTime())
-                                .withMappingKey(posEntity.getMappingKey())
-                                .build();
+                                .withMappingKey(posEntity.getMappingKey());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
             }
         };
-    }
-
-    public static IPaymentDto toDto(final Payment _entity)
-    {
-        return null;
     }
 
     public static TaxEntry toEntity(final TaxEntryDto _dto)
