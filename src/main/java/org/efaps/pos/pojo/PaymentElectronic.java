@@ -110,4 +110,10 @@ public class PaymentElectronic
         this.equipmentIdent = equipmentIdent;
         return this;
     }
+
+    @Override
+    public String getLabel()
+    {
+        return cardLabel;
+    }
 }

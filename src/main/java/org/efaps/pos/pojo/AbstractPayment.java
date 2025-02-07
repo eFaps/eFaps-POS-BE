@@ -115,13 +115,6 @@ public abstract class AbstractPayment
     }
 
     @Override
-    public String getLabel()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public BigDecimal getAmount()
     {
         return amount;

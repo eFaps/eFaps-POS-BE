@@ -25,4 +25,10 @@ public class PaymentCash
     {
         setType(PaymentType.CASH);
     }
+
+    @Override
+    public String getLabel()
+    {
+        return null;
+    }
 }

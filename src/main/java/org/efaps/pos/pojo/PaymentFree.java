@@ -23,4 +23,10 @@ public class PaymentFree extends AbstractPayment
     {
         setType(PaymentType.FREE);
     }
+
+    @Override
+    public String getLabel()
+    {
+        return null;
+    }
 }

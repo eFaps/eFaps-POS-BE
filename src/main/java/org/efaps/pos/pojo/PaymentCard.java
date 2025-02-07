@@ -23,4 +23,10 @@ public class PaymentCard extends AbstractPayment
     {
         setType(PaymentType.CARD);
     }
+
+    @Override
+    public String getLabel()
+    {
+        return null;
+    }
 }

@@ -74,4 +74,10 @@ public class PaymentLoyaltyPoints
         this.pointsAmount = pointsAmount;
         return this;
     }
+
+    @Override
+    public String getLabel()
+    {
+        return mappingKey;
+    }
 }
