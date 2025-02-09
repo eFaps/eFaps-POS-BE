@@ -434,56 +434,58 @@ public final class Converter
 
     public static ProductDto toDto(final Product entity)
     {
+        if (entity == null) {
+            return null;
+        }
         final var prices = INSTANCE.productService.evalPrices(entity);
-        return entity == null ? null
-                        : ProductDto.builder()
-                                        .withSKU(entity.getSKU())
-                                        .withType(entity.getType())
-                                        .withDescription(entity.getDescription())
-                                        .withNote(entity.getNote())
-                                        .withImageOid(entity.getImageOid())
-                                        .withOID(entity.getOid())
-                                        .withNetPrice(prices.getLeft())
-                                        .withCrossPrice(prices.getRight())
-                                        .withCurrency(entity.getCurrency())
-                                        .withCategories(entity.getCategories() == null ? null
-                                                        : entity.getCategories().stream()
-                                                                        .map(Converter::toDto)
-                                                                        .collect(Collectors.toSet()))
+        return ProductDto.builder()
+                        .withSKU(entity.getSKU())
+                        .withType(entity.getType())
+                        .withDescription(entity.getDescription())
+                        .withNote(entity.getNote())
+                        .withImageOid(entity.getImageOid())
+                        .withOID(entity.getOid())
+                        .withNetPrice(prices.getLeft())
+                        .withCrossPrice(prices.getRight())
+                        .withCurrency(entity.getCurrency())
+                        .withCategories(entity.getCategories() == null ? null
+                                        : entity.getCategories().stream()
+                                                        .map(Converter::toDto)
+                                                        .collect(Collectors.toSet()))
 
-                                        .withTaxes(entity.getTaxes() == null ? null
-                                                        : entity.getTaxes().stream().map(Converter::toDto)
-                                                                        .collect(Collectors.toSet()))
-                                        .withUoM(entity.getUoM())
-                                        .withUoMCode(entity.getUoMCode())
-                                        .withRelations(entity.getRelations() == null ? null
-                                                        : entity.getRelations().stream().map(Converter::toDto)
-                                                                        .collect(Collectors.toSet()))
-                                        .withIndicationSets(entity.getIndicationSets() == null ? null
-                                                        : entity.getIndicationSets().stream().map(Converter::toDto)
-                                                                        .collect(Collectors.toSet()))
-                                        .withBarcodes(entity.getBarcodes() == null ? null
-                                                        : entity.getBarcodes().stream().map(Converter::toDto)
-                                                                        .collect(Collectors.toSet()))
-                                        .withBomGroupConfigs(entity.getBomGroupConfigs() == null ? null
-                                                        : entity.getBomGroupConfigs().stream()
-                                                                        .sorted((arg,
-                                                                                 arg1) -> Integer.valueOf(
-                                                                                                 arg.getWeight())
-                                                                                                 .compareTo(arg1.getWeight()))
-                                                                        .map(Converter::toDto)
-                                                                        .collect(Collectors.toSet()))
-                                        .withConfigurationBOMs(entity.getConfigurationBOMs() == null ? null
-                                                        : entity.getConfigurationBOMs()
-                                                                        .stream()
-                                                                        .sorted((arg,
-                                                                                 arg1) -> Integer.valueOf(
-                                                                                                 arg.getPosition())
-                                                                                                 .compareTo(arg1.getPosition()))
-                                                                        .map(Converter::toDto)
-                                                                        .collect(Collectors.toSet()))
-                                        .withIndividual(entity.getIndividual())
-                                        .build();
+                        .withTaxes(entity.getTaxes() == null ? null
+                                        : entity.getTaxes().stream().map(Converter::toDto)
+                                                        .collect(Collectors.toSet()))
+                        .withUoM(entity.getUoM())
+                        .withUoMCode(entity.getUoMCode())
+                        .withRelations(entity.getRelations() == null ? null
+                                        : entity.getRelations().stream().map(Converter::toDto)
+                                                        .collect(Collectors.toSet()))
+                        .withIndicationSets(entity.getIndicationSets() == null ? null
+                                        : entity.getIndicationSets().stream().map(Converter::toDto)
+                                                        .collect(Collectors.toSet()))
+                        .withBarcodes(entity.getBarcodes() == null ? null
+                                        : entity.getBarcodes().stream().map(Converter::toDto)
+                                                        .collect(Collectors.toSet()))
+                        .withBomGroupConfigs(entity.getBomGroupConfigs() == null ? null
+                                        : entity.getBomGroupConfigs().stream()
+                                                        .sorted((arg,
+                                                                 arg1) -> Integer.valueOf(
+                                                                                 arg.getWeight())
+                                                                                 .compareTo(arg1.getWeight()))
+                                                        .map(Converter::toDto)
+                                                        .collect(Collectors.toSet()))
+                        .withConfigurationBOMs(entity.getConfigurationBOMs() == null ? null
+                                        : entity.getConfigurationBOMs()
+                                                        .stream()
+                                                        .sorted((arg,
+                                                                 arg1) -> Integer.valueOf(
+                                                                                 arg.getPosition())
+                                                                                 .compareTo(arg1.getPosition()))
+                                                        .map(Converter::toDto)
+                                                        .collect(Collectors.toSet()))
+                        .withIndividual(entity.getIndividual())
+                        .build();
     }
 
     public static BOMGroupConfigDto toDto(final BOMGroupConfig entity)
