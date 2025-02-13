@@ -15,6 +15,8 @@
  */
 package org.efaps.pos.dto;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -31,4 +33,6 @@ public interface IPosPaymentDto
     extends IPaymentDto
 {
     String getCollectOrderId();
+
+    BigDecimal getAmount();
 }

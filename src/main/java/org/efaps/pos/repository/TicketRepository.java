@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.repository;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 import org.efaps.pos.entity.Ticket;
@@ -30,4 +31,6 @@ public interface TicketRepository
     Collection<Ticket> findByBalanceOid(String _balanceOid);
 
     Collection<Ticket> findByNumberLikeIgnoreCase(String _term);
+
+    Collection<Ticket> findByDate(LocalDate date);
 }

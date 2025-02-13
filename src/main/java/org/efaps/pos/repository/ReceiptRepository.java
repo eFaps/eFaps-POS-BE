@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.repository;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 import org.efaps.pos.entity.Receipt;
@@ -30,4 +31,6 @@ public interface ReceiptRepository
     Collection<Receipt> findByBalanceOid(String _balanceOid);
 
     Collection<Receipt> findByNumberLikeIgnoreCase(String _term);
+
+    Collection<Receipt> findByDate(LocalDate date);
 }

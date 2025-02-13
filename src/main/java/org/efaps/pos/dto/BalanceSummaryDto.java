@@ -18,6 +18,11 @@ package org.efaps.pos.dto;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(builder = BalanceSummaryDto.Builder.class)
 public class BalanceSummaryDto
 {
 
@@ -29,17 +34,19 @@ public class BalanceSummaryDto
     private final BalanceSummaryDetailDto receiptDetail;
     private final BalanceSummaryDetailDto ticketDetail;
     private final BalanceSummaryDetailDto creditNoteDetail;
+    private final List<BalanceSummaryPaymentsDto> paymentDetails;
 
-    private BalanceSummaryDto(final Builder builder)
+    private BalanceSummaryDto(Builder builder)
     {
-        balance = builder.balance;
-        user = builder.user;
-        cashEntries = builder.cashEntries;
-        detail = builder.detail;
-        invoiceDetail = builder.invoiceDetail;
-        receiptDetail = builder.receiptDetail;
-        ticketDetail = builder.ticketDetail;
-        creditNoteDetail=builder.creditNoteDetail;
+        this.balance = builder.balance;
+        this.user = builder.user;
+        this.cashEntries = builder.cashEntries;
+        this.detail = builder.detail;
+        this.invoiceDetail = builder.invoiceDetail;
+        this.receiptDetail = builder.receiptDetail;
+        this.ticketDetail = builder.ticketDetail;
+        this.creditNoteDetail = builder.creditNoteDetail;
+        this.paymentDetails = builder.paymentDetails;
     }
 
     public BalanceDto getBalance()
@@ -82,6 +89,12 @@ public class BalanceSummaryDto
         return creditNoteDetail;
     }
 
+    @JsonInclude(Include.NON_NULL)
+    public List<BalanceSummaryPaymentsDto> getPaymentDetails()
+    {
+        return paymentDetails;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -98,56 +111,63 @@ public class BalanceSummaryDto
         private BalanceSummaryDetailDto receiptDetail;
         private BalanceSummaryDetailDto ticketDetail;
         private BalanceSummaryDetailDto creditNoteDetail;
+        private List<BalanceSummaryPaymentsDto> paymentDetails = Collections.emptyList();
 
         private Builder()
         {
         }
 
-        public Builder withBalance(final BalanceDto balance)
+        public Builder withBalance(BalanceDto balance)
         {
             this.balance = balance;
             return this;
         }
 
-        public Builder withUser(final PosUserDto user)
+        public Builder withUser(PosUserDto user)
         {
             this.user = user;
             return this;
         }
 
-        public Builder withCashEntries(final List<CashEntryDto> cashEntries)
+        public Builder withCashEntries(List<CashEntryDto> cashEntries)
         {
             this.cashEntries = cashEntries;
             return this;
         }
 
-        public Builder withDetail(final BalanceSummaryDetailDto detail)
+        public Builder withDetail(BalanceSummaryDetailDto detail)
         {
             this.detail = detail;
             return this;
         }
 
-        public Builder withInvoiceDetail(final BalanceSummaryDetailDto invoiceDetail)
+        public Builder withInvoiceDetail(BalanceSummaryDetailDto invoiceDetail)
         {
             this.invoiceDetail = invoiceDetail;
             return this;
         }
 
-        public Builder withReceiptDetail(final BalanceSummaryDetailDto receiptDetail)
+        public Builder withReceiptDetail(BalanceSummaryDetailDto receiptDetail)
         {
             this.receiptDetail = receiptDetail;
             return this;
         }
 
-        public Builder withTicketDetail(final BalanceSummaryDetailDto ticketDetail)
+        public Builder withTicketDetail(BalanceSummaryDetailDto ticketDetail)
         {
             this.ticketDetail = ticketDetail;
             return this;
         }
 
-        public Builder withCreditNoteDetaill(final BalanceSummaryDetailDto creditNoteDetail)
+        public Builder withCreditNoteDetail(BalanceSummaryDetailDto creditNoteDetail)
         {
             this.creditNoteDetail = creditNoteDetail;
+            return this;
+        }
+
+        public Builder withPaymentDetails(List<BalanceSummaryPaymentsDto> paymentDetails)
+        {
+            this.paymentDetails = paymentDetails;
             return this;
         }
 

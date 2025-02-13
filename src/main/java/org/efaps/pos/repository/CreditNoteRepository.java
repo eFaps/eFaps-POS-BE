@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.repository;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,4 +30,6 @@ public interface CreditNoteRepository
     Collection<CreditNote> findByOidIsNull();
 
     Collection<CreditNote> findByBalanceOid(String _balanceOid);
+
+    Collection<CreditNote> findByDate(LocalDate date);
 }

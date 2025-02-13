@@ -26,10 +26,15 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.dto.BalanceSummaryDetailDto;
 import org.efaps.pos.dto.BalanceSummaryDto;
+import org.efaps.pos.dto.BalanceSummaryPaymentDetailDto;
+import org.efaps.pos.dto.BalanceSummaryPaymentsDto;
 import org.efaps.pos.dto.CashEntryDto;
+import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PaymentInfoDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.TaxEntryDto;
@@ -74,7 +79,8 @@ public class BalanceService
         userService = _userService;
     }
 
-    public Optional<Balance> getCurrent(final User _principal, final boolean _createNew)
+    public Optional<Balance> getCurrent(final User _principal,
+                                        final boolean _createNew)
     {
         final Optional<Balance> ret;
         final Optional<Balance> balanceOpt = repository.findOneByUserOidAndStatus(_principal.getOid(),
@@ -108,9 +114,10 @@ public class BalanceService
         return ret;
     }
 
-    public BalanceSummaryDto getSummary(final String _balanceId)
+    public BalanceSummaryDto getSummary(final String balanceId,
+                                        final boolean detailed)
     {
-        final Balance balance = repository.findById(_balanceId).orElseThrow();
+        final Balance balance = repository.findById(balanceId).orElseThrow();
 
         final PosUserDto user = Converter.toDto(userService.getUserByOid(balance.getUserOid()));
 
@@ -131,11 +138,11 @@ public class BalanceService
                         : balance.getOid());
 
         creditNotes.forEach(nc -> {
-           nc.setCrossTotal(nc.getCrossTotal().negate());
-           nc.setNetTotal(nc.getNetTotal().negate());
-           nc.getTaxes().forEach(tax -> {
-              tax.setAmount(tax.getAmount().negate());
-           });
+            nc.setCrossTotal(nc.getCrossTotal().negate());
+            nc.setNetTotal(nc.getNetTotal().negate());
+            nc.getTaxes().forEach(tax -> {
+                tax.setAmount(tax.getAmount().negate());
+            });
         });
 
         final List<AbstractPayableDocument<?>> all = new ArrayList<>();
@@ -157,8 +164,9 @@ public class BalanceService
                         .withReceiptDetail(receiptDetail)
                         .withInvoiceDetail(invoiceDetail)
                         .withTicketDetail(ticketDetail)
-                        .withCreditNoteDetaill(creditNoteDetail)
+                        .withCreditNoteDetail(creditNoteDetail)
                         .withBalance(Converter.toBalanceDto(balance))
+                        .withPaymentDetails(detailed ? getPaymentDetail(all) : null)
                         .build();
     }
 
@@ -258,8 +266,41 @@ public class BalanceService
         }
         return PaymentGroup.builder()
                         .withType(_payment.getType())
-                        .withLabel(label ==null ? _payment.getLabel() : label)
+                        .withLabel(label == null ? _payment.getLabel() : label)
                         .build();
+    }
+
+    protected List<BalanceSummaryPaymentsDto> getPaymentDetail(final List<AbstractPayableDocument<?>> allPayables)
+    {
+        final MultiValuedMap<PaymentGroup, BalanceSummaryPaymentDetailDto> values = new ArrayListValuedHashMap<>();
+        for (final var payableDocument : allPayables) {
+            for (final var payment : payableDocument.getPayments()) {
+                final var bldr = BalanceSummaryPaymentDetailDto.builder();
+                if (payableDocument instanceof Receipt) {
+                    bldr.withPayableType(DocType.RECEIPT);
+                } else if (payableDocument instanceof Invoice) {
+                    bldr.withPayableType(DocType.INVOICE);
+                } else if (payableDocument instanceof Ticket) {
+                    bldr.withPayableType(DocType.TICKET);
+                } else if (payableDocument instanceof CreditNote) {
+                    bldr.withPayableType(DocType.CREDITNOTE);
+                }
+                final var paymentGroup = getPaymentGroup(payment);
+                values.put(paymentGroup, bldr
+                                .withPayableNumber(payableDocument.getNumber())
+                                .withPayment(Converter.toPosDto(payment))
+                                .build());
+            }
+        }
+        final List<BalanceSummaryPaymentsDto> paymentsDtos = new ArrayList<>();
+        for (final var entry : values.asMap().entrySet()) {
+            paymentsDtos.add(BalanceSummaryPaymentsDto.builder()
+                            .withType(entry.getKey().getType())
+                            .withLabel(entry.getKey().getLabel())
+                            .withDetails(entry.getValue())
+                            .build());
+        }
+        return paymentsDtos;
     }
 
     public List<Balance> getBalances()
@@ -267,7 +308,8 @@ public class BalanceService
         return repository.findAll();
     }
 
-    public void addCashEntries(final String _id, final List<CashEntryDto> cashEntries)
+    public void addCashEntries(final String _id,
+                               final List<CashEntryDto> cashEntries)
     {
         final var entities = cashEntries.stream()
                         .filter(dto -> dto.getAmount() != null)

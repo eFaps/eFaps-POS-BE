@@ -76,16 +76,16 @@ public class BalanceController
     }
 
     @GetMapping(path = "{id}/summary", produces = MediaType.APPLICATION_JSON_VALUE)
-    public BalanceSummaryDto getSummary(@PathVariable("id") final String _balanceId)
+    public BalanceSummaryDto getSummary(@PathVariable("id") final String balanceId)
     {
-        return balanceService.getSummary(_balanceId);
+        return balanceService.getSummary(balanceId, false);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PosBalanceDto> getBalances()
     {
         return balanceService.getBalances().stream()
-                        .map(balance -> Converter.toDto(balance))
+                        .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 

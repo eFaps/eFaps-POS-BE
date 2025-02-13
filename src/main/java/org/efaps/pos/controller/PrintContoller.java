@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.efaps.pos.service.BalanceService;
 import org.efaps.pos.service.DocumentService;
 import org.efaps.pos.service.JobService;
 import org.efaps.pos.service.PrintService;
+import org.efaps.pos.service.ReportService;
 import org.efaps.pos.service.WorkspaceService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -52,18 +54,21 @@ public class PrintContoller
     private final WorkspaceService workspaceService;
     private final DocumentService documentService;
     private final BalanceService balanceService;
+    private final ReportService reportService;
     private final JobService jobService;
     private final PrintService printService;
 
     public PrintContoller(final WorkspaceService _workspaceService,
                           final DocumentService _service,
                           final BalanceService _balanceService,
+                          final ReportService reportService,
                           final JobService _jobService,
                           final PrintService _printService)
     {
         workspaceService = _workspaceService;
         documentService = _service;
         balanceService = _balanceService;
+        this.reportService = reportService;
         jobService = _jobService;
         printService = _printService;
     }
@@ -166,25 +171,48 @@ public class PrintContoller
     }
 
     @PostMapping(path = "balance", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PrintResponseDto> printBalance(final Authentication _authentication,
-                                           @RequestParam(name = "workspaceOid") final String _workspaceOid,
-                                           @RequestParam(name = "balanceId") final String _balanceId)
+    public List<PrintResponseDto> printBalance(final Authentication authentication,
+                                               @RequestParam(name = "workspaceOid") final String workspaceOid,
+                                               @RequestParam(name = "balanceId") final String balanceId,
+                                               @RequestParam(name = "detailed", required = false) final boolean detailed)
     {
         final List<PrintResponseDto> ret = new ArrayList<>();
-        final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
-                        _workspaceOid);
+        final Workspace workspace = workspaceService.getWorkspace((User) authentication.getPrincipal(),
+                        workspaceOid);
 
-        final BalanceSummaryDto summary = balanceService.getSummary(_balanceId);
+        final BalanceSummaryDto summary = balanceService.getSummary(balanceId, detailed);
 
         workspace.getPrintCmds().stream()
-            .filter(printCmd -> PrintTarget.BALANCE.equals(printCmd.getTarget()))
-            .forEach(printCmd -> {
-                final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd.getPrinterOid(),
-                                printCmd.getReportOid(), summary);
-                if (responseOpt.isPresent()) {
-                    ret.add(responseOpt.get());
-                }
-            });
+                        .filter(printCmd -> PrintTarget.BALANCE.equals(printCmd.getTarget()))
+                        .forEach(printCmd -> {
+                            final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd.getPrinterOid(),
+                                            printCmd.getReportOid(), summary);
+                            if (responseOpt.isPresent()) {
+                                ret.add(responseOpt.get());
+                            }
+                        });
+        return ret;
+    }
+
+    @PostMapping(path = "sales-report", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PrintResponseDto> printSalesReport(final Authentication authentication,
+                                                   @RequestParam(name = "workspaceOid") final String workspaceOid,
+                                                   @RequestParam(name = "date") final LocalDate date)
+    {
+        final List<PrintResponseDto> ret = new ArrayList<>();
+        final Workspace workspace = workspaceService.getWorkspace((User) authentication.getPrincipal(), workspaceOid);
+
+        final var content = reportService.getSalesReport(date);
+
+        workspace.getPrintCmds().stream()
+                        .filter(printCmd -> PrintTarget.SALESREPORT.equals(printCmd.getTarget()))
+                        .forEach(printCmd -> {
+                            final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd.getPrinterOid(),
+                                            printCmd.getReportOid(), content);
+                            if (responseOpt.isPresent()) {
+                                ret.add(responseOpt.get());
+                            }
+                        });
         return ret;
     }
 
