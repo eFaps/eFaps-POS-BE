@@ -15,10 +15,11 @@
  */
 package org.efaps.pos.repository;
 
-import java.util.Collection;
 import java.util.Optional;
 
 import org.efaps.pos.entity.PromotionInfo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface PromotionInfoRepository
@@ -26,5 +27,5 @@ public interface PromotionInfoRepository
 {
     Optional<PromotionInfo> findOneByDocumentId(String documentId);
 
-    Collection<PromotionInfo> findByOidIsNull();
+    Page<PromotionInfo> findByOidIsNull(Pageable pageable);
 }
