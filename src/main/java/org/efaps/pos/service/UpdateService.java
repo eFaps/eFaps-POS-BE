@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.examples.Expander;
 import org.apache.commons.io.FileUtils;
+import org.efaps.pos.Application;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.UpdateDto;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ public class UpdateService
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateService.class);
+
 
     private final EFapsClient eFapsClient;
 
@@ -54,18 +56,23 @@ public class UpdateService
                 if (checkout != null) {
                     final var targetPath = basePath.resolve(instruction.getTargetPath()).normalize();
                     LOG.info("targetPath: {}", targetPath);
-                        final var localFile = new File(targetPath.toFile(), checkout.getFilename());
-                        if (!localFile.exists()) {
-                            FileUtils.createParentDirectories(localFile);
-                            Files.createFile(localFile.toPath());
-                            Files.write(localFile.toPath(), checkout.getContent());
-                        }
-                        if (instruction.isExpand()) {
-                            new Expander().expand(localFile.toPath(), targetPath);
-                            Files.delete(localFile.toPath());
-                        }
+                    final var localFile = new File(targetPath.toFile(), checkout.getFilename());
+                    if (!localFile.exists()) {
+                        FileUtils.createParentDirectories(localFile);
+                        Files.createFile(localFile.toPath());
+                        Files.write(localFile.toPath(), checkout.getContent());
+                    }
+                    if (instruction.isExpand()) {
+                        new Expander().expand(localFile.toPath(), targetPath);
+                        Files.delete(localFile.toPath());
+                    }
                 }
             }
         }
+    }
+
+    public void restart()
+    {
+        Application.restart();
     }
 }

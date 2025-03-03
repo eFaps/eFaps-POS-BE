@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(IApi.BASEPATH + "print")
 public class PrintContoller
 {
+
     private final WorkspaceService workspaceService;
     private final DocumentService documentService;
     private final BalanceService balanceService;
@@ -73,8 +74,7 @@ public class PrintContoller
         printService = _printService;
     }
 
-    @GetMapping(path = "/preview/{key}",
-                    produces = { MediaType.IMAGE_PNG_VALUE })
+    @GetMapping(path = "/preview/{key}", produces = { MediaType.IMAGE_PNG_VALUE })
     public ResponseEntity<byte[]> getPreview(@PathVariable("key") final String _key)
     {
         final byte[] data = printService.getPreview(_key);
@@ -106,8 +106,8 @@ public class PrintContoller
 
     @PostMapping(path = "preliminary", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PrintResponseDto> printPreliminary(final Authentication _authentication,
-                                           @RequestParam(name = "workspaceOid") final String _workspaceOid,
-                                           @RequestParam(name = "documentId") final String _documentId)
+                                                   @RequestParam(name = "workspaceOid") final String _workspaceOid,
+                                                   @RequestParam(name = "documentId") final String _documentId)
     {
         final List<PrintResponseDto> ret = new ArrayList<>();
         final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
@@ -116,20 +116,20 @@ public class PrintContoller
         final AbstractDocument<?> document = documentService.getDocument(_documentId);
 
         workspace.getPrintCmds().stream()
-            .filter(printCmd -> PrintTarget.PRELIMINARY.equals(printCmd.getTarget()))
-            .forEach(printCmd -> {
-                final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd, document);
-                if (responseOpt.isPresent()) {
-                    ret.add(responseOpt.get());
-                }
-            });
+                        .filter(printCmd -> PrintTarget.PRELIMINARY.equals(printCmd.getTarget()))
+                        .forEach(printCmd -> {
+                            final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd, document);
+                            if (responseOpt.isPresent()) {
+                                ret.add(responseOpt.get());
+                            }
+                        });
         return ret;
     }
 
     @PostMapping(path = "copy", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PrintResponseDto> printCopy(final Authentication _authentication,
-                                           @RequestParam(name = "workspaceOid") final String _workspaceOid,
-                                           @RequestParam(name = "documentId") final String _documentId)
+                                            @RequestParam(name = "workspaceOid") final String _workspaceOid,
+                                            @RequestParam(name = "documentId") final String _documentId)
     {
         final List<PrintResponseDto> ret = new ArrayList<>();
         final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
@@ -138,20 +138,20 @@ public class PrintContoller
         final AbstractDocument<?> document = documentService.getDocument(_documentId);
 
         workspace.getPrintCmds().stream()
-            .filter(printCmd -> PrintTarget.COPY.equals(printCmd.getTarget()))
-            .forEach(printCmd -> {
-                final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd, document);
-                if (responseOpt.isPresent()) {
-                    ret.add(responseOpt.get());
-                }
-            });
+                        .filter(printCmd -> PrintTarget.COPY.equals(printCmd.getTarget()))
+                        .forEach(printCmd -> {
+                            final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd, document);
+                            if (responseOpt.isPresent()) {
+                                ret.add(responseOpt.get());
+                            }
+                        });
         return ret;
     }
 
     @PostMapping(path = "ticket", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PrintResponseDto> printTicket(final Authentication _authentication,
-                                           @RequestParam(name = "workspaceOid") final String _workspaceOid,
-                                           @RequestParam(name = "documentId") final String _documentId)
+                                              @RequestParam(name = "workspaceOid") final String _workspaceOid,
+                                              @RequestParam(name = "documentId") final String _documentId)
     {
         final List<PrintResponseDto> ret = new ArrayList<>();
         final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
@@ -160,13 +160,13 @@ public class PrintContoller
         final AbstractDocument<?> document = documentService.getDocument(_documentId);
 
         workspace.getPrintCmds().stream()
-            .filter(printCmd -> PrintTarget.TICKET.equals(printCmd.getTarget()))
-            .forEach(printCmd -> {
-                final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd, document);
-                if (responseOpt.isPresent()) {
-                    ret.add(responseOpt.get());
-                }
-            });
+                        .filter(printCmd -> PrintTarget.TICKET.equals(printCmd.getTarget()))
+                        .forEach(printCmd -> {
+                            final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd, document);
+                            if (responseOpt.isPresent()) {
+                                ret.add(responseOpt.get());
+                            }
+                        });
         return ret;
     }
 
@@ -183,7 +183,9 @@ public class PrintContoller
         final BalanceSummaryDto summary = balanceService.getSummary(balanceId, detailed);
 
         workspace.getPrintCmds().stream()
-                        .filter(printCmd -> PrintTarget.BALANCE.equals(printCmd.getTarget()))
+                        .filter(printCmd -> (detailed
+                                        ? PrintTarget.BALANCE_DETAILED.equals(printCmd.getTarget())
+                                        : PrintTarget.BALANCE.equals(printCmd.getTarget())))
                         .forEach(printCmd -> {
                             final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd.getPrinterOid(),
                                             printCmd.getReportOid(), summary);
