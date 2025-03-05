@@ -54,13 +54,46 @@ public class PosFileService
         this.configService = configService;
     }
 
-    public void syncFiles()
+    public boolean syncFiles()
     {
         final var active = BooleanUtils.toBoolean(configService.getSystemConfig(ConfigService.FILE_ACTIVATE));
         if (active) {
             LOG.info("Syncing Files");
             final var files = eFapsClient.getFiles();
             files.forEach(this::ensureFile);
+            clean(files);
+        }
+        return active;
+    }
+
+    protected void clean(List<FileDto> files)
+    {
+        if (!files.isEmpty()) {
+            final var existingFiles = posFileRepository.findAll();
+            existingFiles.forEach(existing -> {
+                if (!files.stream().filter(file -> file.getOid().equals(existing.getOid())).findFirst()
+                                .isPresent()) {
+                    removeFile(existing);
+                    posFileRepository.delete(existing);
+                }
+            });
+        }
+    }
+
+    protected void removeFile(final PosFile posFile)
+    {
+        if (configProperties.getBeInst().getFileConfig().getLocationUri() != null) {
+            final var fileName = evalFileName(posFile);
+            final var folderUri = configProperties.getBeInst().getFileConfig().getLocationUri();
+            try {
+                final var localFile = new File(folderUri.toURL().getFile() + fileName);
+                LOG.debug("Checking file for delete: {}", localFile);
+                if (localFile.exists()) {
+                    localFile.delete();
+                }
+            } catch (final IOException e) {
+                LOG.error("Something went wrong", e);
+            }
         }
     }
 

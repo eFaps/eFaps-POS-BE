@@ -872,9 +872,14 @@ public class SyncService
         registerSync(StashId.EMPLOYEESYNC);
     }
 
-    public void syncPosFiles()
+    public void syncPosFiles() throws SyncServiceDeactivatedException
     {
-        posFileService.syncFiles();
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
+        if (posFileService.syncFiles()) {
+            registerSync(StashId.POSFILESYNC);
+        }
     }
 
     public void registerSync(final StashId _stashId)
@@ -882,12 +887,12 @@ public class SyncService
         registerSync(_stashId.getKey());
     }
 
-    private void registerSync(final String _id)
+    private void registerSync(final String id)
     {
-        SyncInfo syncInfo = mongoTemplate.findById(_id, SyncInfo.class);
+        SyncInfo syncInfo = mongoTemplate.findById(id, SyncInfo.class);
         if (syncInfo == null) {
             syncInfo = new SyncInfo();
-            syncInfo.setId(_id);
+            syncInfo.setId(id);
         }
         syncInfo.setLastSync(LocalDateTime.now());
         mongoTemplate.save(syncInfo);
