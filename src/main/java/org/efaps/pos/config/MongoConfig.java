@@ -178,7 +178,7 @@ public class MongoConfig
             final List<PromoDetailDto> details = new ArrayList<>();
             for (final var detailDoc : source.getList("details", Document.class)) {
                 details.add(PromoDetailDto.builder()
-                                .withIndex(detailDoc.getInteger("index"))
+                                .withPositionIndex(detailDoc.getInteger("positionIndex"))
                                 .withNetUnitDiscount(detailDoc.getString("netUnitDiscount") == null ? null
                                                 : new BigDecimal(detailDoc.getString("netUnitDiscount")))
                                 .withNetDiscount(detailDoc.getString("netDiscount") == null ? null
@@ -187,7 +187,7 @@ public class MongoConfig
                                                 : new BigDecimal(detailDoc.getString("crossUnitDiscount")))
                                 .withCrossDiscount(detailDoc.getString("crossDiscount") == null ? null
                                                 : new BigDecimal(detailDoc.getString("crossDiscount")))
-                                .withPromotionOids(detailDoc.getList("promotionOids", String.class))
+                                .withPromotionOid(detailDoc.getString("promotionOid"))
                                 .build());
 
             }
