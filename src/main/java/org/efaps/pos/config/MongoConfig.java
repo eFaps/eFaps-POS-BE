@@ -177,8 +177,9 @@ public class MongoConfig
         {
             final List<PromoDetailDto> details = new ArrayList<>();
             for (final var detailDoc : source.getList("details", Document.class)) {
+                final var index = ((Number) detailDoc.get("positionIndex")).intValue();
                 details.add(PromoDetailDto.builder()
-                                .withPositionIndex(detailDoc.getInteger("positionIndex"))
+                                .withPositionIndex(index)
                                 .withNetUnitDiscount(detailDoc.getString("netUnitDiscount") == null ? null
                                                 : new BigDecimal(detailDoc.getString("netUnitDiscount")))
                                 .withNetDiscount(detailDoc.getString("netDiscount") == null ? null
