@@ -1938,8 +1938,8 @@ public final class Converter
                         .withNetDiscount(detail.getNetDiscount())
                         .withCrossUnitDiscount(detail.getCrossUnitDiscount())
                         .withCrossDiscount(detail.getCrossDiscount())
-                        .withIndex(detail.getIndex())
-                        .withPromotionOids(detail.getPromotionOids())
+                        .withPositionIndex(detail.getPositionIndex())
+                        .withPromotionOid(detail.getPromotionOid())
                         .build();
     }
 

@@ -251,7 +251,7 @@ public class CalculatorService
                                 .withPromotionOids(info.getPromotionOids())
                                 .withDetails(info.getDetails().stream()
                                                 .map(pos -> PromoDetailDto.builder()
-                                                                .withIndex(pos.getIndex())
+                                                                .withPositionIndex(pos.getPositionIndex())
                                                                 .withNetBase(pos.getNetBase())
                                                                 .withNetUnitBase(pos.getNetUnitBase())
                                                                 .withNetDiscount(pos.getNetDiscount())
@@ -259,7 +259,7 @@ public class CalculatorService
                                                                 .withNetDiscount(pos.getNetDiscount())
                                                                 .withCrossUnitDiscount(pos.getCrossUnitDiscount())
                                                                 .withCrossDiscount(pos.getCrossDiscount())
-                                                                .withPromotionOids(pos.getPromotionOids())
+                                                                .withPromotionOid(pos.getPromotionOid())
                                                                 .build())
                                                 .toList())
                                 .build();

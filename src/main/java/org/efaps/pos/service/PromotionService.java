@@ -111,7 +111,7 @@ public class PromotionService
         final Set<String> promotionOids = new HashSet<>();
         promotionOids.addAll(promoInfo.getPromotionOids());
         promoInfo.getDetails().forEach(detail -> {
-            promotionOids.addAll(detail.getPromotionOids());
+            promotionOids.add(detail.getPromotionOid());
         });
         return promotionRepository.findAllById(promotionOids);
     }
