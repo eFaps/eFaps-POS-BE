@@ -336,7 +336,6 @@ public class CalculatorService
         sortedItems.sort(Comparator.comparing(Item::getIndex));
 
         final var calcDocument = new Document();
-        int i = 0;
         final var taxMap = new HashMap<String, org.efaps.pos.pojo.Tax>();
         for (final var item : sortedItems) {
             final var product = productService.getProduct(item.getProductOid());
@@ -354,7 +353,8 @@ public class CalculatorService
             if (item.getBomOid() != null) {
                 final var partList = productService.getProductByBomOid(item.getBomOid());
                 if (!ProductType.PARTLIST.equals(partList.getType())) {
-                    LOG.warn("BomOid {} send to Calculator leads to a product that is not a partlist", item.getBomOid());
+                    LOG.warn("BomOid {} send to Calculator leads to a product that is not a partlist",
+                                    item.getBomOid());
                 }
                 final var bomOpt = partList.getConfigurationBOMs().stream()
                                 .filter(bom -> bom.getOid().equals(item.getBomOid()))
@@ -384,7 +384,7 @@ public class CalculatorService
             calcDocument.addPosition(new Position()
                             .setNetUnitPrice(netUnitPrice)
                             .setTaxes(taxes)
-                            .setIndex(i++)
+                            .setIndex(item.getIndex())
                             .setProductOid(item.getProductOid())
                             .setQuantity(item.getQuantity()));
         }
@@ -393,26 +393,32 @@ public class CalculatorService
 
         calculate(calcDocument);
 
-        final var calcPosIter = calcDocument.getPositions().iterator();
         for (final var item : sortedItems) {
-            final var product = productService.getProduct(item.getProductOid());
-            final var calcPos = calcPosIter.next();
-            item.setNetUnitPrice(calcPos.getNetUnitPrice());
-            item.setNetPrice(calcPos.getNetPrice());
-            item.setCrossPrice(calcPos.getCrossPrice());
-            item.setCrossUnitPrice(calcPos.getCrossUnitPrice());
+            final var calculatedPositionOpt = calcDocument.getPositions().stream()
+                            .filter(pos -> (pos.getIndex() == item.getIndex()))
+                            .findFirst();
 
-            final var taxes = product.getTaxes().stream().map(tax -> {
-                final var calcTax = calcPos.getTaxes().stream()
-                                .filter(posTax -> posTax.getKey().equals(tax.getKey())).findFirst().get();
+            if (calculatedPositionOpt.isEmpty()) {
+                LOG.error("There is something wrong with the index");
+            } else {
+                final var product = productService.getProduct(item.getProductOid());
+                final var calculatedPosition = calculatedPositionOpt.get();
+                item.setNetUnitPrice(calculatedPosition.getNetUnitPrice());
+                item.setNetPrice(calculatedPosition.getNetPrice());
+                item.setCrossPrice(calculatedPosition.getCrossPrice());
+                item.setCrossUnitPrice(calculatedPosition.getCrossUnitPrice());
 
-                return new TaxEntry()
-                                .setAmount(calcTax.getAmount())
-                                .setBase(calcTax.getBase())
-                                .setCurrency(posDoc.getCurrency())
-                                .setTax(tax);
-            }).collect(Collectors.toSet());
-            item.setTaxes(taxes);
+                final var taxes = product.getTaxes().stream().map(tax -> {
+                    final var calcTax = calculatedPosition.getTaxes().stream()
+                                    .filter(posTax -> posTax.getKey().equals(tax.getKey())).findFirst().get();
+                    return new TaxEntry()
+                                    .setAmount(calcTax.getAmount())
+                                    .setBase(calcTax.getBase())
+                                    .setCurrency(posDoc.getCurrency())
+                                    .setTax(tax);
+                }).collect(Collectors.toSet());
+                item.setTaxes(taxes);
+            }
         }
         posDoc.setNetTotal(calcDocument.getNetTotal());
         posDoc.setCrossTotal(calcDocument.getCrossTotal());
