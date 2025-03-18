@@ -125,6 +125,7 @@ public class SyncService
     private final PromotionService promotionService;
     private final ProductService productService;
     private final PosFileService posFileService;
+    private final UpdateService updateService;
     private boolean deactivated;
 
     @Autowired
@@ -152,7 +153,8 @@ public class SyncService
                        final LogService logService,
                        final PromotionService promotionService,
                        final ProductService productService,
-                       final PosFileService posFileService)
+                       final PosFileService posFileService,
+                       final UpdateService updateService)
     {
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
@@ -179,6 +181,7 @@ public class SyncService
         this.promotionService = promotionService;
         this.productService = productService;
         this.posFileService = posFileService;
+        this.updateService = updateService;
     }
 
     public void runSyncJob(final String _methodName)
@@ -872,7 +875,8 @@ public class SyncService
         registerSync(StashId.EMPLOYEESYNC);
     }
 
-    public void syncPosFiles() throws SyncServiceDeactivatedException
+    public void syncPosFiles()
+        throws SyncServiceDeactivatedException
     {
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
@@ -880,6 +884,11 @@ public class SyncService
         if (posFileService.syncFiles()) {
             registerSync(StashId.POSFILESYNC);
         }
+    }
+
+    public void check4Update()
+    {
+        updateService.check4Update();
     }
 
     public void registerSync(final StashId _stashId)

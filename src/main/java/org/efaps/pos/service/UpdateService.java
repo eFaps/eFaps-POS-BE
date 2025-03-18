@@ -43,6 +43,18 @@ public class UpdateService
         this.eFapsClient = eFapsClient;
     }
 
+
+    public void check4Update() {
+        final var updateDto = eFapsClient.getUpdate();
+        LOG.info("updateDto: {}", updateDto);
+        try {
+            createStructure(updateDto);
+        } catch (IOException | ArchiveException e) {
+            LOG.error("Well ..no", e);
+        }
+
+    }
+
     public void createStructure(final UpdateDto update)
         throws IOException, ArchiveException
     {

@@ -313,6 +313,7 @@ public class ConfigProperties
         private String promotionPath;
         private String promotionInfoPath;
         private String filePath;
+        private String updatePath;
 
         private String reportToBasePath;
 
@@ -614,6 +615,16 @@ public class ConfigProperties
         public void setCreditnotePath(final String creditnotePath)
         {
             this.creditnotePath = creditnotePath;
+        }
+
+        public String getUpdatePath()
+        {
+            return updatePath;
+        }
+
+        public void setUpdatePath(final String updatePath)
+        {
+            this.updatePath = updatePath;
         }
     }
 

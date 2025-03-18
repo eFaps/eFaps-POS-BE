@@ -47,6 +47,7 @@ import org.efaps.pos.dto.ReportToBaseDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.StocktakingDto;
 import org.efaps.pos.dto.TicketDto;
+import org.efaps.pos.dto.UpdateDto;
 import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WarehouseDto;
 import org.efaps.pos.dto.WorkspaceDto;
@@ -393,6 +394,19 @@ public class EFapsClient
             ret = response.getBody();
         } catch (final IdentException e) {
             LOG.error("Catched error during get for ExchangeRateDto", e);
+        }
+        return ret;
+    }
+
+    public UpdateDto getUpdate()
+    {
+        UpdateDto ret = null;
+        try {
+            final var requestEntity = get(getEFapsConfig().getUpdatePath());
+            final var response = getRestTemplate().exchange(requestEntity, UpdateDto.class);
+            ret = response.getBody();
+        } catch (final IdentException e) {
+            LOG.error("Catched error during get for UpdateDto", e);
         }
         return ret;
     }
