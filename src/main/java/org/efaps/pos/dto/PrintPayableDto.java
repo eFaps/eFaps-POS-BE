@@ -32,7 +32,7 @@ public class PrintPayableDto
 
     private final AbstractPayableDocumentDto payable;
 
-    private final PosOrderDto order;
+    private final PrintPosOrderDto order;
 
     private final Map<String, Object> additionalInfo;
 
@@ -112,7 +112,7 @@ public class PrintPayableDto
 
         private DocType payableType;
         private AbstractPayableDocumentDto payable;
-        private PosOrderDto order;
+        private PrintPosOrderDto order;
         private Map<String, Object> additionalInfo = Collections.emptyMap();
         private String amountInWords;
         private LocalTime time;
@@ -135,7 +135,7 @@ public class PrintPayableDto
             return this;
         }
 
-        public Builder withOrder(PosOrderDto order)
+        public Builder withOrder(PrintPosOrderDto order)
         {
             this.order = order;
             return this;

@@ -83,6 +83,7 @@ import org.efaps.pos.dto.PosStocktakingDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.PrintCmdDto;
+import org.efaps.pos.dto.PrintPosOrderDto;
 import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
@@ -1965,6 +1966,38 @@ public final class Converter
                         .withFileName(entity.getFileName())
                         .withPath(path + fileName)
                         .withTags(entity.getTags())
+                        .build();
+    }
+
+    public static PrintPosOrderDto toPrintDto(final Order entity)
+    {
+        return (PrintPosOrderDto) PrintPosOrderDto.builder()
+                        .withId(entity.getId())
+                        .withOID(entity.getOid())
+                        .withNumber(entity.getNumber())
+                        .withContactOid(entity.getContactOid())
+                        .withCurrency(entity.getCurrency())
+                        .withExchangeRate(entity.getExchangeRate())
+                        .withDate(entity.getDate())
+                        .withItems(entity.getItems() == null ? Collections.emptySet()
+                                        : entity.getItems().stream().map(Converter::toDto)
+                                                        .collect(Collectors.toSet()))
+                        .withStatus(entity.getStatus())
+                        .withNetTotal(entity.getNetTotal())
+                        .withCrossTotal(entity.getCrossTotal())
+                        .withPayableAmount(entity.getPayableAmount())
+                        .withTaxes(entity.getTaxes() == null ? null
+                                        : entity.getTaxes().stream().map(Converter::toDto)
+                                                        .collect(Collectors.toSet()))
+                        .withSpot(toSpotDto(entity.getSpot()))
+                        .withDiscount(entity.getDiscount() == null ? null : toDto(entity.getDiscount()))
+                        .withNote(entity.getNote())
+                        .withPayableOid(entity.getPayableOid())
+                        .withShoutout(entity.getShoutout())
+                        .withEmployeeRelations(entity.getEmployeeRelations() == null ? Collections.emptySet()
+                                        : entity.getEmployeeRelations().stream().map(Converter::toDto)
+                                                        .collect(Collectors.toSet()))
+                        .withOrderOptionKey(entity.getOrderOptionKey())
                         .build();
     }
 }

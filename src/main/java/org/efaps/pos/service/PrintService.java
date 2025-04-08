@@ -167,7 +167,7 @@ public class PrintService
     {
         Object content;
         if (document instanceof Order) {
-            content = Converter.toDto((Order) document);
+            content = Converter.toPrintDto((Order) document);
         } else if (document instanceof AbstractPayableDocument) {
             final Map<String, Object> additionalInfo = new HashMap<>();
             for (final IPrintListener listener : printListeners) {
@@ -181,7 +181,7 @@ public class PrintService
                                             document.getCreatedDate() == null ? Instant.now()
                                                             : document.getCreatedDate(),
                                             ZoneId.of(configProperties.getBeInst().getTimeZone())))
-                            .withOrder(orderOpt.isEmpty() ? null : Converter.toDto(orderOpt.get()))
+                            .withOrder(orderOpt.isEmpty() ? null : Converter.toPrintDto(orderOpt.get()))
                             .withPromoInfo(promoInfo)
                             .withAmountInWords(getWordsForAmount(document.getCrossTotal()))
                             .withAdditionalInfo(additionalInfo)
