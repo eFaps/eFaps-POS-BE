@@ -101,7 +101,9 @@ public class JobServiceTest
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
-        final Collection<Job> jobs = jobService.createJobs(null, order);
+        final var workspace= new Workspace();
+
+        final Collection<Job> jobs = jobService.createJobs(workspace, order);
         assertTrue(jobs.isEmpty());
     }
 
@@ -115,7 +117,8 @@ public class JobServiceTest
         items.add(new Item().setProductOid("productOid"));
         final Order order = new Order().setItems(items);
 
-        final Collection<Job> jobs = jobService.createJobs(null, order);
+        final var workspace= new Workspace();
+        final Collection<Job> jobs = jobService.createJobs(workspace, order);
         assertTrue(jobs.isEmpty());
     }
 
