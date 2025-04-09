@@ -300,6 +300,7 @@ public class BalanceService
             paymentsDtos.add(BalanceSummaryPaymentsDto.builder()
                             .withType(entry.getKey().getType())
                             .withLabel(entry.getKey().getLabel())
+                            .withCurrency(entry.getKey().getCurrency())
                             .withDetails(entry.getValue())
                             .build());
         }
