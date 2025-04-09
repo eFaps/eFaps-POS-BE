@@ -63,7 +63,7 @@ public class ReportService
         this.ticketRepository = ticketRepository;
     }
 
-    public Object getSalesReport(final LocalDate date)
+    public SalesReportDto getSalesReport(final LocalDate date)
     {
         final List<AbstractPayableDocument<?>> payables = new ArrayList<>();
         payables.addAll(creditNoteRepository.findByDate(date));
@@ -112,6 +112,7 @@ public class ReportService
             infos.add(SalesReportInfoDto.builder()
                             .withType(entry.getKey().getType())
                             .withLabel(entry.getKey().getLabel())
+                            .withCurrency(entry.getKey().getCurrency())
                             .withCount(entry.getValue().size())
                             .withAmount(amount)
                             .build());
