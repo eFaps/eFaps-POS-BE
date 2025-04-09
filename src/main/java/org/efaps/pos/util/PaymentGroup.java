@@ -16,20 +16,27 @@
 package org.efaps.pos.util;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
+import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.PaymentInfoDto;
 import org.efaps.pos.dto.PaymentType;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(builder = PaymentGroup.Builder.class)
 public class PaymentGroup
 {
 
     private final PaymentType type;
-    private String label;
+    private final String label;
+    private final Currency currency;
 
-    private PaymentGroup(final Builder _builder)
+    private PaymentGroup(Builder builder)
     {
-        type = _builder.type;
-        label = _builder.label == null ? "" : _builder.label;
+        this.type = builder.type;
+        this.label = builder.label;
+        this.currency = builder.currency;
     }
 
     public PaymentType getType()
@@ -42,17 +49,20 @@ public class PaymentGroup
         return label;
     }
 
-    public void setLabel(final String label)
+    public Currency getCurrency()
     {
-        this.label = label;
+        return currency;
     }
 
-    public PaymentInfoDto getInfo(final int _count, final BigDecimal _amount) {
+    public PaymentInfoDto getInfo(final int count,
+                                  final BigDecimal amount)
+    {
         return PaymentInfoDto.builder()
-                        .withCount(_count)
-                        .withAmount(_amount)
+                        .withCount(count)
+                        .withAmount(amount)
                         .withLabel(label)
                         .withType(type)
+                        .withCurrency(currency)
                         .build();
     }
 
@@ -60,9 +70,10 @@ public class PaymentGroup
     public boolean equals(final Object _obj)
     {
         boolean ret = false;
-        if (_obj instanceof PaymentGroup) {
-            final PaymentGroup other = (PaymentGroup) _obj;
-            ret = other.type.equals(type) && other.label.equals(label);
+        if (_obj instanceof final PaymentGroup other) {
+            ret = other.type.equals(type)
+                            && Objects.equals(other.label, label)
+                            && Objects.equals(other.currency, currency);
         } else {
             ret = super.equals(_obj);
         }
@@ -72,9 +83,8 @@ public class PaymentGroup
     @Override
     public int hashCode()
     {
-        return type.hashCode() + label.hashCode();
+        return type.hashCode() + (label == null ? 0 : label.hashCode()) + currency.hashCode();
     }
-
 
     public static Builder builder()
     {
@@ -86,6 +96,7 @@ public class PaymentGroup
 
         private PaymentType type;
         private String label;
+        private Currency currency = Currency.PEN;
 
         public Builder withType(final PaymentType _type)
         {
@@ -96,6 +107,12 @@ public class PaymentGroup
         public Builder withLabel(final String label)
         {
             this.label = label;
+            return this;
+        }
+
+        public Builder withCurrency(final Currency currency)
+        {
+            this.currency = currency;
             return this;
         }
 

@@ -54,7 +54,7 @@ public abstract class AbstractRestClient
                               final ConfigProperties _config,
                               final SSOClient _ssoClient) {
         restTemplate = _restTemplateBuilder
-            .setReadTimeout(Duration.ofMinutes(10))
+            .readTimeout(Duration.ofMinutes(10))
             .build();
         config = _config;
         ssoClient = _ssoClient;

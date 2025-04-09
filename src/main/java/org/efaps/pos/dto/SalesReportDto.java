@@ -15,7 +15,6 @@
  */
 package org.efaps.pos.dto;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,13 +26,13 @@ public class SalesReportDto
 
     private final List<SalesReportInfoDto> infos;
     private final List<SalesReportDetailDto> details;
-    private final BigDecimal total;
+    private final List<MoneyAmountDto> totals;
 
     private SalesReportDto(Builder builder)
     {
         this.infos = builder.infos;
         this.details = builder.details;
-        this.total = builder.total;
+        this.totals = builder.totals;
     }
 
     public List<SalesReportInfoDto> getInfos()
@@ -46,9 +45,9 @@ public class SalesReportDto
         return details;
     }
 
-    public BigDecimal getTotal()
+    public List<MoneyAmountDto> getTotals()
     {
-        return total;
+        return totals;
     }
 
     public static Builder builder()
@@ -61,7 +60,7 @@ public class SalesReportDto
 
         private List<SalesReportInfoDto> infos = Collections.emptyList();
         private List<SalesReportDetailDto> details = Collections.emptyList();
-        private BigDecimal total;
+        private List<MoneyAmountDto> totals = Collections.emptyList();
 
         private Builder()
         {
@@ -79,9 +78,9 @@ public class SalesReportDto
             return this;
         }
 
-        public Builder withTotal(BigDecimal total)
+        public Builder withTotals(List<MoneyAmountDto> totals)
         {
-            this.total = total;
+            this.totals = totals;
             return this;
         }
 

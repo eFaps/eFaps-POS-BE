@@ -17,6 +17,7 @@ package org.efaps.pos.pojo;
 
 import java.math.BigDecimal;
 
+import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.PaymentType;
 
 public interface IPayment
@@ -28,4 +29,6 @@ public interface IPayment
     String getLabel();
 
     BigDecimal getAmount();
+
+    Currency getCurrency();
 }

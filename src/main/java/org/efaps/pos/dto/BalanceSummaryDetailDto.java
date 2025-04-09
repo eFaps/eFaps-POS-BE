@@ -15,26 +15,25 @@
  */
 package org.efaps.pos.dto;
 
-import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.List;
 
 public class BalanceSummaryDetailDto
 {
 
     private final int documentCount;
     private final int paymentCount;
-    private final BigDecimal netTotal;
-    private final BigDecimal crossTotal;
+    private final List<MoneyAmountDto> netTotals;
+    private final List<MoneyAmountDto> crossTotals;
     private final Collection<PaymentInfoDto> paymentInfos;
     private final Collection<TaxEntryDto> taxEntries;
-
 
     private BalanceSummaryDetailDto(final Builder _builder)
     {
         documentCount = _builder.documentCount;
         paymentCount = _builder.paymentCount;
-        netTotal = _builder.netTotal == null ? BigDecimal.ZERO : _builder.netTotal;
-        crossTotal = _builder.crossTotal == null ? BigDecimal.ZERO : _builder.crossTotal;
+        netTotals = _builder.netTotals;
+        crossTotals = _builder.crossTotals;
         paymentInfos = _builder.paymentInfos;
         taxEntries = _builder.taxEntries;
     }
@@ -49,14 +48,14 @@ public class BalanceSummaryDetailDto
         return paymentCount;
     }
 
-    public BigDecimal getNetTotal()
+    public List<MoneyAmountDto> getNetTotals()
     {
-        return netTotal;
+        return netTotals;
     }
 
-    public BigDecimal getCrossTotal()
+    public List<MoneyAmountDto> getCrossTotals()
     {
-        return crossTotal;
+        return crossTotals;
     }
 
     public Collection<PaymentInfoDto> getPaymentInfos()
@@ -79,8 +78,8 @@ public class BalanceSummaryDetailDto
 
         private int documentCount;
         private int paymentCount;
-        private BigDecimal netTotal;
-        private BigDecimal crossTotal;
+        private List<MoneyAmountDto> netTotals;
+        private List<MoneyAmountDto> crossTotals;
         private Collection<PaymentInfoDto> paymentInfos;
         private Collection<TaxEntryDto> taxEntries;
 
@@ -96,15 +95,15 @@ public class BalanceSummaryDetailDto
             return this;
         }
 
-        public Builder withCrossTotal(final BigDecimal _crossTotal)
+        public Builder withCrossTotals(final List<MoneyAmountDto> crossTotals)
         {
-            crossTotal = _crossTotal;
+            this.crossTotals = crossTotals;
             return this;
         }
 
-        public Builder withNetTotal(final BigDecimal _netTotal)
+        public Builder withNetTotals(final List<MoneyAmountDto> netTotals)
         {
-            netTotal = _netTotal;
+            this.netTotals = netTotals;
             return this;
         }
 

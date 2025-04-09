@@ -18,10 +18,14 @@ package org.efaps.pos.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.efaps.pos.dto.Currency;
+import org.efaps.pos.dto.MoneyAmountDto;
 import org.efaps.pos.dto.SalesReportDetailDto;
 import org.efaps.pos.dto.SalesReportDto;
 import org.efaps.pos.dto.SalesReportEntryDto;
@@ -77,6 +81,7 @@ public class ReportService
                     final var paymentGroup = PaymentGroup.builder()
                                     .withType(payment.getType())
                                     .withLabel(payment.getLabel())
+                                    .withCurrency(payment.getCurrency())
                                     .build();
                     final var payableDto = Converter.toDto(payable);
                     values.put(paymentGroup, SalesReportEntryDto.builder()
@@ -88,17 +93,22 @@ public class ReportService
         });
         final List<SalesReportInfoDto> infos = new ArrayList<>();
         final List<SalesReportDetailDto> details = new ArrayList<>();
-        var total = BigDecimal.ZERO;
+        final Map<Currency, BigDecimal> totalsMap = new HashMap<>();
+
         for (final var entry : values.asMap().entrySet()) {
             details.add(SalesReportDetailDto.builder()
                             .withType(entry.getKey().getType())
                             .withLabel(entry.getKey().getLabel())
+                            .withCurrency(entry.getKey().getCurrency())
                             .withEntries(entry.getValue())
                             .build());
 
             final var amount = entry.getValue().stream()
                             .map(dto -> dto.getPayment().getAmount()).reduce(BigDecimal.ZERO, BigDecimal::add);
-            total = total.add(amount);
+            if (!totalsMap.containsKey(entry.getKey().getCurrency())) {
+                totalsMap.put(entry.getKey().getCurrency(), BigDecimal.ZERO);
+            }
+            totalsMap.put(entry.getKey().getCurrency(), totalsMap.get(entry.getKey().getCurrency()).add(amount));
             infos.add(SalesReportInfoDto.builder()
                             .withType(entry.getKey().getType())
                             .withLabel(entry.getKey().getLabel())
@@ -107,10 +117,17 @@ public class ReportService
                             .build());
         }
 
+        final var totals = totalsMap.entrySet().stream()
+                        .map(entry -> MoneyAmountDto.builder()
+                                        .withAmount(entry.getValue())
+                                        .withCurrency(entry.getKey())
+                                        .build())
+                        .toList();
+
         return SalesReportDto.builder()
                         .withInfos(infos)
                         .withDetails(details)
-                        .withTotal(total)
+                        .withTotals(totals)
                         .build();
     }
 

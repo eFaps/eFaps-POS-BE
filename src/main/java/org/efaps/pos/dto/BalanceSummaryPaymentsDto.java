@@ -26,6 +26,7 @@ public class BalanceSummaryPaymentsDto
 
     private final PaymentType type;
     private final String label;
+    private final Currency currency;
     private final Collection<BalanceSummaryPaymentDetailDto> details;
 
     private BalanceSummaryPaymentsDto(Builder builder)
@@ -33,6 +34,7 @@ public class BalanceSummaryPaymentsDto
         this.type = builder.type;
         this.label = builder.label;
         this.details = builder.details;
+        this.currency = builder.currency;
     }
 
     public PaymentType getType()
@@ -43,6 +45,11 @@ public class BalanceSummaryPaymentsDto
     public String getLabel()
     {
         return label;
+    }
+
+    public Currency getCurrency()
+    {
+        return currency;
     }
 
     public Collection<BalanceSummaryPaymentDetailDto> getDetails()
@@ -60,6 +67,7 @@ public class BalanceSummaryPaymentsDto
 
         private PaymentType type;
         private String label;
+        private Currency currency;
         private Collection<BalanceSummaryPaymentDetailDto> details = Collections.emptyList();
 
         private Builder()
@@ -75,6 +83,12 @@ public class BalanceSummaryPaymentsDto
         public Builder withLabel(String label)
         {
             this.label = label;
+            return this;
+        }
+
+        public Builder withCurrency(Currency currency)
+        {
+            this.currency = currency;
             return this;
         }
 

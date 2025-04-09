@@ -15,46 +15,31 @@
  */
 package org.efaps.pos.dto;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.math.BigDecimal;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-@JsonDeserialize(builder = SalesReportDetailDto.Builder.class)
-public class SalesReportDetailDto
+@JsonDeserialize(builder = MoneyAmountDto.Builder.class)
+public class MoneyAmountDto
 {
 
-    private final PaymentType type;
-    private final String label;
     private final Currency currency;
-    private final Collection<SalesReportEntryDto> entries;
+    private final BigDecimal amount;
 
-    private SalesReportDetailDto(Builder builder)
+    private MoneyAmountDto(Builder builder)
     {
-        this.type = builder.type;
-        this.label = builder.label;
-        this.entries = builder.entries;
         this.currency = builder.currency;
+        this.amount = builder.amount;
     }
 
-    public PaymentType getType()
+    public BigDecimal getAmount()
     {
-        return type;
-    }
-
-    public String getLabel()
-    {
-        return label;
+        return amount;
     }
 
     public Currency getCurrency()
     {
         return currency;
-    }
-
-    public Collection<SalesReportEntryDto> getEntries()
-    {
-        return entries;
     }
 
     public static Builder builder()
@@ -65,25 +50,11 @@ public class SalesReportDetailDto
     public static final class Builder
     {
 
-        private PaymentType type;
-        private String label;
         private Currency currency;
-        private Collection<SalesReportEntryDto> entries = Collections.emptyList();
+        private BigDecimal amount;
 
         private Builder()
         {
-        }
-
-        public Builder withType(PaymentType type)
-        {
-            this.type = type;
-            return this;
-        }
-
-        public Builder withLabel(String label)
-        {
-            this.label = label;
-            return this;
         }
 
         public Builder withCurrency(Currency currency)
@@ -92,15 +63,15 @@ public class SalesReportDetailDto
             return this;
         }
 
-        public Builder withEntries(Collection<SalesReportEntryDto> entries)
+        public Builder withAmount(BigDecimal amount)
         {
-            this.entries = entries;
+            this.amount = amount;
             return this;
         }
 
-        public SalesReportDetailDto build()
+        public MoneyAmountDto build()
         {
-            return new SalesReportDetailDto(this);
+            return new MoneyAmountDto(this);
         }
     }
 }

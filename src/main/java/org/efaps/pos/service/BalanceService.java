@@ -35,6 +35,7 @@ import org.efaps.pos.dto.BalanceSummaryPaymentDetailDto;
 import org.efaps.pos.dto.BalanceSummaryPaymentsDto;
 import org.efaps.pos.dto.CashEntryDto;
 import org.efaps.pos.dto.DocType;
+import org.efaps.pos.dto.MoneyAmountDto;
 import org.efaps.pos.dto.PaymentInfoDto;
 import org.efaps.pos.dto.PosUserDto;
 import org.efaps.pos.dto.TaxEntryDto;
@@ -170,9 +171,9 @@ public class BalanceService
                         .build();
     }
 
-    protected BalanceSummaryDetailDto getDetail(final Collection<? extends AbstractPayableDocument<?>> _payable)
+    protected BalanceSummaryDetailDto getDetail(final Collection<? extends AbstractPayableDocument<?>> payable)
     {
-        final List<IPayment> pay = _payable.stream()
+        final List<IPayment> pay = payable.stream()
                         .map(AbstractPayableDocument::getPayments)
                         .flatMap(Collection::stream)
                         .collect(Collectors.toList());
@@ -202,25 +203,31 @@ public class BalanceService
             }
         }
 
-        final BigDecimal netTotal = _payable.stream()
-                        .map(document -> negate(document, document.getNetTotal()))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        final var netTotals =  payable.stream().collect(Collectors.groupingBy(AbstractPayableDocument::getCurrency,
+                        Collectors.reducing(BigDecimal.ZERO, AbstractPayableDocument::getNetTotal, BigDecimal::add)))
+                        .entrySet().stream().map(entry -> MoneyAmountDto.builder()
+                                        .withAmount(entry.getValue())
+                                        .withCurrency(entry.getKey())
+                                        .build()).toList();
 
-        final BigDecimal crossTotal = _payable.stream()
-                        .map(document -> negate(document, document.getCrossTotal()))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        final var crossTotals =  payable.stream().collect(Collectors.groupingBy(AbstractPayableDocument::getCurrency,
+                        Collectors.reducing(BigDecimal.ZERO, AbstractPayableDocument::getCrossTotal, BigDecimal::add)))
+                        .entrySet().stream().map(entry -> MoneyAmountDto.builder()
+                                        .withAmount(entry.getValue())
+                                        .withCurrency(entry.getKey())
+                                        .build()).toList();
 
-        final List<TaxEntry> taxes = _payable.stream()
+        final List<TaxEntry> taxes = payable.stream()
                         .map(AbstractPayableDocument::getTaxes)
                         .flatMap(Collection::stream)
                         .collect(Collectors.toList());
 
         taxes.stream().collect(Collectors.groupingBy(tax -> tax.getTax().getKey()));
 
-        final Collection<List<TaxEntry>> taxmap = _payable.stream()
+        final Collection<List<TaxEntry>> taxmap = payable.stream()
                         .map(AbstractPayableDocument::getTaxes)
                         .flatMap(Collection::stream)
-                        .collect(Collectors.groupingBy(tax -> tax.getTax().getKey()))
+                        .collect(Collectors.groupingBy(tax -> tax.getTax().getKey() + tax.getCurrency().name()))
                         .values();
         final List<TaxEntryDto> taxEntries = new ArrayList<>();
         for (final List<TaxEntry> taxlist : taxmap) {
@@ -235,38 +242,34 @@ public class BalanceService
             taxEntries.add(TaxEntryDto.builder()
                             .withAmount(amount)
                             .withBase(base)
+                            .withCurrency(taxlist.get(0).getCurrency())
                             .withTax(Converter.toDto(taxlist.get(0).getTax()))
                             .build());
         }
 
         return BalanceSummaryDetailDto.builder()
-                        .withDocumentCount(_payable.size())
+                        .withDocumentCount(payable.size())
                         .withPaymentCount(count)
-                        .withNetTotal(netTotal)
-                        .withCrossTotal(crossTotal)
+                        .withNetTotals(netTotals)
+                        .withCrossTotals(crossTotals)
                         .withPayments(infos.values())
                         .withtTaxEntries(taxEntries)
                         .build();
     }
 
-    protected BigDecimal negate(final AbstractPayableDocument<?> doc,
-                                final BigDecimal value)
-    {
-        return value;
-    }
-
-    protected PaymentGroup getPaymentGroup(final IPayment _payment)
+    protected PaymentGroup getPaymentGroup(final IPayment payment)
     {
         String label = null;
-        if (_payment.getCollectOrderId() != null) {
-            final var collectOrderOpt = collectorService.getCollectOrder(_payment.getCollectOrderId());
+        if (payment.getCollectOrderId() != null) {
+            final var collectOrderOpt = collectorService.getCollectOrder(payment.getCollectOrderId());
             if (collectOrderOpt.isPresent() && collectOrderOpt.get().getCollector() != null) {
                 label = collectOrderOpt.get().getCollector().getLabel();
             }
         }
         return PaymentGroup.builder()
-                        .withType(_payment.getType())
-                        .withLabel(label == null ? _payment.getLabel() : label)
+                        .withType(payment.getType())
+                        .withLabel(label == null ? payment.getLabel() : label)
+                        .withCurrency(payment.getCurrency())
                         .build();
     }
 

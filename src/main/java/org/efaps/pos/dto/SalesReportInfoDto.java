@@ -27,6 +27,7 @@ public class SalesReportInfoDto
     private final String label;
     private final int count;
     private final BigDecimal amount;
+    private final Currency currency;
 
     private SalesReportInfoDto(Builder builder)
     {
@@ -34,6 +35,7 @@ public class SalesReportInfoDto
         this.label = builder.label;
         this.count = builder.count;
         this.amount = builder.amount;
+        this.currency = builder.currency;
     }
 
     public PaymentType getType()
@@ -56,6 +58,11 @@ public class SalesReportInfoDto
         return amount;
     }
 
+    public Currency getCurrency()
+    {
+        return currency;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -68,6 +75,7 @@ public class SalesReportInfoDto
         private String label;
         private int count;
         private BigDecimal amount;
+        private Currency currency;
 
         private Builder()
         {
@@ -94,6 +102,12 @@ public class SalesReportInfoDto
         public Builder withAmount(BigDecimal amount)
         {
             this.amount = amount;
+            return this;
+        }
+
+        public Builder withCurrency(Currency currency)
+        {
+            this.currency = currency;
             return this;
         }
 
