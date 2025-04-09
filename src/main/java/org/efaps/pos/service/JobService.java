@@ -62,53 +62,84 @@ public class JobService
     /**
      * Creates a set of jobs by grouping them by their related printers.
      *
-     * @param _workspace
-     * @param _order the order
+     * @param workspace
+     * @param order the order
      * @return the collection of jobs
      */
-    public Collection<Job> createJobs(final Workspace _workspace, final Order _order)
+    public Collection<Job> createJobs(final Workspace workspace,
+                                      final Order order)
     {
         final List<Job> ret = new ArrayList<>();
         final Map<String, List<Item>> map = new HashMap<>();
         final Map<String, String> reportmap = new HashMap<>();
-        for (final Item item : getNewItems(_order)) {
+        for (final Item item : getNewItems(order)) {
             final Product product = productService.getProduct(item.getProductOid());
             if (product != null) {
-                for (final var prod2cat : product.getCategories()) {
-                    final Optional<Category> catOpt = categoryRepository.findById(prod2cat.getCategoryOid());
-                    if (catOpt.isPresent()) {
-                        final Set<PrintCmd> cmds = _workspace.getPrintCmds().stream()
-                                        .filter(printCmd -> PrintTarget.JOB.equals(printCmd.getTarget())
-                                                        && prod2cat.getCategoryOid().equals(printCmd.getTargetOid()))
-                                        .collect(Collectors.toSet());
-                        for (final PrintCmd cmd : cmds) {
-                            final Optional<Printer> printerOpt = printerRepository.findById(cmd.getPrinterOid());
-                            if (printerOpt.isPresent()) {
-                                final Printer printer = printerOpt.get();
-                                List<Item> items;
-                                if (map.containsKey(printer.getOid())) {
-                                    items = map.get(printer.getOid());
-                                } else {
-                                    items = new ArrayList<>();
+                if (filterByCategory(workspace)) {
+                    for (final var prod2cat : product.getCategories()) {
+                        final Optional<Category> catOpt = categoryRepository.findById(prod2cat.getCategoryOid());
+                        if (catOpt.isPresent()) {
+                            final Set<PrintCmd> cmds = workspace.getPrintCmds().stream()
+                                            .filter(printCmd -> PrintTarget.JOB.equals(printCmd.getTarget())
+                                                            && prod2cat.getCategoryOid()
+                                                                            .equals(printCmd.getTargetOid()))
+                                            .collect(Collectors.toSet());
+                            for (final PrintCmd cmd : cmds) {
+                                final Optional<Printer> printerOpt = printerRepository.findById(cmd.getPrinterOid());
+                                if (printerOpt.isPresent()) {
+                                    final Printer printer = printerOpt.get();
+                                    List<Item> items;
+                                    if (map.containsKey(printer.getOid())) {
+                                        items = map.get(printer.getOid());
+                                    } else {
+                                        items = new ArrayList<>();
+                                    }
+                                    items.add(item);
+                                    map.put(printer.getOid(), items);
+                                    reportmap.put(printer.getOid(), cmd.getReportOid());
                                 }
-                                items.add(item);
-                                map.put(printer.getOid(), items);
-                                reportmap.put(printer.getOid(), cmd.getReportOid());
                             }
                         }
                     }
+                } else {
+                    final var printCmdOpt = workspace.getPrintCmds().stream()
+                                    .filter(printCmd -> PrintTarget.JOB.equals(printCmd.getTarget())).findFirst();
+                    if (printCmdOpt.isPresent()) {
+                        final var printCmd = printCmdOpt.get();
+                        final Optional<Printer> printerOpt = printerRepository.findById(printCmd.getPrinterOid());
+                        if (printerOpt.isPresent()) {
+                            final Printer printer = printerOpt.get();
+                            List<Item> items;
+                            if (map.containsKey(printer.getOid())) {
+                                items = map.get(printer.getOid());
+                            } else {
+                                items = new ArrayList<>();
+                            }
+                            items.add(item);
+                            map.put(printer.getOid(), items);
+                            reportmap.put(printer.getOid(), printCmd.getReportOid());
+                        }
+                    }
+
                 }
             }
         }
         for (final Entry<String, List<Item>> entry : map.entrySet()) {
             ret.add(jobRepository.save(new Job()
-                            .setDocumentId(_order.getId())
-                            .setShoutout(_order.getShoutout())
+                            .setDocumentId(order.getId())
+                            .setShoutout(order.getShoutout())
                             .setPrinterOid(entry.getKey())
                             .setReportOid(reportmap.get(entry.getKey()))
                             .setItems(entry.getValue())));
         }
         return ret;
+    }
+
+    protected boolean filterByCategory(final Workspace workspace)
+    {
+        return workspace.getPrintCmds().stream()
+                        .anyMatch(printCmd -> PrintTarget.JOB.equals(printCmd.getTarget())
+                                        && printCmd.getTargetOid() != null);
     }
 
     /**
@@ -117,14 +148,14 @@ public class JobService
      * @param _order the order
      * @return the new items
      */
-    protected Collection<Item> getNewItems(final Order _order)
+    protected Collection<Item> getNewItems(final Order order)
     {
-        final List<Job> jobs = jobRepository.findByDocumentId(_order.getId());
+        final List<Job> jobs = jobRepository.findByDocumentId(order.getId());
         final Set<Integer> indexes = jobs.stream()
                         .flatMap(job -> job.getItems().stream()
                                         .map(Item::getIndex))
                         .collect(Collectors.toSet());
-        return _order.getItems().stream()
+        return order.getItems().stream()
                         .filter(item -> !indexes.contains(item.getIndex()))
                         .collect(Collectors.toSet());
     }
