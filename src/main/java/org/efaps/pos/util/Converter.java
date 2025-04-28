@@ -880,6 +880,7 @@ public final class Converter
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
                                 .withInfo(posEntity.getInfo());
                 INSTANCE.collectorService.add2PaymentDto(builder, entity);
                 yield builder.build();
@@ -891,6 +892,7 @@ public final class Converter
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
                                 .withInfo(posEntity.getInfo());
                 INSTANCE.collectorService.add2PaymentDto(builder, entity);
                 yield builder.build();
@@ -902,6 +904,7 @@ public final class Converter
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
                                 .withInfo(posEntity.getInfo());
                 INSTANCE.collectorService.add2PaymentDto(builder, entity);
                 yield builder.build();
@@ -932,6 +935,7 @@ public final class Converter
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
                                 .withInfo(posEntity.getInfo());
                 INSTANCE.collectorService.add2PaymentDto(builder, entity);
                 yield builder.build();
