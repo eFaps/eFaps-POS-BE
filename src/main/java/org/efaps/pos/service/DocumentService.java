@@ -802,12 +802,14 @@ public class DocumentService
             Converter.clone(order, invoice);
             invoice.setPayments(payments);
             invoice.setBalanceOid(balanceId);
+            invoice.setStatus(DocStatus.CLOSED);
             payable = createInvoice(order.getWorkspaceOid(), orderId, invoice);
         } else {
             final var receipt = new Receipt();
             Converter.clone(order, receipt);
             receipt.setPayments(payments);
             receipt.setBalanceOid(balanceId);
+            receipt.setStatus(DocStatus.CLOSED);
             payable = createReceipt(order.getWorkspaceOid(), orderId, receipt);
         }
         return payable;
