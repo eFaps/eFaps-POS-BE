@@ -316,6 +316,7 @@ public class DocumentService
     {
         validateOrder(orderId);
         validateContact(workspaceOid, receipt);
+        validateBalance(receipt);
         receipt.setNumber(sequenceService.getNext(workspaceOid, DocType.RECEIPT, null));
         Receipt ret = receiptRepository.insert(receipt);
         try {
@@ -343,6 +344,7 @@ public class DocumentService
     {
         validateOrder(orderId);
         validateContact(workspaceOid, invoice);
+        validateBalance(invoice);
         invoice.setNumber(sequenceService.getNext(workspaceOid, DocType.INVOICE, null));
         Invoice ret = invoiceRepository.insert(invoice);
         try {
@@ -370,6 +372,7 @@ public class DocumentService
     {
         validateOrder(orderId);
         validateContact(workspaceOid, ticket);
+        validateBalance(ticket);
         ticket.setNumber(sequenceService.getNext(workspaceOid, DocType.TICKET, null));
         Ticket ret = ticketRepository.insert(ticket);
         try {
@@ -394,13 +397,13 @@ public class DocumentService
                                        final CreditNote _creditNote)
     {
         validateContact(_workspaceOid, _creditNote);
+        validateBalance(_creditNote);
         final var reference = ReferenceService.getReferenceByIdent(_creditNote.getSourceDocOid());
         _creditNote.setNumber(sequenceService.getNext(_workspaceOid, DocType.CREDITNOTE, reference.getDocType()));
         _creditNote.setDate(LocalDate.now());
         CreditNote ret = creditNoteRepository.insert(_creditNote);
         try {
             if (!creditNoteListeners.isEmpty()) {
-
                 PosCreditNoteDto dto = Converter.toDto(ret);
                 for (final ICreditNoteListener listener : creditNoteListeners) {
                     dto = (PosCreditNoteDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
@@ -412,6 +415,16 @@ public class DocumentService
             LOG.error("Wow that should not happen", e);
         }
         return ret;
+    }
+
+    private void validateBalance(final AbstractPayableDocument<?> entity)
+    {
+        if (entity.getBalanceOid() != null && !Utils.isOid(entity.getBalanceOid())) {
+            final var opt = balanceRepository.findById(entity.getBalanceOid());
+            if (opt.isPresent() && Utils.isOid(opt.get().getOid())) {
+                entity.setBalanceOid(opt.get().getOid());
+            }
+        }
     }
 
     private void validateOrder(final String _orderId)
