@@ -607,6 +607,57 @@ public class EFapsClient
         return ret;
     }
 
+    public List<InvoiceDto> retrieveInvoices(final String number)
+    {
+        List<InvoiceDto> ret = null;
+        try {
+            final var params = new LinkedMultiValueMap<String, String>();
+            params.put("number", Collections.singletonList(String.valueOf(number)));
+            final RequestEntity<?> requestEntity = get(getEFapsConfig().getInvoicePath(), params);
+
+            final ResponseEntity<List<InvoiceDto>> response = getRestTemplate().exchange(requestEntity,
+                            new ParameterizedTypeReference<List<InvoiceDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
+    public List<ReceiptDto> retrieveReceipts(final String number)
+    {
+        List<ReceiptDto> ret = null;
+        try {
+            final var params = new LinkedMultiValueMap<String, String>();
+            params.put("number", Collections.singletonList(String.valueOf(number)));
+            final RequestEntity<?> requestEntity = get(getEFapsConfig().getReceiptPath(), params);
+
+            final ResponseEntity<List<ReceiptDto>> response = getRestTemplate().exchange(requestEntity,
+                            new ParameterizedTypeReference<List<ReceiptDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
+    public ReceiptDto getReceipt(final String oid)
+    {
+        ReceiptDto ret = null;
+        try {
+            final var requestEntity = get(getEFapsConfig().getReceiptPath() + "/" + oid);
+            final var response = getRestTemplate().exchange(requestEntity, ReceiptDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
     private UriComponents getUriComponent(final String _path)
         throws IdentException
     {

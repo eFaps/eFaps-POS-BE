@@ -39,7 +39,7 @@ public class ReferenceService
     public static IReference getReferenceByIdent(final String ident)
     {
         IReference ret = null;
-        final var opt = INSTANCE.documentService.findReceipt(ident);
+        final var opt = INSTANCE.documentService.findReceipt(ident, false);
         if (opt.isPresent()) {
             final AbstractPayableDocument<?> doc = opt.get();
             ret = new IReference()

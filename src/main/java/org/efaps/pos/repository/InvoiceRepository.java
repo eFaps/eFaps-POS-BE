@@ -17,20 +17,28 @@ package org.efaps.pos.repository;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Set;
 
 import org.efaps.pos.entity.Invoice;
+import org.efaps.pos.entity.Origin;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 public interface InvoiceRepository
     extends MongoRepository<Invoice, String>
 {
     Collection<Invoice> findByOidIsNull();
 
-    Collection<Invoice> findByContactOid(String _contactOid);
+    Collection<Invoice> findByContactOid(String contactOid);
 
-    Collection<Invoice> findByBalanceOid(String _balanceOid);
+    Collection<Invoice> findByBalanceOid(String balanceOid);
 
-    Collection<Invoice> findByNumberLikeIgnoreCase(String _term);
+    @Query("""
+        SELECT c\
+        FROM Invoice c \
+        WHERE (:name is null or c.name = :name) and (:email is null\
+         or c.email = :email)""")
+    Collection<Invoice> findByNumberLikeIgnoreCaseAndOrginIn(String term, Set<Origin> orgings);
 
     Collection<Invoice> findByDate(LocalDate date);
 }

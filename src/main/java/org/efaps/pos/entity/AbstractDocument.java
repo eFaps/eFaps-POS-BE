@@ -59,6 +59,8 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>>
     private String note;
     private Set<EmployeeRelation> employeeRelations;
 
+    private Origin origin = Origin.LOCAL;
+
     @CreatedBy
     private String user;
 
@@ -316,6 +318,16 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>>
     {
         this.employeeRelations = employeeRelations;
         return (T) this;
+    }
+
+    public Origin getOrigin()
+    {
+        return origin == null ? Origin.LOCAL : origin;
+    }
+
+    public void setOrigin(Origin origin)
+    {
+        this.origin = origin;
     }
 
     @Override

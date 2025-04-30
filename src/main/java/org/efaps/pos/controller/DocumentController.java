@@ -180,10 +180,11 @@ public class DocumentController
 
     @GetMapping(path = { "receipts", "documents/receipts" }, produces = MediaType.APPLICATION_JSON_VALUE, params = {
                     "ident" })
-    public PosReceiptDto getReceiptByIdent(@RequestParam(name = "ident") final String ident)
+    public PosReceiptDto getReceiptByIdent(@RequestParam(name = "ident") final String ident,
+                                           @RequestParam(name = "remote", required = false) final Boolean remote)
         throws NotFoundException
     {
-        final var receipt = documentService.findReceipt(ident)
+        final var receipt = documentService.findReceipt(ident, remote)
                         .orElseThrow(() -> new NotFoundException("Receipt not found"));
         return Converter.toDto(receipt);
     }
@@ -197,6 +198,12 @@ public class DocumentController
             throw new NotFoundException("Receipt not found");
         }
         return Converter.toDto(receipt);
+    }
+
+    @GetMapping(path = { "receipts" }, produces = MediaType.APPLICATION_JSON_VALUE, params = { "number" })
+    public List<PosReceiptDto> retrieveReceipts(@RequestParam(name = "number") final String number)
+    {
+        return documentService.retrieveReceipts(number).stream().map(Converter::toDto).toList();
     }
 
     @GetMapping(path = { "invoices/{id}", "documents/invoices/{id}" }, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -17,6 +17,8 @@ package org.efaps.pos.repository;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import org.efaps.pos.entity.Receipt;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -33,4 +35,8 @@ public interface ReceiptRepository
     Collection<Receipt> findByNumberLikeIgnoreCase(String _term);
 
     Collection<Receipt> findByDate(LocalDate date);
+
+    Optional<Receipt> findOneByOid(String oid);
+
+    List<Receipt> findOneByNumber(final String number);
 }

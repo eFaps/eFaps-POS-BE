@@ -28,6 +28,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.CreateDocumentDto;
 import org.efaps.pos.dto.Currency;
@@ -51,6 +53,7 @@ import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
+import org.efaps.pos.entity.Origin;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Ticket;
@@ -93,6 +96,7 @@ public class DocumentService
     private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
 
     private final ConfigService configService;
+    private final EFapsClient eFapsClient;
     private final PosService posService;
     private final SequenceService sequenceService;
     private final ContactService contactService;
@@ -117,6 +121,7 @@ public class DocumentService
     @Autowired
     public DocumentService(final MongoTemplate _mongoTemplate,
                            final ConfigService configService,
+                           final EFapsClient eFapsClient,
                            final PosService _posService,
                            final SequenceService _sequenceService,
                            final ContactService _contactService,
@@ -140,6 +145,7 @@ public class DocumentService
         mongoTemplate = _mongoTemplate;
         this.configService = configService;
         this.productService = productService;
+        this.eFapsClient = eFapsClient;
         posService = _posService;
         sequenceService = _sequenceService;
         orderRepository = _orderRepository;
@@ -436,10 +442,38 @@ public class DocumentService
         return receiptRepository.findById(_documentId).orElse(null);
     }
 
-    public Optional<Receipt> findReceipt(final String _identifier)
+    public Optional<Receipt> findReceipt(final String identifier,
+                                         final Boolean remote)
     {
-        return receiptRepository.findOne(
-                        Example.of(new Receipt().setId(_identifier).setOid(_identifier), ExampleMatcher.matchingAny()));
+        Optional<Receipt> opt;
+        if (ObjectId.isValid(identifier)) {
+            opt= receiptRepository.findById(identifier);
+        } else {
+            opt = receiptRepository.findOneByOid(identifier);
+        }
+
+        if (opt.isEmpty() && remote && Utils.isOid(identifier)) {
+            final var receiptDto = eFapsClient.getReceipt(identifier);
+            if (receiptDto != null) {
+                final var entity = Converter.toEntity(receiptDto);
+                entity.setOrigin(Origin.REMOTE);
+                final var persisted = receiptRepository.save(entity);
+                opt = Optional.of(persisted);
+            }
+        }
+        return opt;
+    }
+
+    public List<Receipt> retrieveReceipts(final String number)
+    {
+        List<Receipt> receipts = receiptRepository.findOneByNumber(number);
+        if (receipts.isEmpty()) {
+            final var retrieved = eFapsClient.retrieveReceipts(number);
+            if (retrieved != null) {
+                receipts = retrieved.stream().map(Converter::toEntity).toList();
+            }
+        }
+        return receipts;
     }
 
     public Optional<CreditNote> findCreditNote(final String _identifier)
@@ -611,6 +645,12 @@ public class DocumentService
         return mongoTemplate.aggregate(aggregation, "invoices", PayableHead.class).getMappedResults();
     }
 
+    public void findInvoicesRemote(String number)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
     public Collection<PayableHead> findReceipts(final String _term)
     {
         final LookupOperation lookupOperation = LookupOperation.newLookup()
@@ -658,7 +698,7 @@ public class DocumentService
     public void retrigger4Receipt(final String identifier)
     {
         LOG.warn("Retriggering for Receipt: {}", identifier);
-        final var entity = findReceipt(identifier);
+        final var entity = findReceipt(identifier, false);
         if (entity.isPresent()) {
             final var dto = Converter.toDto(entity.get());
             for (final var listener : receiptListeners) {

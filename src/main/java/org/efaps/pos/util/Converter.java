@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.config.ConfigProperties;
+import org.efaps.pos.dto.AbstractDocItemDto;
 import org.efaps.pos.dto.AbstractDocumentDto;
 import org.efaps.pos.dto.AbstractPayableDocumentDto;
 import org.efaps.pos.dto.BOMActionDto;
@@ -296,6 +297,27 @@ public final class Converter
                         .setBomOid(dto.getBomOid())
                         .setProductOid(dto.getProduct() == null ? dto.getProductOid() : dto.getProduct().getOid())
                         .setStandInOid(dto.getStandIn() == null ? dto.getStandInOid() : dto.getStandIn().getOid())
+                        .setTaxes(dto.getTaxes() == null ? null
+                                        : dto.getTaxes().stream().map(Converter::toEntity)
+                                                        .collect(Collectors.toSet()));
+    }
+
+    public static AbstractDocument.Item toEntity(final DocItemDto dto)
+    {
+        return new AbstractDocument.Item().setOid(dto.getOid())
+                        .setIndex(dto.getIndex())
+                        .setParentIdx(dto.getParentIdx())
+                        .setCrossPrice(dto.getCrossPrice())
+                        .setCrossUnitPrice(dto.getCrossUnitPrice())
+                        .setNetPrice(dto.getNetPrice())
+                        .setNetUnitPrice(dto.getNetUnitPrice())
+                        .setExchangeRate(dto.getExchangeRate())
+                        .setCurrency(dto.getCurrency())
+                        .setQuantity(dto.getQuantity())
+                        .setRemark(dto.getRemark())
+                        .setBomOid(dto.getBomOid())
+                        .setProductOid(dto.getProductOid())
+                        .setStandInOid(dto.getStandInOid())
                         .setTaxes(dto.getTaxes() == null ? null
                                         : dto.getTaxes().stream().map(Converter::toEntity)
                                                         .collect(Collectors.toSet()));
@@ -1077,6 +1099,13 @@ public final class Converter
                         .build();
     }
 
+    public static Receipt toEntity(final ReceiptDto dto)
+    {
+        final var entity = new Receipt();
+        map2DocEntity(dto, entity);
+        return entity;
+    }
+
     public static PosInvoiceDto toDto(final Invoice _entity)
     {
         return PosInvoiceDto.builder()
@@ -1656,10 +1685,9 @@ public final class Converter
         entity.setOid(dto.getOid());
         entity.setNumber(dto.getNumber());
         entity.setCurrency(dto.getCurrency());
-
         entity.setStatus(dto.getStatus());
         entity.setDate(dto.getDate());
-        entity.setItems(dto.getItems().stream().map(_item -> Converter.toEntity((PosDocItemDto) _item))
+        entity.setItems(dto.getItems().stream().map(Converter::toEntity)
                         .collect(Collectors.toList()));
         entity.setNetTotal(dto.getNetTotal());
         entity.setCrossTotal(dto.getCrossTotal());
@@ -1686,6 +1714,16 @@ public final class Converter
                                             .map(Converter::toEntity)
                                             .collect(Collectors.toSet()));
         }
+    }
+
+    protected static Item toEntity(AbstractDocItemDto dto)
+    {
+        if (dto instanceof final PosDocItemDto posDto) {
+            return toEntity(posDto);
+        } else if (dto instanceof final DocItemDto docDto) {
+            return toEntity(docDto);
+        }
+        return null;
     }
 
     public static PosStocktakingDto toDto(final Stocktaking entity)
