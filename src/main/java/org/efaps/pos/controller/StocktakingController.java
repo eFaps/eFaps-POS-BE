@@ -65,7 +65,7 @@ public class StocktakingController
     }
 
     @GetMapping(path = "current", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PosStocktakingDto> getCurrentStocktaking(@RequestParam() String warehouseOid)
+    public ResponseEntity<PosStocktakingDto> getCurrentStocktaking(@RequestParam(name = "warehouseOid") String warehouseOid)
     {
         final var stocktakingOpt = stocktakingService.getCurrent(warehouseOid);
 
@@ -88,7 +88,7 @@ public class StocktakingController
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<PosStocktakingDto> getStocktakings(final Pageable pageable,
-                                                   final @RequestParam(required = false) boolean expand)
+                                                   final @RequestParam(name = "expand", required = false) boolean expand)
     {
         Page<PosStocktakingDto> result;
         if (expand) {
@@ -118,7 +118,7 @@ public class StocktakingController
                         .build();
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = {"status"})
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "status" })
     public List<PosStocktakingDto> getOpenStocktakings()
     {
         return stocktakingService.getOpenStocktakings().stream()
