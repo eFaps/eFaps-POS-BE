@@ -165,16 +165,6 @@ public class DocumentService
         creditNoteListeners = _creditNoteListener.isPresent() ? _creditNoteListener.get() : Collections.emptyList();
     }
 
-    public Order getOrder(final String ident)
-    {
-        return Utils.isOid(ident) ? getOrderByOid(ident) : getOrderById(ident);
-    }
-
-    public Order getOrderByOid(final String oid)
-    {
-        return orderRepository.findByOid(oid).orElse(null);
-    }
-
     public Order getOrderById(final String id)
     {
         return orderRepository.findById(id).orElse(null);
@@ -460,16 +450,6 @@ public class DocumentService
         }
     }
 
-    public Receipt getReceipt(final String ident)
-    {
-        return Utils.isOid(ident) ? getReceiptByOid(ident) : getReceiptById(ident);
-    }
-
-    public Receipt getReceiptByOid(final String oid)
-    {
-        return receiptRepository.findByOid(oid).orElse(null);
-    }
-
     public Receipt getReceiptById(final String _documentId)
     {
         return receiptRepository.findById(_documentId).orElse(null);
@@ -526,16 +506,6 @@ public class DocumentService
         return getPayableHeads4Balance(_balanceKey, "receipts");
     }
 
-    public Invoice getInvoice(final String ident)
-    {
-        return Utils.isOid(ident) ? getInvoiceByOid(ident) : getInvoiceById(ident);
-    }
-
-    public Invoice getInvoiceByOid(final String oid)
-    {
-        return invoiceRepository.findByOid(oid).orElse(null);
-    }
-
     public Invoice getInvoiceById(final String _documentId)
     {
         return invoiceRepository.findById(_documentId).orElse(null);
@@ -557,16 +527,6 @@ public class DocumentService
         return invoiceRepository.findByBalanceOid(evalBalanceOid(_key));
     }
 
-    public Ticket getTicket(final String ident)
-    {
-        return Utils.isOid(ident) ? getTicketByOid(ident) : getTicketById(ident);
-    }
-
-    public Ticket getTicketByOid(final String oid)
-    {
-        return ticketRepository.findByOid(oid).orElse(null);
-    }
-
     public Ticket getTicketById(final String _documentId)
     {
         return ticketRepository.findById(_documentId).orElse(null);
@@ -575,16 +535,6 @@ public class DocumentService
     public Collection<Ticket> getTickets4Balance(final String _key)
     {
         return ticketRepository.findByBalanceOid(evalBalanceOid(_key));
-    }
-
-    public CreditNote getCreditNote(final String ident)
-    {
-        return Utils.isOid(ident) ? getCreditNoteByOid(ident) : getCreditNoteById(ident);
-    }
-
-    public CreditNote getCreditNoteByOid(final String oid)
-    {
-        return creditNoteRepository.findByOid(oid).orElse(null);
     }
 
     public CreditNote getCreditNoteById(final String documentId)
@@ -667,44 +617,6 @@ public class DocumentService
                     ret = balance.getOid();
                 }
             }
-        }
-        return ret;
-    }
-
-    public AbstractDocument<?> getDocument(final String ident)
-    {
-        return Utils.isOid(ident) ? getDocumentByOid(ident) : getDocumentById(ident);
-    }
-
-    public AbstractDocument<?> getDocumentByOid(final String oid)
-    {
-        AbstractDocument<?> ret = getOrderByOid(oid);
-        if (ret == null) {
-            ret = getPayableByOid(oid);
-        }
-        return ret;
-    }
-
-    public AbstractDocument<?> getDocumentById(final String documentId)
-    {
-        AbstractDocument<?> ret = getOrderById(documentId);
-        if (ret == null) {
-            ret = getPayableById(documentId);
-        }
-        return ret;
-    }
-
-    public AbstractPayableDocument<?> getPayableByOid(final String oid)
-    {
-        AbstractPayableDocument<?> ret = getReceiptByOid(oid);
-        if (ret == null) {
-            ret = getInvoiceByOid(oid);
-        }
-        if (ret == null) {
-            ret = getTicketByOid(oid);
-        }
-        if (ret == null) {
-            ret = getCreditNoteByOid(oid);
         }
         return ret;
     }

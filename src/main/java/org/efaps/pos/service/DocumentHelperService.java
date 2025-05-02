@@ -29,6 +29,7 @@ import org.efaps.pos.repository.InvoiceRepository;
 import org.efaps.pos.repository.OrderRepository;
 import org.efaps.pos.repository.ReceiptRepository;
 import org.efaps.pos.repository.TicketRepository;
+import org.efaps.pos.util.Utils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -54,13 +55,123 @@ public class DocumentHelperService
         this.creditNoteRepository = creditNoteRepository;
     }
 
-    public Optional<AbstractDocument<?>> getDocument(final String documentId)
+    public Optional<AbstractDocument<?>> getDocument(final String ident)
     {
-        Optional<AbstractDocument<?>> ret = getOrder(documentId).map(this::toAbstract);
+        Optional<AbstractDocument<?>> ret = getOrder(ident).map(this::toAbstract);
         if (ret.isEmpty()) {
-            ret = getPayable(documentId).map(doc -> ((AbstractDocument<?>) doc));
+            ret = getPayable(ident).map(doc -> ((AbstractDocument<?>) doc));
         }
         return ret;
+    }
+
+    public Optional<AbstractPayableDocument<?>> getPayable(final String ident)
+    {
+        return Utils.isOid(ident) ? getPayableByOid(ident) : getPayableById(ident);
+    }
+
+    public Optional<AbstractPayableDocument<?>> getPayableByOid(final String documentId)
+    {
+        Optional<AbstractPayableDocument<?>> ret = getReceiptByOid(documentId).map(this::toPayable);
+        if (ret.isEmpty()) {
+            ret = getInvoiceByOid(documentId).map(this::toPayable);
+        }
+        if (ret.isEmpty()) {
+            ret = getTicketByOid(documentId).map(this::toPayable);
+        }
+        if (ret.isEmpty()) {
+            ret = getCreditNoteByOid(documentId).map(this::toPayable);
+        }
+        return ret;
+    }
+
+    public Optional<AbstractPayableDocument<?>> getPayableById(final String documentId)
+    {
+        Optional<AbstractPayableDocument<?>> ret = getReceiptById(documentId).map(this::toPayable);
+        if (ret.isEmpty()) {
+            ret = getInvoiceById(documentId).map(this::toPayable);
+        }
+        if (ret.isEmpty()) {
+            ret = getTicketById(documentId).map(this::toPayable);
+        }
+        if (ret.isEmpty()) {
+            ret = getCreditNoteById(documentId).map(this::toPayable);
+        }
+        return ret;
+    }
+
+    public Optional<Order> getOrder(final String ident)
+    {
+        return Utils.isOid(ident) ? getOrderByOid(ident) : getOrderById(ident);
+    }
+
+    public Optional<Order> getOrderByOid(final String oid)
+    {
+        return orderRepository.findByOid(oid);
+    }
+
+    public Optional<Order> getOrderById(final String id)
+    {
+        return orderRepository.findById(id);
+    }
+
+    public Optional<Receipt> getReceipt(final String ident)
+    {
+        return Utils.isOid(ident) ? getReceiptByOid(ident) : getReceiptById(ident);
+    }
+
+    public Optional<Receipt> getReceiptByOid(final String oid)
+    {
+        return receiptRepository.findByOid(oid);
+    }
+
+    public Optional<Receipt> getReceiptById(final String id)
+    {
+        return receiptRepository.findById(id);
+    }
+
+    public Optional<Invoice> getInvoice(final String ident)
+    {
+        return Utils.isOid(ident) ? getInvoiceByOid(ident) : getInvoiceById(ident);
+    }
+
+    public Optional<Invoice> getInvoiceByOid(final String oid)
+    {
+        return invoiceRepository.findByOid(oid);
+    }
+
+    public Optional<Invoice> getInvoiceById(final String id)
+    {
+        return invoiceRepository.findById(id);
+    }
+
+    public Optional<Ticket> getTicket(final String ident)
+    {
+        return Utils.isOid(ident) ? getTicketByOid(ident) : getTicketById(ident);
+    }
+
+    public Optional<Ticket> getTicketByOid(final String oid)
+    {
+        return ticketRepository.findByOid(oid);
+    }
+
+    public Optional<Ticket> getTicketById(final String id)
+    {
+        return ticketRepository.findById(id);
+    }
+
+    public Optional<CreditNote> getCreditNote(final String ident)
+    {
+        return Utils.isOid(ident) ? getCreditNoteByOid(ident) : getCreditNoteById(ident);
+    }
+
+    public Optional<CreditNote> getCreditNoteByOid(final String oid)
+    {
+        return creditNoteRepository.findByOid(oid);
+    }
+
+    public Optional<CreditNote> getCreditNoteById(final String id)
+    {
+        return creditNoteRepository.findById(id);
     }
 
     private AbstractDocument<?> toAbstract(AbstractDocument<?> doc)
@@ -68,49 +179,9 @@ public class DocumentHelperService
         return doc;
     }
 
-    public Optional<AbstractPayableDocument<?>> getPayable(final String documentId)
-    {
-        Optional<AbstractPayableDocument<?>> ret = getReceipt(documentId).map(this::toPayable);
-        if (ret.isEmpty()) {
-            ret = getInvoice(documentId).map(this::toPayable);
-        }
-        if (ret.isEmpty()) {
-            ret = getTicket(documentId).map(this::toPayable);
-        }
-        if (ret.isEmpty()) {
-            ret = getCreditNote(documentId).map(this::toPayable);
-        }
-        return ret;
-    }
-
     private AbstractPayableDocument<?> toPayable(AbstractPayableDocument<?> doc)
     {
         return doc;
-    }
-
-    public Optional<Order> getOrder(final String orderid)
-    {
-        return orderRepository.findById(orderid);
-    }
-
-    public Optional<Receipt> getReceipt(final String orderid)
-    {
-        return receiptRepository.findById(orderid);
-    }
-
-    public Optional<Invoice> getInvoice(final String orderid)
-    {
-        return invoiceRepository.findById(orderid);
-    }
-
-    public Optional<Ticket> getTicket(final String orderid)
-    {
-        return ticketRepository.findById(orderid);
-    }
-
-    public Optional<CreditNote> getCreditNote(final String orderid)
-    {
-        return creditNoteRepository.findById(orderid);
     }
 
 }

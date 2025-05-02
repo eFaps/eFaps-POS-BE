@@ -77,21 +77,21 @@ public class CalculatorService
     private final ConfigService configService;
     private final WorkspaceService workspaceService;
     private final ProductService productService;
-    private final DocumentService documentService;
+    private final DocumentHelperService documentHelperService;
     private final PromotionService promotionService;
 
     public CalculatorService(final MongoTemplate mongoTemplate,
                              final ConfigService configService,
                              final WorkspaceService workspaceService,
                              final ProductService productService,
-                             final DocumentService documentService,
+                             final DocumentHelperService documentHelperService,
                              final PromotionService promotionService)
     {
         this.mongoTemplate = mongoTemplate;
         this.configService = configService;
         this.workspaceService = workspaceService;
         this.productService = productService;
-        this.documentService = documentService;
+        this.documentHelperService = documentHelperService;
         this.promotionService = promotionService;
     }
 
@@ -108,23 +108,30 @@ public class CalculatorService
             i = i + 1000;
         }
 
-        // in case of a new creditnote --> calculation is based on the source document
+        // in case of a new creditnote --> calculation is based on the source
+        // document
         if (calculatorPayloadDto.getSourceDocIdent() != null) {
-            final var sourceDoc = documentService.getDocument(calculatorPayloadDto.getSourceDocIdent());
-            for (final var pos : calculatorPayloadDto.getPositions()) {
-                final var itemOpt = sourceDoc.getItems().stream()
-                                .filter(fitem -> fitem.getIndex().equals(pos.getIndex())).findFirst();
-                if (itemOpt.isPresent()) {
-                    final var item = itemOpt.get();
-                    document.addPosition(new Position()
-                                    .setNetUnitPrice(item.getNetUnitPrice())
-                                    .setTaxes(item.getTaxes().stream()
-                                                    .map(TaxEntry::getTax)
-                                                    .map(this::toAbacusTax)
-                                                    .toList())
-                                    .setIndex(item.getIndex())
-                                    .setProductOid(pos.getProductOid())
-                                    .setQuantity(pos.getQuantity()));
+            final var sourceDocOpt = documentHelperService.getDocument(calculatorPayloadDto.getSourceDocIdent());
+            if (sourceDocOpt.isPresent()) {
+                final var sourceDoc = sourceDocOpt.get();
+                for (final var pos : calculatorPayloadDto.getPositions()) {
+                    final var itemOpt = sourceDoc.getItems().stream()
+                                    .filter(fitem -> fitem.getIndex().equals(pos.getIndex())).findFirst();
+                    if (itemOpt.isPresent()) {
+                        final var item = itemOpt.get();
+                        document.addPosition(new Position()
+                                        .setNetUnitPrice(item.getNetUnitPrice())
+                                        .setTaxes(item.getTaxes().stream()
+                                                        .map(TaxEntry::getTax)
+                                                        .map(tax -> {
+                                                            taxMap.put(tax.getKey(), tax);
+                                                            return toAbacusTax(tax);
+                                                        })
+                                                        .toList())
+                                        .setIndex(item.getIndex())
+                                        .setProductOid(pos.getProductOid())
+                                        .setQuantity(pos.getQuantity()));
+                    }
                 }
             }
         } else {

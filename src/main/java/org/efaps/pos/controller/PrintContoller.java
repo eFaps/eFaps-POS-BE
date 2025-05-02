@@ -30,8 +30,9 @@ import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.error.NotFoundException;
 import org.efaps.pos.service.BalanceService;
-import org.efaps.pos.service.DocumentService;
+import org.efaps.pos.service.DocumentHelperService;
 import org.efaps.pos.service.JobService;
 import org.efaps.pos.service.PrintService;
 import org.efaps.pos.service.ReportService;
@@ -53,21 +54,21 @@ public class PrintContoller
 {
 
     private final WorkspaceService workspaceService;
-    private final DocumentService documentService;
+    private final DocumentHelperService documentHelperService;
     private final BalanceService balanceService;
     private final ReportService reportService;
     private final JobService jobService;
     private final PrintService printService;
 
     public PrintContoller(final WorkspaceService _workspaceService,
-                          final DocumentService _service,
+                          final DocumentHelperService documentHelperService,
                           final BalanceService _balanceService,
                           final ReportService reportService,
                           final JobService _jobService,
                           final PrintService _printService)
     {
         workspaceService = _workspaceService;
-        documentService = _service;
+        this.documentHelperService = documentHelperService;
         balanceService = _balanceService;
         this.reportService = reportService;
         jobService = _jobService;
@@ -88,11 +89,13 @@ public class PrintContoller
     public List<PrintResponseDto> printJob(final Authentication _authentication,
                                            @RequestParam(name = "workspaceOid") final String _workspaceOid,
                                            @RequestParam(name = "documentId") final String _documentId)
+        throws NotFoundException
     {
         final List<PrintResponseDto> ret = new ArrayList<>();
         final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
                         _workspaceOid);
-        final Order order = documentService.getOrderById(_documentId);
+        final Order order = documentHelperService.getOrderById(_documentId)
+                        .orElseThrow(() -> new NotFoundException("Order not found"));
         final Collection<Job> jobs = jobService.createJobs(workspace, order);
 
         for (final Job job : jobs) {
@@ -108,12 +111,14 @@ public class PrintContoller
     public List<PrintResponseDto> printPreliminary(final Authentication _authentication,
                                                    @RequestParam(name = "workspaceOid") final String _workspaceOid,
                                                    @RequestParam(name = "documentId") final String _documentId)
+        throws NotFoundException
     {
         final List<PrintResponseDto> ret = new ArrayList<>();
         final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
                         _workspaceOid);
 
-        final AbstractDocument<?> document = documentService.getDocument(_documentId);
+        final AbstractDocument<?> document = documentHelperService.getDocument(_documentId)
+                        .orElseThrow(() -> new NotFoundException("Document not found"));
 
         workspace.getPrintCmds().stream()
                         .filter(printCmd -> PrintTarget.PRELIMINARY.equals(printCmd.getTarget()))
@@ -130,12 +135,14 @@ public class PrintContoller
     public List<PrintResponseDto> printCopy(final Authentication _authentication,
                                             @RequestParam(name = "workspaceOid") final String _workspaceOid,
                                             @RequestParam(name = "documentId") final String _documentId)
+        throws NotFoundException
     {
         final List<PrintResponseDto> ret = new ArrayList<>();
         final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
                         _workspaceOid);
 
-        final AbstractDocument<?> document = documentService.getDocument(_documentId);
+        final AbstractDocument<?> document = documentHelperService.getDocument(_documentId)
+                        .orElseThrow(() -> new NotFoundException("Document not found"));
 
         workspace.getPrintCmds().stream()
                         .filter(printCmd -> PrintTarget.COPY.equals(printCmd.getTarget()))
@@ -152,12 +159,14 @@ public class PrintContoller
     public List<PrintResponseDto> printTicket(final Authentication _authentication,
                                               @RequestParam(name = "workspaceOid") final String _workspaceOid,
                                               @RequestParam(name = "documentId") final String _documentId)
+        throws NotFoundException
     {
         final List<PrintResponseDto> ret = new ArrayList<>();
         final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
                         _workspaceOid);
 
-        final AbstractDocument<?> document = documentService.getDocument(_documentId);
+        final AbstractDocument<?> document = documentHelperService.getDocument(_documentId)
+                        .orElseThrow(() -> new NotFoundException("Document not found"));
 
         workspace.getPrintCmds().stream()
                         .filter(printCmd -> PrintTarget.TICKET.equals(printCmd.getTarget()))
