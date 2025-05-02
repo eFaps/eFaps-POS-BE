@@ -165,9 +165,19 @@ public class DocumentService
         creditNoteListeners = _creditNoteListener.isPresent() ? _creditNoteListener.get() : Collections.emptyList();
     }
 
-    public Order getOrder(final String _orderid)
+    public Order getOrder(final String ident)
     {
-        return orderRepository.findById(_orderid).orElse(null);
+        return Utils.isOid(ident) ? getOrderByOid(ident) : getOrderById(ident);
+    }
+
+    public Order getOrderByOid(final String oid)
+    {
+        return orderRepository.findByOid(oid).orElse(null);
+    }
+
+    public Order getOrderById(final String id)
+    {
+        return orderRepository.findById(id).orElse(null);
     }
 
     public List<Order> getOrders()
@@ -450,7 +460,17 @@ public class DocumentService
         }
     }
 
-    public Receipt getReceipt(final String _documentId)
+    public Receipt getReceipt(final String ident)
+    {
+        return Utils.isOid(ident) ? getReceiptByOid(ident) : getReceiptById(ident);
+    }
+
+    public Receipt getReceiptByOid(final String oid)
+    {
+        return receiptRepository.findByOid(oid).orElse(null);
+    }
+
+    public Receipt getReceiptById(final String _documentId)
     {
         return receiptRepository.findById(_documentId).orElse(null);
     }
@@ -460,9 +480,9 @@ public class DocumentService
     {
         Optional<Receipt> opt;
         if (ObjectId.isValid(identifier)) {
-            opt= receiptRepository.findById(identifier);
+            opt = receiptRepository.findById(identifier);
         } else {
-            opt = receiptRepository.findOneByOid(identifier);
+            opt = receiptRepository.findByOid(identifier);
         }
 
         if (opt.isEmpty() && remote && Utils.isOid(identifier)) {
@@ -506,7 +526,17 @@ public class DocumentService
         return getPayableHeads4Balance(_balanceKey, "receipts");
     }
 
-    public Invoice getInvoice(final String _documentId)
+    public Invoice getInvoice(final String ident)
+    {
+        return Utils.isOid(ident) ? getInvoiceByOid(ident) : getInvoiceById(ident);
+    }
+
+    public Invoice getInvoiceByOid(final String oid)
+    {
+        return invoiceRepository.findByOid(oid).orElse(null);
+    }
+
+    public Invoice getInvoiceById(final String _documentId)
     {
         return invoiceRepository.findById(_documentId).orElse(null);
     }
@@ -527,7 +557,17 @@ public class DocumentService
         return invoiceRepository.findByBalanceOid(evalBalanceOid(_key));
     }
 
-    public Ticket getTicket(final String _documentId)
+    public Ticket getTicket(final String ident)
+    {
+        return Utils.isOid(ident) ? getTicketByOid(ident) : getTicketById(ident);
+    }
+
+    public Ticket getTicketByOid(final String oid)
+    {
+        return ticketRepository.findByOid(oid).orElse(null);
+    }
+
+    public Ticket getTicketById(final String _documentId)
     {
         return ticketRepository.findById(_documentId).orElse(null);
     }
@@ -537,9 +577,19 @@ public class DocumentService
         return ticketRepository.findByBalanceOid(evalBalanceOid(_key));
     }
 
-    public CreditNote getCreditNote(final String _documentId)
+    public CreditNote getCreditNote(final String ident)
     {
-        return creditNoteRepository.findById(_documentId).orElse(null);
+        return Utils.isOid(ident) ? getCreditNoteByOid(ident) : getCreditNoteById(ident);
+    }
+
+    public CreditNote getCreditNoteByOid(final String oid)
+    {
+        return creditNoteRepository.findByOid(oid).orElse(null);
+    }
+
+    public CreditNote getCreditNoteById(final String documentId)
+    {
+        return creditNoteRepository.findById(documentId).orElse(null);
     }
 
     public Collection<CreditNote> getCreditNotes4Balance(final String _balanceKey)
@@ -621,26 +671,55 @@ public class DocumentService
         return ret;
     }
 
-    public AbstractDocument<?> getDocument(final String _documentId)
+    public AbstractDocument<?> getDocument(final String ident)
     {
-        AbstractDocument<?> ret = getOrder(_documentId);
+        return Utils.isOid(ident) ? getDocumentByOid(ident) : getDocumentById(ident);
+    }
+
+    public AbstractDocument<?> getDocumentByOid(final String oid)
+    {
+        AbstractDocument<?> ret = getOrderByOid(oid);
         if (ret == null) {
-            ret = getPayable(_documentId);
+            ret = getPayableByOid(oid);
         }
         return ret;
     }
 
-    public AbstractPayableDocument<?> getPayable(final String _documentId)
+    public AbstractDocument<?> getDocumentById(final String documentId)
     {
-        AbstractPayableDocument<?> ret = getReceipt(_documentId);
+        AbstractDocument<?> ret = getOrderById(documentId);
         if (ret == null) {
-            ret = getInvoice(_documentId);
+            ret = getPayableById(documentId);
+        }
+        return ret;
+    }
+
+    public AbstractPayableDocument<?> getPayableByOid(final String oid)
+    {
+        AbstractPayableDocument<?> ret = getReceiptByOid(oid);
+        if (ret == null) {
+            ret = getInvoiceByOid(oid);
         }
         if (ret == null) {
-            ret = getTicket(_documentId);
+            ret = getTicketByOid(oid);
         }
         if (ret == null) {
-            ret = getCreditNote(_documentId);
+            ret = getCreditNoteByOid(oid);
+        }
+        return ret;
+    }
+
+    public AbstractPayableDocument<?> getPayableById(final String documentId)
+    {
+        AbstractPayableDocument<?> ret = getReceiptById(documentId);
+        if (ret == null) {
+            ret = getInvoiceById(documentId);
+        }
+        if (ret == null) {
+            ret = getTicketById(documentId);
+        }
+        if (ret == null) {
+            ret = getCreditNoteById(documentId);
         }
         return ret;
     }
@@ -792,7 +871,7 @@ public class DocumentService
                                                  final List<IPosPaymentDto> paymentDtos)
         throws PreconditionException
     {
-        final var order = getOrder(orderId);
+        final var order = getOrderById(orderId);
         final var contact = contactService.findContact(order.getContactOid());
         final AbstractPayableDocument<? extends AbstractPayableDocument<?>> payable;
         final Set<IPayment> payments = new HashSet<>();

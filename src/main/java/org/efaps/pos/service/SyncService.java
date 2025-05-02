@@ -505,7 +505,7 @@ public class SyncService
             if (order.getContactOid() == null || validateContact(order)) {
                 boolean sync = true;
                 if (order.getPayableOid() != null && !Utils.isOid(order.getPayableOid())) {
-                    final AbstractPayableDocument<?> payable = documentService.getPayable(order.getPayableOid());
+                    final AbstractPayableDocument<?> payable = documentService.getPayableById(order.getPayableOid());
                     if (payable != null && Utils.isOid(payable.getOid())) {
                         order.setPayableOid(payable.getOid());
                         orderRepository.save(order);
@@ -680,7 +680,7 @@ public class SyncService
         if (Utils.isOid(creditNote.getSourceDocOid())) {
             ret = true;
         } else {
-            final var payable = documentService.getPayable(creditNote.getSourceDocOid());
+            final var payable = documentService.getPayableById(creditNote.getSourceDocOid());
             if (payable != null && Utils.isOid(payable.getOid())) {
                 creditNote.setSourceDocOid(payable.getOid());
                 creditNoteRepository.save(creditNote);

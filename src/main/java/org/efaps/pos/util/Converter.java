@@ -1439,7 +1439,7 @@ public final class Converter
 
     public static JobDto toDto(final Job _entity)
     {
-        final Order order = INSTANCE.documentService.getOrder(_entity.getDocumentId());
+        final Order order = INSTANCE.documentService.getOrderById(_entity.getDocumentId());
         return JobDto.builder()
                         .withDocumentId(_entity.getDocumentId())
                         .withDocumentNumber(order.getNumber())

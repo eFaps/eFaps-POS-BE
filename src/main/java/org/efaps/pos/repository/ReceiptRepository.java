@@ -36,7 +36,7 @@ public interface ReceiptRepository
 
     Collection<Receipt> findByDate(LocalDate date);
 
-    Optional<Receipt> findOneByOid(String oid);
+    Optional<Receipt> findByOid(String oid);
 
     List<Receipt> findOneByNumber(final String number);
 }

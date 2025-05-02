@@ -17,6 +17,7 @@ package org.efaps.pos.repository;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.efaps.pos.entity.Ticket;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -33,4 +34,6 @@ public interface TicketRepository
     Collection<Ticket> findByNumberLikeIgnoreCase(String _term);
 
     Collection<Ticket> findByDate(LocalDate date);
+
+    Optional<Ticket> findByOid(String oid);
 }

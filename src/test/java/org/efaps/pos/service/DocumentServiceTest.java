@@ -98,7 +98,7 @@ public class DocumentServiceTest
         mongoTemplate.save(order);
         mongoTemplate.save(new Order().setOid("1.3"));
 
-        final Order recievedOrder = documentService.getOrder(order.getId());
+        final Order recievedOrder = documentService.getOrderById(order.getId());
         assertEquals("1.2", recievedOrder.getOid());
     }
 

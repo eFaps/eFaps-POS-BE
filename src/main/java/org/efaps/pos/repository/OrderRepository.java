@@ -34,4 +34,6 @@ public interface OrderRepository
     Collection<Order> findByOidIsNullAndStatus(DocStatus _status);
 
     Optional<Order> findByPayableOid(String _oid);
+
+    Optional<Order> findByOid(String oid);
 }

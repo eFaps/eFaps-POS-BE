@@ -121,7 +121,7 @@ public class DocumentController
     @GetMapping(path = { "orders/{orderId}", "documents/orders/{orderId}" })
     public PosOrderDto getOrder(@PathVariable(name = "orderId") final String orderId)
     {
-        return Converter.toDto(documentService.getOrder(orderId));
+        return Converter.toDto(documentService.getOrderById(orderId));
     }
 
     @DeleteMapping(path = { "orders/{orderId}", "documents/orders/{orderId}" })
@@ -193,7 +193,7 @@ public class DocumentController
     public PosReceiptDto getReceipt(@PathVariable("id") final String _id)
         throws NotFoundException
     {
-        final var receipt = documentService.getReceipt(_id);
+        final var receipt = documentService.getReceiptById(_id);
         if (receipt == null) {
             throw new NotFoundException("Receipt not found");
         }
@@ -210,7 +210,7 @@ public class DocumentController
     public PosInvoiceDto getInvoice(@PathVariable("id") final String _id)
         throws NotFoundException
     {
-        final var invoice = documentService.getInvoice(_id);
+        final var invoice = documentService.getInvoiceById(_id);
         if (invoice == null) {
             throw new NotFoundException("Invoice not found");
         }
@@ -231,7 +231,7 @@ public class DocumentController
     public PosTicketDto getTicket(@PathVariable("id") final String _id)
         throws NotFoundException
     {
-        final Ticket ticket = documentService.getTicket(_id);
+        final Ticket ticket = documentService.getTicketById(_id);
         if (ticket == null) {
             throw new NotFoundException("Ticket not found");
         }
@@ -243,7 +243,7 @@ public class DocumentController
     public PosCreditNoteDto getCreditNote(@PathVariable("id") final String _id)
         throws NotFoundException
     {
-        final var creditNote = documentService.getCreditNote(_id);
+        final var creditNote = documentService.getCreditNoteById(_id);
         if (creditNote == null) {
             throw new NotFoundException("CreditNote not found");
         }

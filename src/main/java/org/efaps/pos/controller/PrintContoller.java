@@ -92,7 +92,7 @@ public class PrintContoller
         final List<PrintResponseDto> ret = new ArrayList<>();
         final Workspace workspace = workspaceService.getWorkspace((User) _authentication.getPrincipal(),
                         _workspaceOid);
-        final Order order = documentService.getOrder(_documentId);
+        final Order order = documentService.getOrderById(_documentId);
         final Collection<Job> jobs = jobService.createJobs(workspace, order);
 
         for (final Job job : jobs) {
