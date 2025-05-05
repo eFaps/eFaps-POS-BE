@@ -45,6 +45,8 @@ import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.ProductRelationType;
 import org.efaps.pos.dto.ProductType;
+import org.efaps.pos.dto.ValidateForCreditNoteDto;
+import org.efaps.pos.dto.ValidateForCreditNoteResponseDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.AbstractPayableDocument;
@@ -840,5 +842,11 @@ public class DocumentService
                 ticketRepository.save(doc);
             });
         }
+    }
+
+    public ValidateForCreditNoteResponseDto validateForCreditNote(final ValidateForCreditNoteDto dto)
+    {
+         dto.getPayableOid();
+         return ValidateForCreditNoteResponseDto.builder().withValid(true).build();
     }
 }

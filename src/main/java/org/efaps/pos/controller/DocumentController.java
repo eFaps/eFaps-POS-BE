@@ -28,6 +28,8 @@ import org.efaps.pos.dto.PosInvoiceDto;
 import org.efaps.pos.dto.PosOrderDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
+import org.efaps.pos.dto.ValidateForCreditNoteDto;
+import org.efaps.pos.dto.ValidateForCreditNoteResponseDto;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Ticket;
@@ -316,6 +318,12 @@ public class DocumentController
         return creditnotes.stream()
                         .map(Converter::toDto)
                         .collect(Collectors.toList());
+    }
+
+    @PostMapping(path = { "creditnotes/validate" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ValidateForCreditNoteResponseDto validateForCreditNote(@RequestBody final ValidateForCreditNoteDto dto)
+    {
+        return documentService.validateForCreditNote(dto);
     }
 
     // mobile
