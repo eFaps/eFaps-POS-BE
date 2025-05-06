@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(IApi.BASEPATH + "admin")
 public class AdminController
 {
+
     private final ConfigService configService;
     /** The sync service. */
     private final SyncService syncService;
@@ -50,26 +51,13 @@ public class AdminController
     public void sync()
         throws SyncServiceDeactivatedException
     {
-        if (!syncService.isDeactivated()) {
-            syncService.syncAllProducts();
-            syncService.syncCategories();
-            syncService.syncPOSs();
-            syncService.syncWorkspaces();
-            syncService.syncUsers();
-            syncService.syncSequences();
-            syncService.syncContacts();
-            syncService.syncWarehouses();
-            syncService.syncInventory();
-            syncService.syncPrinters();
-            syncService.syncImages();
-            syncService.syncReports();
-        }
+        syncService.syncManual();
     }
 
     @GetMapping(path = "/versions")
     public PosVersionsDto version()
     {
-        final String remote =  configService.getOrDefault("org.efaps.pos.Version", "0.0.0");
+        final String remote = configService.getOrDefault("org.efaps.pos.Version", "0.0.0");
         return PosVersionsDto.builder()
                         .withRemote(remote)
                         .withLocal(properties.getBeInst().getVersion()).build();

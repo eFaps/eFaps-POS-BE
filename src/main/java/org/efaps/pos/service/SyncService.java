@@ -921,4 +921,37 @@ public class SyncService
     {
         this.deactivated = deactivated;
     }
+
+    public void syncManual()
+        throws SyncServiceDeactivatedException
+    {
+        if (!isDeactivated()) {
+            syncProperties();
+            syncUsers();
+            syncExchangeRates();
+            syncPOSs();
+            syncWorkspaces();
+            syncAllProducts();
+            syncCategories();
+            syncPromotions();
+            syncBalance();
+            syncReceipts();
+            syncInvoices();
+            syncTickets();
+            syncSequences();
+            syncWarehouses();
+            syncInventory();
+            syncPrinters();
+            syncImages();
+            syncReports();
+            syncOrders();
+            syncAllContacts();
+            syncPosFiles();
+            check4Update();
+            syncPromotionInfos();
+            syncLogs();
+            syncInventory();
+            syncEmployees();
+        }
+    }
 }
