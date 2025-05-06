@@ -65,7 +65,7 @@ public class ReferenceService
 
             };
         } else {
-            final var opt2 = INSTANCE.documentService.findInvoice(ident);
+            final var opt2 = INSTANCE.documentService.findInvoice(ident, false);
             if (opt2.isPresent()) {
                 final AbstractPayableDocument<?> doc = opt2.get();
                 ret = new IReference()

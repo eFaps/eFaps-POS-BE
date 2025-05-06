@@ -922,36 +922,74 @@ public class SyncService
         this.deactivated = deactivated;
     }
 
-    public void syncManual()
+    public void syncManual(List<SyncDirective> syncDirectives)
         throws SyncServiceDeactivatedException
     {
         if (!isDeactivated()) {
-            syncProperties();
-            syncUsers();
-            syncExchangeRates();
-            syncPOSs();
-            syncWorkspaces();
-            syncAllProducts();
-            syncCategories();
-            syncPromotions();
-            syncBalance();
-            syncReceipts();
-            syncInvoices();
-            syncTickets();
-            syncSequences();
-            syncWarehouses();
-            syncInventory();
-            syncPrinters();
-            syncImages();
-            syncReports();
-            syncOrders();
-            syncAllContacts();
-            syncPosFiles();
-            check4Update();
-            syncPromotionInfos();
-            syncLogs();
-            syncInventory();
-            syncEmployees();
+            for (final var syncDirective : syncDirectives) {
+                switch (syncDirective) {
+                    case PRODUCTS:
+                    case PROMOTIONS:
+                    case WORKSPACES:
+                    case EXCHANGERATES:
+                    case USERS:
+                    case CATEGORIES:
+                    case INVENTORY:
+                    case POSFILES:
+                        invokeSync(syncDirective.method);
+                        break;
+                    case ALL:
+                    default:
+                        syncProperties();
+                        syncUsers();
+                        syncExchangeRates();
+                        syncPOSs();
+                        syncWorkspaces();
+                        syncAllProducts();
+                        syncCategories();
+                        syncPromotions();
+                        syncBalance();
+                        syncReceipts();
+                        syncInvoices();
+                        syncTickets();
+                        syncSequences();
+                        syncWarehouses();
+                        syncInventory();
+                        syncPrinters();
+                        syncImages();
+                        syncReports();
+                        syncOrders();
+                        syncAllContacts();
+                        syncPosFiles();
+                        check4Update();
+                        syncPromotionInfos();
+                        syncLogs();
+                        syncInventory();
+                        syncEmployees();
+                }
+            }
+        }
+    }
+
+    private void invokeSync(final String methodName) {
+        LOG.info("Invoking {}", methodName);
+    }
+
+    public enum SyncDirective
+    {
+        ALL(null),
+        PROMOTIONS("syncPromotions"),
+        PRODUCTS("syncAllProducts"),
+        WORKSPACES("syncWorkspaces"),
+        EXCHANGERATES("syncExchangeRates"),
+        USERS("syncUsers"),
+        CATEGORIES("syncCategories"),
+        INVENTORY("syncInventory"),
+        POSFILES("syncPosFiles");
+
+        String method;
+        SyncDirective(String method) {
+            this.method = method;
         }
     }
 }

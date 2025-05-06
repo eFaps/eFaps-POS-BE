@@ -15,15 +15,19 @@
  */
 package org.efaps.pos.controller;
 
+import java.util.List;
+
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PosVersionsDto;
 import org.efaps.pos.service.ConfigService;
 import org.efaps.pos.service.SyncService;
+import org.efaps.pos.service.SyncService.SyncDirective;
 import org.efaps.pos.util.SyncServiceDeactivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -48,10 +52,10 @@ public class AdminController
     }
 
     @GetMapping(path = "/sync")
-    public void sync()
+    public void sync(@RequestParam(name = "syncDirective", required = false, defaultValue = "ALL") List<SyncDirective> syncDirectives)
         throws SyncServiceDeactivatedException
     {
-        syncService.syncManual();
+        syncService.syncManual(syncDirectives);
     }
 
     @GetMapping(path = "/versions")

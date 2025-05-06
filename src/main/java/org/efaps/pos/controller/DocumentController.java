@@ -221,10 +221,11 @@ public class DocumentController
 
     @GetMapping(path = { "invoices", "documents/invoices" }, produces = MediaType.APPLICATION_JSON_VALUE, params = {
                     "ident" })
-    public PosInvoiceDto getInvoiceByIdent(@RequestParam(name = "ident") final String ident)
+    public PosInvoiceDto getInvoiceByIdent(@RequestParam(name = "ident") final String ident,
+                                           @RequestParam(name = "remote", required = false) final Boolean remote)
         throws NotFoundException
     {
-        final var invoice = documentService.findInvoice(ident)
+        final var invoice = documentService.findInvoice(ident, remote)
                         .orElseThrow(() -> new NotFoundException("Receipt not found"));
         return Converter.toDto(invoice);
     }

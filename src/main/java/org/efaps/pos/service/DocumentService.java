@@ -82,8 +82,6 @@ import org.efaps.pos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -491,11 +489,17 @@ public class DocumentService
         return receipts;
     }
 
-    public Optional<CreditNote> findCreditNote(final String _identifier)
+    public Optional<CreditNote> findCreditNote(final String identifier)
     {
-        return creditNoteRepository.findOne(
-                        Example.of(new CreditNote().setId(_identifier).setOid(_identifier),
-                                        ExampleMatcher.matchingAny()));
+
+        Optional<CreditNote> opt;
+        if (ObjectId.isValid(identifier)) {
+            opt = creditNoteRepository.findById(identifier);
+        } else {
+            opt = creditNoteRepository.findByOid(identifier);
+        }
+
+        return opt;
     }
 
     public Collection<Receipt> getReceipts4Balance(final String _key)
@@ -513,10 +517,19 @@ public class DocumentService
         return invoiceRepository.findById(_documentId).orElse(null);
     }
 
-    public Optional<Invoice> findInvoice(final String _identifier)
+    public Optional<Invoice> findInvoice(final String identifier, final Boolean remote)
     {
-        return invoiceRepository.findOne(
-                        Example.of(new Invoice().setId(_identifier).setOid(_identifier), ExampleMatcher.matchingAny()));
+        Optional<Invoice> opt;
+        if (ObjectId.isValid(identifier)) {
+            opt = invoiceRepository.findById(identifier);
+        } else {
+            opt = invoiceRepository.findByOid(identifier);
+        }
+
+        if (opt.isEmpty() && remote && Utils.isOid(identifier)) {
+
+        }
+        return opt;
     }
 
     public Collection<PayableHead> getInvoiceHeads4Balance(final String _balanceKey)
@@ -717,7 +730,7 @@ public class DocumentService
     public void retrigger4Invoice(final String identifier)
     {
         LOG.warn("Retriggering for Invoice: {}", identifier);
-        final var entity = findInvoice(identifier);
+        final var entity = findInvoice(identifier, false);
         if (entity.isPresent()) {
             final var dto = Converter.toDto(entity.get());
             for (final var listener : invoiceListeners) {
