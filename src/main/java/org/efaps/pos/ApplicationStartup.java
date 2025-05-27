@@ -19,6 +19,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.config.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
+import org.efaps.pos.entity.PromotionInfo;
 import org.efaps.pos.service.DemoService;
 import org.efaps.pos.service.SyncService;
 import org.slf4j.Logger;
@@ -30,6 +31,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,17 +45,20 @@ public class ApplicationStartup
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationStartup.class);
 
     private final Environment env;
+    private final MongoTemplate template;
     private final ConfigProperties configProperties;
     private final TaskExecutor taskExecutor;
     private final SyncService syncService;
     private DemoService demoService;
 
     public ApplicationStartup(final Environment env,
+                              final MongoTemplate template,
                               final ConfigProperties configProperties,
                               final TaskExecutor taskExecutor,
                               final SyncService syncService)
     {
         this.env = env;
+        this.template = template;
         this.configProperties = configProperties;
         this.syncService = syncService;
         this.taskExecutor = taskExecutor;
@@ -60,6 +67,7 @@ public class ApplicationStartup
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent _event)
     {
+        ensureIndexes();
         if (ArrayUtils.contains(env.getActiveProfiles(), "demo")) {
             syncService.setDeactivated(true);
             demoService.init();
@@ -76,10 +84,15 @@ public class ApplicationStartup
         }
     }
 
+    private void ensureIndexes()
+    {
+        template.indexOps(PromotionInfo.class).createIndex(new Index().on("documentId", Direction.ASC));
+    }
+
     private void sync()
     {
-      final var company = Context.get().getCompany();
-      taskExecutor.execute(() -> {
+        final var company = Context.get().getCompany();
+        taskExecutor.execute(() -> {
             try {
                 if (company != null) {
                     Context.get().setCompany(company);
