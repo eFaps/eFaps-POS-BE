@@ -973,6 +973,13 @@ public class SyncService
 
     private void invokeSync(final String methodName) {
         LOG.info("Invoking {}", methodName);
+        try {
+            final Method method = getClass().getMethod(methodName);
+            method.invoke(this);
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+                        | InvocationTargetException e) {
+            LOG.error("well....", e);
+        }
     }
 
     public enum SyncDirective
