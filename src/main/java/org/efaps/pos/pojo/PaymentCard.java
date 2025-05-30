@@ -17,8 +17,17 @@ package org.efaps.pos.pojo;
 
 import org.efaps.pos.dto.PaymentType;
 
-public class PaymentCard extends AbstractPayment
+public class PaymentCard
+    extends AbstractPayment
 {
+
+    private String cardTypeId;
+    private String cardLabel;
+    private String cardNumber;
+    private String serviceProvider;
+    private String authorization;
+    private String operationId;
+
     public PaymentCard()
     {
         setType(PaymentType.CARD);
@@ -28,5 +37,71 @@ public class PaymentCard extends AbstractPayment
     public String getLabel()
     {
         return null;
+    }
+
+    public String getCardTypeId()
+    {
+        return cardTypeId;
+    }
+
+    public PaymentCard setCardTypeId(String cardTypeId)
+    {
+        this.cardTypeId = cardTypeId;
+        return this;
+    }
+
+    public String getCardLabel()
+    {
+        return cardLabel;
+    }
+
+    public PaymentCard setCardLabel(String cardLabel)
+    {
+        this.cardLabel = cardLabel;
+        return this;
+    }
+
+    public String getCardNumber()
+    {
+        return cardNumber;
+    }
+
+    public PaymentCard setCardNumber(String cardNumber)
+    {
+        this.cardNumber = cardNumber;
+        return this;
+    }
+
+    public String getServiceProvider()
+    {
+        return serviceProvider;
+    }
+
+    public PaymentCard setServiceProvider(String serviceProvider)
+    {
+        this.serviceProvider = serviceProvider;
+        return this;
+    }
+
+    public String getAuthorization()
+    {
+        return authorization;
+    }
+
+    public PaymentCard setAuthorization(String authorization)
+    {
+        this.authorization = authorization;
+        return this;
+    }
+
+    public String getOperationId()
+    {
+        return operationId;
+    }
+
+    public PaymentCard setOperationId(String operationId)
+    {
+        this.operationId = operationId;
+        return this;
     }
 }

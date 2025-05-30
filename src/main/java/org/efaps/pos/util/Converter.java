@@ -56,6 +56,7 @@ import org.efaps.pos.dto.LogEntryDto;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PayableHeadDto;
 import org.efaps.pos.dto.PaymentAbstractDto;
+import org.efaps.pos.dto.PaymentCardAbstractDto;
 import org.efaps.pos.dto.PaymentCardDto;
 import org.efaps.pos.dto.PaymentCashDto;
 import org.efaps.pos.dto.PaymentChangeDto;
@@ -752,7 +753,15 @@ public final class Converter
                 yield new PaymentCash();
             }
             case CARD -> {
-                yield new PaymentCard();
+                final var paymentDto = (PaymentCardAbstractDto) dto;
+                final var entity = new PaymentCard()
+                                .setCardTypeId(paymentDto.getCardTypeId())
+                                .setCardLabel(paymentDto.getCardLabel())
+                                .setCardNumber(paymentDto.getCardNumber())
+                                .setServiceProvider(paymentDto.getServiceProvider())
+                                .setAuthorization(paymentDto.getAuthorization())
+                                .setOperationId(paymentDto.getOperationId());
+                yield entity;
             }
             case CHANGE -> {
                 yield new PaymentChange();
@@ -815,6 +824,12 @@ public final class Converter
             case CARD -> {
                 final var posEntity = (PaymentCard) entity;
                 final var builder = PosPaymentCardDto.builder()
+                                .withCardTypeId(posEntity.getCardTypeId())
+                                .withCardLabel(posEntity.getCardLabel())
+                                .withCardNumber(posEntity.getCardNumber())
+                                .withServiceProvider(posEntity.getServiceProvider())
+                                .withAuthorization(posEntity.getAuthorization())
+                                .withOperationId(posEntity.getOperationId())
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -910,6 +925,12 @@ public final class Converter
             case CARD -> {
                 final var posEntity = (PaymentCard) entity;
                 final var builder = PaymentCardDto.builder()
+                                .withCardTypeId(posEntity.getCardTypeId())
+                                .withCardLabel(posEntity.getCardLabel())
+                                .withCardNumber(posEntity.getCardNumber())
+                                .withServiceProvider(posEntity.getServiceProvider())
+                                .withAuthorization(posEntity.getAuthorization())
+                                .withOperationId(posEntity.getOperationId())
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())

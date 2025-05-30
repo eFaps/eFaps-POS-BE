@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(builder = PosPaymentCardDto.Builder.class)
 @JsonInclude(Include.NON_NULL)
 public class PosPaymentCardDto
-    extends PaymentAbstractDto
+    extends PaymentCardAbstractDto
     implements IPosPaymentDto
 {
 
@@ -63,7 +63,7 @@ public class PosPaymentCardDto
     }
 
     public static class Builder
-        extends PaymentAbstractDto.Builder<PosPaymentCardDto.Builder>
+        extends PaymentCardAbstractDto.Builder<PosPaymentCardDto.Builder>
     {
 
         private final PaymentType type = PaymentType.CARD;
