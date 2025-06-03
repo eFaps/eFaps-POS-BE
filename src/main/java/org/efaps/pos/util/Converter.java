@@ -1733,7 +1733,7 @@ public final class Converter
                             : payableDto.getPayments()
                                             .stream()
                                             .map(Converter::toEntity)
-                                            .collect(Collectors.toSet()));
+                                            .collect(Collectors.toList()));
         }
     }
 
@@ -1887,7 +1887,7 @@ public final class Converter
                             .setPayments(((AbstractPayableDocument<?>) fromEntity).getPayments() == null ? null
                                             : ((AbstractPayableDocument<?>) fromEntity).getPayments().stream()
                                                             .map(Converter::clone)
-                                                            .collect(Collectors.toSet()));
+                                                            .collect(Collectors.toList()));
         }
     }
 

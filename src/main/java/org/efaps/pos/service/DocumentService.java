@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -68,7 +67,6 @@ import org.efaps.pos.interfaces.IPos;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
 import org.efaps.pos.pojo.EmployeeRelation;
-import org.efaps.pos.pojo.IPayment;
 import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.CreditNoteRepository;
@@ -801,8 +799,7 @@ public class DocumentService
         final var order = getOrderById(orderId);
         final var contact = contactService.findContact(order.getContactOid());
         final AbstractPayableDocument<? extends AbstractPayableDocument<?>> payable;
-        final Set<IPayment> payments = new HashSet<>();
-        payments.addAll(paymentDtos.stream().map(Converter::toEntity).toList());
+        final var payments = paymentDtos.stream().map(Converter::toEntity).toList();
         if (IdentificationType.RUC.equals(contact.getIdType())) {
             final var invoice = new Invoice();
             Converter.clone(order, invoice);

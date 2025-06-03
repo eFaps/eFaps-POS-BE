@@ -15,7 +15,7 @@
  */
 package org.efaps.pos.entity;
 
-import java.util.Set;
+import java.util.List;
 
 import org.efaps.pos.pojo.IPayment;
 
@@ -25,15 +25,15 @@ public abstract class AbstractPayableDocument<T extends AbstractPayableDocument<
 
     private String balanceOid;
 
-    private Set<IPayment> payments;
+    private List<IPayment> payments;
 
-    public Set<IPayment> getPayments()
+    public List<IPayment> getPayments()
     {
         return this.payments;
     }
 
     @SuppressWarnings("unchecked")
-    public T setPayments(final Set<IPayment> _payments)
+    public T setPayments(final List<IPayment> _payments)
     {
         this.payments = _payments;
         return (T) this;
