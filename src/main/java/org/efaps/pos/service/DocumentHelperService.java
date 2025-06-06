@@ -69,32 +69,32 @@ public class DocumentHelperService
         return Utils.isOid(ident) ? getPayableByOid(ident) : getPayableById(ident);
     }
 
-    public Optional<AbstractPayableDocument<?>> getPayableByOid(final String documentId)
+    public Optional<AbstractPayableDocument<?>> getPayableByOid(final String oid)
     {
-        Optional<AbstractPayableDocument<?>> ret = getReceiptByOid(documentId).map(this::toPayable);
+        Optional<AbstractPayableDocument<?>> ret = getReceiptByOid(oid).map(this::toPayable);
         if (ret.isEmpty()) {
-            ret = getInvoiceByOid(documentId).map(this::toPayable);
+            ret = getInvoiceByOid(oid).map(this::toPayable);
         }
         if (ret.isEmpty()) {
-            ret = getTicketByOid(documentId).map(this::toPayable);
+            ret = getTicketByOid(oid).map(this::toPayable);
         }
         if (ret.isEmpty()) {
-            ret = getCreditNoteByOid(documentId).map(this::toPayable);
+            ret = getCreditNoteByOid(oid).map(this::toPayable);
         }
         return ret;
     }
 
-    public Optional<AbstractPayableDocument<?>> getPayableById(final String documentId)
+    public Optional<AbstractPayableDocument<?>> getPayableById(final String id)
     {
-        Optional<AbstractPayableDocument<?>> ret = getReceiptById(documentId).map(this::toPayable);
+        Optional<AbstractPayableDocument<?>> ret = getReceiptById(id).map(this::toPayable);
         if (ret.isEmpty()) {
-            ret = getInvoiceById(documentId).map(this::toPayable);
+            ret = getInvoiceById(id).map(this::toPayable);
         }
         if (ret.isEmpty()) {
-            ret = getTicketById(documentId).map(this::toPayable);
+            ret = getTicketById(id).map(this::toPayable);
         }
         if (ret.isEmpty()) {
-            ret = getCreditNoteById(documentId).map(this::toPayable);
+            ret = getCreditNoteById(id).map(this::toPayable);
         }
         return ret;
     }

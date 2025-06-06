@@ -162,7 +162,7 @@ public class PromotionService
     {
         final var active = BooleanUtils.toBoolean(configService.getSystemConfig(ConfigService.PROMOTIONS_ACTIVATE));
         if (active) {
-            LOG.debug("Syncing promotionInfos with batchSize: {}", syncPromotionsBatchSize);
+            LOG.info("Syncing promotionInfos with batchSize: {}", syncPromotionsBatchSize);
             var slice = promotionInfoRepository.findByOidIsNull(PageRequest.of(0, syncPromotionsBatchSize));
             syncPromotionInfos(slice.getContent());
             while (slice.hasNext()) {

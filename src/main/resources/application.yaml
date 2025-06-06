@@ -15,7 +15,7 @@ spring:
   quartz:
     scheduler-name: Quartz-Scheduler
     properties:
-      org.quartz.threadPool.threadCount: 1
+      org.quartz.threadPool.threadCount: 5
       org.quartz.scheduler.skipUpdateCheck: true
 
 mongoClientURI: mongodb://localhost:27017/efapsPOS
