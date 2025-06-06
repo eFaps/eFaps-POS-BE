@@ -87,6 +87,7 @@ public class ApplicationStartup
     private void ensureIndexes()
     {
         template.indexOps(PromotionInfo.class).createIndex(new Index().on("documentId", Direction.ASC));
+        template.indexOps(PromotionInfo.class).createIndex(new Index().on("oid", Direction.ASC));
     }
 
     private void sync()
