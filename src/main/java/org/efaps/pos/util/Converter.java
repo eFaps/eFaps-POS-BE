@@ -794,6 +794,7 @@ public final class Converter
         final var paymentDto = (PaymentAbstractDto) dto;
 
         payment.setOid(paymentDto.getOid())
+                        .setIndex(dto.getIndex())
                         .setAmount(paymentDto.getAmount())
                         .setCurrency(paymentDto.getCurrency())
                         .setExchangeRate(paymentDto.getExchangeRate())
@@ -811,6 +812,7 @@ public final class Converter
             case CASH -> {
                 final var posEntity = (PaymentCash) entity;
                 final var builder = PosPaymentCashDto.builder()
+                                .withIndex(posEntity.getIndex())
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -824,6 +826,7 @@ public final class Converter
             case CARD -> {
                 final var posEntity = (PaymentCard) entity;
                 final var builder = PosPaymentCardDto.builder()
+                                .withIndex(posEntity.getIndex())
                                 .withCardTypeId(posEntity.getCardTypeId())
                                 .withCardLabel(posEntity.getCardLabel())
                                 .withCardNumber(posEntity.getCardNumber())
@@ -843,6 +846,7 @@ public final class Converter
             case CHANGE -> {
                 final var posEntity = (PaymentChange) entity;
                 final var builder = PosPaymentChangeDto.builder()
+                                .withIndex(posEntity.getIndex())
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -856,6 +860,7 @@ public final class Converter
             case ELECTRONIC -> {
                 final var posEntity = (PaymentElectronic) entity;
                 final var builder = PosPaymentElectronicDto.builder()
+                                .withIndex(posEntity.getIndex())
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -876,6 +881,7 @@ public final class Converter
             case FREE -> {
                 final var posEntity = (PaymentFree) entity;
                 final var builder = PosPaymentFreeDto.builder()
+                                .withIndex(posEntity.getIndex())
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -888,6 +894,7 @@ public final class Converter
             case LOYALTY_POINTS -> {
                 final var posEntity = (PaymentLoyaltyPoints) entity;
                 final var builder = PosPaymentLoyaltyPointsDto.builder()
+                                .withIndex(posEntity.getIndex())
                                 .withOID(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -914,6 +921,7 @@ public final class Converter
                 final var posEntity = (PaymentCash) entity;
                 final var builder = PaymentCashDto.builder()
                                 .withOID(posEntity.getOid())
+                                .withIndex(posEntity.getIndex())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -925,6 +933,7 @@ public final class Converter
             case CARD -> {
                 final var posEntity = (PaymentCard) entity;
                 final var builder = PaymentCardDto.builder()
+                                .withIndex(posEntity.getIndex())
                                 .withCardTypeId(posEntity.getCardTypeId())
                                 .withCardLabel(posEntity.getCardLabel())
                                 .withCardNumber(posEntity.getCardNumber())
@@ -944,6 +953,7 @@ public final class Converter
                 final var posEntity = (PaymentChange) entity;
                 final var builder = PaymentChangeDto.builder()
                                 .withOID(posEntity.getOid())
+                                .withIndex(posEntity.getIndex())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -956,6 +966,7 @@ public final class Converter
                 final var posEntity = (PaymentElectronic) entity;
                 final var builder = PaymentElectronicDto.builder()
                                 .withOID(posEntity.getOid())
+                                .withIndex(posEntity.getIndex())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -975,6 +986,7 @@ public final class Converter
                 final var posEntity = (PaymentFree) entity;
                 final var builder = PaymentFreeDto.builder()
                                 .withOID(posEntity.getOid())
+                                .withIndex(posEntity.getIndex())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -987,6 +999,7 @@ public final class Converter
                 final var posEntity = (PaymentLoyaltyPoints) entity;
                 final var builder = PaymentLoyaltyPointsDto.builder()
                                 .withOID(posEntity.getOid())
+                                .withIndex(posEntity.getIndex())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -1917,6 +1930,7 @@ public final class Converter
                 final var from = (PaymentCard) fromPayment;
                 yield new PaymentCard()
                                 .setOid(from.getOid())
+                                .setIndex(from.getIndex())
                                 .setAmount(from.getAmount())
                                 .setCollectOrderId(from.getCollectOrderId())
                                 .setCurrency(from.getCurrency())
@@ -1927,6 +1941,7 @@ public final class Converter
                 final var from = (PaymentCash) fromPayment;
                 yield new PaymentCash()
                                 .setOid(from.getOid())
+                                .setIndex(from.getIndex())
                                 .setAmount(from.getAmount())
                                 .setCollectOrderId(from.getCollectOrderId())
                                 .setCurrency(from.getCurrency())
@@ -1936,6 +1951,7 @@ public final class Converter
                 final var from = (PaymentChange) fromPayment;
                 yield new PaymentChange()
                                 .setOid(from.getOid())
+                                .setIndex(from.getIndex())
                                 .setAmount(from.getAmount())
                                 .setCollectOrderId(from.getCollectOrderId())
                                 .setCurrency(from.getCurrency())
@@ -1945,6 +1961,7 @@ public final class Converter
                 final var from = (PaymentElectronic) fromPayment;
                 yield new PaymentElectronic()
                                 .setOid(from.getOid())
+                                .setIndex(from.getIndex())
                                 .setAmount(from.getAmount())
                                 .setCollectOrderId(from.getCollectOrderId())
                                 .setCurrency(from.getCurrency())
@@ -1954,6 +1971,7 @@ public final class Converter
                 final var from = (PaymentFree) fromPayment;
                 yield new PaymentFree()
                                 .setOid(from.getOid())
+                                .setIndex(from.getIndex())
                                 .setAmount(from.getAmount())
                                 .setCollectOrderId(from.getCollectOrderId())
                                 .setCurrency(from.getCurrency())
@@ -1963,6 +1981,7 @@ public final class Converter
                 final var from = (PaymentLoyaltyPoints) fromPayment;
                 yield new PaymentLoyaltyPoints()
                                 .setOid(from.getOid())
+                                .setIndex(from.getIndex())
                                 .setAmount(from.getAmount())
                                 .setCollectOrderId(from.getCollectOrderId())
                                 .setCurrency(from.getCurrency())

@@ -26,6 +26,7 @@ public abstract class AbstractPayment
 {
 
     private String oid;
+    private int index;
     private PaymentType type;
     private BigDecimal amount;
     private Currency currency;
@@ -34,6 +35,18 @@ public abstract class AbstractPayment
 
     private String info;
     private OffsetDateTime operationDateTime;
+
+    @Override
+    public int getIndex()
+    {
+        return index;
+    }
+
+    public AbstractPayment setIndex(int index)
+    {
+        this.index = index;
+        return this;
+    }
 
     public BigDecimal getExchangeRate()
     {
@@ -68,6 +81,7 @@ public abstract class AbstractPayment
         return this;
     }
 
+    @Override
     public Currency getCurrency()
     {
         return currency;

@@ -57,6 +57,7 @@ public class Payment implements IPayment
         return this;
     }
 
+    @Override
     public BigDecimal getAmount()
     {
         return amount;
@@ -101,6 +102,7 @@ public class Payment implements IPayment
         return this;
     }
 
+    @Override
     public Currency getCurrency()
     {
         return currency;
@@ -137,5 +139,12 @@ public class Payment implements IPayment
     public String getLabel()
     {
         return getCardLabel();
+    }
+
+    @Override
+    public int getIndex()
+    {
+        // TODO Auto-generated method stub
+        return 0;
     }
 }

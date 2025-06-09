@@ -22,6 +22,8 @@ import org.efaps.pos.dto.PaymentType;
 
 public interface IPayment
 {
+    int getIndex();
+
     PaymentType getType();
 
     String getCollectOrderId();
