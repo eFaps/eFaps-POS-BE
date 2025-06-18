@@ -847,9 +847,8 @@ public class SyncService
         LOG.info("Syncing Contacts");
         final var syncedContacts = contactService.syncContactsUp();
         documentService.updateContactOid(syncedContacts);
-        if (contactService.syncContacts(getSync(StashId.CONTACTSYNC))) {
-            registerSync(StashId.CONTACTSYNC);
-        }
+        contactService.syncContacts(getSync(StashId.CONTACTSYNC));
+        registerSync(StashId.CONTACTSYNC);
     }
 
     public void syncEmployees()

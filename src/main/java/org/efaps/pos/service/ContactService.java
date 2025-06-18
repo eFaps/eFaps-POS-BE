@@ -129,19 +129,16 @@ public class ContactService
         return contactRepository.save(existingEntity);
     }
 
-    public boolean syncContacts(final SyncInfo syncInfo)
+    public void syncContacts(final SyncInfo syncInfo)
         throws SyncServiceDeactivatedException
     {
-        boolean ret = false;
         syncUpdatedContacts();
         if (syncInfo != null) {
             final var after = OffsetDateTime.of(syncInfo.getLastSync(), ZoneOffset.of("-5")).minusMinutes(10);
             syncContactsDown(after);
-            ret = true;
         } else {
             syncContactsDown(null);
         }
-        return ret;
     }
 
     public List<Contact> syncContactsUp()
