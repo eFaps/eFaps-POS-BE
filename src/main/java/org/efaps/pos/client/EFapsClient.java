@@ -592,7 +592,9 @@ public class EFapsClient
         try {
             final URI uri = UriComponentsBuilder.fromUri(getEFapsConfig().getBaseUrl())
                             .path(getEFapsConfig().getCheckoutPath())
-                            .queryParam("oid", _oid).build().toUri();
+                            .queryParam("oid", _oid)
+                            .queryParam("ident", getIdentifier())
+                            .build().toUri();
             final RequestEntity<?> requestEntity = get(uri);
             final ResponseEntity<byte[]> response = getRestTemplate().exchange(requestEntity, byte[].class);
             if (response.getBody() != null) {
