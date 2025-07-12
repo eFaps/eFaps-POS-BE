@@ -62,7 +62,6 @@ import org.efaps.pos.entity.Workspace.Floor;
 import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.pojo.StashId;
 import org.efaps.pos.repository.BalanceRepository;
-import org.efaps.pos.repository.CategoryRepository;
 import org.efaps.pos.repository.CreditNoteRepository;
 import org.efaps.pos.repository.InventoryRepository;
 import org.efaps.pos.repository.InvoiceRepository;
@@ -114,7 +113,6 @@ public class SyncService
     private final WorkspaceRepository workspaceRepository;
     private final BalanceRepository balanceRepository;
     private final OrderRepository orderRepository;
-    private final CategoryRepository categoryRepository;
     private final ConfigProperties configProperties;
     private final ContactService contactService;
     private final DocumentService documentService;
@@ -145,7 +143,6 @@ public class SyncService
                        final WorkspaceRepository _workspaceRepository,
                        final BalanceRepository _balanceRepository,
                        final OrderRepository _orderRepository,
-                       final CategoryRepository _categoryRepository,
                        final EFapsClient _eFapsClient,
                        final ConfigProperties _configProperties,
                        final ContactService contactService,
@@ -174,7 +171,6 @@ public class SyncService
         workspaceRepository = _workspaceRepository;
         balanceRepository = _balanceRepository;
         orderRepository = _orderRepository;
-        categoryRepository = _categoryRepository;
         eFapsClient = _eFapsClient;
         configProperties = _configProperties;
         this.contactService = contactService;
