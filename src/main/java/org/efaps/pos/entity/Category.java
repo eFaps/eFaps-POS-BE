@@ -15,6 +15,8 @@
  */
 package org.efaps.pos.entity;
 
+import java.time.OffsetDateTime;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -35,6 +37,8 @@ public class Category
     private int weight;
 
     private String imageOid;
+
+    private OffsetDateTime imageModifiedAt;
 
     private String parentOid;
 
@@ -91,6 +95,17 @@ public class Category
     public Category setImageOid(final String imageOid)
     {
         this.imageOid = imageOid;
+        return this;
+    }
+
+    public OffsetDateTime getImageModifiedAt()
+    {
+        return imageModifiedAt;
+    }
+
+    public Category setImageModifiedAt(OffsetDateTime imageModifiedAt)
+    {
+        this.imageModifiedAt = imageModifiedAt;
         return this;
     }
 

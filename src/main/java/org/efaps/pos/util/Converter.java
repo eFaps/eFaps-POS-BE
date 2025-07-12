@@ -696,6 +696,7 @@ public final class Converter
                         .withWeight(entity.getWeight())
                         .withImageOid(entity.getImageOid())
                         .withParentOid(entity.getParentOid())
+                        .withImageModifiedAt(entity.getImageModifiedAt())
                         .build();
     }
 
@@ -706,6 +707,7 @@ public final class Converter
                         .setOid(dto.getOid())
                         .setWeight(dto.getWeight())
                         .setImageOid(dto.getImageOid())
+                        .setImageModifiedAt(dto.getImageModifiedAt())
                         .setParentOid(dto.getParentOid());
     }
 
@@ -1738,9 +1740,8 @@ public final class Converter
                                         .collect(Collectors.toSet()));
         entity.setNote(dto.getNote());
 
-        if (entity instanceof AbstractPayableDocument && dto instanceof AbstractPayableDocumentDto) {
+        if (entity instanceof AbstractPayableDocument && dto instanceof final AbstractPayableDocumentDto payableDto) {
             final var payableEntity = (AbstractPayableDocument<?>) entity;
-            final var payableDto = (AbstractPayableDocumentDto) dto;
             payableEntity.setBalanceOid(payableDto.getBalanceOid());
             payableEntity.setPayments(payableDto.getPayments() == null ? null
                             : payableDto.getPayments()

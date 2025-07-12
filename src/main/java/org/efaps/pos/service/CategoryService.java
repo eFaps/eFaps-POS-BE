@@ -15,11 +15,17 @@
  */
 package org.efaps.pos.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.entity.Category;
 import org.efaps.pos.repository.CategoryRepository;
 import org.efaps.pos.util.CategoryNotFoundException;
+import org.efaps.pos.util.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
@@ -28,12 +34,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class CategoryService
 {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CategoryService.class);
+
     private final CategoryRepository categoryRepository;
+    private final EFapsClient eFapsClient;
+    private final ImageService imageService;
 
     @Autowired
-    public CategoryService(final CategoryRepository _categoryRepository)
+    public CategoryService(final CategoryRepository categoryRepository,
+                           final EFapsClient eFapsClient,
+                           final ImageService imageService)
     {
-        categoryRepository = _categoryRepository;
+        this.categoryRepository = categoryRepository;
+        this.eFapsClient = eFapsClient;
+        this.imageService = imageService;
     }
 
     public List<Category> getCategories()
@@ -45,6 +60,43 @@ public class CategoryService
     public Category getCategory(final String _oid)
         throws CategoryNotFoundException
     {
-        return categoryRepository.findById(_oid).orElseThrow(() -> new CategoryNotFoundException());
+        return categoryRepository.findById(_oid).orElseThrow(CategoryNotFoundException::new);
+    }
+
+    public void sync()
+    {
+        LOG.info("Syncing Categories");
+        final List<Category> categories = eFapsClient.getCategories().stream()
+                        .map(Converter::toEntity)
+                        .collect(Collectors.toList());
+        final var imageOids = new ArrayList<String>();
+        if (!categories.isEmpty()) {
+            final var catOids  =categories.stream().map(Category::getOid).collect(Collectors.toSet());
+            categoryRepository.findAll().forEach(existing -> {
+                if (!catOids.contains(existing.getOid())) {
+                    categoryRepository.delete(existing);
+                }
+            });
+            for (final var category : categories) {
+                final var storedOpt = categoryRepository.findById(category.getOid());
+                if (storedOpt.isEmpty()) {
+                    imageOids.add(category.getOid());
+                } else {
+                    final var stored = storedOpt.get();
+                    if (category.getImageModifiedAt() != null) {
+                        if (stored.getImageModifiedAt() == null) {
+                            imageOids.add(category.getOid());
+                        } else if (!category.getImageModifiedAt().withNano(0)
+                                        .isEqual(stored.getImageModifiedAt().withNano(0))) {
+                            imageOids.add(category.getOid());
+                        }
+                    }
+                }
+                categoryRepository.save(category);
+            }
+            if (!imageOids.isEmpty()) {
+                imageService.registerForSync("Categories", imageOids);
+            }
+        }
     }
 }

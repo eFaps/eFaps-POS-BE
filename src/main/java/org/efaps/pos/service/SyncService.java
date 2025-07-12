@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
@@ -42,7 +41,6 @@ import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
-import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Config;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.CreditNote;
@@ -126,6 +124,9 @@ public class SyncService
     private final ProductService productService;
     private final PosFileService posFileService;
     private final UpdateService updateService;
+    private final CategoryService categoryService;
+    private final ImageService imageService;
+
     private boolean deactivated;
 
     @Autowired
@@ -153,8 +154,10 @@ public class SyncService
                        final LogService logService,
                        final PromotionService promotionService,
                        final ProductService productService,
+                       final CategoryService categoryService,
                        final PosFileService posFileService,
-                       final UpdateService updateService)
+                       final UpdateService updateService,
+                       final ImageService imageService)
     {
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
@@ -182,6 +185,8 @@ public class SyncService
         this.productService = productService;
         this.posFileService = posFileService;
         this.updateService = updateService;
+        this.categoryService = categoryService;
+        this.imageService = imageService;
     }
 
     public void runSyncJob(final String _methodName)
@@ -261,21 +266,7 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Categories");
-        final List<Category> categories = eFapsClient.getCategories().stream()
-                        .map(Converter::toEntity)
-                        .collect(Collectors.toList());
-        if (!categories.isEmpty()) {
-            final List<Category> existingCategories = mongoTemplate.findAll(Category.class);
-            existingCategories.forEach(existing -> {
-                if (!categories.stream()
-                                .filter(category -> category.getOid().equals(existing.getOid())).findFirst()
-                                .isPresent()) {
-                    mongoTemplate.remove(existing);
-                }
-            });
-            categories.forEach(category -> mongoTemplate.save(category));
-        }
+        categoryService.sync();
         registerSync(StashId.CATEGORYSYNC);
     }
 
@@ -743,14 +734,7 @@ public class SyncService
                 storeImage(floor.getImageOid());
             }
         }
-
-        final var categories = categoryRepository.findAll();
-        for (final var category : categories) {
-            if (StringUtils.isNotEmpty(category.getImageOid())) {
-                LOG.debug("Syncing Category-Image {}", category.getImageOid());
-                storeImage(category.getImageOid());
-            }
-        }
+        imageService.sync();
         registerSync(StashId.IMAGESYNC);
     }
 
