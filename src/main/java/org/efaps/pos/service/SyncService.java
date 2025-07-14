@@ -15,7 +15,6 @@
  */
 package org.efaps.pos.service;
 
-import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
@@ -23,10 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.config.ConfigProperties.Company;
@@ -57,7 +54,6 @@ import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
-import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.pojo.StashId;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.CreditNoteRepository;
@@ -65,7 +61,6 @@ import org.efaps.pos.repository.InventoryRepository;
 import org.efaps.pos.repository.InvoiceRepository;
 import org.efaps.pos.repository.OrderRepository;
 import org.efaps.pos.repository.PrinterRepository;
-import org.efaps.pos.repository.ProductRepository;
 import org.efaps.pos.repository.ReceiptRepository;
 import org.efaps.pos.repository.SequenceRepository;
 import org.efaps.pos.repository.TicketRepository;
@@ -80,13 +75,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 @Service
 public class SyncService
@@ -102,7 +92,6 @@ public class SyncService
     private final InvoiceRepository invoiceRepository;
     private final TicketRepository ticketRepository;
     private final CreditNoteRepository creditNoteRepository;
-    private final ProductRepository productRepository;
     private final SequenceRepository sequenceRepository;
     private final UserRepository userRepository;
     private final WarehouseRepository warehouseRepository;
@@ -122,6 +111,7 @@ public class SyncService
     private final UpdateService updateService;
     private final CategoryService categoryService;
     private final ImageService imageService;
+    private final ReportService reportService;
 
     private boolean deactivated;
 
@@ -132,7 +122,6 @@ public class SyncService
                        final InvoiceRepository _invoiceRepository,
                        final TicketRepository _ticketRepository,
                        final CreditNoteRepository _creditNoteRepository,
-                       final ProductRepository _productRepository,
                        final SequenceRepository _sequenceRepository,
                        final UserRepository _userRepository,
                        final WarehouseRepository _warehouseRepository,
@@ -152,7 +141,8 @@ public class SyncService
                        final CategoryService categoryService,
                        final PosFileService posFileService,
                        final UpdateService updateService,
-                       final ImageService imageService)
+                       final ImageService imageService,
+                       final ReportService reportService)
     {
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
@@ -160,7 +150,6 @@ public class SyncService
         invoiceRepository = _invoiceRepository;
         ticketRepository = _ticketRepository;
         creditNoteRepository = _creditNoteRepository;
-        productRepository = _productRepository;
         sequenceRepository = _sequenceRepository;
         userRepository = _userRepository;
         warehouseRepository = _warehouseRepository;
@@ -181,6 +170,7 @@ public class SyncService
         this.updateService = updateService;
         this.categoryService = categoryService;
         this.imageService = imageService;
+        this.reportService = reportService;
     }
 
     public void runSyncJob(final String _methodName)
@@ -710,26 +700,7 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Reports");
-        final List<Workspace> workspaces = workspaceRepository.findAll();
-        final Set<String> reportOids = workspaces.stream()
-                        .map(Workspace::getPrintCmds)
-                        .flatMap(Set::stream)
-                        .map(PrintCmd::getReportOid)
-                        .collect(Collectors.toSet());
-
-        for (final String reportOid : reportOids) {
-            LOG.debug("Syncing Report {}", reportOid);
-            final Checkout checkout = eFapsClient.checkout(reportOid);
-            if (checkout != null) {
-                gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(reportOid)));
-                final DBObject metaData = new BasicDBObject();
-                metaData.put("oid", reportOid);
-                metaData.put("contentType", checkout.getContentType().toString());
-                gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
-                                metaData);
-            }
-        }
+        reportService.sync();
         registerSync(StashId.REPORTSYNC);
     }
 

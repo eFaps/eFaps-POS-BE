@@ -15,22 +15,34 @@
  */
 package org.efaps.pos.service;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.efaps.pos.client.Checkout;
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.MoneyAmountDto;
 import org.efaps.pos.dto.SalesReportDetailDto;
 import org.efaps.pos.dto.SalesReportDto;
 import org.efaps.pos.dto.SalesReportEntryDto;
 import org.efaps.pos.dto.SalesReportInfoDto;
+import org.efaps.pos.dto.StoreStatus;
+import org.efaps.pos.dto.StoreStatusRequestDto;
 import org.efaps.pos.entity.AbstractPayableDocument;
+import org.efaps.pos.entity.Workspace;
+import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.repository.CreditNoteRepository;
 import org.efaps.pos.repository.InvoiceRepository;
 import org.efaps.pos.repository.ReceiptRepository;
@@ -47,20 +59,29 @@ public class ReportService
 
     private static final Logger LOG = LoggerFactory.getLogger(ReportService.class);
 
+    private final EFapsClient eFapsClient;
     private final CreditNoteRepository creditNoteRepository;
     private final InvoiceRepository invoiceRepository;
     private final ReceiptRepository receiptRepository;
     private final TicketRepository ticketRepository;
+    private final GridFsService gridFsService;
+    private final WorkspaceService workspaceService;
 
-    public ReportService(final CreditNoteRepository creditNoteRepository,
+    public ReportService(final EFapsClient eFapsClient,
+                         final CreditNoteRepository creditNoteRepository,
                          final InvoiceRepository invoiceRepository,
                          final ReceiptRepository receiptRepository,
-                         final TicketRepository ticketRepository)
+                         final TicketRepository ticketRepository,
+                         final GridFsService gridFsService,
+                         final WorkspaceService workspaceService)
     {
+        this.eFapsClient = eFapsClient;
         this.creditNoteRepository = creditNoteRepository;
         this.invoiceRepository = invoiceRepository;
         this.receiptRepository = receiptRepository;
         this.ticketRepository = ticketRepository;
+        this.gridFsService = gridFsService;
+        this.workspaceService = workspaceService;
     }
 
     public SalesReportDto getSalesReport(final LocalDate date)
@@ -130,6 +151,51 @@ public class ReportService
                         .withDetails(details)
                         .withTotals(totals)
                         .build();
+    }
+
+    public void sync()
+    {
+        LOG.info("Syncing Reports");
+        final var workspaces = workspaceService.getWorkspaces();
+        final var reportOids = workspaces.stream()
+                        .map(Workspace::getPrintCmds)
+                        .flatMap(Set::stream)
+                        .map(PrintCmd::getReportOid)
+                        .collect(Collectors.toSet());
+
+        final var response = eFapsClient.evalStoreStatus(StoreStatusRequestDto.builder()
+                        .withOids(new ArrayList<>(reportOids))
+                        .build());
+
+        for (final var status : response.getStatus()) {
+            if (status.isExisting()) {
+                final var file = gridFsService.getGridFSFile(status.getOid());
+                // no modification date --> sync always
+                if (status.getModifiedAt() == null || file == null) {
+                    retrieveReport(status);
+                } else if (file.getMetadata().containsKey("modifiedAt")) {
+                    final OffsetDateTime local = ((Date) file.getMetadata().get("modifiedAt")).toInstant()
+                                    .atOffset(ZoneOffset.UTC);
+                    if (!local.withNano(0).equals(status.getModifiedAt().withNano(0))) {
+                        retrieveReport(status);
+                    }
+                } else {
+                    retrieveReport(status);
+                }
+            }
+        }
+    }
+
+    protected void retrieveReport(final StoreStatus status)
+    {
+        final Checkout checkout = eFapsClient.checkout(status.getOid());
+        if (checkout != null) {
+            gridFsService.updateContent(status.getOid(),
+                            new ByteArrayInputStream(checkout.getContent()),
+                            checkout.getFilename(),
+                            checkout.getContentType().toString(),
+                            status.getModifiedAt());
+        }
     }
 
 }
