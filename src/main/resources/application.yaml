@@ -66,6 +66,7 @@ efaps:
   reportToBasePath: /servlet/rest/pos/{identifier}/report-to-base
   filePath: /api/pos/{identifier}/files
   updatePath: /api/pos/{identifier}/update
+  storePath: /api/pos/{identifier}/store
 
 auth:
   user: Administrator
@@ -153,5 +154,5 @@ efaps:
   promotionPath: /api/pos/{identifier}/promotions
   promotionInfoPath: /api/pos/{identifier}/promotion-infos
   reportToBasePath: /api/pos/{identifier}/report-to-base
-  filePath: /api/pos/{identifier}/files
+  storePath: /api/pos/{identifier}/store
   updatePath: /api/pos/{identifier}/update

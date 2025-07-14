@@ -44,7 +44,8 @@ public class WorkspaceService
                         .collect(Collectors.toList());
     }
 
-    public Workspace getWorkspace(final User _user, final String _oid)
+    public Workspace getWorkspace(final User _user,
+                                  final String _oid)
     {
         return workspaceRepository.findById(_oid)
                         .filter(ws -> _user.getWorkspaceOids().contains(ws.getOid()))
@@ -62,4 +63,8 @@ public class WorkspaceService
         return workspace == null ? Optional.empty() : Optional.ofNullable(workspace.getWarehouseOid());
     }
 
+    public List<Workspace> getWorkspaces()
+    {
+        return workspaceRepository.findAll();
+    }
 }

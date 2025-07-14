@@ -1,66 +1,116 @@
 package org.efaps.pos.service;
 
 import java.io.ByteArrayInputStream;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Date;
 
 import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.dto.StoreStatus;
+import org.efaps.pos.dto.StoreStatusRequestDto;
+import org.efaps.pos.entity.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 @Service
 public class ImageService
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(ImageService.class);
-    private final Map<String, List<String>> toBeSynced = new LinkedHashMap<>();
-    private final GridFsTemplate gridFsTemplate;
+
+    private final GridFsService gridFsService;
     private final EFapsClient eFapsClient;
+    private final ProductService productService;
+    private final WorkspaceService workspaceService;
 
-    public ImageService(final GridFsTemplate gridFsTemplate,
-                        final EFapsClient eFapsClient)
+    public ImageService(final EFapsClient eFapsClient,
+                        final GridFsService gridFsService,
+                        final ProductService productService,
+                        final WorkspaceService workspaceService)
     {
-        this.gridFsTemplate = gridFsTemplate;
+        this.gridFsService = gridFsService;
         this.eFapsClient = eFapsClient;
-    }
-
-    protected void storeImage(final String imageOid)
-    {
-        final Checkout checkout = eFapsClient.checkout(imageOid);
-        if (checkout != null) {
-            gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(imageOid)));
-            final DBObject metaData = new BasicDBObject();
-            metaData.put("oid", imageOid);
-            metaData.put("contentType", checkout.getContentType().toString());
-            gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
-                            metaData);
-        }
+        this.productService = productService;
+        this.workspaceService = workspaceService;
     }
 
     public void sync()
     {
-        for (final var entry : toBeSynced.entrySet()) {
-            LOG.info("Syncing Images for: {}", entry.getKey());
-            entry.getValue().forEach(oid -> {
-                LOG.debug("Syncing Image {}", oid);
-                storeImage(oid);
-            });
+        LOG.info("Syncing Images");
+        final var imageOids = new ArrayList<String>();
+        var pageable = Pageable.ofSize(1000);
+        while (pageable != null) {
+            final var productPage = productService.getProducts(pageable);
+            for (final Product product : productPage.getContent()) {
+                if (product.getImageOid() != null) {
+                    LOG.debug("Marking Product-Image to be synced {}", product.getImageOid());
+                    imageOids.add(product.getImageOid());
+                }
+                for (final var indicationSet : product.getIndicationSets()) {
+                    if (indicationSet.getImageOid() != null) {
+                        LOG.debug("Marking IndicationSet-Image to be synced {}", indicationSet.getImageOid());
+                        imageOids.add(indicationSet.getImageOid());
+                    }
+                    for (final var indication : indicationSet.getIndications()) {
+                        if (indication.getImageOid() != null) {
+                            LOG.debug("Marking Indication-Image to be synced {}", indication.getImageOid());
+                            imageOids.add(indication.getImageOid());
+                        }
+                    }
+                }
+
+            }
+            if (productPage.hasNext()) {
+                pageable = productPage.nextPageable();
+            } else {
+                pageable = null;
+            }
         }
-        toBeSynced.clear();
+
+        final var workspaces = workspaceService.getWorkspaces();
+        for (final var workspace : workspaces) {
+            for (final var floor : workspace.getFloors()) {
+                LOG.debug("Marking  Floor-Image to be synced {}", floor.getImageOid());
+                imageOids.add(floor.getImageOid());
+            }
+        }
+
+        final var response = eFapsClient.evalStoreStatus(StoreStatusRequestDto.builder()
+                        .withOids(imageOids)
+                        .build());
+
+        for (final var status : response.getStatus()) {
+            if (status.isExisting()) {
+                final var file = gridFsService.getGridFSFile(status.getOid());
+                // no modification date --> sync always
+                if (status.getModifiedAt() == null || file == null) {
+                    retrieveImage(status);
+                } else if (file.getMetadata().containsKey("modifiedAt")) {
+                    final OffsetDateTime local = ((Date) file.getMetadata().get("modifiedAt")).toInstant()
+                                    .atOffset(ZoneOffset.UTC);
+                    if (!local.withNano(0).equals(status.getModifiedAt().withNano(0))) {
+                        retrieveImage(status);
+                    }
+                } else {
+                    retrieveImage(status);
+                }
+            }
+        }
     }
 
-    public void registerForSync(final String key,
-                                final List<String> imageOids)
+    protected void retrieveImage(final StoreStatus status)
     {
-        toBeSynced.put(key, imageOids);
+        final Checkout checkout = eFapsClient.checkout(status.getOid());
+        if (checkout != null) {
+            gridFsService.updateContent(status.getOid(),
+                            new ByteArrayInputStream(checkout.getContent()),
+                            checkout.getFilename(),
+                            checkout.getContentType().toString(),
+                            status.getModifiedAt());
+        }
     }
 }

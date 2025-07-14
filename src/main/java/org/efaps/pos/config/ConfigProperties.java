@@ -314,7 +314,7 @@ public class ConfigProperties
         private String promotionInfoPath;
         private String filePath;
         private String updatePath;
-
+        private String storePath;
         private String reportToBasePath;
 
         public String getFilePath()
@@ -625,6 +625,18 @@ public class ConfigProperties
         public void setUpdatePath(final String updatePath)
         {
             this.updatePath = updatePath;
+        }
+
+
+        public String getStorePath()
+        {
+            return storePath;
+        }
+
+
+        public void setStorePath(String storePath)
+        {
+            this.storePath = storePath;
         }
     }
 

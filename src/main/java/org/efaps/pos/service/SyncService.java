@@ -50,7 +50,6 @@ import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
-import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.SyncInfo;
@@ -58,7 +57,6 @@ import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.entity.Workspace;
-import org.efaps.pos.entity.Workspace.Floor;
 import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.pojo.StashId;
 import org.efaps.pos.repository.BalanceRepository;
@@ -702,49 +700,8 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Images");
-        final List<Product> products = productRepository.findAll();
-        for (final Product product : products) {
-            if (product.getImageOid() != null) {
-                LOG.debug("Syncing Product-Image {}", product.getImageOid());
-                storeImage(product.getImageOid());
-            }
-            for (final var indicationSet : product.getIndicationSets()) {
-                if (indicationSet.getImageOid() != null) {
-                    LOG.debug("Syncing IndicationSet-Image {}", indicationSet.getImageOid());
-                    storeImage(indicationSet.getImageOid());
-                }
-                for (final var indication : indicationSet.getIndications()) {
-                    if (indication.getImageOid() != null) {
-                        LOG.debug("Syncing Indication-Image {}", indication.getImageOid());
-                        storeImage(indication.getImageOid());
-                    }
-                }
-            }
-        }
-
-        final List<Workspace> workspaces = workspaceRepository.findAll();
-        for (final Workspace workspace : workspaces) {
-            for (final Floor floor : workspace.getFloors()) {
-                LOG.debug("Syncing Floor-Image {}", floor.getImageOid());
-                storeImage(floor.getImageOid());
-            }
-        }
         imageService.sync();
         registerSync(StashId.IMAGESYNC);
-    }
-
-    protected void storeImage(final String imageOid)
-    {
-        final Checkout checkout = eFapsClient.checkout(imageOid);
-        if (checkout != null) {
-            gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(imageOid)));
-            final DBObject metaData = new BasicDBObject();
-            metaData.put("oid", imageOid);
-            metaData.put("contentType", checkout.getContentType().toString());
-            gridFsTemplate.store(new ByteArrayInputStream(checkout.getContent()), checkout.getFilename(),
-                            metaData);
-        }
     }
 
     public void syncReports()

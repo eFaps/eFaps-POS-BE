@@ -94,9 +94,6 @@ public class CategoryService
                 }
                 categoryRepository.save(category);
             }
-            if (!imageOids.isEmpty()) {
-                imageService.registerForSync("Categories", imageOids);
-            }
         }
     }
 }

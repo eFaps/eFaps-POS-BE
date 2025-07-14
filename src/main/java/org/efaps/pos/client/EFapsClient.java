@@ -46,6 +46,8 @@ import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.ReportToBaseDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.StocktakingDto;
+import org.efaps.pos.dto.StoreStatusRequestDto;
+import org.efaps.pos.dto.StoreStatusResponseDto;
 import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.dto.UpdateDto;
 import org.efaps.pos.dto.UserDto;
@@ -656,6 +658,19 @@ public class EFapsClient
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
+    public StoreStatusResponseDto evalStoreStatus(final StoreStatusRequestDto dto)
+    {
+        StoreStatusResponseDto ret = null;
+        try {
+            final var requestEntity = post(getEFapsConfig().getStorePath(), dto);
+            final var response = getRestTemplate().exchange(requestEntity, StoreStatusResponseDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during post for ReportToBase", e);
         }
         return ret;
     }

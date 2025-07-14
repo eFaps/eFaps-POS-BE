@@ -71,7 +71,7 @@ public class ProductService
         this.eFapsClient = eFapsClient;
     }
 
-    public Page<Product> getProducts(Pageable pageable)
+    public Page<Product> getProducts(final Pageable pageable)
     {
         return productRepository.findAll(pageable);
     }

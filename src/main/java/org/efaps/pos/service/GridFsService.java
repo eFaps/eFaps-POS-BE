@@ -20,6 +20,7 @@ import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilena
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.OffsetDateTime;
 
 import org.apache.commons.io.IOUtils;
 import org.efaps.pos.error.NotFoundException;
@@ -30,6 +31,7 @@ import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 @Service
@@ -50,7 +52,7 @@ public class GridFsService
     public InputStream getContent(final String oid)
         throws IllegalStateException, IOException
     {
-        final var file = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(oid)));
+        final var file = getGridFSFile(oid);
         return operations.getResource(file).getInputStream();
     }
 
@@ -65,8 +67,25 @@ public class GridFsService
         return new Object[] { file.getMetadata().getString("contentType"), IOUtils.toByteArray(resource) };
     }
 
+    public GridFSFile getGridFSFile(final String oid)
+    {
+        return gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(oid)));
+    }
+
     public GridFSFile getGridFSFileByName(final String fileName)
     {
         return gridFsTemplate.findOne(query(whereFilename().is(fileName)));
+    }
+
+    public void updateContent(final String oid,
+                              final InputStream content,
+                              final String fileName,
+                              final String contentType,
+                              final OffsetDateTime modifiedAt) {
+        gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(oid)));
+        final var metaData = new BasicDBObject();
+        metaData.put("oid", oid);
+        metaData.put("modifiedAt", modifiedAt);
+        gridFsTemplate.store(content, fileName, contentType, metaData);
     }
 }

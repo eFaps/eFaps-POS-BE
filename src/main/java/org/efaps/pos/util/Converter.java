@@ -696,7 +696,6 @@ public final class Converter
                         .withWeight(entity.getWeight())
                         .withImageOid(entity.getImageOid())
                         .withParentOid(entity.getParentOid())
-                        .withImageModifiedAt(entity.getImageModifiedAt())
                         .build();
     }
 
@@ -707,7 +706,6 @@ public final class Converter
                         .setOid(dto.getOid())
                         .setWeight(dto.getWeight())
                         .setImageOid(dto.getImageOid())
-                        .setImageModifiedAt(dto.getImageModifiedAt())
                         .setParentOid(dto.getParentOid());
     }
 
