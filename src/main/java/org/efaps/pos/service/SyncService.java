@@ -75,7 +75,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -86,7 +85,6 @@ public class SyncService
     private static final Logger LOG = LoggerFactory.getLogger(SyncService.class);
 
     private final MongoTemplate mongoTemplate;
-    private final GridFsTemplate gridFsTemplate;
     private final EFapsClient eFapsClient;
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
@@ -117,7 +115,6 @@ public class SyncService
 
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
-                       final GridFsTemplate _gridFsTemplate,
                        final ReceiptRepository _receiptRepository,
                        final InvoiceRepository _invoiceRepository,
                        final TicketRepository _ticketRepository,
@@ -145,7 +142,6 @@ public class SyncService
                        final ReportService reportService)
     {
         mongoTemplate = _mongoTemplate;
-        gridFsTemplate = _gridFsTemplate;
         receiptRepository = _receiptRepository;
         invoiceRepository = _invoiceRepository;
         ticketRepository = _ticketRepository;
