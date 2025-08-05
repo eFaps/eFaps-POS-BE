@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.pojo;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.PaymentType;
 
 public class PaymentLoyaltyPoints
@@ -79,5 +80,11 @@ public class PaymentLoyaltyPoints
     public String getLabel()
     {
         return mappingKey;
+    }
+
+    @Override
+    public String toString()
+    {
+        return ReflectionToStringBuilder.toString(this);
     }
 }

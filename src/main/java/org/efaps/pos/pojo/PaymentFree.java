@@ -15,10 +15,13 @@
  */
 package org.efaps.pos.pojo;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.PaymentType;
 
-public class PaymentFree extends AbstractPayment
+public class PaymentFree
+    extends AbstractPayment
 {
+
     public PaymentFree()
     {
         setType(PaymentType.FREE);
@@ -28,5 +31,11 @@ public class PaymentFree extends AbstractPayment
     public String getLabel()
     {
         return null;
+    }
+
+    @Override
+    public String toString()
+    {
+        return ReflectionToStringBuilder.toString(this);
     }
 }

@@ -79,6 +79,7 @@ import org.efaps.pos.dto.PosPaymentChangeDto;
 import org.efaps.pos.dto.PosPaymentElectronicDto;
 import org.efaps.pos.dto.PosPaymentFreeDto;
 import org.efaps.pos.dto.PosPaymentLoyaltyPointsDto;
+import org.efaps.pos.dto.PosPaymentRedeemCreditNoteDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosSpotDto;
 import org.efaps.pos.dto.PosStocktakingDto;
@@ -153,6 +154,7 @@ import org.efaps.pos.pojo.PaymentChange;
 import org.efaps.pos.pojo.PaymentElectronic;
 import org.efaps.pos.pojo.PaymentFree;
 import org.efaps.pos.pojo.PaymentLoyaltyPoints;
+import org.efaps.pos.pojo.PaymentRedeemCreditNote;
 import org.efaps.pos.pojo.Product2Category;
 import org.efaps.pos.pojo.ProductRelation;
 import org.efaps.pos.pojo.Spot;
@@ -790,6 +792,11 @@ public final class Converter
                                 .setPointsAmount(paymentDto.getPointsAmount());
                 yield entity;
             }
+            case REDEEM_CREDITNOTE -> {
+                final var paymentDto = (PosPaymentRedeemCreditNoteDto) dto;
+                yield new PaymentRedeemCreditNote().setRedeemDocOid(paymentDto.getRedeemDocOid());
+            }
+            default -> throw new IllegalArgumentException("Unexpected value: " + dto.getType());
         };
         final var paymentDto = (PaymentAbstractDto) dto;
 
@@ -910,6 +917,21 @@ public final class Converter
                 INSTANCE.collectorService.add2PaymentDto(builder, entity);
                 yield builder.build();
             }
+            case REDEEM_CREDITNOTE -> {
+                final var posEntity = (PaymentRedeemCreditNote) entity;
+                final var builder = PosPaymentRedeemCreditNoteDto.builder()
+                                .withIndex(posEntity.getIndex())
+                                .withOID(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withCollectOrderId(posEntity.getCollectOrderId())
+                                .withInfo(posEntity.getInfo())
+                                .withRedeemDocOid(posEntity.getRedeemDocOid());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
+            }
+            default -> throw new IllegalArgumentException("Unexpected value: " + entity.getType());
         };
 
     }
@@ -1013,6 +1035,7 @@ public final class Converter
                 INSTANCE.collectorService.add2PaymentDto(builder, entity);
                 yield builder.build();
             }
+            default -> throw new IllegalArgumentException("Unexpected value: " + entity.getType());
         };
     }
 
@@ -1979,6 +2002,17 @@ public final class Converter
             case LOYALTY_POINTS -> {
                 final var from = (PaymentLoyaltyPoints) fromPayment;
                 yield new PaymentLoyaltyPoints()
+                                .setOid(from.getOid())
+                                .setIndex(from.getIndex())
+                                .setAmount(from.getAmount())
+                                .setCollectOrderId(from.getCollectOrderId())
+                                .setCurrency(from.getCurrency())
+                                .setType(from.getType());
+            }
+            case REDEEM_CREDITNOTE  -> {
+                final var from = (PaymentRedeemCreditNote) fromPayment;
+                yield new PaymentRedeemCreditNote()
+                                .setRedeemDocOid(from.getRedeemDocOid())
                                 .setOid(from.getOid())
                                 .setIndex(from.getIndex())
                                 .setAmount(from.getAmount())

@@ -18,19 +18,32 @@ package org.efaps.pos.pojo;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.PaymentType;
 
-public class PaymentChange
+public class PaymentRedeemCreditNote
     extends AbstractPayment
 {
 
-    public PaymentChange()
+    private String redeemDocOid;
+
+    public PaymentRedeemCreditNote()
     {
-        setType(PaymentType.CHANGE);
+        setType(PaymentType.REDEEM_CREDITNOTE);
     }
 
     @Override
     public String getLabel()
     {
         return null;
+    }
+
+    public String getRedeemDocOid()
+    {
+        return redeemDocOid;
+    }
+
+    public PaymentRedeemCreditNote setRedeemDocOid(final String redeemDocOid)
+    {
+        this.redeemDocOid = redeemDocOid;
+        return this;
     }
 
     @Override
