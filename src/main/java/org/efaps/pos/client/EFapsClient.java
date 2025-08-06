@@ -649,6 +649,44 @@ public class EFapsClient
         return ret;
     }
 
+    public List<CreditNoteDto> retrieveCreditNotes(final String number)
+    {
+        List<CreditNoteDto> ret = null;
+        try {
+            final var params = new LinkedMultiValueMap<String, String>();
+            params.put("number", Collections.singletonList(String.valueOf(number)));
+            final RequestEntity<?> requestEntity = get(getEFapsConfig().getCreditnotePath(), params);
+
+            final ResponseEntity<List<CreditNoteDto>> response = getRestTemplate().exchange(requestEntity,
+                            new ParameterizedTypeReference<List<CreditNoteDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
+    public List<TicketDto> retrieveTickets(final String number)
+    {
+        List<TicketDto> ret = null;
+        try {
+            final var params = new LinkedMultiValueMap<String, String>();
+            params.put("number", Collections.singletonList(String.valueOf(number)));
+            final RequestEntity<?> requestEntity = get(getEFapsConfig().getTicketPath(), params);
+
+            final ResponseEntity<List<TicketDto>> response = getRestTemplate().exchange(requestEntity,
+                            new ParameterizedTypeReference<List<TicketDto>>()
+                            {
+                            });
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of users", e);
+        }
+        return ret;
+    }
+
     public ReceiptDto getReceipt(final String oid)
     {
         ReceiptDto ret = null;

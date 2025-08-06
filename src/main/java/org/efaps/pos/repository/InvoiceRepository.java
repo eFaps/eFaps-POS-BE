@@ -17,6 +17,7 @@ package org.efaps.pos.repository;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,4 +45,6 @@ public interface InvoiceRepository
     Collection<Invoice> findByDate(LocalDate date);
 
     Optional<Invoice> findByOid(String oid);
+
+    List<Invoice> findByNumber(final String number);
 }

@@ -477,7 +477,7 @@ public class DocumentService
 
     public List<Receipt> retrieveReceipts(final String number)
     {
-        List<Receipt> receipts = receiptRepository.findOneByNumber(number);
+        List<Receipt> receipts = receiptRepository.findByNumber(number);
         if (receipts.isEmpty()) {
             final var retrieved = eFapsClient.retrieveReceipts(number);
             if (retrieved != null) {
@@ -515,7 +515,8 @@ public class DocumentService
         return invoiceRepository.findById(_documentId).orElse(null);
     }
 
-    public Optional<Invoice> findInvoice(final String identifier, final Boolean remote)
+    public Optional<Invoice> findInvoice(final String identifier,
+                                         final Boolean remote)
     {
         Optional<Invoice> opt;
         if (ObjectId.isValid(identifier)) {
@@ -540,6 +541,18 @@ public class DocumentService
         return invoiceRepository.findByBalanceOid(evalBalanceOid(_key));
     }
 
+    public List<Invoice> retrieveInvoices(final String number)
+    {
+        List<Invoice> invoices = invoiceRepository.findByNumber(number);
+        if (invoices.isEmpty()) {
+            final var retrieved = eFapsClient.retrieveInvoices(number);
+            if (retrieved != null) {
+                invoices = retrieved.stream().map(Converter::toEntity).toList();
+            }
+        }
+        return invoices;
+    }
+
     public Ticket getTicketById(final String _documentId)
     {
         return ticketRepository.findById(_documentId).orElse(null);
@@ -548,6 +561,18 @@ public class DocumentService
     public Collection<Ticket> getTickets4Balance(final String _key)
     {
         return ticketRepository.findByBalanceOid(evalBalanceOid(_key));
+    }
+
+    public List<Ticket> retrieveTickets(final String number)
+    {
+        List<Ticket> tickets = ticketRepository.findByNumber(number);
+        if (tickets.isEmpty()) {
+            final var retrieved = eFapsClient.retrieveTickets(number);
+            if (retrieved != null) {
+                tickets = retrieved.stream().map(Converter::toEntity).toList();
+            }
+        }
+        return tickets;
     }
 
     public CreditNote getCreditNoteById(final String documentId)
@@ -712,6 +737,18 @@ public class DocumentService
         return creditNoteRepository.findBySourceDocOid(sourceDocOid);
     }
 
+    public List<CreditNote> retrieveCreditNotes(final String number)
+    {
+        List<CreditNote> creditNotes = creditNoteRepository.findByNumber(number);
+        if (creditNotes.isEmpty()) {
+            final var retrieved = eFapsClient.retrieveCreditNotes(number);
+            if (retrieved != null) {
+                creditNotes = retrieved.stream().map(Converter::toEntity).toList();
+            }
+        }
+        return creditNotes;
+    }
+
     public void retrigger4Receipt(final String identifier)
     {
         LOG.warn("Retriggering for Receipt: {}", identifier);
@@ -856,7 +893,7 @@ public class DocumentService
 
     public ValidateForCreditNoteResponseDto validateForCreditNote(final ValidateForCreditNoteDto dto)
     {
-         dto.getPayableOid();
-         return ValidateForCreditNoteResponseDto.builder().withValid(true).build();
+        dto.getPayableOid();
+        return ValidateForCreditNoteResponseDto.builder().withValid(true).build();
     }
 }

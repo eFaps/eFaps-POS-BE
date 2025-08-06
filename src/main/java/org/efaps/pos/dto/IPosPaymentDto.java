@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
                 @JsonSubTypes.Type(value = PosPaymentElectronicDto.class, name = "ELECTRONIC"),
                 @JsonSubTypes.Type(value = PosPaymentFreeDto.class, name = "FREE"),
                 @JsonSubTypes.Type(value = PosPaymentLoyaltyPointsDto.class, name = "LOYALTY_POINTS"),
+                @JsonSubTypes.Type(value = PosPaymentRedeemCreditNoteDto.class, name = "REDEEM_CREDITNOTE"),
 })
 public interface IPosPaymentDto
     extends IPaymentDto

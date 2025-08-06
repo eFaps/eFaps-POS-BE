@@ -35,4 +35,6 @@ public interface CreditNoteRepository
     Collection<CreditNote> findByDate(LocalDate date);
 
     Optional<CreditNote> findByOid(String oid);
+
+    List<CreditNote> findByNumber(final String number);
 }

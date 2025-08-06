@@ -230,6 +230,12 @@ public class DocumentController
         return Converter.toDto(invoice);
     }
 
+    @GetMapping(path = { "invoices" }, produces = MediaType.APPLICATION_JSON_VALUE, params = { "number" })
+    public List<PosInvoiceDto> retrieveInvoices(@RequestParam(name = "number") final String number)
+    {
+        return documentService.retrieveInvoices(number).stream().map(Converter::toDto).toList();
+    }
+
     @GetMapping(path = { "tickets/{id}", "documents/tickets/{id}" }, produces = MediaType.APPLICATION_JSON_VALUE)
     public PosTicketDto getTicket(@PathVariable("id") final String _id)
         throws NotFoundException
@@ -239,6 +245,12 @@ public class DocumentController
             throw new NotFoundException("Ticket not found");
         }
         return Converter.toDto(ticket);
+    }
+
+    @GetMapping(path = { "tickets" }, produces = MediaType.APPLICATION_JSON_VALUE, params = { "number" })
+    public List<PosTicketDto> retrieveTickets(@RequestParam(name = "number") final String number)
+    {
+        return documentService.retrieveTickets(number).stream().map(Converter::toDto).toList();
     }
 
     @GetMapping(path = { "creditnotes/{id}",
@@ -319,6 +331,12 @@ public class DocumentController
         return creditnotes.stream()
                         .map(Converter::toDto)
                         .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = { "creditnotes" }, produces = MediaType.APPLICATION_JSON_VALUE, params = { "number" })
+    public List<PosCreditNoteDto> retrieveCreditNotes(@RequestParam(name = "number") final String number)
+    {
+        return documentService.retrieveCreditNotes(number).stream().map(Converter::toDto).toList();
     }
 
     @PostMapping(path = { "creditnotes/validate" }, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -38,5 +38,5 @@ public interface ReceiptRepository
 
     Optional<Receipt> findByOid(String oid);
 
-    List<Receipt> findOneByNumber(final String number);
+    List<Receipt> findByNumber(final String number);
 }

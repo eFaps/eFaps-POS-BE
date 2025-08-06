@@ -65,6 +65,7 @@ import org.efaps.pos.dto.PaymentElectronicDto;
 import org.efaps.pos.dto.PaymentFreeDto;
 import org.efaps.pos.dto.PaymentLoyaltyPointsAbstractDto;
 import org.efaps.pos.dto.PaymentLoyaltyPointsDto;
+import org.efaps.pos.dto.PaymentRedeemCreditNoteDto;
 import org.efaps.pos.dto.PosBalanceDto;
 import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.PosDocItemDto;
@@ -1035,6 +1036,20 @@ public final class Converter
                 INSTANCE.collectorService.add2PaymentDto(builder, entity);
                 yield builder.build();
             }
+            case REDEEM_CREDITNOTE -> {
+                final var posEntity = (PaymentRedeemCreditNote) entity;
+                final var builder = PaymentRedeemCreditNoteDto.builder()
+                                .withOID(posEntity.getOid())
+                                .withIndex(posEntity.getIndex())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
+                                .withInfo(posEntity.getInfo())
+                                .withRedeemDocOid(posEntity.getRedeemDocOid());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
+            }
             default -> throw new IllegalArgumentException("Unexpected value: " + entity.getType());
         };
     }
@@ -1162,6 +1177,28 @@ public final class Converter
         map2DocEntity(dto, entity);
         return entity;
     }
+
+    public static Invoice toEntity(final InvoiceDto dto)
+    {
+        final var entity = new Invoice();
+        map2DocEntity(dto, entity);
+        return entity;
+    }
+
+    public static CreditNote toEntity(final CreditNoteDto dto)
+    {
+        final var entity = new CreditNote();
+        map2DocEntity(dto, entity);
+        return entity;
+    }
+
+    public static Ticket toEntity(final TicketDto dto)
+    {
+        final var entity = new Ticket();
+        map2DocEntity(dto, entity);
+        return entity;
+    }
+
 
     public static PosInvoiceDto toDto(final Invoice _entity)
     {

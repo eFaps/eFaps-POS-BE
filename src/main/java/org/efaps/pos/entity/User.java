@@ -81,7 +81,8 @@ public class User
         if (CollectionUtils.isEmpty(getPermissions()) && CollectionUtils.isNotEmpty(getRoles())) {
             return Arrays.asList(new SimpleGrantedAuthority(Permission.ADMIN.name()),
                             new SimpleGrantedAuthority(Permission.COLLECT.name()),
-                            new SimpleGrantedAuthority(Permission.ORDER.name()));
+                            new SimpleGrantedAuthority(Permission.ORDER.name()),
+                            new SimpleGrantedAuthority(Permission.REDEEM_CREDITNOTE.name()));
         }
         return getPermissions() == null ? Collections.emptyList()
                         : getPermissions().stream().map(permission -> new SimpleGrantedAuthority(permission.name()))
