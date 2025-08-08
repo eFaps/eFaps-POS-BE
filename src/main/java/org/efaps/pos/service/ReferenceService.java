@@ -39,35 +39,10 @@ public class ReferenceService
     public static IReference getReferenceByIdent(final String ident)
     {
         IReference ret = null;
-        final var opt = INSTANCE.documentService.findReceipt(ident, false);
-        if (opt.isPresent()) {
-            final AbstractPayableDocument<?> doc = opt.get();
-            ret = new IReference()
-            {
-
-                @Override
-                public LocalDate getDate()
-                {
-                    return doc.getDate();
-                }
-
-                @Override
-                public DocType getDocType()
-                {
-                    return DocType.RECEIPT;
-                }
-
-                @Override
-                public String getNumber()
-                {
-                    return doc.getNumber();
-                }
-
-            };
-        } else {
-            final var opt2 = INSTANCE.documentService.findInvoice(ident, false);
-            if (opt2.isPresent()) {
-                final AbstractPayableDocument<?> doc = opt2.get();
+        if (ident != null) {
+            final var opt = INSTANCE.documentService.findReceipt(ident, false);
+            if (opt.isPresent()) {
+                final AbstractPayableDocument<?> doc = opt.get();
                 ret = new IReference()
                 {
 
@@ -80,7 +55,7 @@ public class ReferenceService
                     @Override
                     public DocType getDocType()
                     {
-                        return DocType.INVOICE;
+                        return DocType.RECEIPT;
                     }
 
                     @Override
@@ -90,6 +65,33 @@ public class ReferenceService
                     }
 
                 };
+            } else {
+                final var opt2 = INSTANCE.documentService.findInvoice(ident, false);
+                if (opt2.isPresent()) {
+                    final AbstractPayableDocument<?> doc = opt2.get();
+                    ret = new IReference()
+                    {
+
+                        @Override
+                        public LocalDate getDate()
+                        {
+                            return doc.getDate();
+                        }
+
+                        @Override
+                        public DocType getDocType()
+                        {
+                            return DocType.INVOICE;
+                        }
+
+                        @Override
+                        public String getNumber()
+                        {
+                            return doc.getNumber();
+                        }
+
+                    };
+                }
             }
         }
         return ret;

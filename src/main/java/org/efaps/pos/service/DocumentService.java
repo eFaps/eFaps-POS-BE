@@ -67,6 +67,7 @@ import org.efaps.pos.interfaces.IPos;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
 import org.efaps.pos.pojo.EmployeeRelation;
+import org.efaps.pos.pojo.PaymentRedeemCreditNote;
 import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.CreditNoteRepository;
@@ -80,6 +81,7 @@ import org.efaps.pos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -92,6 +94,8 @@ public class DocumentService
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
+
+
 
     private final ConfigService configService;
     private final EFapsClient eFapsClient;
@@ -115,52 +119,55 @@ public class DocumentService
     private final List<ICreditNoteListener> creditNoteListeners;
 
     private final MongoTemplate mongoTemplate;
+    private final TaskExecutor taskExecutor;
 
     @Autowired
-    public DocumentService(final MongoTemplate _mongoTemplate,
+    public DocumentService(final MongoTemplate mongoTemplate,
+                           final TaskExecutor taskExecutor,
                            final ConfigService configService,
                            final EFapsClient eFapsClient,
-                           final PosService _posService,
-                           final SequenceService _sequenceService,
-                           final ContactService _contactService,
-                           final InventoryService _inventoryService,
+                           final PosService posService,
+                           final SequenceService sequenceService,
+                           final ContactService contactService,
+                           final InventoryService inventoryService,
                            final CalculatorService calculatorService,
                            final ProductService productService,
                            final PromotionService promotionService,
                            final WorkspaceService workspaceService,
-                           final OrderRepository _orderRepository,
-                           final ReceiptRepository _receiptRepository,
-                           final InvoiceRepository _invoiceRepository,
-                           final TicketRepository _ticketRepository,
-                           final CreditNoteRepository _creditNoteRepository,
-                           final BalanceRepository _balanceRepository,
+                           final OrderRepository orderRepository,
+                           final ReceiptRepository receiptRepository,
+                           final InvoiceRepository invoiceRepository,
+                           final TicketRepository ticketRepository,
+                           final CreditNoteRepository creditNoteRepository,
+                           final BalanceRepository balanceRepository,
                            final PromotionInfoRepository promotionInfoRepository,
-                           final Optional<List<IReceiptListener>> _receiptListeners,
-                           final Optional<List<IInvoiceListener>> _invoiceListeners,
-                           final Optional<List<ITicketListener>> _ticketListeners,
-                           final Optional<List<ICreditNoteListener>> _creditNoteListener)
+                           final Optional<List<IReceiptListener>> receiptListeners,
+                           final Optional<List<IInvoiceListener>> invoiceListeners,
+                           final Optional<List<ITicketListener>> ticketListeners,
+                           final Optional<List<ICreditNoteListener>> creditNoteListener)
     {
-        mongoTemplate = _mongoTemplate;
+        this.mongoTemplate = mongoTemplate;
+        this.taskExecutor = taskExecutor;
         this.configService = configService;
         this.productService = productService;
         this.eFapsClient = eFapsClient;
-        posService = _posService;
-        sequenceService = _sequenceService;
-        orderRepository = _orderRepository;
-        inventoryService = _inventoryService;
+        this.posService = posService;
+        this.sequenceService = sequenceService;
+        this.orderRepository = orderRepository;
+        this.inventoryService = inventoryService;
         this.calculatorService = calculatorService;
-        receiptRepository = _receiptRepository;
-        contactService = _contactService;
+        this.receiptRepository = receiptRepository;
+        this.contactService = contactService;
         this.promotionService = promotionService;
         this.workspaceService = workspaceService;
-        invoiceRepository = _invoiceRepository;
-        ticketRepository = _ticketRepository;
-        creditNoteRepository = _creditNoteRepository;
-        balanceRepository = _balanceRepository;
-        receiptListeners = _receiptListeners.isPresent() ? _receiptListeners.get() : Collections.emptyList();
-        invoiceListeners = _invoiceListeners.isPresent() ? _invoiceListeners.get() : Collections.emptyList();
-        ticketListeners = _ticketListeners.isPresent() ? _ticketListeners.get() : Collections.emptyList();
-        creditNoteListeners = _creditNoteListener.isPresent() ? _creditNoteListener.get() : Collections.emptyList();
+        this.invoiceRepository = invoiceRepository;
+        this.ticketRepository = ticketRepository;
+        this.creditNoteRepository = creditNoteRepository;
+        this.balanceRepository = balanceRepository;
+        this.receiptListeners = receiptListeners.isPresent() ? receiptListeners.get() : Collections.emptyList();
+        this.invoiceListeners = invoiceListeners.isPresent() ? invoiceListeners.get() : Collections.emptyList();
+        this.ticketListeners = ticketListeners.isPresent() ? ticketListeners.get() : Collections.emptyList();
+        this.creditNoteListeners = creditNoteListener.isPresent() ? creditNoteListener.get() : Collections.emptyList();
     }
 
     public Order getOrderById(final String id)
@@ -317,6 +324,7 @@ public class DocumentService
         validateBalance(receipt);
         receipt.setNumber(sequenceService.getNext(workspaceOid, DocType.RECEIPT, null));
         Receipt ret = receiptRepository.insert(receipt);
+        verifyPayment(ret);
         try {
             if (!receiptListeners.isEmpty()) {
                 PosReceiptDto dto = Converter.toDto(ret);
@@ -345,6 +353,7 @@ public class DocumentService
         validateBalance(invoice);
         invoice.setNumber(sequenceService.getNext(workspaceOid, DocType.INVOICE, null));
         Invoice ret = invoiceRepository.insert(invoice);
+        verifyPayment(ret);
         try {
             if (!invoiceListeners.isEmpty()) {
                 PosInvoiceDto dto = Converter.toDto(ret);
@@ -373,6 +382,7 @@ public class DocumentService
         validateBalance(ticket);
         ticket.setNumber(sequenceService.getNext(workspaceOid, DocType.TICKET, null));
         Ticket ret = ticketRepository.insert(ticket);
+        verifyPayment(ret);
         try {
             if (!ticketListeners.isEmpty()) {
                 PosTicketDto dto = Converter.toDto(ret);
@@ -895,5 +905,41 @@ public class DocumentService
     {
         dto.getPayableOid();
         return ValidateForCreditNoteResponseDto.builder().withValid(true).build();
+    }
+
+    public void verifyPayment(final AbstractPayableDocument<?> payable) {
+        for (final var payment: payable.getPayments()) {
+            if (payment instanceof final PaymentRedeemCreditNote redeemPayment) {
+                // check if the RedeemDocOid is a oid. If oid it was already synced or is from remote
+                // if mongoId  the id must be updated to the oid
+                if (Utils.isOid(redeemPayment.getRedeemDocOid())) {
+                    validateRedeemDocument(redeemPayment.getRedeemDocOid(), payable.getId());
+                } else {
+                    final var creditNote = creditNoteRepository.findById(redeemPayment.getRedeemDocOid()).get();
+                    creditNote.setRedeemedById(payable.getId());
+                    creditNoteRepository.save(creditNote);
+                }
+            }
+        }
+    }
+
+    private void validateRedeemDocument(final String oid, final String payableId)
+    {
+        final var creditNoteOpt = creditNoteRepository.findByOid(oid);
+        if (creditNoteOpt.isPresent()) {
+            final var creditNote = creditNoteOpt.get();
+            creditNote.setRedeemedById(payableId);
+            creditNoteRepository.save(creditNote);
+        } else {
+            taskExecutor.execute(() -> {
+                final var creditNoteDto = eFapsClient.getCreditNote(oid);
+                if (creditNoteDto != null) {
+                    final var entity = Converter.toEntity(creditNoteDto);
+                    entity.setOrigin(Origin.REMOTE);
+                    entity.setRedeemedById(payableId);
+                    creditNoteRepository.save(entity);
+                }
+            });
+        }
     }
 }

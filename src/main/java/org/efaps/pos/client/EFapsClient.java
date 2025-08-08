@@ -695,7 +695,46 @@ public class EFapsClient
             final var response = getRestTemplate().exchange(requestEntity, ReceiptDto.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
-            LOG.error("Catched error during retrieval of users", e);
+            LOG.error("Catched error during retrieval of ReceiptDto", e);
+        }
+        return ret;
+    }
+
+    public InvoiceDto getInvoice(final String oid)
+    {
+        InvoiceDto ret = null;
+        try {
+            final var requestEntity = get(getEFapsConfig().getInvoicePath() + "/" + oid);
+            final var response = getRestTemplate().exchange(requestEntity, InvoiceDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of InvoiceDto", e);
+        }
+        return ret;
+    }
+
+    public TicketDto getTicket(final String oid)
+    {
+        TicketDto ret = null;
+        try {
+            final var requestEntity = get(getEFapsConfig().getTicketPath() + "/" + oid);
+            final var response = getRestTemplate().exchange(requestEntity, TicketDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of InvoiceDto", e);
+        }
+        return ret;
+    }
+
+    public CreditNoteDto getCreditNote(final String oid)
+    {
+        CreditNoteDto ret = null;
+        try {
+            final var requestEntity = get(getEFapsConfig().getCreditnotePath() + "/" + oid);
+            final var response = getRestTemplate().exchange(requestEntity, CreditNoteDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of InvoiceDto", e);
         }
         return ret;
     }
