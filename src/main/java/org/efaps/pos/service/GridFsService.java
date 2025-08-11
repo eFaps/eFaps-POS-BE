@@ -59,12 +59,12 @@ public class GridFsService
     public Object[] getBlob(final String oid)
         throws IllegalStateException, IOException, NotFoundException
     {
-        final GridFSFile file = gridFsTemplate.findOne(new Query(Criteria.where("metadata.oid").is(oid)));
+        final GridFSFile file = getGridFSFile(oid);
         if (file == null) {
             throw new NotFoundException("Coould not get image for oid: " + oid);
         }
         final InputStream resource = operations.getResource(file).getInputStream();
-        return new Object[] { file.getMetadata().getString("contentType"), IOUtils.toByteArray(resource) };
+        return new Object[] { file.getMetadata().getString("_contentType"), IOUtils.toByteArray(resource) };
     }
 
     public GridFSFile getGridFSFile(final String oid)
@@ -81,7 +81,8 @@ public class GridFsService
                               final InputStream content,
                               final String fileName,
                               final String contentType,
-                              final OffsetDateTime modifiedAt) {
+                              final OffsetDateTime modifiedAt)
+    {
         gridFsTemplate.delete(new Query(Criteria.where("metadata.oid").is(oid)));
         final var metaData = new BasicDBObject();
         metaData.put("oid", oid);

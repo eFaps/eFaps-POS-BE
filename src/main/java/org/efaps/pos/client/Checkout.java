@@ -35,9 +35,9 @@ public class Checkout
         this.content = _content;
     }
 
-    public void setContentType(final MediaType _contentType)
+    public void setContentType(final MediaType contentType)
     {
-        this.contentType = _contentType;
+        this.contentType = contentType;
     }
 
     public MediaType getContentType()
