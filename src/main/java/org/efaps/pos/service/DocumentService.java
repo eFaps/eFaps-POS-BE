@@ -907,17 +907,21 @@ public class DocumentService
         return ValidateForCreditNoteResponseDto.builder().withValid(true).build();
     }
 
-    public void verifyPayment(final AbstractPayableDocument<?> payable) {
-        for (final var payment: payable.getPayments()) {
-            if (payment instanceof final PaymentRedeemCreditNote redeemPayment) {
-                // check if the RedeemDocOid is a oid. If oid it was already synced or is from remote
-                // if mongoId  the id must be updated to the oid
-                if (Utils.isOid(redeemPayment.getRedeemDocOid())) {
-                    validateRedeemDocument(redeemPayment.getRedeemDocOid(), payable.getId());
-                } else {
-                    final var creditNote = creditNoteRepository.findById(redeemPayment.getRedeemDocOid()).get();
-                    creditNote.setRedeemedById(payable.getId());
-                    creditNoteRepository.save(creditNote);
+    public void verifyPayment(final AbstractPayableDocument<?> payable)
+    {
+        if (payable.getPayments() != null) {
+            for (final var payment : payable.getPayments()) {
+                if (payment instanceof final PaymentRedeemCreditNote redeemPayment) {
+                    // check if the RedeemDocOid is a oid. If oid it was already
+                    // synced or is from remote
+                    // if mongoId the id must be updated to the oid
+                    if (Utils.isOid(redeemPayment.getRedeemDocOid())) {
+                        validateRedeemDocument(redeemPayment.getRedeemDocOid(), payable.getId());
+                    } else {
+                        final var creditNote = creditNoteRepository.findById(redeemPayment.getRedeemDocOid()).get();
+                        creditNote.setRedeemedById(payable.getId());
+                        creditNoteRepository.save(creditNote);
+                    }
                 }
             }
         }
