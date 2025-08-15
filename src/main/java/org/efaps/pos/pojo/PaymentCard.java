@@ -37,7 +37,7 @@ public class PaymentCard
     @Override
     public String getLabel()
     {
-        return null;
+        return cardLabel;
     }
 
     public String getCardTypeId()
