@@ -231,7 +231,8 @@ public class ConfigProperties
     {
 
         private String numberFormat;
-        private boolean skipCalcOnCreate;
+        private boolean skipCalcOnCreate = false;
+        private boolean allowSetUnitPrice = false;
 
         public String getNumberFormat()
         {
@@ -251,6 +252,16 @@ public class ConfigProperties
         public void setSkipCalcOnCreate(boolean skipCalcOnCreate)
         {
             this.skipCalcOnCreate = skipCalcOnCreate;
+        }
+
+        public boolean isAllowSetUnitPrice()
+        {
+            return allowSetUnitPrice;
+        }
+
+        public void setAllowSetUnitPrice(boolean allowSetUnitPrice)
+        {
+            this.allowSetUnitPrice = allowSetUnitPrice;
         }
     }
 

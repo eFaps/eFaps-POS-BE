@@ -6,7 +6,6 @@ beInst:
   timeZone: America/Lima
   order:
     numberFormat:
-    skipCalcOnCreate: false
 
 spring:
   autoconfigure:

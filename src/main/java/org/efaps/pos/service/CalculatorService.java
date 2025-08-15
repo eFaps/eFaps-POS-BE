@@ -48,6 +48,7 @@ import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.Identifier;
+import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.flags.BOMGroupConfigFlag;
 import org.efaps.pos.flags.WorkspaceFlag;
@@ -382,9 +383,12 @@ public class CalculatorService
                                 .setType(EnumUtils.getEnum(TaxType.class, tax.getType().name()))
                                 .setFreeOfCharge(isFreeOfCharge(tax.getKey()));
             }).toList();
-
             BigDecimal netUnitPrice = BigDecimal.ZERO;
-            if (item.getBomOid() != null) {
+            // use the send netUnitPrice if is allowed
+            if (item.getNetUnitPrice() != null && posDoc instanceof Order
+                            && configService.getInstProperties().getOrder().isAllowSetUnitPrice()) {
+                netUnitPrice = item.getNetUnitPrice();
+            } else if (item.getBomOid() != null) {
                 final var partList = productService.getProductByBomOid(item.getBomOid());
                 if (!ProductType.PARTLIST.equals(partList.getType())) {
                     LOG.warn("BomOid {} send to Calculator leads to a product that is not a partlist",
