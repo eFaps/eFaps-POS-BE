@@ -284,6 +284,7 @@ public class DocumentService
             }
             items.add(new Item().setIndex(counter.getAndIncrement())
                             .setQuantity(item.getQuantity())
+                            .setNetUnitPrice(item.getNetUnitPrice())
                             .setProductOid(productOid)
                             .setStandInOid(standInOid));
         });
