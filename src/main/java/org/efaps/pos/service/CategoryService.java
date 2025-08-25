@@ -15,7 +15,6 @@
  */
 package org.efaps.pos.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,16 +38,13 @@ public class CategoryService
 
     private final CategoryRepository categoryRepository;
     private final EFapsClient eFapsClient;
-    private final ImageService imageService;
 
     @Autowired
     public CategoryService(final CategoryRepository categoryRepository,
-                           final EFapsClient eFapsClient,
-                           final ImageService imageService)
+                           final EFapsClient eFapsClient)
     {
         this.categoryRepository = categoryRepository;
         this.eFapsClient = eFapsClient;
-        this.imageService = imageService;
     }
 
     public List<Category> getCategories()
@@ -69,7 +65,6 @@ public class CategoryService
         final List<Category> categories = eFapsClient.getCategories().stream()
                         .map(Converter::toEntity)
                         .collect(Collectors.toList());
-        final var imageOids = new ArrayList<String>();
         if (!categories.isEmpty()) {
             final var catOids  =categories.stream().map(Category::getOid).collect(Collectors.toSet());
             categoryRepository.findAll().forEach(existing -> {
@@ -78,20 +73,6 @@ public class CategoryService
                 }
             });
             for (final var category : categories) {
-                final var storedOpt = categoryRepository.findById(category.getOid());
-                if (storedOpt.isEmpty()) {
-                    imageOids.add(category.getOid());
-                } else {
-                    final var stored = storedOpt.get();
-                    if (category.getImageModifiedAt() != null) {
-                        if (stored.getImageModifiedAt() == null) {
-                            imageOids.add(category.getOid());
-                        } else if (!category.getImageModifiedAt().withNano(0)
-                                        .isEqual(stored.getImageModifiedAt().withNano(0))) {
-                            imageOids.add(category.getOid());
-                        }
-                    }
-                }
                 categoryRepository.save(category);
             }
         }

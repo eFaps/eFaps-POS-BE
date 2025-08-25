@@ -41,16 +41,19 @@ public class ImageService
     private final EFapsClient eFapsClient;
     private final ProductService productService;
     private final WorkspaceService workspaceService;
+    private final CategoryService categoryService;
 
     public ImageService(final EFapsClient eFapsClient,
                         final GridFsService gridFsService,
                         final ProductService productService,
-                        final WorkspaceService workspaceService)
+                        final WorkspaceService workspaceService,
+                        final CategoryService categoryService)
     {
         this.gridFsService = gridFsService;
         this.eFapsClient = eFapsClient;
         this.productService = productService;
         this.workspaceService = workspaceService;
+        this.categoryService = categoryService;
     }
 
     public void sync()
@@ -92,6 +95,11 @@ public class ImageService
                 LOG.debug("Marking  Floor-Image to be synced {}", floor.getImageOid());
                 imageOids.add(floor.getImageOid());
             }
+        }
+
+        final var categories = categoryService.getCategories();
+        for (final var category : categories) {
+            imageOids.add(category.getOid());
         }
 
         final var response = eFapsClient.evalStoreStatus(StoreStatusRequestDto.builder()
