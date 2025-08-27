@@ -20,6 +20,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 
 import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
@@ -59,7 +60,7 @@ public class ImageService
     public void sync()
     {
         LOG.info("Syncing Images");
-        final var imageOids = new ArrayList<String>();
+        final var imageOids = new HashSet<String>();
         var pageable = Pageable.ofSize(1000);
         while (pageable != null) {
             final var productPage = productService.getProducts(pageable);
@@ -103,7 +104,7 @@ public class ImageService
         }
 
         final var response = eFapsClient.evalStoreStatus(StoreStatusRequestDto.builder()
-                        .withOids(imageOids)
+                        .withOids(new ArrayList<>(imageOids))
                         .build());
 
         for (final var status : response.getStatus()) {
