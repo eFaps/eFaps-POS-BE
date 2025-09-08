@@ -239,6 +239,8 @@ public class ProductService
             final var netPrice = evalPrices(product).getLeft();
             if (netPrice != null && BigDecimal.ZERO.compareTo(netPrice) < 0) {
                 productRepository.save(product);
+            } else {
+                LOG.debug("Skipped product: {} due to flag SkipProductsMissingPrice", product.getOid());
             }
         } else {
             productRepository.save(product);
