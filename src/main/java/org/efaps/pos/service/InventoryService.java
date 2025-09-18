@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.ProductRelationType;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.dto.ValidateStockDto;
@@ -28,28 +30,36 @@ import org.efaps.pos.dto.ValidateStockResponseDto;
 import org.efaps.pos.dto.ValidateStockResponseEntryDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.InventoryEntry;
+import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.repository.InventoryRepository;
 import org.efaps.pos.repository.ProductRepository;
 import org.efaps.pos.repository.WarehouseRepository;
+import org.efaps.pos.util.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class InventoryService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(InventoryService.class);
 
     private final WorkspaceService workspaceService;
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
     private final ProductRepository productRepository;
+    private final EFapsClient eFapsClient;
 
     @Autowired
-    public InventoryService(final WorkspaceService _workspaceService,
+    public InventoryService(final EFapsClient eFapsClient,
+                            final WorkspaceService _workspaceService,
                             final WarehouseRepository _warehouseRepository,
                             final InventoryRepository _inventoryRepository,
                             final ProductRepository _productRepository)
     {
+        this.eFapsClient= eFapsClient;
         workspaceService = _workspaceService;
         warehouseRepository = _warehouseRepository;
         inventoryRepository = _inventoryRepository;
@@ -159,5 +169,19 @@ public class InventoryService
             }
         }
         return ValidateStockResponseDto.builder().withStock(errorEntries.isEmpty()).withEntries(errorEntries).build();
+    }
+
+
+    public boolean syncInventory(final SyncInfo syncInfo)
+    {
+        LOG.info("Syncing Inventory");
+        final List<InventoryEntry> entries = eFapsClient.getInventory().stream()
+                        .map(Converter::toEntity)
+                        .collect(Collectors.toList());
+        if (!entries.isEmpty()) {
+            inventoryRepository.deleteAll();
+            entries.forEach(workspace -> inventoryRepository.save(workspace));
+        }
+        return true;
     }
 }

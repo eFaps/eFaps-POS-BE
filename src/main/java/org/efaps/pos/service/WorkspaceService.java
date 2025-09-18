@@ -19,9 +19,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.repository.WorkspaceRepository;
+import org.efaps.pos.util.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,12 +34,16 @@ import org.springframework.stereotype.Service;
 public class WorkspaceService
 {
 
+    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceService.class);
     private final WorkspaceRepository workspaceRepository;
+    private final EFapsClient eFapsClient;
 
     @Autowired
-    public WorkspaceService(final WorkspaceRepository _workspaceRepository)
+    public WorkspaceService(final EFapsClient eFapsClient,
+                            final WorkspaceRepository workspaceRepository)
     {
-        workspaceRepository = _workspaceRepository;
+        this.eFapsClient = eFapsClient;
+        this.workspaceRepository = workspaceRepository;
     }
 
     public List<Workspace> getWorkspaces(final User _user)
@@ -66,5 +75,25 @@ public class WorkspaceService
     public List<Workspace> getWorkspaces()
     {
         return workspaceRepository.findAll();
+    }
+
+    public boolean syncWorkspaces(final SyncInfo syncInfo)
+    {
+        LOG.info("Syncing Workspaces");
+        final List<Workspace> workspaces = eFapsClient.getWorkspaces().stream()
+                        .map(Converter::toEntity)
+                        .collect(Collectors.toList());
+        if (!workspaces.isEmpty()) {
+            final List<Workspace> existingWorkspaces = workspaceRepository.findAll();
+            existingWorkspaces.forEach(existing -> {
+                if (!workspaces.stream()
+                                .filter(workspace -> workspace.getOid().equals(existing.getOid())).findFirst()
+                                .isPresent()) {
+                    workspaceRepository.delete(existing);
+                }
+            });
+            workspaces.forEach(workspace -> workspaceRepository.save(workspace));
+        }
+        return true;
     }
 }

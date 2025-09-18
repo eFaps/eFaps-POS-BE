@@ -106,7 +106,7 @@ public class ApplicationStartup
                 syncService.syncAllProducts();
                 syncService.syncCategories();
                 syncService.syncPromotions();
-                syncService.syncBalance();
+                syncService.syncBalances();
                 syncService.syncReceipts();
                 syncService.syncInvoices();
                 syncService.syncTickets();

@@ -26,6 +26,7 @@ public enum StashId
     INVOICESYNC("org.efaps.pos.sync.Invoice"),
     RECEIPTSYNC("org.efaps.pos.sync.Receipt"),
     CREDITNOTESYNC("org.efaps.pos.sync.CreditNote"),
+    ORDERSYNC("org.efaps.pos.sync.Order"),
     USERSYNC("org.efaps.pos.sync.User"),
     POSSYNC("org.efaps.pos.sync.POS"),
     PRINTERSYNC("org.efaps.pos.sync.Printer"),
@@ -38,7 +39,8 @@ public enum StashId
     EMPLOYEESYNC("org.efaps.pos.sync.Employee"),
     PROMOTIONSYNC("org.efaps.pos.sync.Promotion"),
     PROMOTIONINFOSYNC("org.efaps.pos.sync.PromotionInfo"),
-    POSFILESYNC("org.efaps.pos.sync.PosFile");
+    POSFILESYNC("org.efaps.pos.sync.PosFile"),
+    INVENTORYSYNC("org.efaps.pos.sync.Inventory");
 
     private final String key;
 

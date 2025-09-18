@@ -1,0 +1,60 @@
+package org.efaps.pos.service;
+
+import java.util.Collection;
+import java.util.Optional;
+
+import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.dto.DocStatus;
+import org.efaps.pos.dto.ReceiptDto;
+import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.SyncInfo;
+import org.efaps.pos.repository.ReceiptRepository;
+import org.efaps.pos.util.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ReceiptService extends PayablesService
+{
+
+    private static final Logger LOG = LoggerFactory.getLogger(ReceiptService.class);
+    private final ReceiptRepository receiptRepository;
+
+    public ReceiptService(final EFapsClient eFapsClient,
+                          final DocumentHelperService documentHelperService,
+                          final ContactService contactService,
+                          final BalanceService balanceService,
+                          final ReceiptRepository receiptRepository)
+    {
+        super(eFapsClient, documentHelperService, contactService, balanceService);
+        this.receiptRepository = receiptRepository;
+    }
+
+    public boolean syncReceipts(final SyncInfo syncInfo)
+    {
+        boolean ret = false;
+        LOG.info("Syncing Receipts");
+        final Collection<Receipt> tosync = receiptRepository.findByOidIsNull();
+        for (final Receipt receipt : tosync) {
+            if (validateContact(receipt) && verifyBalance(receipt)) {
+                LOG.debug("Syncing Receipt: {}", receipt);
+                final ReceiptDto recDto = getEFapsClient().postReceipt(Converter.toReceiptDto(receipt));
+                LOG.debug("received Receipt: {}", recDto);
+                if (recDto.getOid() != null) {
+                    final Optional<Receipt> receiptOpt = receiptRepository.findById(recDto.getId());
+                    if (receiptOpt.isPresent()) {
+                        final Receipt retReceipt = receiptOpt.get();
+                        retReceipt.setOid(recDto.getOid());
+                        retReceipt.setStatus(DocStatus.CLOSED);
+                        receiptRepository.save(retReceipt);
+                    }
+                }
+            } else {
+                LOG.debug("skipped Receipt: {}", receipt);
+            }
+            ret = true;
+        }
+        return ret;
+    }
+}

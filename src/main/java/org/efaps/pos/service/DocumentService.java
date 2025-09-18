@@ -66,6 +66,7 @@ import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IPos;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
+import org.efaps.pos.listener.IDocumentListener;
 import org.efaps.pos.pojo.EmployeeRelation;
 import org.efaps.pos.pojo.PaymentRedeemCreditNote;
 import org.efaps.pos.projection.PayableHead;
@@ -95,8 +96,6 @@ public class DocumentService
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
 
-
-
     private final ConfigService configService;
     private final EFapsClient eFapsClient;
     private final PosService posService;
@@ -117,6 +116,7 @@ public class DocumentService
     private final List<IInvoiceListener> invoiceListeners;
     private final List<ITicketListener> ticketListeners;
     private final List<ICreditNoteListener> creditNoteListeners;
+    private final List<IDocumentListener> documentListeners;
 
     private final MongoTemplate mongoTemplate;
     private final TaskExecutor taskExecutor;
@@ -144,7 +144,8 @@ public class DocumentService
                            final Optional<List<IReceiptListener>> receiptListeners,
                            final Optional<List<IInvoiceListener>> invoiceListeners,
                            final Optional<List<ITicketListener>> ticketListeners,
-                           final Optional<List<ICreditNoteListener>> creditNoteListener)
+                           final Optional<List<ICreditNoteListener>> creditNoteListener,
+                           final Optional<List<IDocumentListener>> documentListeners)
     {
         this.mongoTemplate = mongoTemplate;
         this.taskExecutor = taskExecutor;
@@ -168,6 +169,7 @@ public class DocumentService
         this.invoiceListeners = invoiceListeners.isPresent() ? invoiceListeners.get() : Collections.emptyList();
         this.ticketListeners = ticketListeners.isPresent() ? ticketListeners.get() : Collections.emptyList();
         this.creditNoteListeners = creditNoteListener.isPresent() ? creditNoteListener.get() : Collections.emptyList();
+        this.documentListeners = documentListeners.isPresent() ? documentListeners.get() : Collections.emptyList();
     }
 
     public Order getOrderById(final String id)
@@ -218,6 +220,9 @@ public class DocumentService
             storedOrder = orderRepository.insert(order);
             promotionService.registerInfo(storedOrder.getId(), promoInfo);
         }
+        for (final IDocumentListener listener : documentListeners) {
+            listener.afterCreate(storedOrder);
+        }
         return storedOrder;
     }
 
@@ -236,6 +241,9 @@ public class DocumentService
         final var promoInfo = calculatorService.calculate(workspaceOid, order);
         final var storedOrder = orderRepository.insert(order);
         promotionService.registerInfo(storedOrder.getId(), promoInfo);
+        for (final IDocumentListener listener : documentListeners) {
+            listener.afterCreate(storedOrder);
+        }
         return storedOrder;
     }
 
@@ -341,6 +349,10 @@ public class DocumentService
         promotionService.copyPromotionInfo(orderId, ret.getId());
         closeOrder(orderId, ret.getId());
         inventoryService.removeFromInventory(workspaceOid, ret);
+
+        for (final IDocumentListener listener : documentListeners) {
+            listener.afterCreate(ret);
+        }
         return ret;
     }
 
@@ -370,6 +382,9 @@ public class DocumentService
         promotionService.copyPromotionInfo(orderId, ret.getId());
         closeOrder(orderId, ret.getId());
         inventoryService.removeFromInventory(workspaceOid, ret);
+        for (final IDocumentListener listener : documentListeners) {
+            listener.afterCreate(ret);
+        }
         return ret;
     }
 
@@ -399,6 +414,9 @@ public class DocumentService
         promotionService.copyPromotionInfo(orderId, ret.getId());
         closeOrder(orderId, ret.getId());
         inventoryService.removeFromInventory(workspaceOid, ret);
+        for (final IDocumentListener listener : documentListeners) {
+            listener.afterCreate(ret);
+        }
         return ret;
     }
 
@@ -422,6 +440,9 @@ public class DocumentService
             }
         } catch (final Exception e) {
             LOG.error("Wow that should not happen", e);
+        }
+        for (final IDocumentListener listener : documentListeners) {
+            listener.afterCreate(ret);
         }
         return ret;
     }
@@ -928,7 +949,8 @@ public class DocumentService
         }
     }
 
-    private void validateRedeemDocument(final String oid, final String payableId)
+    private void validateRedeemDocument(final String oid,
+                                        final String payableId)
     {
         final var creditNoteOpt = creditNoteRepository.findByOid(oid);
         if (creditNoteOpt.isPresent()) {
@@ -946,5 +968,24 @@ public class DocumentService
                 }
             });
         }
+    }
+
+    public void updateBalanceOid(Balance balance)
+    {
+        final Collection<Receipt> reciepts = receiptRepository.findByBalanceOid(balance.getId());
+        reciepts.forEach(doc -> {
+            doc.setBalanceOid(balance.getOid());
+            receiptRepository.save(doc);
+        });
+        final Collection<Invoice> invoices = invoiceRepository.findByBalanceOid(balance.getId());
+        invoices.forEach(doc -> {
+            doc.setBalanceOid(balance.getOid());
+            invoiceRepository.save(doc);
+        });
+        final Collection<Ticket> tickets = ticketRepository.findByBalanceOid(balance.getId());
+        tickets.forEach(doc -> {
+            doc.setBalanceOid(balance.getOid());
+            ticketRepository.save(doc);
+        });
     }
 }

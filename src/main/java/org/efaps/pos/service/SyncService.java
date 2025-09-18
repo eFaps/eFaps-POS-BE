@@ -18,7 +18,6 @@ package org.efaps.pos.service;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,48 +27,21 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.config.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
-import org.efaps.pos.dto.BalanceDto;
-import org.efaps.pos.dto.BalanceStatus;
-import org.efaps.pos.dto.DocStatus;
-import org.efaps.pos.dto.InvoiceDto;
-import org.efaps.pos.dto.OrderDto;
-import org.efaps.pos.dto.ReceiptDto;
-import org.efaps.pos.dto.TicketDto;
-import org.efaps.pos.entity.AbstractDocument;
-import org.efaps.pos.entity.AbstractPayableDocument;
-import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.Config;
-import org.efaps.pos.entity.Contact;
-import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Employee;
-import org.efaps.pos.entity.InventoryEntry;
-import org.efaps.pos.entity.Invoice;
-import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Printer;
-import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.SyncInfo;
-import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.entity.Warehouse;
-import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.pojo.StashId;
-import org.efaps.pos.repository.BalanceRepository;
-import org.efaps.pos.repository.CreditNoteRepository;
-import org.efaps.pos.repository.InventoryRepository;
-import org.efaps.pos.repository.InvoiceRepository;
-import org.efaps.pos.repository.OrderRepository;
 import org.efaps.pos.repository.PrinterRepository;
-import org.efaps.pos.repository.ReceiptRepository;
 import org.efaps.pos.repository.SequenceRepository;
-import org.efaps.pos.repository.TicketRepository;
 import org.efaps.pos.repository.UserRepository;
 import org.efaps.pos.repository.WarehouseRepository;
-import org.efaps.pos.repository.WorkspaceRepository;
 import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.SyncServiceDeactivatedException;
-import org.efaps.pos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -86,18 +58,10 @@ public class SyncService
 
     private final MongoTemplate mongoTemplate;
     private final EFapsClient eFapsClient;
-    private final ReceiptRepository receiptRepository;
-    private final InvoiceRepository invoiceRepository;
-    private final TicketRepository ticketRepository;
-    private final CreditNoteRepository creditNoteRepository;
     private final SequenceRepository sequenceRepository;
     private final UserRepository userRepository;
     private final WarehouseRepository warehouseRepository;
-    private final InventoryRepository inventoryRepository;
     private final PrinterRepository printerRepository;
-    private final WorkspaceRepository workspaceRepository;
-    private final BalanceRepository balanceRepository;
-    private final OrderRepository orderRepository;
     private final ConfigProperties configProperties;
     private final ContactService contactService;
     private final DocumentService documentService;
@@ -110,63 +74,78 @@ public class SyncService
     private final CategoryService categoryService;
     private final ImageService imageService;
     private final ReportService reportService;
+    private final ReceiptService receiptService;
 
     private boolean deactivated;
 
+    private final BalanceService balanceService;
+
+    private final InvoiceService invoiceService;
+
+    private final TicketService ticketService;
+
+    private final CreditNoteService creditNoteService;
+
+    private final OrderService orderService;
+
+    private final WorkspaceService workspaceService;
+
+    private final InventoryService inventoryService;
+
     @Autowired
     public SyncService(final MongoTemplate _mongoTemplate,
-                       final ReceiptRepository _receiptRepository,
-                       final InvoiceRepository _invoiceRepository,
-                       final TicketRepository _ticketRepository,
-                       final CreditNoteRepository _creditNoteRepository,
                        final SequenceRepository _sequenceRepository,
                        final UserRepository _userRepository,
                        final WarehouseRepository _warehouseRepository,
-                       final InventoryRepository _inventoryRepository,
                        final PrinterRepository _printerRepository,
-                       final WorkspaceRepository _workspaceRepository,
-                       final BalanceRepository _balanceRepository,
-                       final OrderRepository _orderRepository,
                        final EFapsClient _eFapsClient,
                        final ConfigProperties _configProperties,
+                       final WorkspaceService workspaceService,
                        final ContactService contactService,
                        final DocumentService documentService,
                        final ExchangeRateService _exchangeRateService,
                        final LogService logService,
                        final PromotionService promotionService,
                        final ProductService productService,
+                       final InventoryService inventoryService,
                        final CategoryService categoryService,
                        final PosFileService posFileService,
                        final UpdateService updateService,
                        final ImageService imageService,
-                       final ReportService reportService)
+                       final ReportService reportService,
+                       final OrderService orderService,
+                       final InvoiceService invoiceService,
+                       final ReceiptService receiptService,
+                       final TicketService ticketService,
+                       final CreditNoteService creditNoteService,
+                       final BalanceService balanceService)
     {
         mongoTemplate = _mongoTemplate;
-        receiptRepository = _receiptRepository;
-        invoiceRepository = _invoiceRepository;
-        ticketRepository = _ticketRepository;
-        creditNoteRepository = _creditNoteRepository;
         sequenceRepository = _sequenceRepository;
         userRepository = _userRepository;
         warehouseRepository = _warehouseRepository;
-        inventoryRepository = _inventoryRepository;
         printerRepository = _printerRepository;
-        workspaceRepository = _workspaceRepository;
-        balanceRepository = _balanceRepository;
-        orderRepository = _orderRepository;
         eFapsClient = _eFapsClient;
         configProperties = _configProperties;
+        this.workspaceService= workspaceService;
         this.contactService = contactService;
         this.documentService = documentService;
         exchangeRateService = _exchangeRateService;
         this.logService = logService;
         this.promotionService = promotionService;
         this.productService = productService;
+        this.inventoryService= inventoryService;
         this.posFileService = posFileService;
         this.updateService = updateService;
         this.categoryService = categoryService;
         this.imageService = imageService;
         this.reportService = reportService;
+        this.orderService = orderService;
+        this.invoiceService = invoiceService;
+        this.receiptService = receiptService;
+        this.ticketService = ticketService;
+        this.creditNoteService =creditNoteService;
+        this.balanceService = balanceService;
     }
 
     public void runSyncJob(final String _methodName)
@@ -256,22 +235,7 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-
-        LOG.info("Syncing Workspaces");
-        final List<Workspace> workspaces = eFapsClient.getWorkspaces().stream()
-                        .map(Converter::toEntity)
-                        .collect(Collectors.toList());
-        if (!workspaces.isEmpty()) {
-            final List<Workspace> existingWorkspaces = workspaceRepository.findAll();
-            existingWorkspaces.forEach(existing -> {
-                if (!workspaces.stream()
-                                .filter(workspace -> workspace.getOid().equals(existing.getOid())).findFirst()
-                                .isPresent()) {
-                    workspaceRepository.delete(existing);
-                }
-            });
-            workspaces.forEach(workspace -> workspaceRepository.save(workspace));
-        }
+        workspaceService.syncWorkspaces(getSync(StashId.WORKSPACESYNC));
         registerSync(StashId.WORKSPACESYNC);
     }
 
@@ -309,15 +273,9 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Inventory");
-        final List<InventoryEntry> entries = eFapsClient.getInventory().stream()
-                        .map(Converter::toEntity)
-                        .collect(Collectors.toList());
-        if (!entries.isEmpty()) {
-            inventoryRepository.deleteAll();
-            entries.forEach(workspace -> inventoryRepository.save(workspace));
+        if (inventoryService.syncInventory(getSync(StashId.INVENTORYSYNC))) {
+            registerSync(StashId.INVENTORYSYNC);
         }
-        registerSync(StashId.WAREHOUSESYNC);
     }
 
     public void syncPrinters()
@@ -384,7 +342,7 @@ public class SyncService
     {
         final var syncedContacts = contactService.syncContactsUp();
         documentService.updateContactOid(syncedContacts);
-        syncBalance();
+        syncBalances();
         syncReceipts();
         syncInvoices();
         syncTickets();
@@ -392,59 +350,17 @@ public class SyncService
         syncCreditNotes();
     }
 
-    public void syncBalance()
+    public void syncBalances()
         throws SyncServiceDeactivatedException
     {
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Balance");
-        final Collection<BalanceDto> tosync = balanceRepository.findByOidIsNull().stream()
-                        .map(Converter::toBalanceDto)
-                        .collect(Collectors.toList());
-        for (final BalanceDto dto : tosync) {
-            LOG.debug("Syncing Balance: {}", dto);
-            final BalanceDto recDto = eFapsClient.postBalance(dto);
-            LOG.debug("received Balance: {}", recDto);
-            if (recDto.getOid() != null) {
-                final Optional<Balance> balanceOpt = balanceRepository.findById(recDto.getId());
-                if (balanceOpt.isPresent()) {
-                    final Balance balance = balanceOpt.get();
-                    balance.setOid(recDto.getOid());
-                    balanceRepository.save(balance);
-                    final Collection<Receipt> reciepts = receiptRepository.findByBalanceOid(balance.getId());
-                    reciepts.forEach(_doc -> {
-                        _doc.setBalanceOid(balance.getOid());
-                        receiptRepository.save(_doc);
-                    });
-                    final Collection<Invoice> invoices = invoiceRepository.findByBalanceOid(balance.getId());
-                    invoices.forEach(_doc -> {
-                        _doc.setBalanceOid(balance.getOid());
-                        invoiceRepository.save(_doc);
-                    });
-                    final Collection<Ticket> tickets = ticketRepository.findByBalanceOid(balance.getId());
-                    tickets.forEach(_doc -> {
-                        _doc.setBalanceOid(balance.getOid());
-                        ticketRepository.save(_doc);
-                    });
-                }
-            }
+
+        if (balanceService.syncBalances(getSync(StashId.BALANCESYNC))) {
+            registerSync(StashId.BALANCESYNC);
         }
-        final Collection<BalanceDto> tosync2 = balanceRepository.findBySyncedIsFalseAndStatus(BalanceStatus.CLOSED)
-                        .stream()
-                        .map(Converter::toBalanceDto)
-                        .collect(Collectors.toList());
-        for (final BalanceDto dto : tosync2) {
-            if (eFapsClient.putBalance(dto)) {
-                final Optional<Balance> balanceOpt = balanceRepository.findById(dto.getId());
-                if (balanceOpt.isPresent()) {
-                    final Balance balance = balanceOpt.get();
-                    balance.setSynced(true);
-                    balanceRepository.save(balance);
-                }
-            }
-        }
-        registerSync(StashId.BALANCESYNC);
+
     }
 
     public void syncOrders()
@@ -453,53 +369,8 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Canceled Orders");
-        final Collection<Order> tosync = orderRepository.findByOidIsNullAndStatus(DocStatus.CANCELED);
-        for (final Order order : tosync) {
-            if (order.getContactOid() == null || validateContact(order)) {
-                LOG.debug("Syncing Order: {}", order);
-                final OrderDto recDto = eFapsClient.postOrder(Converter.toOrderDto(order));
-                LOG.debug("received Order: {}", recDto);
-                if (recDto.getOid() != null) {
-                    final Optional<Order> orderOpt = orderRepository.findById(recDto.getId());
-                    if (orderOpt.isPresent()) {
-                        final Order retOrder = orderOpt.get();
-                        retOrder.setOid(recDto.getOid());
-                        orderRepository.save(retOrder);
-                    }
-                }
-            }
-        }
-        LOG.info("Syncing Closed Orders");
-        final Collection<Order> tosync2 = orderRepository.findByOidIsNullAndStatus(DocStatus.CLOSED);
-        for (final Order order : tosync2) {
-            if (order.getContactOid() == null || validateContact(order)) {
-                boolean sync = true;
-                if (order.getPayableOid() != null && !Utils.isOid(order.getPayableOid())) {
-                    final AbstractPayableDocument<?> payable = documentService.getPayableById(order.getPayableOid());
-                    if (payable != null && Utils.isOid(payable.getOid())) {
-                        order.setPayableOid(payable.getOid());
-                        orderRepository.save(order);
-                    } else {
-                        sync = false;
-                    }
-                }
-                if (sync) {
-                    LOG.debug("Syncing Order: {}", order);
-                    final OrderDto recDto = eFapsClient.postOrder(Converter.toOrderDto(order));
-                    LOG.debug("received Order: {}", recDto);
-                    if (recDto.getOid() != null) {
-                        final Optional<Order> orderOpt = orderRepository.findById(recDto.getId());
-                        if (orderOpt.isPresent()) {
-                            final Order retOrder = orderOpt.get();
-                            retOrder.setOid(recDto.getOid());
-                            orderRepository.save(retOrder);
-                        }
-                    }
-                } else {
-                    LOG.info("skipped Order: {}", order);
-                }
-            }
+        if (orderService.syncOrders(getSync(StashId.ORDERSYNC))) {
+            registerSync(StashId.ORDERSYNC);
         }
     }
 
@@ -509,53 +380,9 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Receipts");
-        final Collection<Receipt> tosync = receiptRepository.findByOidIsNull();
-        for (final Receipt receipt : tosync) {
-            if (validateContact(receipt) && verifyBalance(receipt)) {
-                LOG.debug("Syncing Receipt: {}", receipt);
-                final ReceiptDto recDto = eFapsClient.postReceipt(Converter.toReceiptDto(receipt));
-                LOG.debug("received Receipt: {}", recDto);
-                if (recDto.getOid() != null) {
-                    final Optional<Receipt> receiptOpt = receiptRepository.findById(recDto.getId());
-                    if (receiptOpt.isPresent()) {
-                        final Receipt retReceipt = receiptOpt.get();
-                        retReceipt.setOid(recDto.getOid());
-                        retReceipt.setStatus(DocStatus.CLOSED);
-                        receiptRepository.save(retReceipt);
-                    }
-                }
-            } else {
-                LOG.debug("skipped Receipt: {}", receipt);
-            }
+        if (receiptService.syncReceipts(getSync(StashId.RECEIPTSYNC))) {
+            registerSync(StashId.RECEIPTSYNC);
         }
-        registerSync(StashId.RECEIPTSYNC);
-    }
-
-    private boolean verifyBalance(final AbstractPayableDocument<?> _document)
-    {
-        boolean ret = true;
-        if (!Utils.isOid(_document.getBalanceOid())) {
-            ret = false;
-            final Optional<Balance> balanceOpt = balanceRepository.findById(_document.getBalanceOid());
-            if (balanceOpt.isPresent()) {
-                final Balance balance = balanceOpt.get();
-                if (Utils.isOid(balance.getOid())) {
-                    _document.setBalanceOid(balance.getOid());
-                    ret = true;
-                    if (_document instanceof Receipt) {
-                        receiptRepository.save((Receipt) _document);
-                    } else if (_document instanceof Invoice) {
-                        invoiceRepository.save((Invoice) _document);
-                    } else if (_document instanceof Ticket) {
-                        ticketRepository.save((Ticket) _document);
-                    }
-                } else {
-                    LOG.error("The found Balance does no thave an OID {}", balance);
-                }
-            }
-        }
-        return ret;
     }
 
     public void syncInvoices()
@@ -564,27 +391,9 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Invoices");
-        final Collection<Invoice> tosync = invoiceRepository.findByOidIsNull();
-        for (final Invoice invoice : tosync) {
-            LOG.debug("Syncing Invoice: {}", invoice);
-            if (validateContact(invoice) && verifyBalance(invoice)) {
-                final InvoiceDto recDto = eFapsClient.postInvoice(Converter.toInvoiceDto(invoice));
-                LOG.debug("received Invoice: {}", recDto);
-                if (recDto.getOid() != null) {
-                    final Optional<Invoice> opt = invoiceRepository.findById(recDto.getId());
-                    if (opt.isPresent()) {
-                        final Invoice receipt = opt.get();
-                        receipt.setOid(recDto.getOid());
-                        receipt.setStatus(DocStatus.CLOSED);
-                        invoiceRepository.save(receipt);
-                    }
-                }
-            } else {
-                LOG.debug("skipped Invoice: {}", invoice);
-            }
+        if (invoiceService.syncInvoices(getSync(StashId.INVOICESYNC))) {
+            registerSync(StashId.INVOICESYNC);
         }
-        registerSync(StashId.INVOICESYNC);
     }
 
     public void syncTickets()
@@ -593,27 +402,9 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Tickets");
-        final Collection<Ticket> tosync = ticketRepository.findByOidIsNull();
-        for (final Ticket dto : tosync) {
-            LOG.debug("Syncing Ticket: {}", dto);
-            if (validateContact(dto) && verifyBalance(dto)) {
-                final TicketDto recDto = eFapsClient.postTicket(Converter.toTicketDto(dto));
-                LOG.debug("received Ticket: {}", recDto);
-                if (recDto.getOid() != null) {
-                    final Optional<Ticket> opt = ticketRepository.findById(recDto.getId());
-                    if (opt.isPresent()) {
-                        final Ticket receipt = opt.get();
-                        receipt.setOid(recDto.getOid());
-                        receipt.setStatus(DocStatus.CLOSED);
-                        ticketRepository.save(receipt);
-                    }
-                }
-            } else {
-                LOG.debug("skipped Ticket: {}", dto);
-            }
+        if (ticketService.syncTickets(getSync(StashId.TICKETSYNC))) {
+            registerSync(StashId.TICKETSYNC);
         }
-        registerSync(StashId.TICKETSYNC);
     }
 
     public void syncCreditNotes()
@@ -622,62 +413,9 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing CreditNotes");
-        final Collection<CreditNote> tosync = creditNoteRepository.findByOidIsNull();
-        for (final CreditNote creditNote : tosync) {
-            LOG.debug("Syncing CreditNote: {}", creditNote);
-            if (validateContact(creditNote) && verifyBalance(creditNote) && verifySourceDoc(creditNote)) {
-                final var recDto = eFapsClient.postCreditNote(Converter.toCreditNoteDto(creditNote));
-                LOG.debug("received CreditNote: {}", recDto);
-                if (recDto.getOid() != null) {
-                    final Optional<CreditNote> opt = creditNoteRepository.findById(recDto.getId());
-                    if (opt.isPresent()) {
-                        final CreditNote receipt = opt.get();
-                        receipt.setOid(recDto.getOid());
-                        receipt.setStatus(DocStatus.CLOSED);
-                        creditNoteRepository.save(receipt);
-                    }
-                }
-            } else {
-                LOG.debug("skipped CreditNote: {}", creditNote);
-            }
+        if (creditNoteService.syncCreditNotes(getSync(StashId.CREDITNOTESYNC))) {
+            registerSync(StashId.CREDITNOTESYNC);
         }
-        registerSync(StashId.INVOICESYNC);
-    }
-
-    private boolean verifySourceDoc(final CreditNote creditNote)
-    {
-        boolean ret = false;
-        if (Utils.isOid(creditNote.getSourceDocOid())) {
-            ret = true;
-        } else {
-            final var payable = documentService.getPayableById(creditNote.getSourceDocOid());
-            if (payable != null && Utils.isOid(payable.getOid())) {
-                creditNote.setSourceDocOid(payable.getOid());
-                creditNoteRepository.save(creditNote);
-                ret = true;
-            }
-        }
-        return ret;
-    }
-
-    private boolean validateContact(final AbstractDocument<?> entity)
-    {
-        boolean ret = false;
-        if (Utils.isOid(entity.getContactOid())) {
-            ret = contactService.findOneByOid(entity.getContactOid()).isPresent();
-        } else if (entity.getContactOid() != null) {
-            final Optional<Contact> optContact = contactService.findById(entity.getContactOid());
-            if (optContact.isPresent()) {
-                final String contactOid = optContact.get().getOid();
-                if (Utils.isOid(contactOid)) {
-                    entity.setContactOid(contactOid);
-                    mongoTemplate.save(entity);
-                    ret = true;
-                }
-            }
-        }
-        return ret;
     }
 
     public void syncImages()
@@ -851,7 +589,7 @@ public class SyncService
                         syncAllProducts();
                         syncCategories();
                         syncPromotions();
-                        syncBalance();
+                        syncBalances();
                         syncReceipts();
                         syncInvoices();
                         syncTickets();
@@ -874,7 +612,8 @@ public class SyncService
         }
     }
 
-    private void invokeSync(final String methodName) {
+    private void invokeSync(final String methodName)
+    {
         LOG.info("Invoking {}", methodName);
         try {
             final Method method = getClass().getMethod(methodName);
@@ -887,6 +626,7 @@ public class SyncService
 
     public enum SyncDirective
     {
+
         ALL(null),
         PROMOTIONS("syncPromotions"),
         PRODUCTS("syncAllProducts"),
@@ -898,7 +638,9 @@ public class SyncService
         POSFILES("syncPosFiles");
 
         String method;
-        SyncDirective(String method) {
+
+        SyncDirective(String method)
+        {
             this.method = method;
         }
     }

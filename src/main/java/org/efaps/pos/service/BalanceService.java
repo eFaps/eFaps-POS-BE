@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BalanceStatus;
 import org.efaps.pos.dto.BalanceSummaryDetailDto;
 import org.efaps.pos.dto.BalanceSummaryDto;
@@ -45,6 +47,7 @@ import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.pojo.IPayment;
@@ -52,39 +55,46 @@ import org.efaps.pos.repository.BalanceRepository;
 import org.efaps.pos.repository.CashEntryRepository;
 import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.PaymentGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BalanceService
 {
 
-    private final BalanceRepository repository;
+    private static final Logger LOG = LoggerFactory.getLogger(BalanceService.class);
+
+    private final BalanceRepository balanceRepository;
     private final CashEntryRepository cashEntryRepository;
+    private final EFapsClient eFapsClient;
     private final SequenceService sequenceService;
     private final DocumentService documentService;
     private final CollectorService collectorService;
     private final UserService userService;
 
-    public BalanceService(final BalanceRepository _repository,
-                          final CashEntryRepository _cashEntryRepository,
-                          final SequenceService _sequenceService,
-                          final DocumentService _documentService,
-                          final CollectorService _collectorService,
-                          final UserService _userService)
+    public BalanceService(final BalanceRepository balanceRepository,
+                          final CashEntryRepository cashEntryRepository,
+                          final EFapsClient eFapsClient,
+                          final SequenceService sequenceService,
+                          final DocumentService documentService,
+                          final CollectorService collectorService,
+                          final UserService userService)
     {
-        repository = _repository;
-        cashEntryRepository = _cashEntryRepository;
-        sequenceService = _sequenceService;
-        collectorService = _collectorService;
-        documentService = _documentService;
-        userService = _userService;
+        this.balanceRepository = balanceRepository;
+        this.cashEntryRepository = cashEntryRepository;
+        this.eFapsClient = eFapsClient;
+        this.sequenceService = sequenceService;
+        this.collectorService = collectorService;
+        this.documentService = documentService;
+        this.userService = userService;
     }
 
     public Optional<Balance> getCurrent(final User _principal,
                                         final boolean _createNew)
     {
         final Optional<Balance> ret;
-        final Optional<Balance> balanceOpt = repository.findOneByUserOidAndStatus(_principal.getOid(),
+        final Optional<Balance> balanceOpt = balanceRepository.findOneByUserOidAndStatus(_principal.getOid(),
                         BalanceStatus.OPEN);
         if (!balanceOpt.isPresent() && _createNew) {
             final String number = sequenceService.getNextNumber("Balance", false);
@@ -94,23 +104,28 @@ public class BalanceService
                             .setStatus(BalanceStatus.OPEN)
                             .setKey("TODO")
                             .setNumber(number);
-            ret = Optional.of(repository.save(balance));
+            ret = Optional.of(balanceRepository.save(balance));
         } else {
             ret = balanceOpt;
         }
         return ret;
     }
 
+    public Optional<Balance> findById(final String id)
+    {
+        return balanceRepository.findById(id);
+    }
+
     public Balance update(final Balance _retrievedBalance)
     {
         Balance ret = _retrievedBalance;
-        final Optional<Balance> balanceOpt = repository.findById(_retrievedBalance.getId());
+        final Optional<Balance> balanceOpt = balanceRepository.findById(_retrievedBalance.getId());
         if (balanceOpt.isPresent()) {
             final Balance balance = balanceOpt.get();
             balance.setStatus(BalanceStatus.CLOSED)
                             .setEndAt(LocalDateTime.now())
                             .setSynced(false);
-            ret = repository.save(balance);
+            ret = balanceRepository.save(balance);
         }
         return ret;
     }
@@ -118,7 +133,7 @@ public class BalanceService
     public BalanceSummaryDto getSummary(final String balanceId,
                                         final boolean detailed)
     {
-        final Balance balance = repository.findById(balanceId).orElseThrow();
+        final Balance balance = balanceRepository.findById(balanceId).orElseThrow();
 
         final PosUserDto user = Converter.toDto(userService.getUserByOid(balance.getUserOid()));
 
@@ -203,19 +218,21 @@ public class BalanceService
             }
         }
 
-        final var netTotals =  payable.stream().collect(Collectors.groupingBy(AbstractPayableDocument::getCurrency,
+        final var netTotals = payable.stream().collect(Collectors.groupingBy(AbstractPayableDocument::getCurrency,
                         Collectors.reducing(BigDecimal.ZERO, AbstractPayableDocument::getNetTotal, BigDecimal::add)))
                         .entrySet().stream().map(entry -> MoneyAmountDto.builder()
                                         .withAmount(entry.getValue())
                                         .withCurrency(entry.getKey())
-                                        .build()).toList();
+                                        .build())
+                        .toList();
 
-        final var crossTotals =  payable.stream().collect(Collectors.groupingBy(AbstractPayableDocument::getCurrency,
+        final var crossTotals = payable.stream().collect(Collectors.groupingBy(AbstractPayableDocument::getCurrency,
                         Collectors.reducing(BigDecimal.ZERO, AbstractPayableDocument::getCrossTotal, BigDecimal::add)))
                         .entrySet().stream().map(entry -> MoneyAmountDto.builder()
                                         .withAmount(entry.getValue())
                                         .withCurrency(entry.getKey())
-                                        .build()).toList();
+                                        .build())
+                        .toList();
 
         final List<TaxEntry> taxes = payable.stream()
                         .map(AbstractPayableDocument::getTaxes)
@@ -309,7 +326,7 @@ public class BalanceService
 
     public List<Balance> getBalances()
     {
-        return repository.findAll();
+        return balanceRepository.findAll();
     }
 
     public void addCashEntries(final String _id,
@@ -321,4 +338,43 @@ public class BalanceService
                         .collect(Collectors.toList());
         cashEntryRepository.saveAll(entities);
     }
+
+    public boolean syncBalances(final SyncInfo syncInfo)
+    {
+        final boolean ret = false;
+        LOG.info("Syncing Balance");
+        final Collection<BalanceDto> tosync = balanceRepository.findByOidIsNull().stream()
+                        .map(Converter::toBalanceDto)
+                        .collect(Collectors.toList());
+        for (final BalanceDto dto : tosync) {
+            LOG.debug("Syncing Balance: {}", dto);
+            final BalanceDto recDto = eFapsClient.postBalance(dto);
+            LOG.debug("received Balance: {}", recDto);
+            if (recDto.getOid() != null) {
+                final Optional<Balance> balanceOpt = balanceRepository.findById(recDto.getId());
+                if (balanceOpt.isPresent()) {
+                    final Balance balance = balanceOpt.get();
+                    balance.setOid(recDto.getOid());
+                    balanceRepository.save(balance);
+                    documentService.updateBalanceOid(balance);
+                }
+            }
+        }
+        final Collection<BalanceDto> tosync2 = balanceRepository.findBySyncedIsFalseAndStatus(BalanceStatus.CLOSED)
+                        .stream()
+                        .map(Converter::toBalanceDto)
+                        .collect(Collectors.toList());
+        for (final BalanceDto dto : tosync2) {
+            if (eFapsClient.putBalance(dto)) {
+                final Optional<Balance> balanceOpt = balanceRepository.findById(dto.getId());
+                if (balanceOpt.isPresent()) {
+                    final Balance balance = balanceOpt.get();
+                    balance.setSynced(true);
+                    balanceRepository.save(balance);
+                }
+            }
+        }
+        return ret;
+    }
+
 }
