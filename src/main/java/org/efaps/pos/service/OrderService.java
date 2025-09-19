@@ -15,10 +15,12 @@
  */
 package org.efaps.pos.service;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.entity.Order;
@@ -31,20 +33,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class OrderService extends PayablesService
+public class OrderService
+    extends PayablesService
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(OrderService.class);
     private final OrderRepository orderRepository;
 
-    public OrderService(final EFapsClient eFapsClient,
+    public OrderService(final ConfigProperties configProperties,
+                        final EFapsClient eFapsClient,
                         final DocumentHelperService documentHelperService,
-                          final ContactService contactService,
-                          final BalanceService balanceService,
-                          final OrderRepository orderRepository)
+                        final ContactService contactService,
+                        final BalanceService balanceService,
+                        final OrderRepository orderRepository)
     {
-        super(eFapsClient,documentHelperService, contactService, balanceService);
+        super(configProperties, eFapsClient, documentHelperService, contactService, balanceService);
         this.orderRepository = orderRepository;
+        LOG.info("Started {} with defer sync of {}s", this.getClass().getSimpleName(),
+                        getConfigProperties().getBeInst().getOrder().getDeferSync());
     }
 
     public boolean syncOrders(final SyncInfo syncInfo)
@@ -68,7 +74,11 @@ public class OrderService extends PayablesService
             }
         }
         LOG.info("Syncing Closed Orders");
-        final Collection<Order> tosync2 = orderRepository.findByOidIsNullAndStatus(DocStatus.CLOSED);
+        final Collection<Order> tosync2 = orderRepository.findByOidIsNullAndStatus(DocStatus.CLOSED).stream()
+                        .filter(entity -> entity.getLastModifiedDate()
+                                        .plusSeconds(getConfigProperties().getBeInst().getOrder().getDeferSync())
+                                        .isBefore(Instant.now()))
+                        .toList();
         for (final Order order : tosync2) {
             if (order.getContactOid() == null || validateContact(order)) {
                 boolean sync = true;

@@ -15,12 +15,14 @@
  */
 package org.efaps.pos.service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.entity.Invoice;
@@ -39,19 +41,26 @@ public class InvoiceService
     private static final Logger LOG = LoggerFactory.getLogger(InvoiceService.class);
     private final InvoiceRepository invoiceRepository;
 
-    public InvoiceService(final EFapsClient eFapsClient,
+    public InvoiceService(final ConfigProperties configProperties,
+                          final EFapsClient eFapsClient,
                           final DocumentHelperService documentHelperService,
                           final ContactService contactService,
                           final BalanceService balanceService,
                           final InvoiceRepository invoiceRepository)
     {
-        super(eFapsClient, documentHelperService, contactService, balanceService);
+        super(configProperties, eFapsClient, documentHelperService, contactService, balanceService);
         this.invoiceRepository = invoiceRepository;
+        LOG.info("Started {} with defer sync of {}s", this.getClass().getSimpleName(),
+                        getConfigProperties().getBeInst().getInvoice().getDeferSync());
     }
 
     public boolean syncInvoices(final SyncInfo syncInfo)
     {
-        final Collection<Invoice> tosync = invoiceRepository.findByOidIsNull();
+        final Collection<Invoice> tosync = invoiceRepository.findByOidIsNull().stream()
+                        .filter(entity -> entity.getLastModifiedDate()
+                                        .plusSeconds(getConfigProperties().getBeInst().getInvoice().getDeferSync())
+                                        .isBefore(Instant.now()))
+                        .toList();
         syncInvoices(tosync);
         return true;
     }

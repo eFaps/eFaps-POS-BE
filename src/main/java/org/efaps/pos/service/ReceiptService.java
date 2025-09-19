@@ -15,12 +15,14 @@
  */
 package org.efaps.pos.service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.entity.Receipt;
@@ -39,20 +41,27 @@ public class ReceiptService
     private static final Logger LOG = LoggerFactory.getLogger(ReceiptService.class);
     private final ReceiptRepository receiptRepository;
 
-    public ReceiptService(final EFapsClient eFapsClient,
+    public ReceiptService(final ConfigProperties configProperties,
+                          final EFapsClient eFapsClient,
                           final DocumentHelperService documentHelperService,
                           final ContactService contactService,
                           final BalanceService balanceService,
                           final ReceiptRepository receiptRepository)
     {
-        super(eFapsClient, documentHelperService, contactService, balanceService);
+        super(configProperties, eFapsClient, documentHelperService, contactService, balanceService);
         this.receiptRepository = receiptRepository;
+        LOG.info("Started {} with defer sync of {}s", this.getClass().getSimpleName(),
+                        getConfigProperties().getBeInst().getReceipt().getDeferSync());
     }
 
     public boolean syncReceipts(final SyncInfo syncInfo)
     {
         LOG.info("Syncing Receipts");
-        final Collection<Receipt> tosync = receiptRepository.findByOidIsNull();
+        final Collection<Receipt> tosync = receiptRepository.findByOidIsNull().stream()
+                        .filter(entity -> entity.getLastModifiedDate()
+                                        .plusSeconds(getConfigProperties().getBeInst().getReceipt().getDeferSync())
+                                        .isBefore(Instant.now()))
+                        .toList();
         syncReceipts(tosync);
         return true;
     }

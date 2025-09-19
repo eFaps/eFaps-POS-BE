@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.TicketDto;
 import org.efaps.pos.entity.SyncInfo;
@@ -37,13 +38,14 @@ public class TicketService
     private static final Logger LOG = LoggerFactory.getLogger(TicketService.class);
     private final TicketRepository ticketRepository;
 
-    public TicketService(final EFapsClient eFapsClient,
+    public TicketService(final ConfigProperties configProperties,
+                         final EFapsClient eFapsClient,
                          final DocumentHelperService documentHelperService,
                          final ContactService contactService,
                          final BalanceService balanceService,
                          final TicketRepository ticketRepository)
     {
-        super(eFapsClient, documentHelperService, contactService, balanceService);
+        super(configProperties, eFapsClient, documentHelperService, contactService, balanceService);
         this.ticketRepository = ticketRepository;
     }
 

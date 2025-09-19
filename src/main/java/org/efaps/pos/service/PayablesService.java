@@ -18,6 +18,7 @@ package org.efaps.pos.service;
 import java.util.Optional;
 
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.util.Utils;
@@ -32,12 +33,13 @@ public abstract class PayablesService
 
     private final BalanceService balanceService;
 
-    public PayablesService(final EFapsClient eFapsClient,
+    public PayablesService(final ConfigProperties configProperties,
+                           final EFapsClient eFapsClient,
                            final DocumentHelperService documentHelperService,
                            final ContactService contactService,
                            final BalanceService balanceService)
     {
-        super(eFapsClient, documentHelperService, contactService);
+        super(configProperties, eFapsClient, documentHelperService, contactService);
         this.balanceService = balanceService;
     }
 

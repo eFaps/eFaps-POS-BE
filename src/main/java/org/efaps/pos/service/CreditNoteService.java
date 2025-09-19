@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.SyncInfo;
@@ -37,13 +38,14 @@ public class CreditNoteService
     private static final Logger LOG = LoggerFactory.getLogger(CreditNoteService.class);
     private final CreditNoteRepository creditNoteRepository;
 
-    public CreditNoteService(final EFapsClient eFapsClient,
+    public CreditNoteService(final ConfigProperties configProperties,
+                             final EFapsClient eFapsClient,
                              final ContactService contactService,
                              final DocumentHelperService documentHelperService,
                              final BalanceService balanceService,
                              final CreditNoteRepository creditNoteRepository)
     {
-        super(eFapsClient, documentHelperService, contactService, balanceService);
+        super(configProperties, eFapsClient, documentHelperService, contactService, balanceService);
         this.creditNoteRepository = creditNoteRepository;
     }
 

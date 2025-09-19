@@ -127,6 +127,10 @@ public class ConfigProperties
 
         private Order order = new Order();
 
+        private Invoice invoice = new Invoice();
+
+        private Receipt receipt = new Receipt();
+
         private FileConfig fileConfig = new FileConfig();
 
         public void setOrderFormat(String orderFormat)
@@ -153,6 +157,26 @@ public class ConfigProperties
         public void setOrder(Order order)
         {
             this.order = order;
+        }
+
+        public Invoice getInvoice()
+        {
+            return invoice;
+        }
+
+        public void setInvoice(Invoice invoice)
+        {
+            this.invoice = invoice;
+        }
+
+        public Receipt getReceipt()
+        {
+            return receipt;
+        }
+
+        public void setReceipt(Receipt receipt)
+        {
+            this.receipt = receipt;
         }
 
         public String getVersion()
@@ -227,12 +251,55 @@ public class ConfigProperties
 
     }
 
+    public static class Invoice
+    {
+
+        private int deferSync = 0;
+
+        public int getDeferSync()
+        {
+            return deferSync;
+        }
+
+        public void setDeferSync(int deferSync)
+        {
+            this.deferSync = deferSync;
+        }
+    }
+
+    public static class Receipt
+    {
+
+        private int deferSync = 0;
+
+        public int getDeferSync()
+        {
+            return deferSync;
+        }
+
+        public void setDeferSync(int deferSync)
+        {
+            this.deferSync = deferSync;
+        }
+    }
+
     public static class Order
     {
 
         private String numberFormat;
         private boolean skipCalcOnCreate = false;
         private boolean allowSetUnitPrice = false;
+        private int deferSync = 0;
+
+        public int getDeferSync()
+        {
+            return deferSync;
+        }
+
+        public void setDeferSync(int deferSync)
+        {
+            this.deferSync = deferSync;
+        }
 
         public String getNumberFormat()
         {
@@ -638,12 +705,10 @@ public class ConfigProperties
             this.updatePath = updatePath;
         }
 
-
         public String getStorePath()
         {
             return storePath;
         }
-
 
         public void setStorePath(String storePath)
         {

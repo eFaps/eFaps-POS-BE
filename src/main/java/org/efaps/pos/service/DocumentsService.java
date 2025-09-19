@@ -18,6 +18,7 @@ package org.efaps.pos.service;
 import java.util.Optional;
 
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.util.Utils;
@@ -29,18 +30,26 @@ public abstract class DocumentsService
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentsService.class);
 
+    private final ConfigProperties configProperties;
+
     private final EFapsClient eFapsClient;
     private final DocumentHelperService documentHelperService;
-
     private final ContactService contactService;
 
-    public DocumentsService(final EFapsClient eFapsClient,
+    public DocumentsService(final ConfigProperties configProperties,
+                            final EFapsClient eFapsClient,
                             final DocumentHelperService documentHelperService,
                             final ContactService contactService)
     {
+        this.configProperties = configProperties;
         this.eFapsClient = eFapsClient;
         this.documentHelperService = documentHelperService;
         this.contactService = contactService;
+    }
+
+    protected ConfigProperties getConfigProperties()
+    {
+        return configProperties;
     }
 
     protected EFapsClient getEFapsClient()
