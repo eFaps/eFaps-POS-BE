@@ -36,7 +36,7 @@ import org.springframework.security.config.annotation.web.configurers.HttpBasicC
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
@@ -65,8 +65,7 @@ public class SecurityConfig
     @Bean
     public AuthenticationManager authenticationManager()
     {
-        final var provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userService);
+        final var provider = new DaoAuthenticationProvider(userService);
         provider.setPasswordEncoder(userService.getPasswordEncoder());
         return new ProviderManager(provider);
     }
@@ -83,11 +82,14 @@ public class SecurityConfig
                                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authorizeHttpRequests(authz -> authz
                                         .requestMatchers(
-                                                        AntPathRequestMatcher.antMatcher(HttpMethod.POST,
+                                                        PathPatternRequestMatcher.withDefaults().matcher(
+                                                                        HttpMethod.POST,
                                                                         IApi.BASEPATH + "authenticate"),
-                                                        AntPathRequestMatcher.antMatcher(HttpMethod.POST,
+                                                        PathPatternRequestMatcher.withDefaults().matcher(
+                                                                        HttpMethod.POST,
                                                                         IApi.BASEPATH + "refreshauth"),
-                                                        AntPathRequestMatcher.antMatcher(HttpMethod.POST,
+                                                        PathPatternRequestMatcher.withDefaults().matcher(
+                                                                        HttpMethod.POST,
                                                                         IApi.BASEPATH + "logs"))
                                         .permitAll()
                                         .requestMatchers(getIgnore()).permitAll()
@@ -131,7 +133,7 @@ public class SecurityConfig
     private RequestMatcher[] getIgnore()
     {
         return getIgnorePatterns().stream()
-                        .map(AntPathRequestMatcher::antMatcher)
+                        .map(ignore -> PathPatternRequestMatcher.withDefaults().matcher(ignore))
                         .toArray(RequestMatcher[]::new);
     }
 
