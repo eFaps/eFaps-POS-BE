@@ -49,7 +49,7 @@ public class UpdateService
         LOG.info("updateDto: {}", updateDto);
         try {
             createStructure(updateDto);
-        } catch (IOException | ArchiveException e) {
+        } catch (final IOException e) {
             LOG.error("Well ..no", e);
         }
 
