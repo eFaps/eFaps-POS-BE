@@ -16,9 +16,12 @@
 package org.efaps.pos.config;
 
 import org.efaps.pos.entity.Product;
+import org.efaps.pos.entity.PromotionInfo;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.index.TextIndexDefinition;
 import org.springframework.data.mongodb.core.index.TextIndexDefinition.TextIndexDefinitionBuilder;
 import org.springframework.stereotype.Component;
@@ -46,7 +49,8 @@ public class MongoInit
                         .onField("barcodes.code")
                         .withDefaultLanguage("spanish")
                         .build();
-        mongoTemplate.indexOps(Product.class).ensureIndex(textIndex);
+        mongoTemplate.indexOps(Product.class).createIndex(textIndex);
+        mongoTemplate.indexOps(PromotionInfo.class).createIndex(new Index().on("documentId", Direction.ASC));
+        mongoTemplate.indexOps(PromotionInfo.class).createIndex(new Index().on("oid", Direction.ASC));
     }
-
 }
