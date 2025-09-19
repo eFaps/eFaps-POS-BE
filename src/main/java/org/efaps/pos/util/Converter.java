@@ -1199,7 +1199,6 @@ public final class Converter
         return entity;
     }
 
-
     public static PosInvoiceDto toDto(final Invoice _entity)
     {
         return PosInvoiceDto.builder()
@@ -1318,6 +1317,12 @@ public final class Converter
 
     public static OrderDto toOrderDto(final Order entity)
     {
+        return toOrderDto(entity, null);
+    }
+
+    public static OrderDto toOrderDto(final Order entity,
+                                      final Map<String, Object> extension)
+    {
         return OrderDto.builder()
                         .withId(entity.getId())
                         .withOID(entity.getOid())
@@ -1344,6 +1349,7 @@ public final class Converter
                                                         .collect(Collectors.toSet()))
                         .withOrderOptionKey(entity.getOrderOptionKey())
                         .withShoutout(entity.getShoutout())
+                        .withExtension(extension)
                         .build();
     }
 
@@ -2046,7 +2052,7 @@ public final class Converter
                                 .setCurrency(from.getCurrency())
                                 .setType(from.getType());
             }
-            case REDEEM_CREDITNOTE  -> {
+            case REDEEM_CREDITNOTE -> {
                 final var from = (PaymentRedeemCreditNote) fromPayment;
                 yield new PaymentRedeemCreditNote()
                                 .setRedeemDocOid(from.getRedeemDocOid())
