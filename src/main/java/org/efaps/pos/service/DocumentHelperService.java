@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.service;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import org.efaps.pos.entity.AbstractDocument;
@@ -184,4 +185,23 @@ public class DocumentHelperService
         return doc;
     }
 
+    public Collection<Invoice> getInvoices4Balance(final String balanceIdent)
+    {
+        return invoiceRepository.findByBalanceOid(balanceIdent);
+    }
+
+    public Collection<Receipt> getReceipts4Balance(final String balanceIdent)
+    {
+        return receiptRepository.findByBalanceOid(balanceIdent);
+    }
+
+    public Collection<Ticket> getTickets4Balance(final String balanceIdent)
+    {
+        return ticketRepository.findByBalanceOid(balanceIdent);
+    }
+
+    public Collection<CreditNote> getCreditNotes4Balance(final String balanceIdent)
+    {
+        return creditNoteRepository.findByBalanceOid(balanceIdent);
+    }
 }

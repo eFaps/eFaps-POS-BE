@@ -57,6 +57,7 @@ import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.PaymentGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -65,28 +66,31 @@ public class BalanceService
 
     private static final Logger LOG = LoggerFactory.getLogger(BalanceService.class);
 
+    private final MongoTemplate mongoTemplate;
     private final BalanceRepository balanceRepository;
     private final CashEntryRepository cashEntryRepository;
     private final EFapsClient eFapsClient;
     private final SequenceService sequenceService;
-    private final DocumentService documentService;
+    private final DocumentHelperService documentHelperService;
     private final CollectorService collectorService;
     private final UserService userService;
 
-    public BalanceService(final BalanceRepository balanceRepository,
+    public BalanceService(final MongoTemplate mongoTemplate,
+                          final BalanceRepository balanceRepository,
                           final CashEntryRepository cashEntryRepository,
                           final EFapsClient eFapsClient,
                           final SequenceService sequenceService,
-                          final DocumentService documentService,
+                          final DocumentHelperService documentHelperService,
                           final CollectorService collectorService,
                           final UserService userService)
     {
+        this.mongoTemplate = mongoTemplate;
         this.balanceRepository = balanceRepository;
         this.cashEntryRepository = cashEntryRepository;
         this.eFapsClient = eFapsClient;
         this.sequenceService = sequenceService;
         this.collectorService = collectorService;
-        this.documentService = documentService;
+        this.documentHelperService = documentHelperService;
         this.userService = userService;
     }
 
@@ -140,16 +144,16 @@ public class BalanceService
         final var cashEntries = cashEntryRepository.findByBalanceOidIn(balance.getId(), balance.getOid()).stream()
                         .map(Converter::toDto).collect(Collectors.toList());
 
-        final Collection<Invoice> invoices = documentService.getInvoices4Balance(balance.getOid() == null
+        final Collection<Invoice> invoices = documentHelperService.getInvoices4Balance(balance.getOid() == null
                         ? balance.getId()
                         : balance.getOid());
-        final Collection<Receipt> receipts = documentService.getReceipts4Balance(balance.getOid() == null
+        final Collection<Receipt> receipts = documentHelperService.getReceipts4Balance(balance.getOid() == null
                         ? balance.getId()
                         : balance.getOid());
-        final Collection<Ticket> tickets = documentService.getTickets4Balance(balance.getOid() == null
+        final Collection<Ticket> tickets = documentHelperService.getTickets4Balance(balance.getOid() == null
                         ? balance.getId()
                         : balance.getOid());
-        final Collection<CreditNote> creditNotes = documentService.getCreditNotes4Balance(balance.getOid() == null
+        final Collection<CreditNote> creditNotes = documentHelperService.getCreditNotes4Balance(balance.getOid() == null
                         ? balance.getId()
                         : balance.getOid());
 
@@ -356,7 +360,7 @@ public class BalanceService
                     final Balance balance = balanceOpt.get();
                     balance.setOid(recDto.getOid());
                     balanceRepository.save(balance);
-                    documentService.updateBalanceOid(balance);
+                    updateBalanceOid(balance);
                 }
             }
         }
@@ -375,6 +379,26 @@ public class BalanceService
             }
         }
         return ret;
+    }
+
+    private void updateBalanceOid(Balance balance)
+    {
+        documentHelperService.getReceipts4Balance(balance.getId()).forEach(doc -> {
+            doc.setBalanceOid(balance.getOid());
+            mongoTemplate.save(doc);
+        });
+        documentHelperService.getInvoices4Balance(balance.getId()).forEach(doc -> {
+            doc.setBalanceOid(balance.getOid());
+            mongoTemplate.save(doc);
+        });
+        documentHelperService.getTickets4Balance(balance.getId()).forEach(doc -> {
+            doc.setBalanceOid(balance.getOid());
+            mongoTemplate.save(doc);
+        });
+        documentHelperService.getCreditNotes4Balance(balance.getId()).forEach(doc -> {
+            doc.setBalanceOid(balance.getOid());
+            mongoTemplate.save(doc);
+        });
     }
 
 }
