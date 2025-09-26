@@ -24,12 +24,14 @@ public class BalanceSummaryPaymentDetailDto
     private final IPosPaymentDto payment;
     private final String payableNumber;
     private final DocType payableType;
+    private final String orderNumber;
 
     private BalanceSummaryPaymentDetailDto(Builder builder)
     {
         this.payment = builder.payment;
         this.payableNumber = builder.payableNumber;
         this.payableType = builder.payableType;
+        this.orderNumber = builder.orderNumber;
     }
 
     public IPosPaymentDto getPayment()
@@ -47,6 +49,11 @@ public class BalanceSummaryPaymentDetailDto
         return payableType;
     }
 
+    public String getOrderNumber()
+    {
+        return orderNumber;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -58,6 +65,7 @@ public class BalanceSummaryPaymentDetailDto
         private IPosPaymentDto payment;
         private String payableNumber;
         private DocType payableType;
+        private String orderNumber;
 
         private Builder()
         {
@@ -78,6 +86,12 @@ public class BalanceSummaryPaymentDetailDto
         public Builder withPayableType(DocType payableType)
         {
             this.payableType = payableType;
+            return this;
+        }
+
+        public Builder withOrderNumber(String orderNumber)
+        {
+            this.orderNumber = orderNumber;
             return this;
         }
 

@@ -16,6 +16,7 @@
 package org.efaps.pos.service;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 
 import org.efaps.pos.entity.AbstractDocument;
@@ -113,6 +114,17 @@ public class DocumentHelperService
     public Optional<Order> getOrderById(final String id)
     {
         return orderRepository.findById(id);
+    }
+
+    public Optional<Order> getOrder4Payable(final AbstractPayableDocument<?> payable)
+    {
+        final var idents = new HashSet<String>();
+        idents.add(payable.getId());
+        if (payable.getOid() != null) {
+            idents.add(payable.getOid());
+        }
+        final var orders = orderRepository.findByPayableOidIn(idents);
+        return orders.isEmpty() ? Optional.empty() : Optional.of(orders.get(0));
     }
 
     public Optional<Receipt> getReceipt(final String ident)

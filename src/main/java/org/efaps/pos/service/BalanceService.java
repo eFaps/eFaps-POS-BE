@@ -298,6 +298,7 @@ public class BalanceService
     {
         final MultiValuedMap<PaymentGroup, BalanceSummaryPaymentDetailDto> values = new ArrayListValuedHashMap<>();
         for (final var payableDocument : allPayables) {
+            final var orderOpt = documentHelperService.getOrder4Payable(payableDocument);
             for (final var payment : payableDocument.getPayments()) {
                 final var bldr = BalanceSummaryPaymentDetailDto.builder();
                 if (payableDocument instanceof Receipt) {
@@ -309,10 +310,12 @@ public class BalanceService
                 } else if (payableDocument instanceof CreditNote) {
                     bldr.withPayableType(DocType.CREDITNOTE);
                 }
+
                 final var paymentGroup = getPaymentGroup(payment);
                 values.put(paymentGroup, bldr
                                 .withPayableNumber(payableDocument.getNumber())
                                 .withPayment(Converter.toPosDto(payment))
+                                .withOrderNumber(orderOpt.isPresent() ? orderOpt.get().getNumber() : null)
                                 .build());
             }
         }

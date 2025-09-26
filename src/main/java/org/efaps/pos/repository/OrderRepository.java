@@ -16,6 +16,7 @@
 package org.efaps.pos.repository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.efaps.pos.dto.DocStatus;
@@ -33,7 +34,7 @@ public interface OrderRepository
 
     Collection<Order> findByOidIsNullAndStatus(DocStatus _status);
 
-    Optional<Order> findByPayableOid(String _oid);
+    List<Order> findByPayableOidIn(Collection<String> idents);
 
     Optional<Order> findByOid(String oid);
 }

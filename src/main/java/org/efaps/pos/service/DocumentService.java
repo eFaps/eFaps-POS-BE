@@ -192,16 +192,6 @@ public class DocumentService
         return orderRepository.findBySpotIsNotNullAndStatus(DocStatus.OPEN);
     }
 
-    public Optional<Order> getOrder4Payable(final AbstractPayableDocument<?> _payable)
-    {
-        Optional<Order> ret = orderRepository.findByPayableOid(_payable.getOid() == null ? _payable.getId()
-                        : _payable.getOid());
-        if (ret.isEmpty() && _payable.getOid() != null) {
-            ret = orderRepository.findByPayableOid(_payable.getId());
-        }
-        return ret;
-    }
-
     public Collection<Order> findOrders(final String _term)
     {
         return orderRepository.findByNumberLikeIgnoreCase(_term);
