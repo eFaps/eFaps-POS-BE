@@ -91,7 +91,7 @@ public class PrintService
     private final PrinterRepository printerRepository;
     private final ConfigProperties configProperties;
     private final GridFsService gridFsService;
-    private final DocumentService documentService;
+    private final DocumentHelperService documentHelperService;
     private final PromotionService promotionService;
     private final EmployeeService employeeService;
     private final List<IPrintListener> printListeners;
@@ -100,7 +100,7 @@ public class PrintService
                         final GridFsService _gridFsService,
                         final ConfigProperties _configProperties,
                         final PrinterRepository _printerRepository,
-                        final DocumentService _documentService,
+                        final DocumentHelperService documentHelperService,
                         final PromotionService promotionService,
                         final EmployeeService employeeService,
                         final Optional<List<IPrintListener>> _printListeners)
@@ -109,7 +109,7 @@ public class PrintService
         gridFsService = _gridFsService;
         configProperties = _configProperties;
         printerRepository = _printerRepository;
-        documentService = _documentService;
+        this.documentHelperService = documentHelperService;
         this.promotionService = promotionService;
         this.employeeService = employeeService;
         printListeners = _printListeners.isPresent() ? _printListeners.get() : Collections.emptyList();
@@ -173,7 +173,8 @@ public class PrintService
             for (final IPrintListener listener : printListeners) {
                 listener.addAdditionalInfo2Document(document, additionalInfo);
             }
-            final Optional<Order> orderOpt = documentService.getOrder4Payable((AbstractPayableDocument<?>) document);
+            final Optional<Order> orderOpt = documentHelperService
+                            .getOrder4Payable((AbstractPayableDocument<?>) document);
             final var promoInfo = promotionService.getPromotionInfoForDocument(document.getId());
 
             final var bldr = PrintPayableDto.builder()
@@ -330,7 +331,9 @@ public class PrintService
         }
     }
 
-    public void printViaExtension(final String identifier, final Object object) {
+    public void printViaExtension(final String identifier,
+                                  final Object object)
+    {
         for (final IPrintListener listener : printListeners) {
             listener.print(identifier, object);
         }
