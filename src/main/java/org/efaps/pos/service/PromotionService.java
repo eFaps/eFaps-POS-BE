@@ -166,6 +166,7 @@ public class PromotionService
             var slice = promotionInfoRepository.findByOidIsNull(PageRequest.of(0, syncPromotionsBatchSize));
             syncPromotionInfos(slice.getContent());
             while (slice.hasNext()) {
+                LOG.info("  page: {}", slice.nextPageable());
                 slice = promotionInfoRepository.findByOidIsNull(slice.nextPageable());
                 syncPromotionInfos(slice.getContent());
             }
