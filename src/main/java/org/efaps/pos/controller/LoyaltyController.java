@@ -15,7 +15,10 @@
  */
 package org.efaps.pos.controller;
 
+import java.util.List;
+
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.LoyaltyPointsBalanceDto;
 import org.efaps.pos.service.LoyaltyService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,8 +38,8 @@ public class LoyaltyController
     }
 
     @GetMapping(path = "/balance")
-    public void findBalance4Contact(@RequestParam(name = "contact") final String contactIdent)
+    public List<LoyaltyPointsBalanceDto> findBalance4Contact(@RequestParam(name = "contact") final String contactIdent)
     {
-        loyaltyService.findBalance4Contact(contactIdent);
+        return loyaltyService.findBalance4Contact(contactIdent);
     }
 }

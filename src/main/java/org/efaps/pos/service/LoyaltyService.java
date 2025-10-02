@@ -15,7 +15,10 @@
  */
 package org.efaps.pos.service;
 
+import java.util.List;
+
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.dto.LoyaltyPointsBalanceDto;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,9 +32,9 @@ public class LoyaltyService
         this.eFapsClient = eFapsClient;
     }
 
-    public void findBalance4Contact(final String contactIdent)
+    public List<LoyaltyPointsBalanceDto> findBalance4Contact(final String contactIdent)
     {
-        eFapsClient.retrieveLoyaltyBalance(contactIdent);
+        return eFapsClient.retrieveLoyaltyBalance(contactIdent);
     }
 
 }
