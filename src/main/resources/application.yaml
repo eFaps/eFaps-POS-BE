@@ -66,6 +66,7 @@ efaps:
   filePath: /api/pos/{identifier}/files
   updatePath: /api/pos/{identifier}/update
   storePath: /api/pos/{identifier}/store
+  loyaltyPath: /api/pos/{identifier}/loyalty
 
 auth:
   user: Administrator

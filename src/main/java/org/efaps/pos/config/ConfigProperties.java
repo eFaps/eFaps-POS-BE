@@ -394,6 +394,17 @@ public class ConfigProperties
         private String updatePath;
         private String storePath;
         private String reportToBasePath;
+        private String loyaltyPath;
+
+        public String getLoyaltyPath()
+        {
+            return loyaltyPath;
+        }
+
+        public void setLoyaltyPath(String loyaltyPath)
+        {
+            this.loyaltyPath = loyaltyPath;
+        }
 
         public String getFilePath()
         {

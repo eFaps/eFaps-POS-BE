@@ -118,7 +118,8 @@ public class SecurityConfig
                                         IApi.BASEPATH + "companies",
                                         IApi.BASEPATH + "health",
                                         IApi.BASEPATH + "pos-files",
-                                        IApi.BASEPATH + "pos-files/*")
+                                        IApi.BASEPATH + "pos-files/*",
+                                        IApi.BASEPATH + "loyalty/*")
                         .and()
                         .ignoring()
                         .requestMatchers(HttpMethod.GET, getIgnorePaths())

@@ -37,6 +37,7 @@ import org.efaps.pos.dto.FileDto;
 import org.efaps.pos.dto.InventoryEntryDto;
 import org.efaps.pos.dto.InvoiceDto;
 import org.efaps.pos.dto.LogEntryDto;
+import org.efaps.pos.dto.LoyaltyPointsBalanceDto;
 import org.efaps.pos.dto.OrderDto;
 import org.efaps.pos.dto.PosDto;
 import org.efaps.pos.dto.PrinterDto;
@@ -748,6 +749,25 @@ public class EFapsClient
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for ReportToBase", e);
+        }
+        return ret;
+    }
+
+    public List<LoyaltyPointsBalanceDto> retrieveLoyaltyBalance(final String term)
+    {
+        List<LoyaltyPointsBalanceDto> ret = null;
+        try {
+            final var params = new LinkedMultiValueMap<String, String>();
+            params.put("contact-identifier", Collections.singletonList(String.valueOf(term)));
+            final var requestEntity = get(getEFapsConfig().getLoyaltyPath() + "/balance", params);
+            final var response = getRestTemplate().exchange(requestEntity,
+                            new ParameterizedTypeReference<List<LoyaltyPointsBalanceDto>>()
+                            {
+                            }
+            );
+            ret = response.getBody();
+        } catch (final IdentException e) {
+            LOG.error("Catched error during get for LoyaltyBalance", e);
         }
         return ret;
     }
