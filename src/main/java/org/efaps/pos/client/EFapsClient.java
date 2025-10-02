@@ -71,6 +71,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -768,6 +769,12 @@ public class EFapsClient
             ret = response.getBody();
         } catch (final IdentException e) {
             LOG.error("Catched error during get for LoyaltyBalance", e);
+        } catch (final HttpStatusCodeException e) {
+            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                ret = new ArrayList<>();
+            } else {
+                LOG.error("Catched error during get for LoyaltyBalance", e);
+            }
         }
         return ret;
     }
