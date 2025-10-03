@@ -32,9 +32,10 @@ public class LoyaltyService
         this.eFapsClient = eFapsClient;
     }
 
-    public List<LoyaltyPointsBalanceDto> findBalance4Contact(final String contactIdent)
+    public List<LoyaltyPointsBalanceDto> findBalance4Contact(final String contactIdent,
+                                                             final Boolean includeContact)
     {
-        return eFapsClient.retrieveLoyaltyBalance(contactIdent);
+        return eFapsClient.retrieveLoyaltyBalance(contactIdent, includeContact);
     }
 
 }

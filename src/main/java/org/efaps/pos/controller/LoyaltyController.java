@@ -38,8 +38,10 @@ public class LoyaltyController
     }
 
     @GetMapping(path = "/balance")
-    public List<LoyaltyPointsBalanceDto> findBalance4Contact(@RequestParam(name = "contact") final String contactIdent)
+    public List<LoyaltyPointsBalanceDto> findBalance4Contact(
+         @RequestParam(name = "contact") final String contactIdent,
+         @RequestParam(name = "include-contact", required = false, defaultValue = "false") final Boolean includeContact)
     {
-        return loyaltyService.findBalance4Contact(contactIdent);
+        return loyaltyService.findBalance4Contact(contactIdent, includeContact);
     }
 }

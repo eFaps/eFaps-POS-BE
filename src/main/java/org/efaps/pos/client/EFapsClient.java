@@ -754,12 +754,14 @@ public class EFapsClient
         return ret;
     }
 
-    public List<LoyaltyPointsBalanceDto> retrieveLoyaltyBalance(final String term)
+    public List<LoyaltyPointsBalanceDto> retrieveLoyaltyBalance(final String term,
+                                                                final Boolean includeContact)
     {
         List<LoyaltyPointsBalanceDto> ret = null;
         try {
             final var params = new LinkedMultiValueMap<String, String>();
             params.put("contact-identifier", Collections.singletonList(String.valueOf(term)));
+            params.put("include-contact", Collections.singletonList(String.valueOf(includeContact)));
             final var requestEntity = get(getEFapsConfig().getLoyaltyPath() + "/balance", params);
             final var response = getRestTemplate().exchange(requestEntity,
                             new ParameterizedTypeReference<List<LoyaltyPointsBalanceDto>>()
