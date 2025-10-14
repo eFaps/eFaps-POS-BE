@@ -21,6 +21,7 @@ import org.efaps.pos.interfaces.ITicketListener;
 import org.efaps.pos.listener.ICollectorListener;
 import org.efaps.pos.listener.IDocumentListener;
 import org.efaps.pos.listener.ILogListener;
+import org.efaps.pos.listener.ILoyaltyListener;
 import org.efaps.pos.listener.IPrintListener;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
@@ -139,6 +140,15 @@ public class Application
         serviceListFactoryBean.setServiceType(IDocumentListener.class);
         return serviceListFactoryBean;
     }
+
+    @Bean(name = "loyaltyListeners")
+    public ServiceListFactoryBean loyaltyListeners()
+    {
+        final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
+        serviceListFactoryBean.setServiceType(ILoyaltyListener.class);
+        return serviceListFactoryBean;
+    }
+
 
     @Bean
     public TaskExecutor taskExecutor()

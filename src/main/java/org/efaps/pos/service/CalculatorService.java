@@ -40,6 +40,7 @@ import org.efaps.pos.dto.CalculatorPositionRequestDto;
 import org.efaps.pos.dto.CalculatorPositionResponseDto;
 import org.efaps.pos.dto.CalculatorRequestDto;
 import org.efaps.pos.dto.CalculatorResponseDto;
+import org.efaps.pos.dto.LoyaltyInfoDto;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.dto.PromoDetailDto;
 import org.efaps.pos.dto.PromoInfoDto;
@@ -80,13 +81,15 @@ public class CalculatorService
     private final ProductService productService;
     private final DocumentHelperService documentHelperService;
     private final PromotionService promotionService;
+    private final LoyaltyService loyaltyService;
 
     public CalculatorService(final MongoTemplate mongoTemplate,
                              final ConfigService configService,
                              final WorkspaceService workspaceService,
                              final ProductService productService,
                              final DocumentHelperService documentHelperService,
-                             final PromotionService promotionService)
+                             final PromotionService promotionService,
+                             final LoyaltyService loyaltyService)
     {
         this.mongoTemplate = mongoTemplate;
         this.configService = configService;
@@ -94,6 +97,7 @@ public class CalculatorService
         this.productService = productService;
         this.documentHelperService = documentHelperService;
         this.promotionService = promotionService;
+        this.loyaltyService = loyaltyService;
     }
 
     public CalculatorResponseDto calculate(final String workspaceOid,
@@ -192,7 +196,20 @@ public class CalculatorService
                                                         .build())
                                         .toList())
                         .withPromotionInfo(getPromoInfo(result))
+                        .withLoyaltyInfos(evalLoyalty(calculatorPayloadDto, result))
                         .build();
+    }
+
+    private List<LoyaltyInfoDto> evalLoyalty(final CalculatorRequestDto calculatorPayloadDto,
+                                             final IDocument result)
+    {
+        List<LoyaltyInfoDto> ret;
+        if (calculatorPayloadDto.isEvaluateLoyalty()) {
+            ret = loyaltyService.evalLoyaltyInfos(calculatorPayloadDto.getContactOid(), result);
+        } else {
+            ret = Collections.emptyList();
+        }
+        return ret;
     }
 
     private BigDecimal evalPrice(CalculatorPositionRequestDto pos,

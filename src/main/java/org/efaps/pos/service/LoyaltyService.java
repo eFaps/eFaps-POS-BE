@@ -15,10 +15,17 @@
  */
 package org.efaps.pos.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.dto.LoyaltyInfoDto;
 import org.efaps.pos.dto.LoyaltyPointsBalanceDto;
+import org.efaps.pos.listener.ILoyaltyListener;
+import org.efaps.promotionengine.api.IDocument;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,16 +33,35 @@ public class LoyaltyService
 {
 
     private final EFapsClient eFapsClient;
+    private final ConfigService configService;
+    private final List<ILoyaltyListener> loyaltyListeners;
 
-    public LoyaltyService(final EFapsClient eFapsClient)
+    public LoyaltyService(final EFapsClient eFapsClient,
+                          final ConfigService configService,
+                          final Optional<List<ILoyaltyListener>> loyaltyListeners)
     {
         this.eFapsClient = eFapsClient;
+        this.configService = configService;
+        this.loyaltyListeners = loyaltyListeners.isPresent() ? loyaltyListeners.get() : Collections.emptyList();
     }
 
     public List<LoyaltyPointsBalanceDto> findBalance4Contact(final String contactIdent,
                                                              final Boolean includeContact)
     {
         return eFapsClient.retrieveLoyaltyBalance(contactIdent, includeContact);
+    }
+
+    public List<LoyaltyInfoDto> evalLoyaltyInfos(final String contactOid,
+                                                 final IDocument document)
+    {
+        final List<LoyaltyInfoDto> ret = new ArrayList<>();
+        final var active = BooleanUtils.toBoolean(configService.getSystemConfig(ConfigService.PROMOTIONS_ACTIVATE));
+        if (active) {
+            for (final ILoyaltyListener listener : loyaltyListeners) {
+                ret.addAll(listener.evalLoyaltyInfos(contactOid, document));
+            }
+        }
+        return ret;
     }
 
 }
