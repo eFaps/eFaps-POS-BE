@@ -1082,6 +1082,7 @@ public final class Converter
                         .withOID(entity.getOid())
                         .withNumber(entity.getNumber())
                         .withContactOid(entity.getContactOid())
+                        .withLoyaltyContactOid(entity.getLoyaltyContactOid())
                         .withCurrency(entity.getCurrency())
                         .withExchangeRate(entity.getExchangeRate())
                         .withDate(entity.getDate())
@@ -1152,6 +1153,7 @@ public final class Converter
                         .withExchangeRate(_entity.getExchangeRate())
                         .withPayableAmount(_entity.getPayableAmount())
                         .withContactOid(_entity.getContactOid())
+                        .withLoyaltyContactOid(_entity.getLoyaltyContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
                                         : _entity.getItems().stream().map(Converter::toDto)
@@ -1213,6 +1215,7 @@ public final class Converter
                         .withPayableAmount(_entity.getPayableAmount())
                         .withStatus(_entity.getStatus())
                         .withContactOid(_entity.getContactOid())
+                        .withLoyaltyContactOid(_entity.getLoyaltyContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
                                         : _entity.getItems().stream().map(Converter::toDto)
@@ -1246,6 +1249,7 @@ public final class Converter
                         .withPayableAmount(_entity.getPayableAmount())
                         .withStatus(_entity.getStatus())
                         .withContactOid(_entity.getContactOid())
+                        .withLoyaltyContactOid(_entity.getLoyaltyContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
                                         : _entity.getItems().stream().map(Converter::toDto)
@@ -1279,6 +1283,7 @@ public final class Converter
                         .withExchangeRate(_entity.getExchangeRate())
                         .withPayableAmount(_entity.getPayableAmount())
                         .withContactOid(_entity.getContactOid())
+                        .withLoyaltyContactOid(_entity.getLoyaltyContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
                                         : _entity.getItems().stream().map(Converter::toDto)
@@ -1335,6 +1340,7 @@ public final class Converter
                         .withExchangeRate(entity.getExchangeRate())
                         .withPayableAmount(entity.getPayableAmount())
                         .withContactOid(entity.getContactOid())
+                        .withLoyaltyContactOid(entity.getLoyaltyContactOid())
                         .withWorkspaceOid(entity.getWorkspaceOid())
                         .withItems(entity.getItems() == null ? null
                                         : entity.getItems().stream().map(Converter::toItemDto)
@@ -1367,6 +1373,7 @@ public final class Converter
                         .withPayableAmount(_entity.getPayableAmount())
                         .withNetTotal(_entity.getNetTotal())
                         .withContactOid(_entity.getContactOid())
+                        .withLoyaltyContactOid(_entity.getLoyaltyContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
                                         : _entity.getItems().stream().map(Converter::toItemDto)
@@ -1399,6 +1406,7 @@ public final class Converter
                         .withExchangeRate(_entity.getExchangeRate())
                         .withPayableAmount(_entity.getPayableAmount())
                         .withContactOid(_entity.getContactOid())
+                        .withLoyaltyContactOid(_entity.getLoyaltyContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
                                         : _entity.getItems().stream().map(Converter::toItemDto)
@@ -1431,6 +1439,7 @@ public final class Converter
                         .withExchangeRate(_entity.getExchangeRate())
                         .withPayableAmount(_entity.getPayableAmount())
                         .withContactOid(_entity.getContactOid())
+                        .withLoyaltyContactOid(_entity.getLoyaltyContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
                                         : _entity.getItems().stream().map(Converter::toItemDto)
@@ -1463,6 +1472,7 @@ public final class Converter
                         .withExchangeRate(_entity.getExchangeRate())
                         .withPayableAmount(_entity.getPayableAmount())
                         .withContactOid(_entity.getContactOid())
+                        .withLoyaltyContactOid(_entity.getLoyaltyContactOid())
                         .withWorkspaceOid(_entity.getWorkspaceOid())
                         .withItems(_entity.getItems() == null ? null
                                         : _entity.getItems().stream().map(Converter::toItemDto)
@@ -1794,6 +1804,7 @@ public final class Converter
         entity.setExchangeRate(dto.getExchangeRate());
         entity.setPayableAmount(dto.getPayableAmount());
         entity.setContactOid(dto.getContactOid());
+        entity.setLoyaltyContactOid(dto.getLoyaltyContactOid());
         entity.setWorkspaceOid(dto.getWorkspaceOid());
         entity.setTaxes(dto.getTaxes() == null ? null
                         : dto.getTaxes().stream().map(Converter::toEntity).collect(Collectors.toSet()));

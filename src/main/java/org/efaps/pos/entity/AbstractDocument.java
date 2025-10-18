@@ -54,6 +54,8 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>>
     private BigDecimal payableAmount;
     private Set<TaxEntry> taxes;
     private String contactOid;
+    private String loyaltyContactOid;
+
     private String workspaceOid;
     private Discount discount;
     private String note;
@@ -229,6 +231,18 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>>
     public T setContactOid(final String _contactOid)
     {
         this.contactOid = _contactOid;
+        return (T) this;
+    }
+
+    public String getLoyaltyContactOid()
+    {
+        return loyaltyContactOid;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setLoyaltyContactOid(final String loyaltyContactOid)
+    {
+        this.loyaltyContactOid = loyaltyContactOid;
         return (T) this;
     }
 
