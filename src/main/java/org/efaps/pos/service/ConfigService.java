@@ -49,6 +49,8 @@ public class ConfigService
     public static String FILE_ACTIVATE = "org.efaps.pos.File.Activate";
     public static String EBILL_MAP = "org.efaps.electronicbilling.TaxMapping";
     public static String LOYALTY_ACTIVATE = "org.efaps.loyalty.Activate";
+    public static String UPDATE_ACTIVATE = "org.efaps.pos.Update.Activate";
+
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigService.class);
 

@@ -17,14 +17,17 @@ package org.efaps.pos.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.examples.Expander;
 import org.apache.commons.io.FileUtils;
-import org.efaps.pos.Application;
+import org.apache.commons.lang3.BooleanUtils;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.UpdateDto;
+import org.efaps.pos.util.VersionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,31 +37,72 @@ public class UpdateService
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateService.class);
-
-
     private final EFapsClient eFapsClient;
+    private final ConfigService configService;
 
-    public UpdateService(final EFapsClient eFapsClient)
+    public UpdateService(final EFapsClient eFapsClient,
+                         final ConfigService configService)
     {
         this.eFapsClient = eFapsClient;
+        this.configService = configService;
     }
 
+    public void check4Update()
+    {
+        final var active = BooleanUtils.toBoolean(configService.getSystemConfig(ConfigService.UPDATE_ACTIVATE));
+        if (active) {
+            final var updateDto = eFapsClient.getUpdate();
+            LOG.info("updateDto: {}", updateDto);
+            if (verify(updateDto)) {
+                try {
+                    final var tempFolder = adhereInstructions(updateDto);
+                    final var targetFolder = moveToTarget(tempFolder, updateDto);
+                    VersionUtil.createVersionFile(targetFolder, updateDto.getVersion());
+                } catch (final IOException e) {
+                    LOG.error("Update preperation failed", e);
+                }
 
-    public void check4Update() {
-        final var updateDto = eFapsClient.getUpdate();
-        LOG.info("updateDto: {}", updateDto);
-        try {
-            createStructure(updateDto);
-        } catch (final IOException e) {
-            LOG.error("Well ..no", e);
+            }
         }
-
     }
 
-    public void createStructure(final UpdateDto update)
+    protected boolean verify(final UpdateDto updateDto)
+    {
+        boolean ret = false;
+        if (updateDto != null) {
+            final var currentVersion = VersionUtil.evalVersion();
+            if (!updateDto.getVersion().equalsIgnoreCase(currentVersion)) {
+                ret = true;
+                Path targetFolder;
+                if (updateDto.getTargetFolder() != null) {
+                    targetFolder = FileSystems.getDefault()
+                                    .getPath(updateDto.getTargetFolder())
+                                    .toAbsolutePath();
+                } else {
+                    targetFolder = getTempFolder(updateDto).toPath();
+                }
+                final var path = VersionUtil.searchVersionFile(targetFolder);
+                if (path != null) {
+                    final var version = VersionUtil.readContent(path);
+                    if (updateDto.getVersion().equals(version)) {
+                        ret = false;
+                        LOG.info("Found Version: {} in {}", version, path);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    protected File getTempFolder(final UpdateDto updateDto)
+    {
+        return new File(FileUtils.getTempDirectory().getPath(), "pos-update-" + updateDto.getVersion());
+    }
+
+    protected Path adhereInstructions(final UpdateDto update)
         throws IOException, ArchiveException
     {
-        final var tempFolder = new File(FileUtils.getTempDirectory().getPath(), "pos-update-" + update.getVersion());
+        final var tempFolder = getTempFolder(update);
         FileUtils.forceMkdir(tempFolder);
         LOG.info("UpdateFolder: {}", tempFolder);
         final var basePath = tempFolder.toPath();
@@ -81,10 +125,23 @@ public class UpdateService
                 }
             }
         }
+        return tempFolder.toPath();
     }
 
-    public void restart()
+    protected Path moveToTarget(final Path current,
+                                final UpdateDto dto)
+        throws IOException
     {
-        Application.restart();
+        Path target = null;
+        if (dto.getTargetFolder() != null) {
+            target = FileSystems.getDefault()
+                            .getPath(dto.getTargetFolder())
+                            .toAbsolutePath();
+            if (Files.exists(target)) {
+                FileUtils.deleteDirectory(target.toFile());
+            }
+            FileUtils.moveDirectory(current.toFile(), target.toFile());
+        }
+        return target == null ? current : target;
     }
 }

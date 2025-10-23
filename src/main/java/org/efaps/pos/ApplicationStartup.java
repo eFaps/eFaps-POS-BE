@@ -21,6 +21,7 @@ import org.efaps.pos.config.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.service.DemoService;
 import org.efaps.pos.service.SyncService;
+import org.efaps.pos.util.VersionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -60,6 +61,7 @@ public class ApplicationStartup
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent _event)
     {
+        VersionUtil.evalVersion();
         if (ArrayUtils.contains(env.getActiveProfiles(), "demo")) {
             syncService.setDeactivated(true);
             demoService.init();

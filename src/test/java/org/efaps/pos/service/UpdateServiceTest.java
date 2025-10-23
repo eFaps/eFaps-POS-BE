@@ -102,7 +102,7 @@ public class UpdateServiceTest
                                         ContentDisposition.attachment().filename("spa.zip").build()
                                                         .toString()));
 
-        updateService.createStructure(UpdateDto.builder()
+        updateService.adhereInstructions(UpdateDto.builder()
                         .withVersion("26.3.5")
                         .withInstructions(Arrays.asList(
                                         UpdateInstructionDto.builder()
