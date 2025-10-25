@@ -415,6 +415,20 @@ public class EFapsClient
         return ret;
     }
 
+    public boolean confirmUpdate(final String version)
+    {
+        boolean ret = false;
+        try {
+            final var requestEntity = post(getEFapsConfig().getUpdatePath() + "/confirm", version);
+
+            final var response = getRestTemplate().exchange(requestEntity, Void.class);
+            ret = response.getStatusCode().is2xxSuccessful();
+        } catch (final IdentException e) {
+            LOG.error("Catched error during get for UpdateDto", e);
+        }
+        return ret;
+    }
+
     public BalanceDto postBalance(final BalanceDto _balance)
     {
         BalanceDto ret = _balance;

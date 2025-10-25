@@ -25,6 +25,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.examples.Expander;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.UpdateDto;
 import org.efaps.pos.util.VersionUtil;
@@ -58,10 +59,10 @@ public class UpdateService
                     final var tempFolder = adhereInstructions(updateDto);
                     final var targetFolder = moveToTarget(tempFolder, updateDto);
                     VersionUtil.createVersionFile(targetFolder, updateDto.getVersion());
+                    eFapsClient.confirmUpdate(updateDto.getVersion());
                 } catch (final IOException e) {
                     LOG.error("Update preperation failed", e);
                 }
-
             }
         }
     }
@@ -133,7 +134,7 @@ public class UpdateService
         throws IOException
     {
         Path target = null;
-        if (dto.getTargetFolder() != null) {
+        if (StringUtils.isNotEmpty(dto.getTargetFolder())) {
             target = FileSystems.getDefault()
                             .getPath(dto.getTargetFolder())
                             .toAbsolutePath();
