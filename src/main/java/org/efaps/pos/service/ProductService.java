@@ -130,22 +130,26 @@ public class ProductService
 
     public Pair<BigDecimal, BigDecimal> evalPrices(final Product product)
     {
+        final var baseProduct = evalBaseProduct(product);
+        return Pair.of(baseProduct.getNetPrice(), baseProduct.getCrossPrice());
+    }
 
-        var netPrice = product.getNetPrice();
-        var crossPrice = product.getCrossPrice();
-        if (ProductType.BATCH.equals(product.getType()) && product.getRelations() != null) {
+    public Product evalBaseProduct(final Product product)
+    {
+        Product prod = product;
+        if (ProductType.BATCH.equals(product.getType()) || ProductType.INDIVIDUAL.equals(product.getType())
+                        && product.getRelations() != null) {
             final var relOpt = product.getRelations().stream()
                             .filter(relation -> ProductRelationType.BATCH.equals(relation.getType()))
                             .findFirst();
             if (relOpt.isPresent()) {
                 final var baseProduct = getProduct(relOpt.get().getProductOid());
                 if (baseProduct != null) {
-                    netPrice = baseProduct.getNetPrice();
-                    crossPrice = baseProduct.getCrossPrice();
+                    prod = baseProduct;
                 }
             }
         }
-        return Pair.of(netPrice, crossPrice);
+        return prod;
     }
 
     public void syncAllProducts()

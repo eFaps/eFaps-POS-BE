@@ -158,11 +158,15 @@ public class CalculatorService
                 } else {
                     index = i++;
                 }
+                final var baseProduct = productService.evalBaseProduct(product);
+
                 document.addPosition(new Position()
                                 .setNetUnitPrice(netUnitPrice)
                                 .setTaxes(taxes)
                                 .setIndex(index)
-                                .setProductOid(pos.getProductOid())
+                                .setProductOid(baseProduct.getOid())
+                                .setStandInOid(baseProduct.getOid().equals(pos.getProductOid()) ? null
+                                                : pos.getProductOid())
                                 .setQuantity(pos.getQuantity()));
             }
         }
@@ -185,7 +189,9 @@ public class CalculatorService
                                                         .withParentIdx(evalParentIndex(usesIndex, pos,
                                                                         calculatorPayloadDto))
                                                         .withQuantity(pos.getQuantity())
-                                                        .withProductOid(pos.getProductOid())
+                                                        .withProductOid(pos.getStandInOid() != null
+                                                                        ? pos.getStandInOid()
+                                                                        : pos.getProductOid())
                                                         .withNetUnitPrice(pos.getNetUnitPrice())
                                                         .withNetPrice(pos.getNetPrice())
                                                         .withCrossUnitPrice(pos.getCrossUnitPrice())
@@ -436,11 +442,15 @@ public class CalculatorService
             } else {
                 netUnitPrice = productService.evalPrices(product).getLeft();
             }
+            final var baseProduct = productService.evalBaseProduct(product);
+
             calcDocument.addPosition(new Position()
                             .setNetUnitPrice(netUnitPrice)
                             .setTaxes(taxes)
                             .setIndex(item.getIndex())
-                            .setProductOid(item.getProductOid())
+                            .setProductOid(baseProduct.getOid())
+                            .setStandInOid(baseProduct.getOid().equals(item.getProductOid()) ? null
+                                            : item.getProductOid())
                             .setQuantity(item.getQuantity()));
         }
         // apply discount selected in the UI
@@ -456,7 +466,8 @@ public class CalculatorService
             if (calculatedPositionOpt.isEmpty()) {
                 LOG.error("There is something wrong with the index");
             } else {
-                final var product = productService.getProduct(item.getProductOid());
+                final var product = productService
+                                .getProduct(item.getStandInOid() != null ? item.getStandInOid() : item.getProductOid());
                 final var calculatedPosition = calculatedPositionOpt.get();
                 item.setNetUnitPrice(calculatedPosition.getNetUnitPrice());
                 item.setNetPrice(calculatedPosition.getNetPrice());
