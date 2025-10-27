@@ -30,9 +30,11 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.UpdateConfirmationDto;
 import org.efaps.pos.dto.UpdateDto;
 import org.efaps.pos.dto.UpdateStatus;
+import org.efaps.pos.entity.UpdateInfo;
 import org.efaps.pos.util.VersionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,12 +42,18 @@ public class UpdateService
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateService.class);
+
+    private static final String KEY = "org.efaps.pos.Update.VERSION";
+
+    private final MongoTemplate mongoTemplate;
     private final EFapsClient eFapsClient;
     private final ConfigService configService;
 
-    public UpdateService(final EFapsClient eFapsClient,
+    public UpdateService(final MongoTemplate mongoTemplate,
+                         final EFapsClient eFapsClient,
                          final ConfigService configService)
     {
+        this.mongoTemplate = mongoTemplate;
         this.eFapsClient = eFapsClient;
         this.configService = configService;
     }
@@ -67,6 +75,24 @@ public class UpdateService
                                     .build());
                 } catch (final IOException e) {
                     LOG.error("Update preperation failed", e);
+                }
+            } else {
+                final var currentVersion = VersionUtil.evalVersion();
+                var updateInfo = mongoTemplate.findById(KEY, UpdateInfo.class);
+                if (currentVersion != null
+                                && (updateInfo == null
+                                || !currentVersion.equalsIgnoreCase(updateInfo.getRegisteredVersion()))) {
+                    LOG.info("Registering new version {} in cloud", currentVersion);
+                    eFapsClient.confirm(UpdateConfirmationDto.builder()
+                            .withStatus(UpdateStatus.INSTALLED)
+                            .withVersion(currentVersion)
+                            .build());
+                    if (updateInfo== null) {
+                        updateInfo = new UpdateInfo();
+                        updateInfo.setId(KEY);
+                    }
+                    updateInfo.setRegisteredVersion(currentVersion);
+                    mongoTemplate.save(updateInfo);
                 }
             }
         }
