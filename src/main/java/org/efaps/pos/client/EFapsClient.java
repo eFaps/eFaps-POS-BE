@@ -50,6 +50,7 @@ import org.efaps.pos.dto.StocktakingDto;
 import org.efaps.pos.dto.StoreStatusRequestDto;
 import org.efaps.pos.dto.StoreStatusResponseDto;
 import org.efaps.pos.dto.TicketDto;
+import org.efaps.pos.dto.UpdateConfirmationDto;
 import org.efaps.pos.dto.UpdateDto;
 import org.efaps.pos.dto.UserDto;
 import org.efaps.pos.dto.WarehouseDto;
@@ -415,11 +416,11 @@ public class EFapsClient
         return ret;
     }
 
-    public boolean confirmUpdate(final String version)
+    public boolean confirm(final UpdateConfirmationDto dto)
     {
         boolean ret = false;
         try {
-            final var requestEntity = post(getEFapsConfig().getUpdatePath() + "/confirm", version);
+            final var requestEntity = post(getEFapsConfig().getUpdatePath() + "/confirm", dto);
 
             final var response = getRestTemplate().exchange(requestEntity, Void.class);
             ret = response.getStatusCode().is2xxSuccessful();

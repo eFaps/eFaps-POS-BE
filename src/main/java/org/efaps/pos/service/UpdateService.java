@@ -27,7 +27,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.dto.UpdateConfirmationDto;
 import org.efaps.pos.dto.UpdateDto;
+import org.efaps.pos.dto.UpdateStatus;
 import org.efaps.pos.util.VersionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +61,10 @@ public class UpdateService
                     final var tempFolder = adhereInstructions(updateDto);
                     final var targetFolder = moveToTarget(tempFolder, updateDto);
                     VersionUtil.createVersionFile(targetFolder, updateDto.getVersion());
-                    eFapsClient.confirmUpdate(updateDto.getVersion());
+                    eFapsClient.confirm(UpdateConfirmationDto.builder()
+                                    .withStatus(UpdateStatus.DOWNLOADED)
+                                    .withVersion(updateDto.getVersion())
+                                    .build());
                 } catch (final IOException e) {
                     LOG.error("Update preperation failed", e);
                 }
