@@ -127,7 +127,6 @@ public class JobService
         for (final Entry<String, List<Item>> entry : map.entrySet()) {
             ret.add(jobRepository.save(new Job()
                             .setDocumentId(order.getId())
-                            .setShoutout(order.getShoutout())
                             .setPrinterOid(entry.getKey())
                             .setReportOid(reportmap.get(entry.getKey()))
                             .setItems(entry.getValue())));

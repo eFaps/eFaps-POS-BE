@@ -157,9 +157,9 @@ public class PrintService
         return ret;
     }
 
-    public Optional<PrintResponseDto> queue(final Job _job)
+    public Optional<PrintResponseDto> queue(final Job job)
     {
-        return queue(_job.getPrinterOid(), _job.getReportOid(), Converter.toDto(_job));
+        return queue(job.getPrinterOid(), job.getReportOid(), Converter.toDto(job));
     }
 
     public Optional<PrintResponseDto> queue(final PrintCmd printCmd,

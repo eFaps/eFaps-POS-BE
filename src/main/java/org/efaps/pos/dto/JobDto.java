@@ -20,6 +20,8 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import jakarta.annotation.Generated;
+
 @JsonDeserialize(builder = JobDto.Builder.class)
 public class JobDto
 {
@@ -30,18 +32,21 @@ public class JobDto
     private final String spotNumber;
     private final String shoutout;
     private final String note;
+    private final ContactDto contact;
 
     private final Set<PosDocItemDto> items;
 
-    private JobDto(final Builder builder)
+    @Generated("SparkTools")
+    private JobDto(Builder builder)
     {
-        id = builder.id;
-        documentId = builder.documentId;
-        documentNumber = builder.documentNumber;
-        spotNumber = builder.spotNumber;
-        shoutout = builder.shoutout;
-        items = builder.items;
-        note = builder.note;
+        this.id = builder.id;
+        this.documentId = builder.documentId;
+        this.documentNumber = builder.documentNumber;
+        this.spotNumber = builder.spotNumber;
+        this.shoutout = builder.shoutout;
+        this.note = builder.note;
+        this.contact = builder.contact;
+        this.items = builder.items;
     }
 
     public String getId()
@@ -79,19 +84,18 @@ public class JobDto
         return note;
     }
 
-    /**
-     * Creates builder to build {@link JobDto}.
-     *
-     * @return created builder
-     */
+    public ContactDto getContact()
+    {
+        return contact;
+    }
+
+    @Generated("SparkTools")
     public static Builder builder()
     {
         return new Builder();
     }
 
-    /**
-     * Builder to build {@link JobDto}.
-     */
+    @Generated("SparkTools")
     public static final class Builder
     {
 
@@ -101,49 +105,56 @@ public class JobDto
         private String spotNumber;
         private String shoutout;
         private String note;
+        private ContactDto contact;
         private Set<PosDocItemDto> items = Collections.emptySet();
 
         private Builder()
         {
         }
 
-        public Builder withId(final String id)
+        public Builder withId(String id)
         {
             this.id = id;
             return this;
         }
 
-        public Builder withDocumentId(final String documentId)
+        public Builder withDocumentId(String documentId)
         {
             this.documentId = documentId;
             return this;
         }
 
-        public Builder withDocumentNumber(final String documentNumber)
+        public Builder withDocumentNumber(String documentNumber)
         {
             this.documentNumber = documentNumber;
             return this;
         }
 
-        public Builder withSpotNumber(final String spotNumber)
+        public Builder withSpotNumber(String spotNumber)
         {
             this.spotNumber = spotNumber;
             return this;
         }
 
-        public Builder withShoutout(final String shoutout)
+        public Builder withShoutout(String shoutout)
         {
             this.shoutout = shoutout;
             return this;
         }
 
-        public Builder withNote(final String note)
+        public Builder withNote(String note)
         {
             this.note = note;
             return this;
         }
 
-        public Builder withItems(final Set<PosDocItemDto> items)
+        public Builder withContact(ContactDto contact)
+        {
+            this.contact = contact;
+            return this;
+        }
+
+        public Builder withItems(Set<PosDocItemDto> items)
         {
             this.items = items;
             return this;

@@ -1547,20 +1547,21 @@ public final class Converter
                         .build();
     }
 
-    public static JobDto toDto(final Job _entity)
+    public static JobDto toDto(final Job entity)
     {
-        final Order order = INSTANCE.documentService.getOrderById(_entity.getDocumentId());
+        final Order order = INSTANCE.documentService.getOrderById(entity.getDocumentId());
         return JobDto.builder()
-                        .withDocumentId(_entity.getDocumentId())
+                        .withDocumentId(entity.getDocumentId())
                         .withDocumentNumber(order.getNumber())
-                        .withShoutout(_entity.getShoutout())
+                        .withShoutout(order.getShoutout())
+                        .withContact(Converter.getContactDto(order.getContactOid()))
                         .withSpotNumber(order.getSpot() == null ? null
                                         : StringUtils.isEmpty(order.getSpot().getLabel()) ? order.getSpot().getId()
                                                         : order.getSpot().getLabel())
-                        .withId(_entity.getId())
+                        .withId(entity.getId())
                         .withNote(order.getNote())
-                        .withItems(_entity.getItems() == null ? Collections.emptySet()
-                                        : _entity.getItems().stream().map(Converter::toDto)
+                        .withItems(entity.getItems() == null ? Collections.emptySet()
+                                        : entity.getItems().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }

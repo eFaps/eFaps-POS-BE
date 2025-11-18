@@ -41,8 +41,6 @@ public class Job
 
     private List<Item> items;
 
-    private String shoutout;
-
     @CreatedBy
     private String user;
 
@@ -104,17 +102,6 @@ public class Job
     public Job setReportOid(final String _reportOid)
     {
         reportOid = _reportOid;
-        return this;
-    }
-
-    public String getShoutout()
-    {
-        return shoutout;
-    }
-
-    public Job setShoutout(final String shoutout)
-    {
-        this.shoutout = shoutout;
         return this;
     }
 
