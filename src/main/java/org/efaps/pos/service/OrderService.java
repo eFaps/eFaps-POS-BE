@@ -23,6 +23,7 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.OrderDto;
+import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.repository.OrderRepository;
@@ -59,7 +60,7 @@ public class OrderService
         LOG.info("Syncing Canceled Orders");
         final Collection<Order> tosync = orderRepository.findByOidIsNullAndStatus(DocStatus.CANCELED);
         for (final Order order : tosync) {
-            if (order.getContactOid() == null || validateContact(order)) {
+            if (order.getContactOid() == null || validateContact(order, false)) {
                 LOG.debug("Syncing Order: {}", order);
                 final OrderDto recDto = getEFapsClient().postOrder(Converter.toOrderDto(order));
                 LOG.debug("received Order: {}", recDto);
@@ -80,7 +81,7 @@ public class OrderService
                                         .isBefore(Instant.now()))
                         .toList();
         for (final Order order : tosync2) {
-            if (order.getContactOid() == null || validateContact(order)) {
+            if (order.getContactOid() == null || validateContact(order, false)) {
                 boolean sync = true;
                 if (order.getPayableOid() != null && !Utils.isOid(order.getPayableOid())) {
                     final var payableOpt = getDocumentHelperService().getPayableById(order.getPayableOid());
@@ -110,4 +111,13 @@ public class OrderService
         }
         return ret;
     }
+
+    @Override
+    protected void persist(final AbstractDocument<?> document)
+    {
+        if (document instanceof Order) {
+            orderRepository.save((Order) document);
+        }
+    }
+
 }

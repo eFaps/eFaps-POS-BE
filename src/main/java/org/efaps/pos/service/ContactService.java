@@ -143,8 +143,13 @@ public class ContactService
 
     public List<Contact> syncContactsUp()
     {
-        final var syncedContacts = new ArrayList<Contact>();
         final Collection<Contact> tosync = contactRepository.findByOidIsNull();
+        return syncContactsUp(tosync);
+    }
+
+    public List<Contact> syncContactsUp(Collection<Contact> tosync)
+    {
+        final var syncedContacts = new ArrayList<Contact>();
         for (final Contact contact : tosync) {
             LOG.debug("Syncing Contact: {}", contact);
             final ContactDto recDto = eFapsClient.postContact(Converter.toDto(contact));

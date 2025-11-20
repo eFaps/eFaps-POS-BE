@@ -22,6 +22,7 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.TicketDto;
+import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.repository.TicketRepository;
@@ -51,12 +52,19 @@ public class TicketService
 
     public boolean syncTickets(final SyncInfo syncInfo)
     {
+        final Collection<Ticket> tosync = ticketRepository.findByOidIsNull();
+        syncTickets(tosync, false);
+        return true;
+    }
+
+    public boolean syncTickets(final Collection<Ticket> tosync,
+                               boolean ensure)
+    {
         boolean ret = false;
         LOG.info("Syncing Tickets");
-        final Collection<Ticket> tosync = ticketRepository.findByOidIsNull();
         for (final Ticket dto : tosync) {
             LOG.debug("Syncing Ticket: {}", dto);
-            if (validateContact(dto) && verifyBalance(dto)) {
+            if (validateContact(dto, ensure) && verifyBalance(dto, ensure)) {
                 final TicketDto recDto = getEFapsClient().postTicket(Converter.toTicketDto(dto));
                 LOG.debug("received Ticket: {}", recDto);
                 if (recDto.getOid() != null) {
@@ -74,5 +82,13 @@ public class TicketService
             ret = true;
         }
         return ret;
+    }
+
+    @Override
+    protected void persist(final AbstractDocument<?> document)
+    {
+        if (document instanceof Ticket) {
+            ticketRepository.save((Ticket) document);
+        }
     }
 }

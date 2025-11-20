@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.service;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import org.efaps.pos.client.EFapsClient;
@@ -31,7 +32,6 @@ public abstract class DocumentsService
     private static final Logger LOG = LoggerFactory.getLogger(DocumentsService.class);
 
     private final ConfigProperties configProperties;
-
     private final EFapsClient eFapsClient;
     private final DocumentHelperService documentHelperService;
     private final ContactService contactService;
@@ -62,7 +62,8 @@ public abstract class DocumentsService
         return documentHelperService;
     }
 
-    protected boolean validateContact(final AbstractDocument<?> document)
+    public boolean validateContact(final AbstractDocument<?> document,
+                                   final Boolean ensure)
     {
         boolean ret = false;
         if (Utils.isOid(document.getContactOid())) {
@@ -70,10 +71,19 @@ public abstract class DocumentsService
         } else if (document.getContactOid() != null) {
             final Optional<Contact> optContact = contactService.findById(document.getContactOid());
             if (optContact.isPresent()) {
-                final String contactOid = optContact.get().getOid();
-                if (Utils.isOid(contactOid)) {
-                    document.setContactOid(contactOid);
+                final var contact = optContact.get();
+                if (Utils.isOid(contact.getOid())) {
+                    document.setContactOid(contact.getOid());
+                    persist(document);
                     ret = true;
+                } else if (ensure) {
+                    LOG.info("Ensure valid contact by syncing {}", contact);
+                    final var syncedContacts = contactService.syncContactsUp(Collections.singleton(contact));
+                    if (!syncedContacts.isEmpty()) {
+                        document.setContactOid(syncedContacts.get(0).getOid());
+                        persist(document);
+                        ret = true;
+                    }
                 }
             }
         }
@@ -82,5 +92,7 @@ public abstract class DocumentsService
         }
         return ret;
     }
+
+    protected abstract void persist(final AbstractDocument<?> document);
 
 }

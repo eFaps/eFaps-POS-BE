@@ -25,6 +25,7 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.InvoiceDto;
+import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Invoice;
 import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.repository.InvoiceRepository;
@@ -61,16 +62,17 @@ public class InvoiceService
                                         .plusSeconds(getConfigProperties().getBeInst().getInvoice().getDeferSync())
                                         .isBefore(Instant.now()))
                         .toList();
-        syncInvoices(tosync);
+        syncInvoices(tosync, false);
         return true;
     }
 
-    public List<Invoice> syncInvoices(final Collection<Invoice> invoices)
+    public List<Invoice> syncInvoices(final Collection<Invoice> invoices,
+                                      boolean ensure)
     {
         final List<Invoice> updates = new ArrayList<>();
         for (final Invoice invoice : invoices) {
             LOG.debug("Syncing Invoice: {}", invoice);
-            if (validateContact(invoice) && verifyBalance(invoice)) {
+            if (validateContact(invoice, ensure) && verifyBalance(invoice, ensure)) {
                 final InvoiceDto recDto = getEFapsClient().postInvoice(Converter.toInvoiceDto(invoice));
                 LOG.debug("received Invoice: {}", recDto);
                 if (recDto.getOid() != null) {
@@ -87,5 +89,13 @@ public class InvoiceService
             }
         }
         return updates;
+    }
+
+    @Override
+    protected void persist(AbstractDocument<?> document)
+    {
+        if (document instanceof Invoice) {
+            invoiceRepository.save((Invoice) document);
+        }
     }
 }

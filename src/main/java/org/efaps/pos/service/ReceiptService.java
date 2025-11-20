@@ -25,6 +25,7 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.ReceiptDto;
+import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Receipt;
 import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.repository.ReceiptRepository;
@@ -62,15 +63,16 @@ public class ReceiptService
                                         .plusSeconds(getConfigProperties().getBeInst().getReceipt().getDeferSync())
                                         .isBefore(Instant.now()))
                         .toList();
-        syncReceipts(tosync);
+        syncReceipts(tosync, false);
         return true;
     }
 
-    public List<Receipt> syncReceipts(final Collection<Receipt> receipts)
+    public List<Receipt> syncReceipts(final Collection<Receipt> receipts,
+                                      boolean ensure)
     {
         final List<Receipt> updates = new ArrayList<>();
         for (final Receipt receipt : receipts) {
-            if (validateContact(receipt) && verifyBalance(receipt)) {
+            if (validateContact(receipt, ensure) && verifyBalance(receipt, ensure)) {
                 LOG.debug("Syncing Receipt: {}", receipt);
                 final ReceiptDto recDto = getEFapsClient().postReceipt(Converter.toReceiptDto(receipt));
                 LOG.debug("received Receipt: {}", recDto);
@@ -89,5 +91,13 @@ public class ReceiptService
             }
         }
         return updates;
+    }
+
+    @Override
+    protected void persist(final AbstractDocument<?> document)
+    {
+        if (document instanceof Receipt) {
+            receiptRepository.save((Receipt) document);
+        }
     }
 }

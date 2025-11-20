@@ -21,6 +21,7 @@ import java.util.Optional;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
+import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.repository.CreditNoteRepository;
@@ -56,7 +57,7 @@ public class CreditNoteService
         final Collection<CreditNote> tosync = creditNoteRepository.findByOidIsNull();
         for (final CreditNote creditNote : tosync) {
             LOG.debug("Syncing CreditNote: {}", creditNote);
-            if (validateContact(creditNote) && verifyBalance(creditNote) && verifySourceDoc(creditNote)) {
+            if (validateContact(creditNote, false) && verifyBalance(creditNote, false) && verifySourceDoc(creditNote)) {
                 final var recDto = getEFapsClient().postCreditNote(Converter.toCreditNoteDto(creditNote));
                 LOG.debug("received CreditNote: {}", recDto);
                 if (recDto.getOid() != null) {
@@ -90,5 +91,13 @@ public class CreditNoteService
             }
         }
         return ret;
+    }
+
+    @Override
+    protected void persist(final AbstractDocument<?> document)
+    {
+        if (document instanceof CreditNote) {
+            creditNoteRepository.save((CreditNote) document);
+        }
     }
 }

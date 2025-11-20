@@ -384,6 +384,24 @@ public class BalanceService
         return ret;
     }
 
+    public Balance syncBalance(final Balance entityToSync)
+    {
+        Balance ret = null;
+        LOG.debug("Syncing Balance: {}", entityToSync);
+        final var dto = Converter.toBalanceDto(entityToSync);
+        final BalanceDto recDto = eFapsClient.postBalance(dto);
+        LOG.debug("received Balance: {}", recDto);
+        if (recDto.getOid() != null) {
+            final Optional<Balance> balanceOpt = balanceRepository.findById(recDto.getId());
+            if (balanceOpt.isPresent()) {
+                final var balance = balanceOpt.get();
+                balance.setOid(recDto.getOid());
+                ret = balanceRepository.save(balance);
+            }
+        }
+        return ret;
+    }
+
     private void updateBalanceOid(Balance balance)
     {
         documentHelperService.getReceipts4Balance(balance.getId()).forEach(doc -> {

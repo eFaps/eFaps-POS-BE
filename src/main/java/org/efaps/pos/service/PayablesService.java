@@ -43,7 +43,8 @@ public abstract class PayablesService
         this.balanceService = balanceService;
     }
 
-    protected boolean verifyBalance(final AbstractPayableDocument<?> document)
+    protected boolean verifyBalance(final AbstractPayableDocument<?> document,
+                                    final boolean ensure)
     {
         boolean ret = true;
         if (!Utils.isOid(document.getBalanceOid())) {
@@ -53,6 +54,11 @@ public abstract class PayablesService
                 final Balance balance = balanceOpt.get();
                 if (Utils.isOid(balance.getOid())) {
                     document.setBalanceOid(balance.getOid());
+                    ret = true;
+                } else if (ensure) {
+                    LOG.info("Ensure valid balance by syncing {}", balance);
+                    final var syncedBalance = balanceService.syncBalance(balance);
+                    document.setBalanceOid(syncedBalance.getOid());
                     ret = true;
                 } else {
                     LOG.error("The found Balance does not have an OID {}", balance);
