@@ -198,7 +198,7 @@ public class QuartzConfig
         LOG.info("Registering Quartz trigger 'syncBalances' with delay: {}s, interval: {}s",
                         syncBalancesDelay, syncBalancesInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncPayablesJobDetailFactoryBean().getObject());
+        stFactory.setJobDetail(syncBalancesJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(syncBalancesDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncBalancesInterval) * 1000);
         return stFactory;
@@ -223,7 +223,7 @@ public class QuartzConfig
         LOG.info("Registering Quartz trigger 'syncInvoices' with delay: {}s, interval: {}s",
                         syncInvoicesDelay, syncInvoicesInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncPayablesJobDetailFactoryBean().getObject());
+        stFactory.setJobDetail(syncInvoicesJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(syncInvoicesDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncInvoicesInterval) * 1000);
         return stFactory;
@@ -248,7 +248,7 @@ public class QuartzConfig
         LOG.info("Registering Quartz trigger 'syncReceipts' with delay: {}s, interval: {}s",
                         syncReceiptsDelay, syncReceiptsInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncPayablesJobDetailFactoryBean().getObject());
+        stFactory.setJobDetail(syncReceiptsJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(syncReceiptsDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncReceiptsInterval) * 1000);
         return stFactory;
@@ -273,7 +273,7 @@ public class QuartzConfig
         LOG.info("Registering Quartz trigger 'syncTickets' with delay: {}s, interval: {}s",
                         syncTicketsDelay, syncTicketsInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncPayablesJobDetailFactoryBean().getObject());
+        stFactory.setJobDetail(syncTicketsJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(syncTicketsDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncTicketsInterval) * 1000);
         return stFactory;
@@ -298,7 +298,7 @@ public class QuartzConfig
         LOG.info("Registering Quartz trigger 'syncOrders' with delay: {}s, interval: {}s",
                         syncOrdersDelay, syncOrdersInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncPayablesJobDetailFactoryBean().getObject());
+        stFactory.setJobDetail(syncOrdersJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(syncOrdersDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncOrdersInterval) * 1000);
         return stFactory;
@@ -323,7 +323,7 @@ public class QuartzConfig
         LOG.info("Registering Quartz trigger 'syncCreditNotes' with delay: {}s, interval: {}s",
                         syncCreditNotesDelay, syncCreditNotesInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncPayablesJobDetailFactoryBean().getObject());
+        stFactory.setJobDetail(syncCreditNotesJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(syncCreditNotesDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncCreditNotesInterval) * 1000);
         return stFactory;
