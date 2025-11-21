@@ -78,10 +78,11 @@ public class InvoiceService
                 if (recDto.getOid() != null) {
                     final Optional<Invoice> opt = invoiceRepository.findById(recDto.getId());
                     if (opt.isPresent()) {
-                        final Invoice receipt = opt.get();
-                        receipt.setOid(recDto.getOid());
-                        receipt.setStatus(DocStatus.CLOSED);
-                        invoiceRepository.save(receipt);
+                        final Invoice storedInvoice = opt.get();
+                        storedInvoice.setOid(recDto.getOid());
+                        storedInvoice.setStatus(DocStatus.CLOSED);
+                        invoiceRepository.save(storedInvoice);
+                        updates.add(storedInvoice);
                     }
                 }
             } else {
