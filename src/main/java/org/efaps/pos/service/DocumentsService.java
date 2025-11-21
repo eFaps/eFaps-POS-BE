@@ -22,6 +22,7 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.Order;
 import org.efaps.pos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +88,7 @@ public abstract class DocumentsService
                 }
             }
         }
-        if (!ret) {
+        if (!ret && !(document instanceof Order)) {
             LOG.info("Invalid contact for {}", document);
         }
         return ret;

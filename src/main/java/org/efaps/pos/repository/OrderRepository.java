@@ -34,6 +34,8 @@ public interface OrderRepository
 
     Collection<Order> findByOidIsNullAndStatus(DocStatus _status);
 
+    Collection<Order> findByOidIsNull();
+
     List<Order> findByPayableOidIn(Collection<String> idents);
 
     Optional<Order> findByOid(String oid);
