@@ -22,13 +22,13 @@ import org.efaps.pos.listener.ICollectorListener;
 import org.efaps.pos.listener.IDocumentListener;
 import org.efaps.pos.listener.ILogListener;
 import org.efaps.pos.listener.ILoyaltyListener;
+import org.efaps.pos.listener.IMonitoringReportContributor;
 import org.efaps.pos.listener.IPrintListener;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
-import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
@@ -150,28 +150,18 @@ public class Application
     }
 
 
+    @Bean(name = "monitoringReportContributors")
+    public ServiceListFactoryBean monitoringReportContributors()
+    {
+        final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
+        serviceListFactoryBean.setServiceType(IMonitoringReportContributor.class);
+        return serviceListFactoryBean;
+    }
+
+
     @Bean
     public TaskExecutor taskExecutor()
     {
         return new SimpleAsyncTaskExecutor();
     }
-
-    public static void restart()
-    {
-        LOG.info("Restarting in 3 seconds !!! ");
-        try {
-            Thread.sleep(3000L);
-        } catch (final Exception e) {
-        }
-
-        final ApplicationArguments args = context.getBean(ApplicationArguments.class);
-        final Thread thread = new Thread(() -> {
-            context.close();
-            context = SpringApplication.run(Application.class, args.getSourceArgs());
-        });
-        thread.setDaemon(false);
-        thread.start();
-        LOG.info("Restart done.");
-    }
-
 }

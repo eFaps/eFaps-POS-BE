@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.repository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -39,4 +40,6 @@ public interface OrderRepository
     List<Order> findByPayableOidIn(Collection<String> idents);
 
     Optional<Order> findByOid(String oid);
+
+    List<Order> findByCreatedDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 }

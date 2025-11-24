@@ -40,7 +40,8 @@ public enum StashId
     PROMOTIONSYNC("org.efaps.pos.sync.Promotion"),
     PROMOTIONINFOSYNC("org.efaps.pos.sync.PromotionInfo"),
     POSFILESYNC("org.efaps.pos.sync.PosFile"),
-    INVENTORYSYNC("org.efaps.pos.sync.Inventory");
+    INVENTORYSYNC("org.efaps.pos.sync.Inventory"),
+    REPORTTOBASESYNC("org.efaps.pos.sync.ReportToBase");
 
     private final String key;
 

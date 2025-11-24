@@ -582,14 +582,17 @@ public class EFapsClient
         return ret;
     }
 
-    public void postReportToBase(final ReportToBaseDto dto)
+    public boolean postReportToBase(final ReportToBaseDto dto)
     {
+        boolean ret = false;
         try {
             final RequestEntity<ReportToBaseDto> requestEntity = post(getEFapsConfig().getReportToBasePath(), dto);
-            getRestTemplate().exchange(requestEntity, Void.class);
+            final var post = getRestTemplate().exchange(requestEntity, Void.class);
+            ret = post.getStatusCode().is2xxSuccessful();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during post for ReportToBase", e);
         }
+        return ret;
     }
 
     public String postPromotionInfo(final PromoInfoSyncDto dto)
