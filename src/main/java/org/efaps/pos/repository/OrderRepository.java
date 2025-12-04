@@ -42,4 +42,8 @@ public interface OrderRepository
     Optional<Order> findByOid(String oid);
 
     List<Order> findByCreatedDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+    Collection<Order> findByContactOid(String contactOid);
+
+    Collection<Order> findByLoyaltyContactOid(String loyaltyContactOid);
 }

@@ -60,7 +60,7 @@ public class OrderService
         LOG.info("Syncing Canceled Orders");
         final Collection<Order> tosync = orderRepository.findByOidIsNullAndStatus(DocStatus.CANCELED);
         for (final Order order : tosync) {
-            if (order.getContactOid() == null || validateContact(order, false)) {
+            if (order.getContactOid() == null || validateContacts(order, false)) {
                 LOG.debug("Syncing Order: {}", order);
                 final OrderDto recDto = getEFapsClient().postOrder(Converter.toOrderDto(order));
                 LOG.debug("received Order: {}", recDto);
@@ -81,7 +81,7 @@ public class OrderService
                                         .isBefore(Instant.now()))
                         .toList();
         for (final Order order : tosync2) {
-            if (order.getContactOid() == null || validateContact(order, false)) {
+            if (order.getContactOid() == null || validateContacts(order, false)) {
                 boolean sync = true;
                 if (order.getPayableOid() != null && !Utils.isOid(order.getPayableOid())) {
                     final var payableOpt = getDocumentHelperService().getPayableById(order.getPayableOid());

@@ -1957,6 +1957,7 @@ public final class Converter
                              final AbstractDocument<?> toEntity)
     {
         toEntity.setContactOid(fromEntity.getContactOid())
+                        .setLoyaltyContactOid(fromEntity.getLoyaltyContactOid())
                         .setCrossTotal(fromEntity.getCrossTotal())
                         .setCurrency(fromEntity.getCurrency())
                         .setDate(fromEntity.getDate())

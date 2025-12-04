@@ -300,6 +300,17 @@ public class DocumentService
         return orderRepository.save(order);
     }
 
+    public Order updateOrderWithLoyaltyContact(final String orderId,
+                                               final String contactId)
+    {
+        final var order = orderRepository.findById(orderId).orElseThrow();
+        final var contact = contactService.findContact(contactId);
+        if (contact != null) {
+            order.setLoyaltyContactOid(contact.getOid() == null ? contact.getId() : contact.getOid());
+        }
+        return orderRepository.save(order);
+    }
+
     public void deleteOrder(final String _orderId)
     {
         final Optional<Order> opt = orderRepository.findById(_orderId);
@@ -895,9 +906,10 @@ public class DocumentService
         }
     }
 
-    public void updateContactOid(final List<Contact> syncedContacts)
+    public void updateContactOids(final List<Contact> syncedContacts)
     {
         for (final var contact : syncedContacts) {
+            // contact
             receiptRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
                 doc.setContactOid(contact.getOid());
                 receiptRepository.save(doc);
@@ -909,6 +921,28 @@ public class DocumentService
             ticketRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
                 doc.setContactOid(contact.getOid());
                 ticketRepository.save(doc);
+            });
+            orderRepository.findByContactOid(contact.getId()).stream().forEach(doc -> {
+                doc.setContactOid(contact.getOid());
+                orderRepository.save(doc);
+            });
+
+            // loyalty contact
+            receiptRepository.findByLoyaltyContactOid(contact.getId()).stream().forEach(doc -> {
+                doc.setContactOid(contact.getOid());
+                receiptRepository.save(doc);
+            });
+            invoiceRepository.findByLoyaltyContactOid(contact.getId()).stream().forEach(doc -> {
+                doc.setContactOid(contact.getOid());
+                invoiceRepository.save(doc);
+            });
+            ticketRepository.findByLoyaltyContactOid(contact.getId()).stream().forEach(doc -> {
+                doc.setContactOid(contact.getOid());
+                ticketRepository.save(doc);
+            });
+            orderRepository.findByLoyaltyContactOid(contact.getId()).stream().forEach(doc -> {
+                doc.setContactOid(contact.getOid());
+                orderRepository.save(doc);
             });
         }
     }

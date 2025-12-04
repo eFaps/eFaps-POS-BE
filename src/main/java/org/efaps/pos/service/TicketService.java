@@ -64,7 +64,7 @@ public class TicketService
         LOG.info("Syncing Tickets");
         for (final Ticket dto : tosync) {
             LOG.debug("Syncing Ticket: {}", dto);
-            if (validateContact(dto, ensure) && verifyBalance(dto, ensure)) {
+            if (validateContacts(dto, ensure) && verifyBalance(dto, ensure)) {
                 final TicketDto recDto = getEFapsClient().postTicket(Converter.toTicketDto(dto));
                 LOG.debug("received Ticket: {}", recDto);
                 if (recDto.getOid() != null) {

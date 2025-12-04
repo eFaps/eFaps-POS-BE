@@ -341,7 +341,7 @@ public class SyncService
         throws SyncServiceDeactivatedException
     {
         final var syncedContacts = contactService.syncContactsUp();
-        documentService.updateContactOid(syncedContacts);
+        documentService.updateContactOids(syncedContacts);
         syncBalances();
         syncReceipts();
         syncInvoices();
@@ -476,7 +476,7 @@ public class SyncService
         }
         LOG.info("Syncing All Contacts");
         final var syncedContacts = contactService.syncContactsUp();
-        documentService.updateContactOid(syncedContacts);
+        documentService.updateContactOids(syncedContacts);
         contactService.syncContacts(null);
     }
 
@@ -488,7 +488,7 @@ public class SyncService
         }
         LOG.info("Syncing Contacts");
         final var syncedContacts = contactService.syncContactsUp();
-        documentService.updateContactOid(syncedContacts);
+        documentService.updateContactOids(syncedContacts);
         contactService.syncContacts(getSync(StashId.CONTACTSYNC));
         registerSync(StashId.CONTACTSYNC);
     }

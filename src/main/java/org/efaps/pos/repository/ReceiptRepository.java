@@ -28,7 +28,9 @@ public interface ReceiptRepository
 {
     Collection<Receipt> findByOidIsNull();
 
-    Collection<Receipt> findByContactOid(String _contactOid);
+    Collection<Receipt> findByContactOid(String contactOid);
+
+    Collection<Receipt> findByLoyaltyContactOid(String loyaltyContactOid);
 
     Collection<Receipt> findByBalanceOid(String _balanceOid);
 

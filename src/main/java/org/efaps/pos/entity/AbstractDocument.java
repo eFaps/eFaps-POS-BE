@@ -55,7 +55,6 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>>
     private Set<TaxEntry> taxes;
     private String contactOid;
     private String loyaltyContactOid;
-
     private String workspaceOid;
     private Discount discount;
     private String note;

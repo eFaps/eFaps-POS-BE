@@ -33,6 +33,8 @@ public interface InvoiceRepository
 
     Collection<Invoice> findByContactOid(String contactOid);
 
+    Collection<Invoice> findByLoyaltyContactOid(String loyaltyContactOid);
+
     Collection<Invoice> findByBalanceOid(String balanceOid);
 
     @Query("""

@@ -63,8 +63,8 @@ public abstract class DocumentsService
         return documentHelperService;
     }
 
-    public boolean validateContact(final AbstractDocument<?> document,
-                                   final Boolean ensure)
+    public boolean validateContacts(final AbstractDocument<?> document,
+                                    final Boolean ensure)
     {
         boolean ret = false;
         if (Utils.isOid(document.getContactOid())) {
@@ -84,10 +84,44 @@ public abstract class DocumentsService
                         document.setContactOid(syncedContacts.get(0).getOid());
                         persist(document);
                         ret = true;
+                    } else {
+                        LOG.warn("Syncing vailed for {}", contact);
                     }
                 }
+            } else {
+                LOG.warn("Could not find contact to validate for {} on {}", document.getContactOid(), document);
             }
         }
+        // if everything is still find ==> validate the LoyaltyContact
+        if (ret && document.getLoyaltyContactOid() != null && !Utils.isOid(document.getLoyaltyContactOid())) {
+            LOG.debug("Invalid loyaltyContactOid of {} for {}", document.getLoyaltyContactOid(), document);
+            final Optional<Contact> optContact = contactService.findById(document.getLoyaltyContactOid());
+            if (optContact.isPresent()) {
+                final var contact = optContact.get();
+                if (Utils.isOid(contact.getOid())) {
+                    document.setLoyaltyContactOid(contact.getOid());
+                    persist(document);
+                } else if (ensure) {
+                    LOG.info("Ensure valid contact by syncing {}", contact);
+                    final var syncedContacts = contactService.syncContactsUp(Collections.singleton(contact));
+                    if (!syncedContacts.isEmpty()) {
+                        document.setLoyaltyContactOid(syncedContacts.get(0).getOid());
+                        persist(document);
+                        ret = true;
+                    } else {
+                        LOG.warn("Syncing vailed for {}", contact);
+                        ret = false;
+                    }
+                } else {
+                    ret = false;
+                }
+            } else {
+                ret = false;
+                LOG.warn("Could not find contact to validate for Loyalty {} on {}", document.getLoyaltyContactOid(),
+                                document);
+            }
+        }
+
         if (!ret && !(document instanceof Order)) {
             LOG.info("Invalid contact for {}", document);
         }

@@ -72,7 +72,7 @@ public class ReceiptService
     {
         final List<Receipt> updates = new ArrayList<>();
         for (final Receipt receipt : receipts) {
-            if (validateContact(receipt, ensure) && verifyBalance(receipt, ensure)) {
+            if (validateContacts(receipt, ensure) && verifyBalance(receipt, ensure)) {
                 LOG.debug("Syncing Receipt: {}", receipt);
                 final ReceiptDto recDto = getEFapsClient().postReceipt(Converter.toReceiptDto(receipt));
                 LOG.debug("received Receipt: {}", recDto);

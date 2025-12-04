@@ -120,6 +120,14 @@ public class DocumentController
         return Converter.toDto(documentService.updateOrderWithContact(orderId, contactId));
     }
 
+    @PutMapping(path = { "orders/{orderId}/loyaltyContact/{contactId}",
+                    "documents/orders/{orderId}/loyaltyContact/{contactId}" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosOrderDto updateOrderWithLoyaltyContact(@PathVariable(name = "orderId") final String orderId,
+                                                     @PathVariable(name = "contactId") final String contactId)
+    {
+        return Converter.toDto(documentService.updateOrderWithLoyaltyContact(orderId, contactId));
+    }
+
     @GetMapping(path = { "orders/{orderId}", "documents/orders/{orderId}" })
     public PosOrderDto getOrder(@PathVariable(name = "orderId") final String orderId)
     {

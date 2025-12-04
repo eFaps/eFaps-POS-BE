@@ -57,7 +57,7 @@ public class CreditNoteService
         final Collection<CreditNote> tosync = creditNoteRepository.findByOidIsNull();
         for (final CreditNote creditNote : tosync) {
             LOG.debug("Syncing CreditNote: {}", creditNote);
-            if (validateContact(creditNote, false) && verifyBalance(creditNote, false) && verifySourceDoc(creditNote)) {
+            if (validateContacts(creditNote, false) && verifyBalance(creditNote, false) && verifySourceDoc(creditNote)) {
                 final var recDto = getEFapsClient().postCreditNote(Converter.toCreditNoteDto(creditNote));
                 LOG.debug("received CreditNote: {}", recDto);
                 if (recDto.getOid() != null) {
