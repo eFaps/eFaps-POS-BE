@@ -91,7 +91,7 @@ public class MonitoringService
         final var syncInfo = mongoTemplate.findById(StashId.REPORTTOBASESYNC.getKey(), SyncInfo.class);
         LocalDateTime lastSync;
         if (syncInfo == null) {
-            lastSync = LocalDateTime.MIN;
+            lastSync = LocalDateTime.now();
         } else {
             lastSync = syncInfo.getLastSync();
         }
