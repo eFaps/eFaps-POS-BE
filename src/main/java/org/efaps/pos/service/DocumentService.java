@@ -311,6 +311,27 @@ public class DocumentService
         return orderRepository.save(order);
     }
 
+    public Order updateOrderContacts(final String orderId,
+                                     final String contactIdent,
+                                     final String loyaltyContactIdent)
+    {
+        final var order = orderRepository.findById(orderId).orElseThrow();
+        final var contact = contactService.findContact(contactIdent);
+        final var loyaltyContact = contactService.findContact(loyaltyContactIdent);
+        if (contact != null) {
+            order.setContactOid(contact.getOid() == null ? contact.getId() : contact.getOid());
+        }
+
+        if (loyaltyContact == null) {
+            order.setLoyaltyContactOid(null);
+        } else {
+            order.setLoyaltyContactOid(
+                            loyaltyContact.getOid() == null ? loyaltyContact.getId() : loyaltyContact.getOid());
+        }
+        return orderRepository.save(order);
+    }
+
+
     public void deleteOrder(final String _orderId)
     {
         final Optional<Order> opt = orderRepository.findById(_orderId);

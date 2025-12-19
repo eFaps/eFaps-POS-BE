@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.CreateDocumentDto;
+import org.efaps.pos.dto.DocContactsUpdateDto;
 import org.efaps.pos.dto.DocStatus;
 import org.efaps.pos.dto.PayableHeadDto;
 import org.efaps.pos.dto.PosCreditNoteDto;
@@ -126,6 +127,15 @@ public class DocumentController
                                                      @PathVariable(name = "contactId") final String contactId)
     {
         return Converter.toDto(documentService.updateOrderWithLoyaltyContact(orderId, contactId));
+    }
+
+    @PutMapping(path = { "orders/{orderId}/contacts",
+                    "documents/orders/{orderId}/contacts" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public PosOrderDto updateOrderContacts(@PathVariable(name = "orderId") final String orderId,
+                                           @RequestBody final DocContactsUpdateDto dto)
+    {
+        return Converter.toDto(documentService.updateOrderContacts(orderId, dto.getContactIdent(),
+                        dto.getLoyaltyContactIdent()));
     }
 
     @GetMapping(path = { "orders/{orderId}", "documents/orders/{orderId}" })
