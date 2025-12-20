@@ -19,6 +19,7 @@ import org.efaps.pos.interfaces.IInvoiceListener;
 import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
 import org.efaps.pos.listener.ICollectorListener;
+import org.efaps.pos.listener.IConversionListener;
 import org.efaps.pos.listener.IDocumentListener;
 import org.efaps.pos.listener.ILogListener;
 import org.efaps.pos.listener.ILoyaltyListener;
@@ -26,15 +27,12 @@ import org.efaps.pos.listener.IMonitoringReportContributor;
 import org.efaps.pos.listener.IPrintListener;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
@@ -53,13 +51,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class Application
 {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Application.class);
-
-    private static ConfigurableApplicationContext context;
-
     public static void main(final String _args[])
     {
-        context = SpringApplication.run(Application.class);
+        SpringApplication.run(Application.class);
     }
 
     @Bean
@@ -149,7 +143,6 @@ public class Application
         return serviceListFactoryBean;
     }
 
-
     @Bean(name = "monitoringReportContributors")
     public ServiceListFactoryBean monitoringReportContributors()
     {
@@ -158,6 +151,13 @@ public class Application
         return serviceListFactoryBean;
     }
 
+    @Bean(name = "conversionListeners")
+    public ServiceListFactoryBean conversionListeners()
+    {
+        final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
+        serviceListFactoryBean.setServiceType(IConversionListener.class);
+        return serviceListFactoryBean;
+    }
 
     @Bean
     public TaskExecutor taskExecutor()

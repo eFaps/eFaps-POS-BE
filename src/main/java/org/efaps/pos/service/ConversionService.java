@@ -1,0 +1,55 @@
+/*
+ * Copyright © 2003 - 2024 The eFaps Team (-)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.efaps.pos.service;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.efaps.pos.dto.AbstractPayableDocumentDto;
+import org.efaps.pos.entity.AbstractPayableDocument;
+import org.efaps.pos.listener.ConversionEvent;
+import org.efaps.pos.listener.IConversionListener;
+import org.efaps.pos.util.Converter;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ConversionService
+{
+
+    private final List<IConversionListener> conversionListeners;
+
+    public ConversionService(final Optional<List<IConversionListener>> conversionListeners)
+    {
+        this.conversionListeners = conversionListeners.isPresent() ? conversionListeners.get()
+                        : Collections.emptyList();
+    }
+
+    public AbstractPayableDocumentDto toDto(final ConversionEvent event,
+                                            final AbstractPayableDocument<?> entity)
+    {
+        final Map<String, Object> extension = new HashMap<>();
+        for (final var listener : conversionListeners) {
+            final var map = listener.extension(event, entity);
+            if (map != null) {
+                extension.putAll(map);
+            }
+        }
+        return Converter.toDto(entity, extension.isEmpty() ? null : extension);
+    }
+}

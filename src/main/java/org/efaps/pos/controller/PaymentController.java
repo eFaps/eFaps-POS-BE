@@ -22,9 +22,10 @@ import org.efaps.pos.dto.AbstractPayableDocumentDto;
 import org.efaps.pos.dto.IPosPaymentDto;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.error.PreconditionException;
+import org.efaps.pos.listener.ConversionEvent;
 import org.efaps.pos.service.BalanceService;
+import org.efaps.pos.service.ConversionService;
 import org.efaps.pos.service.DocumentService;
-import org.efaps.pos.util.Converter;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,11 +38,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController
 {
 
+    private final ConversionService conversionService;
     private final DocumentService documentService;
     private final BalanceService balanceService;
 
-    public PaymentController(final DocumentService documentService, final BalanceService balanceService)
+    public PaymentController(final ConversionService conversionService, final DocumentService documentService,
+                             final BalanceService balanceService)
     {
+        this.conversionService = conversionService;
         this.documentService = documentService;
         this.balanceService = balanceService;
     }
@@ -53,7 +57,8 @@ public class PaymentController
         throws PreconditionException
     {
         final var balanceId = balanceService.getCurrent((User) authentication.getPrincipal(), true).get().getId();
-        return Converter.toDto(documentService.payAndEmit(balanceId, orderId, paymentDtos));
+        final var payable = documentService.payAndEmit(balanceId, orderId, paymentDtos);
+        return conversionService.toDto(ConversionEvent.PAYANDEMIT, payable);
     }
 
 }
