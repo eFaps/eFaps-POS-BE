@@ -1245,6 +1245,7 @@ public final class Converter
                         .withEmployeeRelations(entity.getEmployeeRelations() == null ? Collections.emptySet()
                                         : entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
+                        .withExtension(extension)
                         .build();
     }
 
@@ -1285,6 +1286,7 @@ public final class Converter
                         .withEmployeeRelations(entity.getEmployeeRelations() == null ? Collections.emptySet()
                                         : entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
+                        .withExtension(extension)
                         .build();
     }
 
@@ -1326,6 +1328,7 @@ public final class Converter
                         .withEmployeeRelations(entity.getEmployeeRelations() == null ? Collections.emptySet()
                                         : entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
+                        .withExtension(extension)
                         .build();
     }
 
