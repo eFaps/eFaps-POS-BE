@@ -224,6 +224,7 @@ public class DocumentService
                         .setStatus(DocStatus.OPEN)
                         .setDate(LocalDate.now())
                         .setCurrency(createOrderDto.getCurrency())
+                        .setNote(createOrderDto.getNote())
                         .setWorkspaceOid(workspaceOid);
         order.setNumber(sequenceService.getNextOrder());
         order.setItems(getItems(createOrderDto));
