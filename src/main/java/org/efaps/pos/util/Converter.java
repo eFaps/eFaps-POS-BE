@@ -1975,14 +1975,14 @@ public final class Converter
     public static AbstractPayableDocumentDto toDto(final AbstractPayableDocument<?> entity,
                                                    final Map<String, Object> extension)
     {
-        if (entity instanceof Receipt) {
-            return toDto(entity, extension);
-        } else if (entity instanceof Invoice) {
-            return toDto((Invoice) entity, extension);
-        } else if (entity instanceof Ticket) {
-            return toDto((Ticket) entity, extension);
-        } else if (entity instanceof CreditNote) {
-            return toDto((CreditNote) entity, extension);
+        if (entity instanceof final Receipt receipt) {
+            return toDto(receipt, extension);
+        } else if (entity instanceof final Invoice invoice) {
+            return toDto(invoice, extension);
+        } else if (entity instanceof final Ticket ticket) {
+            return toDto(ticket, extension);
+        } else if (entity instanceof final CreditNote creditNote) {
+            return toDto(creditNote, extension);
         }
         return null;
     }
