@@ -57,11 +57,11 @@ public class ContactController
         return service.getContacts(pageable).map(Converter::toDto);
     }
 
-    @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ContactDto getContact(@PathVariable(name="id") final String id)
+    @GetMapping(path = "{ident}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ContactDto getContact(@PathVariable(name="ident") final String ident)
         throws NotFoundException
     {
-        final var contact = service.findContact(id);
+        final var contact = service.findContact(ident);
         if (contact == null) {
             throw new NotFoundException("Contact not found");
         }

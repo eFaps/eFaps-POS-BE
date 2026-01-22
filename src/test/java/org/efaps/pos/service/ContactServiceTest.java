@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.List;
 
 import org.efaps.pos.entity.Contact;
-import org.efaps.pos.entity.Visibility;
 import org.efaps.pos.error.PreconditionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,6 @@ import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataM
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
@@ -56,18 +54,6 @@ public class ContactServiceTest
     public void setup()
     {
         mongoTemplate.remove(new Query(), Contact.class);
-    }
-
-    @Test
-    public void testGetContacts()
-    {
-        mongoTemplate.save(new Contact().setOid("1.1").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.2").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.3").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.4").setVisibility(Visibility.HIDDEN));
-
-        final List<Contact> contacts = contactService.getContacts(PageRequest.of(0, 10)).getContent();
-        assertEquals(3, contacts.size());
     }
 
     @Test
@@ -128,16 +114,16 @@ public class ContactServiceTest
     @Test
     public void testFindContactByName()
     {
-        mongoTemplate.save(new Contact().setOid("1.1").setName("ABC").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.2").setName("ABCD").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.3").setName("DEFG").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.4").setName("ZYX").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.5").setName("ZYXAB").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.6").setName("ZABYX").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.7").setName("ZAVYX").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.8").setName("zAbyX").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.9").setName("abZAVYX").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.9").setName("abAB").setVisibility(Visibility.HIDDEN));
+        mongoTemplate.save(new Contact().setOid("1.1").setName("ABC"));
+        mongoTemplate.save(new Contact().setOid("1.2").setName("ABCD"));
+        mongoTemplate.save(new Contact().setOid("1.3").setName("DEFG"));
+        mongoTemplate.save(new Contact().setOid("1.4").setName("ZYX"));
+        mongoTemplate.save(new Contact().setOid("1.5").setName("ZYXAB"));
+        mongoTemplate.save(new Contact().setOid("1.6").setName("ZABYX"));
+        mongoTemplate.save(new Contact().setOid("1.7").setName("ZAVYX"));
+        mongoTemplate.save(new Contact().setOid("1.8").setName("zAbyX"));
+        mongoTemplate.save(new Contact().setOid("1.9").setName("abZAVYX"));
+
 
         final List<Contact> contacts = contactService.findContacts("AB", true);
         assertEquals(6, contacts.size());
@@ -148,10 +134,10 @@ public class ContactServiceTest
     @Test
     public void testFindContactByTaxnumber()
     {
-        mongoTemplate.save(new Contact().setOid("1.1").setIdNumber("1234").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.2").setIdNumber("123456").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.3").setIdNumber("345").setVisibility(Visibility.VISIBLE));
-        mongoTemplate.save(new Contact().setOid("1.4").setIdNumber("124").setVisibility(Visibility.VISIBLE));
+        mongoTemplate.save(new Contact().setOid("1.1").setIdNumber("1234"));
+        mongoTemplate.save(new Contact().setOid("1.2").setIdNumber("123456"));
+        mongoTemplate.save(new Contact().setOid("1.3").setIdNumber("345"));
+        mongoTemplate.save(new Contact().setOid("1.4").setIdNumber("124"));
 
         final List<Contact> contacts = contactService.findContacts("1234", false);
         assertEquals(2, contacts.size());

@@ -20,32 +20,19 @@ import java.util.List;
 import java.util.Optional;
 
 import org.efaps.pos.entity.Contact;
-import org.efaps.pos.entity.Visibility;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 public interface ContactRepository
     extends MongoRepository<Contact, String>
 {
-    @Query(value = "{'visibility': 'VISIBLE'}")
-    List<Contact> findAllVisible();
-
-    @Query(value = "{'visibility': 'VISIBLE'}")
-    Page<Contact> findAllVisible(Pageable pageable);
-
     Optional<Contact> findOneByOid(String _oid);
 
     List<Contact> findByOid(String _oid);
 
-    default List<Contact> findByIdNumberStartingWith(String _term) {
-        return findByIdNumberStartingWithAndVisibility(_term, Visibility.VISIBLE);
-    }
+    List<Contact> findByIdNumberStartingWith(String term);
 
-    List<Contact> findByIdNumberStartingWithAndVisibility(String _term, Visibility visibility);
-
-    @Query(value = "{'name': {$regex : '?0', $options: 'i'}, 'visibility': 'VISIBLE'}")
+    @Query(value = "{'name': {$regex : '?0', $options: 'i'}}")
     List<Contact> findByNameRegex(String _term);
 
     Collection<Contact> findByOidIsNull();

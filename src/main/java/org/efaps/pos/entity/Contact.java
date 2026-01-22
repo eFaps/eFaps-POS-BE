@@ -50,9 +50,9 @@ public class Contact
 
     private String secondLastName;
 
-    private Visibility visibility;
-
     private Boolean updated;
+
+    private Origin origin = Origin.LOCAL;
 
     @CreatedBy
     private String user;
@@ -168,14 +168,14 @@ public class Contact
         return this;
     }
 
-    public Visibility getVisibility()
+    public Origin getOrigin()
     {
-        return visibility;
+        return origin == null ? Origin.LOCAL : origin;
     }
 
-    public Contact setVisibility(Visibility visibility)
+    public Contact setOrigin(Origin origin)
     {
-        this.visibility = visibility;
+        this.origin = origin;
         return this;
     }
 

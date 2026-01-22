@@ -28,8 +28,8 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.entity.Contact;
+import org.efaps.pos.entity.Origin;
 import org.efaps.pos.entity.SyncInfo;
-import org.efaps.pos.entity.Visibility;
 import org.efaps.pos.error.PreconditionException;
 import org.efaps.pos.repository.ContactRepository;
 import org.efaps.pos.util.Converter;
@@ -78,7 +78,7 @@ public class ContactService
             final var dto = eFapsClient.getContact(_key);
             if (dto != null) {
                 contact = Converter.toEntity(dto);
-                contact.setVisibility(Visibility.HIDDEN);
+                contact.setOrigin(Origin.REMOTE);
                 contact = contactRepository.save(contact);
             }
         }
@@ -87,7 +87,7 @@ public class ContactService
 
     public Page<Contact> getContacts(final Pageable pageable)
     {
-        return contactRepository.findAllVisible(pageable);
+        return contactRepository.findAll(pageable);
     }
 
     public List<Contact> findContacts(final String _term,
@@ -103,7 +103,7 @@ public class ContactService
         if (!contactRepository.findByIdNumber(entity.getIdNumber()).isEmpty()) {
             throw new PreconditionException("Contact with same IdNumber already exists");
         }
-        entity.setVisibility(Visibility.VISIBLE);
+        entity.setOrigin(Origin.LOCAL);
         return contactRepository.save(entity);
     }
 
@@ -124,7 +124,7 @@ public class ContactService
         existingEntity.setEmail(updateEntity.getEmail());
         existingEntity.setIdType(updateEntity.getIdType());
         existingEntity.setName(updateEntity.getName());
-        existingEntity.setVisibility(Visibility.VISIBLE);
+        existingEntity.setOrigin(Origin.LOCAL);
         existingEntity.setUpdated(true);
         return contactRepository.save(existingEntity);
     }
@@ -193,9 +193,9 @@ public class ContactService
             next = !(recievedContacts.size() < limit);
         }
         for (final Contact contact : queriedContacts) {
-            contact.setVisibility(Visibility.VISIBLE);
             final List<Contact> contacts = contactRepository.findByOid(contact.getOid());
             if (CollectionUtils.isEmpty(contacts)) {
+                contact.setOrigin(Origin.REMOTE);
                 contactRepository.save(contact);
             } else if (contacts.size() > 1) {
                 contacts.forEach(entity -> contactRepository.delete(entity));
@@ -206,20 +206,8 @@ public class ContactService
                                 .setEmail(contact.getEmail())
                                 .setIdNumber(contact.getIdNumber())
                                 .setIdType(contact.getIdType())
-                                .setName(contact.getName())
-                                .setVisibility(Visibility.VISIBLE);
+                                .setName(contact.getName());
                 contactRepository.save(updatedContact);
-            }
-        }
-        if (after == null && !queriedContacts.isEmpty()) {
-            for (final Contact contact : contactRepository.findAllVisible()) {
-                if (contact.getOid() != null && !queriedContacts.stream()
-                                .filter(recieved -> recieved.getOid().equals(contact.getOid()))
-                                .findFirst()
-                                .isPresent()) {
-                    contact.setVisibility(Visibility.HIDDEN);
-                    contactRepository.save(contact);
-                }
             }
         }
     }
