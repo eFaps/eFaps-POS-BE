@@ -65,17 +65,17 @@ public class ContactService
         return contactRepository.findOneByOid(_oid).orElse(null);
     }
 
-    public Contact findContact(final String _key)
+    public Contact findContact(final String ident)
     {
-        return findContact(_key, false);
+        return findContact(ident, false);
     }
 
-    public Contact findContact(final String _key,
+    public Contact findContact(final String ident,
                                final boolean evalCloud)
     {
-        var contact = contactRepository.findOneByOid(_key).orElse(contactRepository.findById(_key).orElse(null));
-        if (contact == null && evalCloud && Utils.isOid(_key)) {
-            final var dto = eFapsClient.getContact(_key);
+        var contact = contactRepository.findOneByOid(ident).orElse(contactRepository.findById(ident).orElse(null));
+        if (contact == null && evalCloud && Utils.isOid(ident)) {
+            final var dto = eFapsClient.getContact(ident);
             if (dto != null) {
                 contact = Converter.toEntity(dto);
                 contact.setOrigin(Origin.REMOTE);
@@ -156,6 +156,7 @@ public class ContactService
             LOG.debug("received Contact: {}", recDto);
             if (recDto.getOid() != null) {
                 contact.setOid(recDto.getOid());
+                contact.setOrigin(Origin.LOCAL);
                 final var savedContact = contactRepository.save(contact);
                 syncedContacts.add(savedContact);
             }
@@ -199,6 +200,7 @@ public class ContactService
                 contactRepository.save(contact);
             } else if (contacts.size() > 1) {
                 contacts.forEach(entity -> contactRepository.delete(entity));
+                contact.setOrigin(Origin.REMOTE);
                 contactRepository.save(contact);
             } else {
                 final var updatedContact = contacts.get(0);
@@ -206,7 +208,10 @@ public class ContactService
                                 .setEmail(contact.getEmail())
                                 .setIdNumber(contact.getIdNumber())
                                 .setIdType(contact.getIdType())
-                                .setName(contact.getName());
+                                .setName(contact.getName())
+                                .setFirstLastName(contact.getFirstLastName())
+                                .setForename(contact.getForename())
+                                .setSecondLastName(contact.getSecondLastName());
                 contactRepository.save(updatedContact);
             }
         }

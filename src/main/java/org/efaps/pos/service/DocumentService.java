@@ -295,7 +295,7 @@ public class DocumentService
                                         final String contactId)
     {
         final var order = orderRepository.findById(orderId).orElseThrow();
-        final var contact = contactService.findContact(contactId);
+        final var contact = contactService.findContact(contactId, true);
         if (contact != null) {
             order.setContactOid(contact.getOid() == null ? contact.getId() : contact.getOid());
         }
@@ -306,7 +306,7 @@ public class DocumentService
                                                final String contactId)
     {
         final var order = orderRepository.findById(orderId).orElseThrow();
-        final var contact = contactService.findContact(contactId);
+        final var contact = contactService.findContact(contactId, true);
         if (contact != null) {
             order.setLoyaltyContactOid(contact.getOid() == null ? contact.getId() : contact.getOid());
         }
@@ -318,14 +318,14 @@ public class DocumentService
                                      final String loyaltyContactIdent)
     {
         final var order = orderRepository.findById(orderId).orElseThrow();
-        final var contact = contactService.findContact(contactIdent);
+        final var contact = contactService.findContact(contactIdent, true);
         if (contact != null) {
             order.setContactOid(contact.getOid() == null ? contact.getId() : contact.getOid());
         }
         if (loyaltyContactIdent == null) {
             order.setLoyaltyContactOid(null);
         } else {
-            final var loyaltyContact = contactService.findContact(loyaltyContactIdent);
+            final var loyaltyContact = contactService.findContact(loyaltyContactIdent, true);
             order.setLoyaltyContactOid(
                             loyaltyContact.getOid() == null ? loyaltyContact.getId() : loyaltyContact.getOid());
         }
