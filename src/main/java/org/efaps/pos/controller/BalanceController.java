@@ -24,6 +24,7 @@ import org.efaps.pos.dto.BalanceDto;
 import org.efaps.pos.dto.BalanceSummaryDto;
 import org.efaps.pos.dto.CashEntryDto;
 import org.efaps.pos.dto.PosBalanceDto;
+import org.efaps.pos.dto.PrintResponseDto;
 import org.efaps.pos.entity.Balance;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.service.BalanceService;
@@ -90,9 +91,11 @@ public class BalanceController
     }
 
     @PostMapping(path = "{id}/cash", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void addCashEntries(@PathVariable("id") final String _id, @RequestBody final List<CashEntryDto> cashEntries)
+    public List<PrintResponseDto> addCashEntries(@PathVariable("id") final String id,
+                                                 @RequestParam(name = "workspaceOid") final String workspaceOid,
+                                                 @RequestBody final List<CashEntryDto> cashEntries)
     {
-        balanceService.addCashEntries(_id, cashEntries);
+        return balanceService.addCashEntries(id, workspaceOid, cashEntries);
     }
 
 }

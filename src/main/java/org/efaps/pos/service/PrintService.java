@@ -241,19 +241,19 @@ public class PrintService
         return num2wrdCvtr.convert(amount.longValue());
     }
 
-    public Optional<PrintResponseDto> queue(final String _printerOid,
-                                            final String _reportOid,
-                                            final Object _content)
+    public Optional<PrintResponseDto> queue(final String printerOid,
+                                            final String reportOid,
+                                            final Object content)
     {
         Optional<PrintResponseDto> ret;
-        final Optional<Printer> printerOpt = printerRepository.findById(_printerOid);
+        final Optional<Printer> printerOpt = printerRepository.findById(printerOid);
         if (printerOpt.isPresent()) {
             final Map<String, Object> parameters = new HashMap<>();
             parameters.put("PRINTER", printerOpt.get().getName());
 
             switch (printerOpt.get().getType()) {
                 case PREVIEW: {
-                    final byte[] data = print2Image(_content, _reportOid, parameters);
+                    final byte[] data = print2Image(content, reportOid, parameters);
                     final String key = RandomStringUtils.insecure().nextAlphabetic(12);
                     CACHE.put(key, data);
                     ret = Optional.of(PrintResponseDto.builder()
@@ -263,14 +263,14 @@ public class PrintService
                     break;
                 }
                 case EXTENSION:
-                    printViaExtension(printerOpt.get().getName(), _content);
+                    printViaExtension(printerOpt.get().getName(), content);
                     ret = Optional.of(PrintResponseDto.builder()
                                     .withPrinter(Converter.toDto(printerOpt.get()))
                                     .build());
                     break;
                 case PHYSICAL:
                 default:
-                    print(printerOpt.get().getName(), _content, _reportOid, parameters);
+                    print(printerOpt.get().getName(), content, reportOid, parameters);
                     ret = Optional.of(PrintResponseDto.builder()
                                     .withPrinter(Converter.toDto(printerOpt.get()))
                                     .build());

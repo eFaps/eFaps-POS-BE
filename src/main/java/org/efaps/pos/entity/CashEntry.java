@@ -39,6 +39,7 @@ public class CashEntry
     private CashEntryType entryType;
     private BigDecimal amount;
     private Currency currency;
+    private String description;
 
     @CreatedBy
     private String user;
@@ -85,6 +86,17 @@ public class CashEntry
     public CashEntry setCurrency(final Currency currency)
     {
         this.currency = currency;
+        return this;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public CashEntry setDescription(String description)
+    {
+        this.description = description;
         return this;
     }
 

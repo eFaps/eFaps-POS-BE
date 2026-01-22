@@ -40,6 +40,8 @@ import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.MoneyAmountDto;
 import org.efaps.pos.dto.PaymentInfoDto;
 import org.efaps.pos.dto.PosUserDto;
+import org.efaps.pos.dto.PrintResponseDto;
+import org.efaps.pos.dto.PrintTarget;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.efaps.pos.entity.AbstractDocument.TaxEntry;
 import org.efaps.pos.entity.AbstractPayableDocument;
@@ -74,6 +76,8 @@ public class BalanceService
     private final DocumentHelperService documentHelperService;
     private final CollectorService collectorService;
     private final UserService userService;
+    private final PrintService printService;
+    private final WorkspaceService workspaceService;
 
     public BalanceService(final MongoTemplate mongoTemplate,
                           final BalanceRepository balanceRepository,
@@ -82,7 +86,9 @@ public class BalanceService
                           final SequenceService sequenceService,
                           final DocumentHelperService documentHelperService,
                           final CollectorService collectorService,
-                          final UserService userService)
+                          final UserService userService,
+                          final PrintService printService,
+                          final WorkspaceService workspaceService)
     {
         this.mongoTemplate = mongoTemplate;
         this.balanceRepository = balanceRepository;
@@ -92,6 +98,8 @@ public class BalanceService
         this.collectorService = collectorService;
         this.documentHelperService = documentHelperService;
         this.userService = userService;
+        this.printService = printService;
+        this.workspaceService = workspaceService;
     }
 
     public Optional<Balance> getCurrent(final User _principal,
@@ -336,14 +344,29 @@ public class BalanceService
         return balanceRepository.findAll();
     }
 
-    public void addCashEntries(final String _id,
-                               final List<CashEntryDto> cashEntries)
+    public List<PrintResponseDto> addCashEntries(final String balanceId,
+                                                 final String workspaceOid,
+                                                 final List<CashEntryDto> cashEntries)
     {
+        final List<PrintResponseDto> ret = new ArrayList<>();
+        balanceRepository.findById(balanceId).orElseThrow();
+
         final var entities = cashEntries.stream()
                         .filter(dto -> dto.getAmount() != null)
                         .map(Converter::toEntity)
                         .collect(Collectors.toList());
         cashEntryRepository.saveAll(entities);
+
+        workspaceService.getWorkspace(workspaceOid).getPrintCmds().stream()
+                        .filter(printCmd -> PrintTarget.CASHENTRIES.equals(printCmd.getTarget()))
+                        .forEach(printCmd -> {
+                            final Optional<PrintResponseDto> responseOpt = printService.queue(printCmd.getPrinterOid(),
+                                            printCmd.getReportOid(), cashEntries);
+                            if (responseOpt.isPresent()) {
+                                ret.add(responseOpt.get());
+                            }
+                        });
+        return ret;
     }
 
     public boolean syncBalances(final SyncInfo syncInfo)

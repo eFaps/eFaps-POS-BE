@@ -1780,7 +1780,8 @@ public final class Converter
         return new CashEntry().setBalanceOid(dto.getBalanceOid())
                         .setAmount(dto.getAmount())
                         .setCurrency(dto.getCurrency())
-                        .setEntryType(dto.getEntryType());
+                        .setEntryType(dto.getEntryType())
+                        .setDescription(dto.getDescription());
     }
 
     public static CashEntryDto toDto(final CashEntry entity)
@@ -1790,6 +1791,7 @@ public final class Converter
                         .withAmount(entity.getAmount())
                         .withCurrency(entity.getCurrency())
                         .withEntryType(entity.getEntryType())
+                        .withDescription(entity.getDescription())
                         .build();
     }
 
