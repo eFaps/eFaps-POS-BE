@@ -40,7 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.sso.SSOClient;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.RequestEntity.HeadersBuilder;
 import org.springframework.web.client.RestTemplate;
 
