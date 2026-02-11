@@ -30,7 +30,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 public class TemplateCustomizer
-    implements org.springframework.boot.web.client.RestTemplateCustomizer
+    implements org.springframework.boot.restclient.RestTemplateCustomizer
 {
     private static final Logger LOG = LoggerFactory.getLogger(TemplateCustomizer.class);
 
