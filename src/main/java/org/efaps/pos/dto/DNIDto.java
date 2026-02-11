@@ -18,7 +18,7 @@ package org.efaps.pos.dto;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = DNIDto.Builder.class)
 public class DNIDto

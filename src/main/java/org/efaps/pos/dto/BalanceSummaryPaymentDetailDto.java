@@ -15,7 +15,7 @@
  */
 package org.efaps.pos.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = BalanceSummaryPaymentDetailDto.Builder.class)
 public class BalanceSummaryPaymentDetailDto

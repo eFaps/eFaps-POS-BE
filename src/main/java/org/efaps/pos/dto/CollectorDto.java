@@ -15,7 +15,7 @@
  */
 package org.efaps.pos.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = CollectorDto.Builder.class)
 public class CollectorDto

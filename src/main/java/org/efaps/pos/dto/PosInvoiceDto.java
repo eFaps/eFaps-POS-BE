@@ -24,7 +24,7 @@ import org.efaps.pos.interfaces.IInvoiceItem;
 import org.efaps.pos.util.Converter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosInvoiceDto.Builder.class)
 public class PosInvoiceDto

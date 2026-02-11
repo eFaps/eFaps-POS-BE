@@ -41,12 +41,11 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Profile(value = { "demo" })
@@ -98,7 +97,7 @@ public class DemoService
     @SuppressWarnings("unchecked")
     private List<?> loadDocuments(final String _resourceLocation,
                                @SuppressWarnings("rawtypes") final TypeReference _valueTypeRef)
-        throws JsonParseException, JsonMappingException, IOException
+        throws IOException
     {
         List<?> ret = null;
         if (_resourceLocation != null) {

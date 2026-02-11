@@ -18,7 +18,7 @@ package org.efaps.pos.dto;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = SalesReportDto.Builder.class)
 public class SalesReportDto

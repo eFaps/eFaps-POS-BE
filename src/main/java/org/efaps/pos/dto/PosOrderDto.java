@@ -17,7 +17,7 @@ package org.efaps.pos.dto;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosOrderDto.Builder.class)
 public class PosOrderDto

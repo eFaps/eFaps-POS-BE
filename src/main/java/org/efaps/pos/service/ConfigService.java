@@ -34,10 +34,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+
 
 @Service
 public class ConfigService
@@ -64,8 +63,6 @@ public class ConfigService
         this.mongoTemplate = mongoTemplate;
         this.configProperties = configProperties;
         objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     public String getSystemConfig(final String key)
@@ -87,24 +84,14 @@ public class ConfigService
             final Map<String, String> map = toMap(conf);
             map.entrySet().forEach(entry -> {
                 switch (entry.getKey()) {
-                    case "NetPriceScale":
-                        config.setNetPriceScale(Integer.valueOf(entry.getValue()));
-                        break;
-                    case "TaxScale":
-                        config.setTaxScale(Integer.valueOf(entry.getValue()));
-                        break;
-                    case "CrossPriceScale":
-                        config.setCrossPriceScale(Integer.valueOf(entry.getValue()));
-                        break;
-                    case "TaxCalcFlow":
-                        config.setTaxCalcFlow(EnumUtils.getEnum(TaxCalcFlow.class, entry.getValue()));
-                        break;
-                    case "CrossTotalFlow":
-                        config.setCrossTotalFlow(EnumUtils.getEnum(CrossTotalFlow.class, entry.getValue()));
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unexpected value: " + entry.getKey());
+                    case "NetPriceScale" -> config.setNetPriceScale(Integer.valueOf(entry.getValue()));
+                    case "TaxScale" -> config.setTaxScale(Integer.valueOf(entry.getValue()));
+                    case "CrossPriceScale" -> config.setCrossPriceScale(Integer.valueOf(entry.getValue()));
+                    case "TaxCalcFlow" -> config.setTaxCalcFlow(EnumUtils.getEnum(TaxCalcFlow.class, entry.getValue()));
+                    case "CrossTotalFlow" -> config.setCrossTotalFlow(EnumUtils.getEnum(CrossTotalFlow.class, entry.getValue()));
+                    default -> throw new IllegalArgumentException("Unexpected value: " + entry.getKey());
                 }
+
             });
         }
         return config;
@@ -118,12 +105,10 @@ public class ConfigService
             final Map<String, String> map = toMap(conf);
             map.entrySet().forEach(entry -> {
                 switch (entry.getKey()) {
-                    case "EngineRule":
-                        config.setEngineRule(EnumUtils.getEnum(EngineRule.class, entry.getValue()));
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unexpected value: " + entry.getKey());
+                    case "EngineRule" -> config.setEngineRule(EnumUtils.getEnum(EngineRule.class, entry.getValue()));
+                    default -> throw new IllegalArgumentException("Unexpected value: " + entry.getKey());
                 }
+
             });
         }
         return config;
@@ -156,7 +141,7 @@ public class ConfigService
     {
         try {
             return objectMapper.readValue(content, HashMap.class);
-        } catch (final JsonProcessingException e) {
+        } catch (final JacksonException e) {
            LOG.error("Catched", e);
         }
         return null;

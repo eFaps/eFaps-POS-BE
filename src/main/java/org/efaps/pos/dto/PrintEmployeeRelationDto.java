@@ -17,7 +17,7 @@ package org.efaps.pos.dto;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PrintEmployeeRelationDto.Builder.class)
 public class PrintEmployeeRelationDto

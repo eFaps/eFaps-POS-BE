@@ -23,7 +23,7 @@ import org.efaps.pos.interfaces.ITicketItem;
 import org.efaps.pos.util.Converter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosTicketDto.Builder.class)
 public class PosTicketDto

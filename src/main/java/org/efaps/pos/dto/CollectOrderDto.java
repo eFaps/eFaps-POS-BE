@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.efaps.pos.entity.CollectOrder.State;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = CollectOrderDto.Builder.class)
 public class CollectOrderDto

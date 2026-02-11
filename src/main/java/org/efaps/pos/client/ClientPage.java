@@ -24,7 +24,9 @@ import org.springframework.data.domain.Pageable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
+
+import tools.jackson.databind.JsonNode;
+
 
 public class ClientPage<T> extends PageImpl<T> {
     private static final long serialVersionUID = 1L;

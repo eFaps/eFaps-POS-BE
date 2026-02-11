@@ -25,7 +25,7 @@ import org.efaps.pos.service.ReferenceService;
 import org.efaps.pos.util.Converter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosCreditNoteDto.Builder.class)
 public class PosCreditNoteDto

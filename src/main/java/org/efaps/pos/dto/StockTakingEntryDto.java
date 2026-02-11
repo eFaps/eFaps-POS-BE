@@ -18,7 +18,7 @@ package org.efaps.pos.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = StockTakingEntryDto.Builder.class)
 public class StockTakingEntryDto

@@ -18,7 +18,7 @@ package org.efaps.pos.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosPaymentRedeemCreditNoteDto.Builder.class)
 @JsonInclude(Include.NON_NULL)

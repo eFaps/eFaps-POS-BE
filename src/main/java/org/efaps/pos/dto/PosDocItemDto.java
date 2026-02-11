@@ -21,7 +21,7 @@ import org.efaps.pos.interfaces.IReceiptItem;
 import org.efaps.pos.interfaces.ITicketItem;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosDocItemDto.Builder.class)
 public class PosDocItemDto

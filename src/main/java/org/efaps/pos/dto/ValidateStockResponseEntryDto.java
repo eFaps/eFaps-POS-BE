@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = ValidateStockResponseEntryDto.Builder.class)
 public class ValidateStockResponseEntryDto

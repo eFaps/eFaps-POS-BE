@@ -22,7 +22,7 @@ import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.PaymentInfoDto;
 import org.efaps.pos.dto.PaymentType;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PaymentGroup.Builder.class)
 public class PaymentGroup

@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = CollectStartOrderDto.Builder.class)
 public class CollectStartOrderDto

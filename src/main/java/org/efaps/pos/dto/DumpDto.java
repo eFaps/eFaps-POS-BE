@@ -17,7 +17,7 @@ package org.efaps.pos.dto;
 
 import java.time.OffsetDateTime;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = DumpDto.Builder.class)
 public class DumpDto
