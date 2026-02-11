@@ -62,8 +62,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
@@ -107,7 +107,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncProductsFirstTime()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Product.class).isEmpty());
 
@@ -129,7 +129,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncProductsUpdate()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Product.class).isEmpty());
 
@@ -158,7 +158,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncProductsRemoveObsolete()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Product.class).isEmpty());
 
@@ -187,7 +187,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncCategoriesFirstTime()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Category.class).isEmpty());
 
@@ -209,7 +209,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncCategoriesRemoveObsolete()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Category.class).isEmpty());
 
@@ -238,7 +238,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncWorkspacesFirstTime()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Workspace.class).isEmpty());
 
@@ -260,7 +260,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncWorkspacesRemoveObsolete()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Workspace.class).isEmpty());
 
@@ -289,7 +289,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncWarehousesFirstTime()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Warehouse.class).isEmpty());
 
@@ -311,7 +311,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncWarehousesRemoveObsolete()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Warehouse.class).isEmpty());
 
@@ -340,7 +340,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncPrintersFirstTime()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Printer.class).isEmpty());
 
@@ -362,7 +362,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncPrintersRemoveObsolete()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Printer.class).isEmpty());
 
@@ -391,7 +391,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncPossFirstTime()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Pos.class).isEmpty());
 
@@ -413,7 +413,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncPossRemoveObsolete()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Pos.class).isEmpty());
 
@@ -442,7 +442,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncUsersFirstTime()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(User.class).isEmpty());
 
@@ -464,7 +464,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncUsersRemoveObsolete()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(User.class).isEmpty());
 
@@ -509,7 +509,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncReceipts()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Receipt.class).isEmpty());
         final Contact contact = new Contact().setOid("123.456");
@@ -555,7 +555,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncInvoices()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Invoice.class).isEmpty());
         final Contact contact = new Contact().setOid("123.456");
@@ -600,7 +600,7 @@ public class SyncServiceTest
 
     //@Test
     public void testSyncTickets()
-        throws JsonProcessingException, SyncServiceDeactivatedException
+        throws  SyncServiceDeactivatedException
     {
         assertTrue(mongoTemplate.findAll(Ticket.class).isEmpty());
         final Contact contact = new Contact().setOid("123.456");

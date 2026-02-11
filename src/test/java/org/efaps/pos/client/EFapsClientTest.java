@@ -32,8 +32,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+
 
 //@ExtendWith(SpringExtension.class)
 //@SpringBootTest
@@ -66,7 +66,7 @@ public class EFapsClientTest
     }
 
     //@Test
-    public void testGetProducts() throws JsonProcessingException {
+    public void testGetProducts() {
         mongoTemplate.save(new Identifier()
                                         .setId(Identifier.KEY)
                                         .setCreated(LocalDateTime.now())

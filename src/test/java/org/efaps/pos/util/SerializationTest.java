@@ -35,8 +35,6 @@ import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import tools.jackson.databind.ObjectMapper;
 
 
@@ -94,7 +92,6 @@ public class SerializationTest
 
     @Test
     public void testPaymentCash()
-        throws JsonProcessingException
     {
 
         final var dto = getPaymentCashDto();
@@ -115,7 +112,6 @@ public class SerializationTest
 
     @Test
     public void testPaymentLoyaltyPoints()
-        throws JsonProcessingException
     {
 
         final var dto = getPaymentLoyaltyPointsDto();
@@ -136,7 +132,6 @@ public class SerializationTest
 
     @Test
     public void testPaymentElectronics()
-        throws JsonProcessingException
     {
 
         final var dto = getPaymentElectronicDto();
@@ -158,7 +153,6 @@ public class SerializationTest
 
     @Test
     public void testDocument()
-        throws JsonProcessingException
     {
 
         final PosReceiptDto dto = PosReceiptDto.builder()
