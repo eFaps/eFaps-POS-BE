@@ -16,13 +16,12 @@
 package org.efaps.pos.controller;
 
 import java.util.List;
+import java.util.Map;
 
-import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.config.IApi;
-import org.efaps.pos.dto.PosVersionsDto;
-import org.efaps.pos.service.ConfigService;
 import org.efaps.pos.service.SyncService;
 import org.efaps.pos.service.SyncService.SyncDirective;
+import org.efaps.pos.service.VersionService;
 import org.efaps.pos.util.SyncServiceDeactivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,20 +34,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController
 {
 
-    private final ConfigService configService;
-    /** The sync service. */
     private final SyncService syncService;
 
-    private final ConfigProperties properties;
+    private final VersionService versionService;
 
     @Autowired
-    public AdminController(final ConfigService configService,
-                           final ConfigProperties _properties,
-                           final SyncService _syncService)
+    public AdminController(final SyncService syncService,
+                           final VersionService versionService)
     {
-        this.configService = configService;
-        syncService = _syncService;
-        properties = _properties;
+        this.syncService = syncService;
+        this.versionService = versionService;
     }
 
     @GetMapping(path = "/sync")
@@ -59,11 +54,8 @@ public class AdminController
     }
 
     @GetMapping(path = "/versions")
-    public PosVersionsDto version()
+    public Map<String,String> version()
     {
-        final String remote = configService.getOrDefault("org.efaps.pos.Version", "0.0.0");
-        return PosVersionsDto.builder()
-                        .withRemote(remote)
-                        .withLocal(properties.getBeInst().getVersion()).build();
+        return versionService.getVersions();
     }
 }

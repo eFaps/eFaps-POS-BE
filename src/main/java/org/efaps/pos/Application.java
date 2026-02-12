@@ -25,6 +25,7 @@ import org.efaps.pos.listener.ILogListener;
 import org.efaps.pos.listener.ILoyaltyListener;
 import org.efaps.pos.listener.IMonitoringReportContributor;
 import org.efaps.pos.listener.IPrintListener;
+import org.efaps.pos.listener.IVersionListener;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.beans.factory.serviceloader.ServiceListFactoryBean;
@@ -154,6 +155,14 @@ public class Application
     {
         final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
         serviceListFactoryBean.setServiceType(IConversionListener.class);
+        return serviceListFactoryBean;
+    }
+
+    @Bean(name = "versionListeners")
+    public ServiceListFactoryBean versionListeners()
+    {
+        final ServiceListFactoryBean serviceListFactoryBean = new ServiceListFactoryBean();
+        serviceListFactoryBean.setServiceType(IVersionListener.class);
         return serviceListFactoryBean;
     }
 
