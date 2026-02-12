@@ -113,7 +113,7 @@ public class SyncServiceTest
 
         final ProductDto product1 = ProductDto.builder()
                         .withDescription("A product description")
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .build();
 
         final List<ProductDto> productDtos = Arrays.asList(product1);
@@ -140,7 +140,7 @@ public class SyncServiceTest
 
         final ProductDto product1 = ProductDto.builder()
                         .withDescription("An updated product description")
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .build();
 
         final List<ProductDto> productDtos = Arrays.asList(product1);
@@ -169,7 +169,7 @@ public class SyncServiceTest
 
         final ProductDto product1 = ProductDto.builder()
                         .withDescription("An updated product description")
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .build();
 
         final List<ProductDto> productDtos = Arrays.asList(product1);
@@ -192,7 +192,7 @@ public class SyncServiceTest
         assertTrue(mongoTemplate.findAll(Category.class).isEmpty());
 
         final CategoryDto product1 = CategoryDto.builder()
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .withName("Cat Name")
                         .build();
 
@@ -220,7 +220,7 @@ public class SyncServiceTest
 
         final CategoryDto category1 = CategoryDto.builder()
                         .withName("An updated category description")
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .build();
 
         final List<CategoryDto> categoryDtos = Arrays.asList(category1);
@@ -243,7 +243,7 @@ public class SyncServiceTest
         assertTrue(mongoTemplate.findAll(Workspace.class).isEmpty());
 
         final WorkspaceDto product1 = WorkspaceDto.builder()
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .withName("Cat Name")
                         .build();
 
@@ -271,7 +271,7 @@ public class SyncServiceTest
 
         final WorkspaceDto workspace1 = WorkspaceDto.builder()
                         .withName("A workspace description")
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .build();
 
         final List<WorkspaceDto> workspaceDtos = Arrays.asList(workspace1);
@@ -294,7 +294,7 @@ public class SyncServiceTest
         assertTrue(mongoTemplate.findAll(Warehouse.class).isEmpty());
 
         final WarehouseDto product1 = WarehouseDto.builder()
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .withName("Cat Name")
                         .build();
 
@@ -322,7 +322,7 @@ public class SyncServiceTest
 
         final WarehouseDto warehouse1 = WarehouseDto.builder()
                         .withName("A warehouse description")
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .build();
 
         final List<WarehouseDto> warehouseDtos = Arrays.asList(warehouse1);
@@ -345,7 +345,7 @@ public class SyncServiceTest
         assertTrue(mongoTemplate.findAll(Printer.class).isEmpty());
 
         final PrinterDto product1 = PrinterDto.builder()
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .withName("Cat Name")
                         .build();
 
@@ -373,7 +373,7 @@ public class SyncServiceTest
 
         final PrinterDto printer1 = PrinterDto.builder()
                         .withName("A printer description")
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .build();
 
         final List<PrinterDto> printerDtos = Arrays.asList(printer1);
@@ -396,7 +396,7 @@ public class SyncServiceTest
         assertTrue(mongoTemplate.findAll(Pos.class).isEmpty());
 
         final PosDto product1 = PosDto.builder()
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .withName("Cat Name")
                         .build();
 
@@ -424,7 +424,7 @@ public class SyncServiceTest
 
         final PosDto pos1 = PosDto.builder()
                         .withName("A pos description")
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .build();
 
         final List<PosDto> posDtos = Arrays.asList(pos1);
@@ -447,7 +447,7 @@ public class SyncServiceTest
         assertTrue(mongoTemplate.findAll(User.class).isEmpty());
 
         final UserDto user1 = UserDto.builder()
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .withFirstName("Cat Name")
                         .build();
 
@@ -474,7 +474,7 @@ public class SyncServiceTest
         mongoTemplate.save(user);
 
         final UserDto user1 = UserDto.builder()
-                        .withOID("5586.1651")
+                        .withOid("5586.1651")
                         .withFirstName("A user description")
                         .build();
 
@@ -524,7 +524,7 @@ public class SyncServiceTest
 
         final ReceiptDto responseDto = ReceiptDto.builder()
                         .withId(receipt2.getId())
-                        .withOID("5555.6666")
+                        .withOid("5555.6666")
                         .build();
 
         server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/receipts"))
@@ -570,7 +570,7 @@ public class SyncServiceTest
 
         final InvoiceDto responseDto = InvoiceDto.builder()
                         .withId(invoice2.getId())
-                        .withOID("5555.6666")
+                        .withOid("5555.6666")
                         .build();
 
         server.expect(requestTo("http://localhost:8888/eFaps/servlet/rest/pos/invoices"))
@@ -616,7 +616,7 @@ public class SyncServiceTest
 
         final TicketDto responseDto = TicketDto.builder()
                         .withId(ticket2.getId())
-                        .withOID("5555.6666")
+                        .withOid("5555.6666")
                         .withBalanceOid("123.456")
                         .build();
 

@@ -120,7 +120,7 @@ public class ConverterTest
     public void testProductToEntity()
     {
         final ProductDto dto = ProductDto.builder()
-                        .withOID("Asda")
+                        .withOid("Asda")
                         .withSKU("100612.001")
                         .withDescription("This is the product Description")
                         .withImageOid("1234.1")
@@ -229,7 +229,7 @@ public class ConverterTest
     public void testCategoryToEntity()
     {
         final CategoryDto dto = CategoryDto.builder()
-                        .withOID("165165.14651")
+                        .withOid("165165.14651")
                         .withName("Caja 1")
                         .withImageOid("image.OId")
                         .build();
@@ -263,7 +263,7 @@ public class ConverterTest
     {
         final ContactDto dto = ContactDto.builder()
                         .withId("this is the id")
-                        .withOID("165165.14651")
+                        .withOid("165165.14651")
                         .withName("Caja 1")
                         .withIdType(IdentificationType.PASSPORT)
                         .withIdNumber("ABCTHDD")
@@ -281,7 +281,7 @@ public class ConverterTest
     public void testReceiptToEntity()
     {
         final PosReceiptDto dto = PosReceiptDto.builder()
-                        .withOID("16515.5165")
+                        .withOid("16515.5165")
                         .withNumber("B001-1651651")
                         .withStatus(DocStatus.CLOSED)
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))
@@ -299,7 +299,7 @@ public class ConverterTest
     public void testInvoiceToEntity()
     {
         final PosInvoiceDto dto = PosInvoiceDto.builder()
-                        .withOID("16515.5165")
+                        .withOid("16515.5165")
                         .withNumber("B001-1651651")
                         .withStatus(DocStatus.CLOSED)
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))
@@ -317,7 +317,7 @@ public class ConverterTest
     public void testTicketToEntity()
     {
         final PosTicketDto dto = PosTicketDto.builder()
-                        .withOID("16515.5165")
+                        .withOid("16515.5165")
                         .withNumber("B001-1651651")
                         .withStatus(DocStatus.CLOSED)
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))
@@ -335,7 +335,7 @@ public class ConverterTest
     public void testOrderToEntity()
     {
         final PosOrderDto dto = PosOrderDto.builder()
-                        .withOID("16515.5165")
+                        .withOid("16515.5165")
                         .withNumber("B001-1651651")
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))
                         .withStatus(DocStatus.CLOSED)
@@ -358,7 +358,7 @@ public class ConverterTest
     public void testItemToEntity()
     {
         final PosDocItemDto dto = PosDocItemDto.builder()
-                        .withOID("16515.5165")
+                        .withOid("16515.5165")
                         .withIndex(2)
                         .withCrossPrice(new BigDecimal("1.11"))
                         .withCrossUnitPrice(new BigDecimal("1.12"))
@@ -386,7 +386,7 @@ public class ConverterTest
     {
         final PosDocItemDto dto = PosDocItemDto.builder()
                         .withProductOid("ProductOid")
-                        .withProduct(ProductDto.builder().withOID("ThisOid").build())
+                        .withProduct(ProductDto.builder().withOid("ThisOid").build())
                         .build();
 
         final Item entity = Converter.toEntity(dto);
@@ -397,7 +397,7 @@ public class ConverterTest
     public void testTaxToEntity()
     {
         final TaxDto dto = TaxDto.builder()
-                        .withOID("653.25")
+                        .withOid("653.25")
                         .withName("VAT")
                         .withPercent(new BigDecimal("18"))
                         .build();
@@ -502,7 +502,7 @@ public class ConverterTest
     {
         final SpotDto dto = SpotDto.builder()
                         .withLabel("Label")
-                        .withOID("123.45")
+                        .withOid("123.45")
                         .build();
         final Spot entity = Converter.toEntity(dto);
         assertEquals(dto.getOid(), entity.getId());
@@ -513,7 +513,7 @@ public class ConverterTest
     public void testUserToEntity()
     {
         final UserDto dto = UserDto.builder()
-                        .withOID("id 1")
+                        .withOid("id 1")
                         .withFirstName("First Name")
                         .withSurName("Last Name")
                         .withPassword("thats secret")
@@ -532,7 +532,7 @@ public class ConverterTest
     public void testSequenceToEntity()
     {
         final SequenceDto dto = SequenceDto.builder()
-                        .withOID("id 1")
+                        .withOid("id 1")
                         .withFormat("Format")
                         .withSeq(22)
                         .build();
@@ -546,7 +546,7 @@ public class ConverterTest
     public void testWorkspaceToEntity()
     {
         final WorkspaceDto dto = WorkspaceDto.builder()
-                        .withOID("id 1")
+                        .withOid("id 1")
                         .withName("Name")
                         .withDocTypes(Collections.singleton(DocType.INVOICE))
                         .withPosOid("123.4")
@@ -568,7 +568,7 @@ public class ConverterTest
     public void testWarehouseToEntity()
     {
         final WarehouseDto dto = WarehouseDto.builder()
-                        .withOID("id 1")
+                        .withOid("id 1")
                         .withName("Name")
                         .build();
         final Warehouse entity = Converter.toEntity(dto);
@@ -591,7 +591,7 @@ public class ConverterTest
     public void testInventoryToEntity()
     {
         final InventoryEntryDto dto = InventoryEntryDto.builder()
-                        .withOID("id 1")
+                        .withOid("id 1")
                         .withProductOid("Some oid")
                         .withWarehouseOid("some warehouse")
                         .withQuantity(BigDecimal.TEN)
@@ -640,7 +640,7 @@ public class ConverterTest
     public void testPrinterToEntity()
     {
         final PrinterDto dto = PrinterDto.builder()
-                        .withOID("id 1")
+                        .withOid("id 1")
                         .withName("Name")
                         .withType(PrinterType.PHYSICAL)
                         .build();
@@ -859,7 +859,7 @@ public class ConverterTest
     public void testPosToEntity()
     {
         final PosDto dto = PosDto.builder()
-                        .withOID("1651.1651")
+                        .withOid("1651.1651")
                         .withName("A name")
                         .withCurrency(Currency.PEN)
                         .withDefaultContactOid("998.15")
@@ -881,7 +881,7 @@ public class ConverterTest
     public void testBalanceToEntity()
     {
         final BalanceDto dto = BalanceDto.builder()
-                        .withOID("5556.26")
+                        .withOid("5556.26")
                         .withId("asimsddfsdfs")
                         .withNumber("a number")
                         .withUserOid("12369.99")

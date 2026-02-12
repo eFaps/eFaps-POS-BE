@@ -282,7 +282,7 @@ public final class Converter
 
     public static SpotDto toDto(final Spot _entity)
     {
-        return SpotDto.builder().withOID(_entity.getId()).withLabel(_entity.getLabel()).build();
+        return SpotDto.builder().withOid(_entity.getId()).withLabel(_entity.getLabel()).build();
     }
 
     public static AbstractDocument.Item toEntity(final PosDocItemDto dto)
@@ -426,7 +426,7 @@ public final class Converter
     public static IndicationSetDto toDto(final IndicationSet _entity)
     {
         return IndicationSetDto.builder()
-                        .withOID(_entity.getId())
+                        .withOid(_entity.getId())
                         .withName(_entity.getName())
                         .withDescription(_entity.getDescription())
                         .withRequired(_entity.isRequired())
@@ -450,7 +450,7 @@ public final class Converter
     public static IndicationDto toDto(final Indication entity)
     {
         return IndicationDto.builder()
-                        .withOID(entity.getId())
+                        .withOid(entity.getId())
                         .withValue(entity.getValue())
                         .withDescription(entity.getDescription())
                         .withImageOid(entity.getImageOid())
@@ -471,7 +471,7 @@ public final class Converter
                         .withDescription(entity.getDescription())
                         .withNote(entity.getNote())
                         .withImageOid(entity.getImageOid())
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withNetPrice(prices.getLeft())
                         .withCrossPrice(prices.getRight())
                         .withCurrency(entity.getCurrency())
@@ -518,7 +518,7 @@ public final class Converter
     public static BOMGroupConfigDto toDto(final BOMGroupConfig entity)
     {
         return BOMGroupConfigDto.builder()
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withName(entity.getName())
                         .withDescription(entity.getDescription())
                         .withProductOid(entity.getProductOid())
@@ -532,7 +532,7 @@ public final class Converter
     public static ConfigurationBOMDto toDto(final ConfigurationBOM entity)
     {
         return ConfigurationBOMDto.builder()
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withBomGroupOid(entity.getBomGroupOid())
                         .withPosition(entity.getPosition())
                         .withQuantity(entity.getQuantity())
@@ -586,7 +586,7 @@ public final class Converter
     public static WorkspaceDto toDto(final Workspace _entity)
     {
         return WorkspaceDto.builder()
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withName(_entity.getName())
                         .withPosOid(_entity.getPosOid())
                         .withDocTypes(_entity.getDocTypes())
@@ -653,7 +653,7 @@ public final class Converter
     public static FloorDto toDto(final Floor _entity)
     {
         return FloorDto.builder()
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withImageOid(_entity.getImageOid())
                         .withName(_entity.getName())
                         .withSpots(_entity.getSpots() == null ? null
@@ -665,7 +665,7 @@ public final class Converter
     public static PosDto toDto(final Pos _entity)
     {
         return PosDto.builder()
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withName(_entity.getName())
                         .withCurrency(_entity.getCurrency())
                         .withReceiptSeqOid(_entity.getReceiptSeqOid())
@@ -693,7 +693,7 @@ public final class Converter
     public static CategoryDto toDto(final Category entity)
     {
         return CategoryDto.builder()
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withName(entity.getName())
                         .withDescription(entity.getDescription())
                         .withWeight(entity.getWeight())
@@ -728,7 +728,7 @@ public final class Converter
     public static TaxDto toDto(final Tax _entity)
     {
         return TaxDto.builder()
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withKey(_entity.getKey())
                         .withCatKey(_entity.getCatKey())
                         .withType(_entity.getType())
@@ -821,7 +821,7 @@ public final class Converter
                 final var posEntity = (PaymentCash) entity;
                 final var builder = PosPaymentCashDto.builder()
                                 .withIndex(posEntity.getIndex())
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -841,7 +841,7 @@ public final class Converter
                                 .withServiceProvider(posEntity.getServiceProvider())
                                 .withAuthorization(posEntity.getAuthorization())
                                 .withOperationId(posEntity.getOperationId())
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -855,7 +855,7 @@ public final class Converter
                 final var posEntity = (PaymentChange) entity;
                 final var builder = PosPaymentChangeDto.builder()
                                 .withIndex(posEntity.getIndex())
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -869,7 +869,7 @@ public final class Converter
                 final var posEntity = (PaymentElectronic) entity;
                 final var builder = PosPaymentElectronicDto.builder()
                                 .withIndex(posEntity.getIndex())
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -890,7 +890,7 @@ public final class Converter
                 final var posEntity = (PaymentFree) entity;
                 final var builder = PosPaymentFreeDto.builder()
                                 .withIndex(posEntity.getIndex())
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -903,7 +903,7 @@ public final class Converter
                 final var posEntity = (PaymentLoyaltyPoints) entity;
                 final var builder = PosPaymentLoyaltyPointsDto.builder()
                                 .withIndex(posEntity.getIndex())
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -922,7 +922,7 @@ public final class Converter
                 final var posEntity = (PaymentRedeemCreditNote) entity;
                 final var builder = PosPaymentRedeemCreditNoteDto.builder()
                                 .withIndex(posEntity.getIndex())
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -943,7 +943,7 @@ public final class Converter
             case CASH -> {
                 final var posEntity = (PaymentCash) entity;
                 final var builder = PaymentCashDto.builder()
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withIndex(posEntity.getIndex())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -963,7 +963,7 @@ public final class Converter
                                 .withServiceProvider(posEntity.getServiceProvider())
                                 .withAuthorization(posEntity.getAuthorization())
                                 .withOperationId(posEntity.getOperationId())
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
                                 .withCurrency(posEntity.getCurrency())
@@ -975,7 +975,7 @@ public final class Converter
             case CHANGE -> {
                 final var posEntity = (PaymentChange) entity;
                 final var builder = PaymentChangeDto.builder()
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withIndex(posEntity.getIndex())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -988,7 +988,7 @@ public final class Converter
             case ELECTRONIC -> {
                 final var posEntity = (PaymentElectronic) entity;
                 final var builder = PaymentElectronicDto.builder()
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withIndex(posEntity.getIndex())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -1008,7 +1008,7 @@ public final class Converter
             case FREE -> {
                 final var posEntity = (PaymentFree) entity;
                 final var builder = PaymentFreeDto.builder()
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withIndex(posEntity.getIndex())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -1021,7 +1021,7 @@ public final class Converter
             case LOYALTY_POINTS -> {
                 final var posEntity = (PaymentLoyaltyPoints) entity;
                 final var builder = PaymentLoyaltyPointsDto.builder()
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withIndex(posEntity.getIndex())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -1039,7 +1039,7 @@ public final class Converter
             case REDEEM_CREDITNOTE -> {
                 final var posEntity = (PaymentRedeemCreditNote) entity;
                 final var builder = PaymentRedeemCreditNoteDto.builder()
-                                .withOID(posEntity.getOid())
+                                .withOid(posEntity.getOid())
                                 .withIndex(posEntity.getIndex())
                                 .withType(posEntity.getType())
                                 .withAmount(posEntity.getAmount())
@@ -1079,7 +1079,7 @@ public final class Converter
     {
         return PosOrderDto.builder()
                         .withId(entity.getId())
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withNumber(entity.getNumber())
                         .withContactOid(entity.getContactOid())
                         .withLoyaltyContactOid(entity.getLoyaltyContactOid())
@@ -1116,7 +1116,7 @@ public final class Converter
     public static PosDocItemDto toDto(final AbstractDocument.Item entity)
     {
         return PosDocItemDto.builder()
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withIndex(entity.getIndex())
                         .withParentIdx(entity.getParentIdx())
                         .withCrossPrice(entity.getCrossPrice())
@@ -1149,7 +1149,7 @@ public final class Converter
     {
         return PosReceiptDto.builder()
                         .withId(entity.getId())
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withNumber(entity.getNumber())
                         .withDate(entity.getDate())
                         .withCurrency(entity.getCurrency())
@@ -1218,7 +1218,7 @@ public final class Converter
     {
         return PosInvoiceDto.builder()
                         .withId(entity.getId())
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withNumber(entity.getNumber())
                         .withDate(entity.getDate())
                         .withCurrency(entity.getCurrency())
@@ -1259,7 +1259,7 @@ public final class Converter
     {
         return PosTicketDto.builder()
                         .withId(entity.getId())
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withNumber(entity.getNumber())
                         .withDate(entity.getDate())
                         .withCurrency(entity.getCurrency())
@@ -1300,7 +1300,7 @@ public final class Converter
     {
         return PosCreditNoteDto.builder()
                         .withId(entity.getId())
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withNumber(entity.getNumber())
                         .withDate(entity.getDate())
                         .withCurrency(entity.getCurrency())
@@ -1337,7 +1337,7 @@ public final class Converter
         return entity == null ? null
                         : ContactDto.builder()
                                         .withId(entity.getId())
-                                        .withOID(entity.getOid())
+                                        .withOid(entity.getOid())
                                         .withName(entity.getName())
                                         .withIdType(entity.getIdType())
                                         .withIdNumber(entity.getIdNumber())
@@ -1358,7 +1358,7 @@ public final class Converter
     {
         return OrderDto.builder()
                         .withId(entity.getId())
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withNumber(entity.getNumber())
                         .withDate(entity.getDate())
                         .withCurrency(entity.getCurrency())
@@ -1391,7 +1391,7 @@ public final class Converter
     {
         return ReceiptDto.builder()
                         .withId(_entity.getId())
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withNumber(_entity.getNumber())
                         .withDate(_entity.getDate())
                         .withCurrency(_entity.getCurrency())
@@ -1424,7 +1424,7 @@ public final class Converter
     {
         return InvoiceDto.builder()
                         .withId(_entity.getId())
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withNumber(_entity.getNumber())
                         .withDate(_entity.getDate())
                         .withCurrency(_entity.getCurrency())
@@ -1457,7 +1457,7 @@ public final class Converter
     {
         return TicketDto.builder()
                         .withId(_entity.getId())
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withNumber(_entity.getNumber())
                         .withDate(_entity.getDate())
                         .withCurrency(_entity.getCurrency())
@@ -1490,7 +1490,7 @@ public final class Converter
     {
         return CreditNoteDto.builder()
                         .withId(_entity.getId())
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withNumber(_entity.getNumber())
                         .withDate(_entity.getDate())
                         .withCurrency(_entity.getCurrency())
@@ -1523,7 +1523,7 @@ public final class Converter
     public static DocItemDto toItemDto(final AbstractDocument.Item entity)
     {
         return DocItemDto.builder()
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withIndex(entity.getIndex())
                         .withParentIdx(entity.getParentIdx())
                         .withCrossPrice(entity.getCrossPrice())
@@ -1550,7 +1550,7 @@ public final class Converter
 
     public static WarehouseDto toDto(final Warehouse _entity)
     {
-        return WarehouseDto.builder().withOID(_entity.getOid()).withName(_entity.getName()).build();
+        return WarehouseDto.builder().withOid(_entity.getOid()).withName(_entity.getName()).build();
     }
 
     public static InventoryEntry toEntity(final InventoryEntryDto _dto)
@@ -1565,7 +1565,7 @@ public final class Converter
     {
         return PosInventoryEntryDto.builder()
                         .withId(_entity.getId())
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withQuantity(_entity.getQuantity())
                         .withProduct(_entity.getProductOid() == null ? null
                                         : Converter.toDto(INSTANCE.productService.getProduct(_entity.getProductOid())))
@@ -1602,7 +1602,7 @@ public final class Converter
     public static PrinterDto toDto(final Printer _entity)
     {
         return PrinterDto.builder()
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withName(_entity.getName())
                         .withType(_entity.getType())
                         .build();
@@ -1669,7 +1669,7 @@ public final class Converter
     public static BalanceDto toBalanceDto(final Balance _entity)
     {
         return BalanceDto.builder()
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withId(_entity.getId())
                         .withNumber(_entity.getNumber())
                         .withKey(_entity.getKey())
@@ -1684,7 +1684,7 @@ public final class Converter
     {
         final User user = INSTANCE.userService.getUserByOid(_entity.getUserOid());
         return PosBalanceDto.builder()
-                        .withOID(_entity.getOid())
+                        .withOid(_entity.getOid())
                         .withId(_entity.getId())
                         .withNumber(_entity.getNumber())
                         .withKey(_entity.getKey())
@@ -1803,7 +1803,7 @@ public final class Converter
     public static EmployeeDto toDto(final Employee entity)
     {
         return EmployeeDto.builder()
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withFirstName(entity.getFirstName())
                         .withSurName(entity.getSurName())
                         .build();
@@ -2180,7 +2180,7 @@ public final class Converter
     {
         return (PrintPosOrderDto) PrintPosOrderDto.builder()
                         .withId(entity.getId())
-                        .withOID(entity.getOid())
+                        .withOid(entity.getOid())
                         .withNumber(entity.getNumber())
                         .withContactOid(entity.getContactOid())
                         .withCurrency(entity.getCurrency())

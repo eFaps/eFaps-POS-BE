@@ -44,6 +44,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.mongodb.test.autoconfigure.AutoConfigureDataMongo;
 import org.springframework.boot.restclient.test.autoconfigure.AutoConfigureMockRestServiceServer;
@@ -79,6 +80,7 @@ public class DocumentServiceTest
     @BeforeEach
     public void setup()
     {
+        MockitoAnnotations.openMocks(this);
         ReflectionTestUtils.setField(documentService, "orderRepository", orderRepository);
         mongoTemplate.remove(new Query(), Order.class);
         mongoTemplate.remove(new Query(), Receipt.class);

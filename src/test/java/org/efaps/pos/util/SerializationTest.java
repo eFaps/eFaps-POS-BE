@@ -52,7 +52,7 @@ public class SerializationTest
     {
         return PosPaymentCashDto.builder()
                         .withCollectOrderId("collectOrderId")
-                        .withOID("123.456")
+                        .withOid("123.456")
                         .withAmount(new BigDecimal("12.56"))
                         .withCurrency(Currency.PEN)
                         .withExchangeRate(BigDecimal.ONE)
@@ -63,7 +63,7 @@ public class SerializationTest
     {
         return PosPaymentLoyaltyPointsDto.builder()
                         .withCollectOrderId("collectOrderId")
-                        .withOID("123.456")
+                        .withOid("123.456")
                         .withAmount(new BigDecimal("12.56"))
                         .withCurrency(Currency.PEN)
                         .withExchangeRate(BigDecimal.ONE)
@@ -74,7 +74,7 @@ public class SerializationTest
     {
         return PosPaymentElectronicDto.builder()
                         .withCollectOrderId("collectOrderId")
-                        .withOID("123.456")
+                        .withOid("123.456")
                         .withAmount(new BigDecimal("12.56"))
                         .withCurrency(Currency.PEN)
                         .withExchangeRate(BigDecimal.ONE)
@@ -157,7 +157,7 @@ public class SerializationTest
 
         final PosReceiptDto dto = PosReceiptDto.builder()
                         .withId("absgctagd")
-                        .withOID("123.15")
+                        .withOid("123.15")
                         .withNumber("001-001651")
                         .withStatus(DocStatus.OPEN)
                         .withItems(Collections.singleton(PosDocItemDto.builder().build()))

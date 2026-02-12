@@ -15,9 +15,9 @@
  */
 package org.efaps.pos.dto;
 
-import tools.jackson.databind.annotation.JsonDeserialize;
-
 import java.math.BigDecimal;
+
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosInventoryEntryDto.Builder.class)
 public class PosInventoryEntryDto
@@ -83,7 +83,7 @@ public class PosInventoryEntryDto
             return this;
         }
 
-        public Builder withOID(final String _oid)
+        public Builder withOid(final String _oid)
         {
             this.oid = _oid;
             return this;
