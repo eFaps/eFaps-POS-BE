@@ -127,14 +127,14 @@ public class SyncService
         printerRepository = _printerRepository;
         eFapsClient = _eFapsClient;
         configProperties = _configProperties;
-        this.workspaceService= workspaceService;
+        this.workspaceService = workspaceService;
         this.contactService = contactService;
         this.documentService = documentService;
         exchangeRateService = _exchangeRateService;
         this.logService = logService;
         this.promotionService = promotionService;
         this.productService = productService;
-        this.inventoryService= inventoryService;
+        this.inventoryService = inventoryService;
         this.posFileService = posFileService;
         this.updateService = updateService;
         this.categoryService = categoryService;
@@ -144,15 +144,15 @@ public class SyncService
         this.invoiceService = invoiceService;
         this.receiptService = receiptService;
         this.ticketService = ticketService;
-        this.creditNoteService =creditNoteService;
+        this.creditNoteService = creditNoteService;
         this.balanceService = balanceService;
     }
 
-    public void runSyncJob(final String _methodName)
+    public void runSyncJob(final String methodName)
         throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
         InvocationTargetException
     {
-        final Method method = getClass().getMethod(_methodName);
+        final Method method = getClass().getMethod(methodName);
         if (configProperties.getCompanies().size() > 0) {
             for (final Company company : configProperties.getCompanies()) {
                 Context.get().setCompany(company);
@@ -330,10 +330,14 @@ public class SyncService
         final List<User> users = eFapsClient.getUsers().stream()
                         .map(Converter::toEntity)
                         .collect(Collectors.toList());
-        if (!users.isEmpty()) {
-            userRepository.deleteAll();
-            users.forEach(user -> userRepository.save(user));
-        }
+        users.forEach(user -> userRepository.save(user));
+
+        final var allUsers = userRepository.findAll();
+        allUsers.forEach(existingUser -> {
+            if (users.stream().noneMatch(au -> au.getOid().equals(existingUser.getOid()))) {
+                userRepository.deleteById(existingUser.getId());
+            }
+        });
         registerSync(StashId.USERSYNC);
     }
 
@@ -569,18 +573,9 @@ public class SyncService
         if (!isDeactivated()) {
             for (final var syncDirective : syncDirectives) {
                 switch (syncDirective) {
-                    case PRODUCTS:
-                    case PROMOTIONS:
-                    case WORKSPACES:
-                    case EXCHANGERATES:
-                    case USERS:
-                    case CATEGORIES:
-                    case INVENTORY:
-                    case POSFILES:
+                    case PRODUCTS, PROMOTIONS, WORKSPACES, EXCHANGERATES, USERS, CATEGORIES, INVENTORY, POSFILES ->
                         invokeSync(syncDirective.method);
-                        break;
-                    case ALL:
-                    default:
+                    case ALL -> {
                         syncProperties();
                         syncUsers();
                         syncExchangeRates();
@@ -607,7 +602,37 @@ public class SyncService
                         syncLogs();
                         syncInventory();
                         syncEmployees();
+                    }
+                    default -> {
+                        syncProperties();
+                        syncUsers();
+                        syncExchangeRates();
+                        syncPOSs();
+                        syncWorkspaces();
+                        syncAllProducts();
+                        syncCategories();
+                        syncPromotions();
+                        syncBalances();
+                        syncReceipts();
+                        syncInvoices();
+                        syncTickets();
+                        syncSequences();
+                        syncWarehouses();
+                        syncInventory();
+                        syncPrinters();
+                        syncImages();
+                        syncReports();
+                        syncOrders();
+                        syncAllContacts();
+                        syncPosFiles();
+                        check4Update();
+                        syncPromotionInfos();
+                        syncLogs();
+                        syncInventory();
+                        syncEmployees();
+                    }
                 }
+
             }
         }
     }
@@ -627,15 +652,9 @@ public class SyncService
     public enum SyncDirective
     {
 
-        ALL(null),
-        PROMOTIONS("syncPromotions"),
-        PRODUCTS("syncAllProducts"),
-        WORKSPACES("syncWorkspaces"),
-        EXCHANGERATES("syncExchangeRates"),
-        USERS("syncUsers"),
-        CATEGORIES("syncCategories"),
-        INVENTORY("syncInventory"),
-        POSFILES("syncPosFiles");
+        ALL(null), PROMOTIONS("syncPromotions"), PRODUCTS("syncAllProducts"), WORKSPACES(
+                        "syncWorkspaces"), EXCHANGERATES("syncExchangeRates"), USERS("syncUsers"), CATEGORIES(
+                                        "syncCategories"), INVENTORY("syncInventory"), POSFILES("syncPosFiles");
 
         String method;
 

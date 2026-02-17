@@ -63,6 +63,11 @@ public class User
 
     private Collection<Permission> permissions;
 
+    public String getId()
+    {
+        return id;
+    }
+
     public String getOid()
     {
         return this.oid;
@@ -181,6 +186,7 @@ public class User
         this.visible = _visible;
         return this;
     }
+
     @Deprecated
     public Collection<Roles> getRoles()
     {

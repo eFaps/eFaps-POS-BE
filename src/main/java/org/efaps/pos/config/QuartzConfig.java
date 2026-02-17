@@ -32,6 +32,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 @Profile(value = { "!demo" })
 public class QuartzConfig
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(QuartzConfig.class);
 
     private final SyncService syncService;
@@ -138,13 +139,17 @@ public class QuartzConfig
     @Value("${org.quartz.jobs.reportToBase.delay:420}")
     private Integer reportToBaseDelay;
 
-
     @Value("${org.quartz.jobs.syncPosFiles.interval:0}")
     private Integer syncPosFilesInterval;
 
     @Value("${org.quartz.jobs.syncPosFiles.delay:360}")
     private Integer syncPosFilesDelay;
 
+    @Value("${org.quartz.jobs.syncUsers.interval:0}")
+    private Integer syncUsersInterval;
+
+    @Value("${org.quartz.jobs.syncUsers.delay:360}")
+    private Integer syncUsersDelay;
 
     @Autowired
     public QuartzConfig(final SyncService _syncService,
@@ -340,8 +345,6 @@ public class QuartzConfig
         obj.setConcurrent(false);
         return obj;
     }
-
-
 
     @Bean
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncContacts.interval} > 0}")
@@ -556,7 +559,6 @@ public class QuartzConfig
         return stFactory;
     }
 
-
     @Bean
     @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncPosFiles.interval:0} > 0}")
     public MethodInvokingJobDetailFactoryBean syncPosFilesJobDetailFactoryBean()
@@ -579,6 +581,31 @@ public class QuartzConfig
         stFactory.setJobDetail(syncPosFilesJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(syncPosFilesDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncPosFilesInterval) * 1000);
+        return stFactory;
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncUsers.interval:0} > 0}")
+    public MethodInvokingJobDetailFactoryBean syncUsersJobDetailFactoryBean()
+    {
+        final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
+        obj.setTargetObject(syncService);
+        obj.setTargetMethod("runSyncJob");
+        obj.setArguments("syncUsers");
+        obj.setConcurrent(false);
+        return obj;
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncUsers.interval:0} > 0}")
+    public SimpleTriggerFactoryBean syncUsersTriggerFactoryBean()
+    {
+        LOG.info("Registering Quartz trigger 'syncUsers' with delay: {}s, interval: {}s",
+                        syncUsersDelay, syncUsersInterval);
+        final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
+        stFactory.setJobDetail(syncPosFilesJobDetailFactoryBean().getObject());
+        stFactory.setStartDelay(syncUsersDelay * 1000);
+        stFactory.setRepeatInterval(Math.abs(syncUsersInterval) * 1000);
         return stFactory;
     }
 
