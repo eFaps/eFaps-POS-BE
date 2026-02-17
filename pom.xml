@@ -31,7 +31,7 @@
 
     <properties>
         <spring.boot.version>4.0.2</spring.boot.version>
-        <junit.jupiter.version>6.0.2</junit.jupiter.version>
+        <junit.jupiter.version>6.0.3</junit.jupiter.version>
         <junit.platform.version>6.0.2</junit.platform.version>
         <jasperreports.version>7.0.3</jasperreports.version>
     </properties>
