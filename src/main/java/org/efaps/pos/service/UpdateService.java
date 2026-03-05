@@ -58,7 +58,7 @@ public class UpdateService
         this.configService = configService;
     }
 
-    public void check4Update()
+    public void check4Updates()
     {
         final var active = BooleanUtils.toBoolean(configService.getSystemConfig(ConfigService.UPDATE_ACTIVATE));
         if (active) {

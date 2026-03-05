@@ -151,6 +151,12 @@ public class QuartzConfig
     @Value("${org.quartz.jobs.syncUsers.delay:360}")
     private Integer syncUsersDelay;
 
+    @Value("${org.quartz.jobs.check4Updates.interval:3600}")
+    private Integer check4UpdatesInterval;
+
+    @Value("${org.quartz.jobs.check4Updates.delay:360}")
+    private Integer check4UpdatesDelay;
+
     @Autowired
     public QuartzConfig(final SyncService _syncService,
                         final MonitoringService monitoringService)
@@ -168,6 +174,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncPayables");
         obj.setConcurrent(false);
+        obj.setName("Sync-Payables");
         return obj;
     }
 
@@ -193,6 +200,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncBalances");
         obj.setConcurrent(false);
+        obj.setName("Sync-Balances");
         return obj;
     }
 
@@ -218,6 +226,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncInvoices");
         obj.setConcurrent(false);
+        obj.setName("Sync-Invoices");
         return obj;
     }
 
@@ -243,6 +252,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncReceipts");
         obj.setConcurrent(false);
+        obj.setName("Sync-Receipts");
         return obj;
     }
 
@@ -268,6 +278,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncTickets");
         obj.setConcurrent(false);
+        obj.setName("Sync-Tickets");
         return obj;
     }
 
@@ -293,6 +304,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncOrders");
         obj.setConcurrent(false);
+        obj.setName("Sync-Orders");
         return obj;
     }
 
@@ -318,6 +330,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncCreditNotes");
         obj.setConcurrent(false);
+        obj.setName("Sync-CreditNotes");
         return obj;
     }
 
@@ -343,6 +356,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncContacts");
         obj.setConcurrent(false);
+        obj.setName("Sync-Contacts");
         return obj;
     }
 
@@ -368,6 +382,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncInventory");
         obj.setConcurrent(false);
+        obj.setName("Sync-Inventory");
         return obj;
     }
 
@@ -393,6 +408,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncExchangeRates");
         obj.setConcurrent(false);
+        obj.setName("Sync-ExchangeRates");
         return obj;
     }
 
@@ -418,6 +434,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncEmployees");
         obj.setConcurrent(false);
+        obj.setName("Sync-Employees");
         return obj;
     }
 
@@ -468,6 +485,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncLogs");
         obj.setConcurrent(false);
+        obj.setName("Sync-Logs");
         return obj;
     }
 
@@ -493,6 +511,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncPromotions");
         obj.setConcurrent(false);
+        obj.setName("Sync-Promotions");
         return obj;
     }
 
@@ -518,6 +537,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncPromotionInfos");
         obj.setConcurrent(false);
+        obj.setName("Sync-PromotionInfos");
         return obj;
     }
 
@@ -542,6 +562,7 @@ public class QuartzConfig
         obj.setTargetObject(monitoringService);
         obj.setTargetMethod("reportToBase");
         obj.setConcurrent(false);
+        obj.setName("Sync-ReportToBase");
         return obj;
     }
 
@@ -568,6 +589,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncPosFiles");
         obj.setConcurrent(false);
+        obj.setName("Sync-PosFiles");
         return obj;
     }
 
@@ -593,6 +615,7 @@ public class QuartzConfig
         obj.setTargetMethod("runSyncJob");
         obj.setArguments("syncUsers");
         obj.setConcurrent(false);
+        obj.setName("Sync-Users");
         return obj;
     }
 
@@ -606,6 +629,32 @@ public class QuartzConfig
         stFactory.setJobDetail(syncPosFilesJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(syncUsersDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncUsersInterval) * 1000);
+        return stFactory;
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.check4Updates.interval:0} > 0}")
+    public MethodInvokingJobDetailFactoryBean check4UpdatesJobDetailFactoryBean()
+    {
+        final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
+        obj.setTargetObject(syncService);
+        obj.setTargetMethod("runSyncJob");
+        obj.setArguments("check4Updates");
+        obj.setConcurrent(false);
+        obj.setName("Check-for-Updates");
+        return obj;
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.check4Updates.interval:0} > 0}")
+    public SimpleTriggerFactoryBean check4UpdatesTriggerFactoryBean()
+    {
+        LOG.info("Registering Quartz trigger 'check4Updates' with delay: {}s, interval: {}s",
+                        check4UpdatesDelay, check4UpdatesInterval);
+        final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
+        stFactory.setJobDetail(check4UpdatesJobDetailFactoryBean().getObject());
+        stFactory.setStartDelay(check4UpdatesDelay * 1000);
+        stFactory.setRepeatInterval(Math.abs(check4UpdatesInterval) * 1000);
         return stFactory;
     }
 

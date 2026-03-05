@@ -107,7 +107,7 @@ public class ApplicationStartup
                 syncService.syncOrders();
                 syncService.syncAllContacts();
                 syncService.syncPosFiles();
-                syncService.check4Update();
+                syncService.check4Updates();
             } catch (final Exception e) {
                 LOG.error("Catched error during startup sync", e);
             }

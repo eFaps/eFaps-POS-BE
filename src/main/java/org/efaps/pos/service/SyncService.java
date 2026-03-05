@@ -531,9 +531,9 @@ public class SyncService
         }
     }
 
-    public void check4Update()
+    public void check4Updates()
     {
-        updateService.check4Update();
+        updateService.check4Updates();
     }
 
     public void registerSync(final StashId _stashId)
@@ -597,7 +597,7 @@ public class SyncService
                         syncOrders();
                         syncAllContacts();
                         syncPosFiles();
-                        check4Update();
+                        check4Updates();
                         syncPromotionInfos();
                         syncLogs();
                         syncInventory();
@@ -625,7 +625,7 @@ public class SyncService
                         syncOrders();
                         syncAllContacts();
                         syncPosFiles();
-                        check4Update();
+                        check4Updates();
                         syncPromotionInfos();
                         syncLogs();
                         syncInventory();
