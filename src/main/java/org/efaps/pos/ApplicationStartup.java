@@ -61,7 +61,7 @@ public class ApplicationStartup
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent _event)
     {
-        VersionUtil.evalVersion();
+        LOG.info("Version: {}", VersionUtil.evalVersion());
         if (ArrayUtils.contains(env.getActiveProfiles(), "demo")) {
             syncService.setDeactivated(true);
             demoService.init();

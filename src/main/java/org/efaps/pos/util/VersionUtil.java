@@ -50,29 +50,43 @@ public class VersionUtil
 
     public static Path searchVersionFile(final Path startFolder)
     {
-        Path versionPath = null;
+        LOG.debug("Start searching for version-file in {}", startFolder);
+        Path versionFilePath = null;
 
         final var firstCheck = startFolder.resolve(VERSIONFILE);
         // firstCheck.e
         if (Files.exists(firstCheck)) {
-            LOG.info("Found version in {}", firstCheck);
-            versionPath = firstCheck;
+            LOG.info("Found version-file in {}", firstCheck);
+            versionFilePath = firstCheck;
         }
-        if (versionPath == null) {
+        if (versionFilePath == null) {
+            LOG.debug("Searching in all child folders");
             try {
                 final var fileOpt = Files.walk(startFolder)
                                 .filter(Files::isRegularFile)
                                 .filter(path -> path.getFileName().toString().equals(VERSIONFILE))
                                 .findFirst();
                 if (fileOpt.isPresent()) {
-                    versionPath = fileOpt.get();
-                    LOG.info("Found version in {}", versionPath);
+                    versionFilePath = fileOpt.get();
+                    LOG.info("Found version-file in {}", versionFilePath);
                 }
             } catch (final IOException e) {
-                LOG.error("Catched error during search for  Version file in {}", startFolder);
+                LOG.error("Catched error during search for Version file in {}", startFolder);
             }
         }
-        return versionPath;
+        if (versionFilePath == null) {
+            final var parentFolder = startFolder.getParent();
+            LOG.debug("Searching in parent folder: {}", parentFolder);
+            final var parentCheck = parentFolder.resolve(VERSIONFILE);
+            if (Files.exists(parentCheck)) {
+                LOG.info("Found version-file in {}", parentCheck);
+                versionFilePath = parentCheck;
+            }
+        }
+        if (versionFilePath == null) {
+            LOG.info("No version-file found");
+        }
+        return versionFilePath;
     }
 
     public static String readContent(final Path path)
