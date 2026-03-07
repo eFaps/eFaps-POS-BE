@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.config;
 
+import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.PromotionInfo;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -52,5 +53,6 @@ public class MongoInit
         mongoTemplate.indexOps(Product.class).createIndex(textIndex);
         mongoTemplate.indexOps(PromotionInfo.class).createIndex(new Index().on("documentId", Direction.ASC));
         mongoTemplate.indexOps(PromotionInfo.class).createIndex(new Index().on("oid", Direction.ASC));
+        mongoTemplate.indexOps(Contact.class).createIndex(new Index().on("oid", Direction.ASC).unique());
     }
 }

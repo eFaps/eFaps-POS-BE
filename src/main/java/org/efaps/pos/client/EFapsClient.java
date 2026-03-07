@@ -165,6 +165,23 @@ public class EFapsClient
         return ret;
     }
 
+    public DumpDto getContactsDump()
+    {
+        DumpDto ret = null;
+        try {
+
+            final RequestEntity<?> requestEntity = get(getEFapsConfig().getContactPath() + "/dump");
+            final ResponseEntity<DumpDto> response = getRestTemplate().exchange(requestEntity, DumpDto.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                ret = response.getBody();
+            }
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of products", e);
+        }
+        return ret;
+    }
+
+
     public List<CategoryDto> getCategories()
     {
         List<CategoryDto> ret = new ArrayList<>();

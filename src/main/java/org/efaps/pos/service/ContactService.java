@@ -15,6 +15,10 @@
  */
 package org.efaps.pos.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -22,10 +26,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.zip.ZipInputStream;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
+import org.efaps.pos.config.UserAudtiting;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.entity.Contact;
 import org.efaps.pos.entity.Origin;
@@ -39,7 +45,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.BulkOperations;
+import org.springframework.data.mongodb.core.BulkOperations.BulkMode;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class ContactService
@@ -47,14 +62,23 @@ public class ContactService
 
     private static final Logger LOG = LoggerFactory.getLogger(ContactService.class);
 
+    private final MongoTemplate mongoTemplate;
+    private final UserAudtiting userAudtiting;
+    private final ObjectMapper objectMapper;
     private final ConfigProperties configProperties;
     private final ContactRepository contactRepository;
     private final EFapsClient eFapsClient;
 
-    public ContactService(final ConfigProperties configProperties,
+    public ContactService(final MongoTemplate mongoTemplate,
+                          final UserAudtiting userAudtiting,
+                          final ObjectMapper objectMapper,
+                          final ConfigProperties configProperties,
                           final ContactRepository contactRepository,
                           final EFapsClient eFapsClient)
     {
+        this.mongoTemplate = mongoTemplate;
+        this.userAudtiting = userAudtiting;
+        this.objectMapper = objectMapper;
         this.configProperties = configProperties;
         this.contactRepository = contactRepository;
         this.eFapsClient = eFapsClient;
@@ -141,6 +165,39 @@ public class ContactService
         }
     }
 
+    public void syncAllContacts()
+        throws SyncServiceDeactivatedException
+    {
+        final var dumpDto = eFapsClient.getContactsDump();
+        if (dumpDto != null) {
+            LOG.info("Syncing All Contacts using dump");
+            final var checkout = eFapsClient.checkout(dumpDto.getOid());
+            try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(checkout.getContent()))) {
+                var zipEntry = zis.getNextEntry();
+                var i = 0;
+                while (zipEntry != null) {
+                    LOG.info("Reading contacts from: {}", zipEntry.getName());
+                    final var writer = new StringWriter();
+                    IOUtils.copy(zis, writer, "UTF-8");
+                    final var contacts = objectMapper.readValue(writer.toString(), new TypeReference<List<ContactDto>>()
+                    {
+                    });
+                    LOG.info("Loaded contacts {} - {} ", i, i + contacts.size());
+                    persistContacts(contacts.stream().map(Converter::toEntity).toList());
+                    i += contacts.size();
+                    zipEntry = zis.getNextEntry();
+                }
+                zis.closeEntry();
+                zis.close();
+            } catch (final IOException e) {
+                LOG.error("Catched", e);
+            }
+            syncContacts(new SyncInfo().setLastSync(Utils.toLocal(dumpDto.getUpdateAt())));
+        } else {
+            syncContactsDown(null);
+        }
+    }
+
     public List<Contact> syncContactsUp()
     {
         final Collection<Contact> tosync = contactRepository.findByOidIsNull();
@@ -178,7 +235,6 @@ public class ContactService
 
     private void syncContactsDown(final OffsetDateTime after)
     {
-        final var queriedContacts = new ArrayList<Contact>();
         final var limit = configProperties.getEFaps().getContactLimit();
         var next = true;
         var i = 0;
@@ -189,32 +245,53 @@ public class ContactService
                             .stream()
                             .map(Converter::toEntity)
                             .collect(Collectors.toList());
-            queriedContacts.addAll(recievedContacts);
+            persistContacts(recievedContacts);
             i++;
             next = !(recievedContacts.size() < limit);
         }
-        for (final Contact contact : queriedContacts) {
-            final List<Contact> contacts = contactRepository.findByOid(contact.getOid());
-            if (CollectionUtils.isEmpty(contacts)) {
-                contact.setOrigin(Origin.REMOTE);
-                contactRepository.save(contact);
-            } else if (contacts.size() > 1) {
-                contacts.forEach(entity -> contactRepository.delete(entity));
-                contact.setOrigin(Origin.REMOTE);
-                contactRepository.save(contact);
+    }
+
+    private void persistContacts(final List<Contact> contacts)
+    {
+        var bulkOps = mongoTemplate.bulkOps(BulkMode.UNORDERED, Contact.class);
+        final var of = contacts.size();
+        var from = 0;
+        var count = 0;
+        for (final Contact contact : contacts) {
+            count++;
+            if (count % 1000 == 0) {
+                LOG.info("Persisting contacts {} - {} of {}", from, count, of);
+                from = count;
+                bulkOps.execute();
+                bulkOps = mongoTemplate.bulkOps(BulkMode.UNORDERED, Contact.class);
             } else {
-                final var updatedContact = contacts.get(0);
-                updatedContact
-                                .setEmail(contact.getEmail())
-                                .setIdNumber(contact.getIdNumber())
-                                .setIdType(contact.getIdType())
-                                .setName(contact.getName())
-                                .setFirstLastName(contact.getFirstLastName())
-                                .setForename(contact.getForename())
-                                .setSecondLastName(contact.getSecondLastName());
-                contactRepository.save(updatedContact);
+                LOG.trace("Persisting contact {} of {}", count, of);
             }
+            addToBulkOps(bulkOps, contact);
         }
+        LOG.info("Persisting contacts {} - {} of {}", from, count, of);
+        bulkOps.execute();
+    }
+
+    private void addToBulkOps(final BulkOperations bulkOps,
+                              final Contact contact)
+    {
+        final var query = Query.query(Criteria.where("oid").is(contact.getOid()));
+        final var update = new Update()
+                        .setOnInsert("oid", contact.getOid())
+                        .setOnInsert("origin", Origin.REMOTE)
+                        .setOnInsert("user", userAudtiting.getCurrentAuditor().get())
+                        .setOnInsert("createdDate", Instant.now())
+                        .set("email", contact.getEmail())
+                        .set("idNumber", contact.getIdNumber())
+                        .set("idType", contact.getIdType())
+                        .set("name", contact.getName())
+                        .set("firstLastName", contact.getFirstLastName())
+                        .set("forename", contact.getForename())
+                        .set("secondLastName", contact.getSecondLastName())
+                        .set("lastModifiedBy", userAudtiting.getCurrentAuditor().get())
+                        .set("lastModifiedDate", Instant.now());
+        bulkOps.upsert(query, update);
     }
 
     public Optional<Contact> findOneByOid(final String oid)

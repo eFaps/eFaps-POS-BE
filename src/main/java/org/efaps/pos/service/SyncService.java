@@ -481,7 +481,8 @@ public class SyncService
         LOG.info("Syncing All Contacts");
         final var syncedContacts = contactService.syncContactsUp();
         documentService.updateContactOids(syncedContacts);
-        contactService.syncContacts(null);
+        contactService.syncAllContacts();
+        registerSync(StashId.PRODUCTSYNC);
     }
 
     public void syncContacts()
