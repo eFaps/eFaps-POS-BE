@@ -25,7 +25,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.UpdateDto;
-import org.efaps.pos.dto.UpdateInstructionDto;
+import org.efaps.pos.dto.UpdateTemplateInstructionDto;
 import org.efaps.pos.entity.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,15 +105,15 @@ public class UpdateServiceTest
         updateService.adhereInstructions(UpdateDto.builder()
                         .withVersion("26.3.5")
                         .withInstructions(Arrays.asList(
-                                        UpdateInstructionDto.builder()
+                                        UpdateTemplateInstructionDto.builder()
                                                         .withFileOid("1.1")
                                                         .withTargetPath(".")
                                                         .build(),
-                                        UpdateInstructionDto.builder()
+                                        UpdateTemplateInstructionDto.builder()
                                                         .withFileOid("1.2")
                                                         .withTargetPath("./extension")
                                                         .build(),
-                                        UpdateInstructionDto.builder()
+                                        UpdateTemplateInstructionDto.builder()
                                                         .withFileOid("1.3")
                                                         .withTargetPath("./static")
                                                         .withExpand(true)

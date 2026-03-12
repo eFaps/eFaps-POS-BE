@@ -181,7 +181,6 @@ public class EFapsClient
         return ret;
     }
 
-
     public List<CategoryDto> getCategories()
     {
         List<CategoryDto> ret = new ArrayList<>();
@@ -443,6 +442,19 @@ public class EFapsClient
             ret = response.getStatusCode().is2xxSuccessful();
         } catch (final IdentException e) {
             LOG.error("Catched error during get for UpdateDto", e);
+        }
+        return ret;
+    }
+
+    public String getFilledInTemplate(final String oid)
+    {
+        String ret = null;
+        try {
+            final var requestEntity = get(getEFapsConfig().getUpdatePath() + "/filled-in-template/" + oid);
+            final var response = getRestTemplate().exchange(requestEntity, String.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during download of TemplatedFile for  oid: '{}'", oid);
         }
         return ret;
     }
@@ -801,8 +813,7 @@ public class EFapsClient
             final var response = getRestTemplate().exchange(requestEntity,
                             new ParameterizedTypeReference<List<LoyaltyPointsBalanceDto>>()
                             {
-                            }
-            );
+                            });
             ret = response.getBody();
         } catch (final IdentException e) {
             LOG.error("Catched error during get for LoyaltyBalance", e);

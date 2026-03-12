@@ -17,6 +17,7 @@ package org.efaps.pos.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -81,13 +82,14 @@ public class UpdateService
                 var updateInfo = mongoTemplate.findById(KEY, UpdateInfo.class);
                 if (currentVersion != null
                                 && (updateInfo == null
-                                || !currentVersion.equalsIgnoreCase(updateInfo.getRegisteredVersion()))) {
+                                                || !currentVersion
+                                                                .equalsIgnoreCase(updateInfo.getRegisteredVersion()))) {
                     LOG.info("Registering new version {} in cloud", currentVersion);
                     eFapsClient.confirm(UpdateConfirmationDto.builder()
-                            .withStatus(UpdateStatus.INSTALLED)
-                            .withVersion(currentVersion)
-                            .build());
-                    if (updateInfo== null) {
+                                    .withStatus(UpdateStatus.INSTALLED)
+                                    .withVersion(currentVersion)
+                                    .build());
+                    if (updateInfo == null) {
                         updateInfo = new UpdateInfo();
                         updateInfo.setId(KEY);
                     }
@@ -155,6 +157,15 @@ public class UpdateService
                         Files.delete(localFile.toPath());
                     }
                 }
+            }
+        }
+        for (final var template : update.getTemplates()) {
+            final var content = eFapsClient.getFilledInTemplate(template.getTemplateOid());
+            if (content != null) {
+                final var targetPath = basePath.resolve(template.getTargetPath()).normalize();
+                LOG.info("targetPath: {}", targetPath);
+                FileUtils.createParentDirectories(targetPath.toFile());
+                Files.writeString(targetPath, content, StandardCharsets.UTF_8);
             }
         }
         return tempFolder.toPath();

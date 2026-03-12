@@ -253,24 +253,26 @@ public class ContactService
 
     private void persistContacts(final List<Contact> contacts)
     {
-        var bulkOps = mongoTemplate.bulkOps(BulkMode.UNORDERED, Contact.class);
-        final var of = contacts.size();
-        var from = 0;
-        var count = 0;
-        for (final Contact contact : contacts) {
-            count++;
-            if (count % 1000 == 0) {
-                LOG.info("Persisting contacts {} - {} of {}", from, count, of);
-                from = count;
-                bulkOps.execute();
-                bulkOps = mongoTemplate.bulkOps(BulkMode.UNORDERED, Contact.class);
-            } else {
-                LOG.trace("Persisting contact {} of {}", count, of);
+        if (!contacts.isEmpty()) {
+            var bulkOps = mongoTemplate.bulkOps(BulkMode.UNORDERED, Contact.class);
+            final var of = contacts.size();
+            var from = 0;
+            var count = 0;
+            for (final Contact contact : contacts) {
+                count++;
+                if (count % 1000 == 0) {
+                    LOG.info("Persisting contacts {} - {} of {}", from, count, of);
+                    from = count;
+                    bulkOps.execute();
+                    bulkOps = mongoTemplate.bulkOps(BulkMode.UNORDERED, Contact.class);
+                } else {
+                    LOG.trace("Persisting contact {} of {}", count, of);
+                }
+                addToBulkOps(bulkOps, contact);
             }
-            addToBulkOps(bulkOps, contact);
+            LOG.info("Persisting contacts {} - {} of {}", from, count, of);
+            bulkOps.execute();
         }
-        LOG.info("Persisting contacts {} - {} of {}", from, count, of);
-        bulkOps.execute();
     }
 
     private void addToBulkOps(final BulkOperations bulkOps,
