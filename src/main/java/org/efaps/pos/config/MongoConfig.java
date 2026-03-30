@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import org.bson.BsonRegularExpression;
 import org.bson.Document;
+import org.bson.types.Decimal128;
 import org.efaps.pos.context.MultiTenantMongoDbFactory;
 import org.efaps.pos.dto.PromoDetailDto;
 import org.efaps.pos.dto.PromoInfoDto;
@@ -179,26 +180,33 @@ public class MongoConfig
             for (final var detailDoc : source.getList("details", Document.class)) {
                 details.add(PromoDetailDto.builder()
                                 .withPositionIndex(detailDoc.getInteger("positionIndex"))
-                                .withNetUnitDiscount(detailDoc.getString("netUnitDiscount") == null ? null
-                                                : new BigDecimal(detailDoc.getString("netUnitDiscount")))
-                                .withNetDiscount(detailDoc.getString("netDiscount") == null ? null
-                                                : new BigDecimal(detailDoc.getString("netDiscount")))
-                                .withCrossUnitDiscount(detailDoc.getString("crossUnitDiscount") == null ? null
-                                                : new BigDecimal(detailDoc.getString("crossUnitDiscount")))
-                                .withCrossDiscount(detailDoc.getString("crossDiscount") == null ? null
-                                                : new BigDecimal(detailDoc.getString("crossDiscount")))
+                                .withNetUnitDiscount(toBigDecimal(detailDoc.get("netUnitDiscount")))
+                                .withNetDiscount(toBigDecimal(detailDoc.get("netDiscount")))
+                                .withCrossUnitDiscount(toBigDecimal(detailDoc.get("crossUnitDiscount")))
+                                .withCrossDiscount(toBigDecimal(detailDoc.get("crossDiscount")))
                                 .withPromotionOid(detailDoc.getString("promotionOid"))
                                 .build());
 
             }
             return PromoInfoDto.builder()
-                            .withNetTotalDiscount(source.getString("netTotalDiscount") == null ? null
-                                            : new BigDecimal(source.getString("netTotalDiscount")))
-                            .withCrossTotalDiscount(source.getString("crossTotalDiscount") == null ? null
-                                            : new BigDecimal(source.getString("crossTotalDiscount")))
+                            .withNetTotalDiscount(toBigDecimal(source.get("netTotalDiscount")))
+                            .withCrossTotalDiscount(toBigDecimal(source.get("crossTotalDiscount")))
                             .withPromotionOids(new HashSet<>(source.getList("promotionOids", String.class)))
                             .withDetails(details)
                             .build();
         }
+
+        private BigDecimal toBigDecimal(final Object bsonValue) {
+            BigDecimal ret = null;
+            if (bsonValue != null) {
+                if (bsonValue instanceof final String stringValue) {
+                    ret = new BigDecimal(stringValue);
+                } else if (bsonValue instanceof final Decimal128 decimalValue) {
+                    ret = decimalValue.bigDecimalValue();
+                }
+            }
+            return ret;
+        }
+
     }
 }
