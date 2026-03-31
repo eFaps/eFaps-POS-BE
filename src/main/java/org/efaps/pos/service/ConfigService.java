@@ -35,7 +35,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 
 @Service
@@ -55,14 +55,14 @@ public class ConfigService
 
     private final MongoTemplate mongoTemplate;
     private final ConfigProperties configProperties;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     public ConfigService(final MongoTemplate mongoTemplate,
                          final ConfigProperties configProperties)
     {
         this.mongoTemplate = mongoTemplate;
         this.configProperties = configProperties;
-        objectMapper = new ObjectMapper();
+        jsonMapper = JsonMapper.builder().build();
     }
 
     public String getSystemConfig(final String key)
@@ -140,7 +140,7 @@ public class ConfigService
     private Map<String, String> toMap(final String content)
     {
         try {
-            return objectMapper.readValue(content, HashMap.class);
+            return jsonMapper.readValue(content, HashMap.class);
         } catch (final JacksonException e) {
            LOG.error("Catched", e);
         }

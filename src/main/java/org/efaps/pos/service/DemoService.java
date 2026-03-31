@@ -45,7 +45,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 @Profile(value = { "demo" })
@@ -56,18 +56,18 @@ public class DemoService
     private final DemoConfig config;
     private final MongoTemplate mongoTemplate;
     private final GridFsTemplate gridFsTemplate;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     @Autowired
     public DemoService(final DemoConfig _config,
                        final MongoTemplate _mongoTemplate,
                        final GridFsTemplate _gridFsTemplate,
-                       final ObjectMapper _objectMapper)
+                       final JsonMapper jsonMapper)
     {
         config = _config;
         mongoTemplate = _mongoTemplate;
         gridFsTemplate = _gridFsTemplate;
-        objectMapper = _objectMapper;
+this.        jsonMapper = jsonMapper;
     }
 
     @SuppressWarnings("unchecked")
@@ -103,7 +103,7 @@ public class DemoService
         if (_resourceLocation != null) {
             final var file = ResourceUtils.getFile(_resourceLocation);
             if (file.exists()) {
-                ret = objectMapper.<List<?>>readValue(new FileInputStream(file), _valueTypeRef);
+                ret = jsonMapper.<List<?>>readValue(new FileInputStream(file), _valueTypeRef);
             } else {
                 LOG.error("Cannot find: {}", _resourceLocation);
             }

@@ -35,17 +35,16 @@ import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.TaxEntryDto;
 import org.junit.jupiter.api.Test;
 
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 
 
 public class SerializationTest
 {
 
-    private ObjectMapper getObjectMapper()
+    private JsonMapper getMapper()
     {
-        final var objectMapper = new ObjectMapper();
-        return objectMapper;
+        return JsonMapper.builder().build();
     }
 
     private PosPaymentCashDto getPaymentCashDto()
@@ -95,7 +94,7 @@ public class SerializationTest
     {
 
         final var dto = getPaymentCashDto();
-        final var objectMapper = getObjectMapper();
+        final var objectMapper = getMapper();
         final var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto);
         System.out.println(json);
         final var payment = objectMapper.readValue(json, IPosPaymentDto.class);
@@ -115,7 +114,7 @@ public class SerializationTest
     {
 
         final var dto = getPaymentLoyaltyPointsDto();
-        final var objectMapper = getObjectMapper();
+        final var objectMapper = getMapper();
         final var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto);
         System.out.println(json);
         final var payment = objectMapper.readValue(json, IPosPaymentDto.class);
@@ -136,7 +135,7 @@ public class SerializationTest
 
         final var dto = getPaymentElectronicDto();
 
-        final var objectMapper = getObjectMapper();
+        final var objectMapper = getMapper();
         final var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto);
         System.out.println(json);
         final var payment = objectMapper.readValue(json, IPosPaymentDto.class);
@@ -167,7 +166,7 @@ public class SerializationTest
                         .withCrossTotal(new BigDecimal("13.41"))
                         .withTaxes(Collections.singleton(TaxEntryDto.builder().build()))
                         .build();
-        final var objectMapper = getObjectMapper();
+        final var objectMapper = getMapper();
         final var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto);
         System.out.println(json);
         final var receiptDto = objectMapper.readValue(json, PosReceiptDto.class);

@@ -46,7 +46,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 
 @Service
@@ -55,18 +55,18 @@ public class ProductService
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductService.class);
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
     private final ConfigProperties configProperties;
     private final ProductRepository productRepository;
     private final EFapsClient eFapsClient;
 
     @Autowired
-    public ProductService(final ObjectMapper objectMapper,
+    public ProductService(final JsonMapper jsonMapper,
                           final ConfigProperties _configProperties,
                           final ProductRepository _productRepository,
                           final EFapsClient eFapsClient)
     {
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
         configProperties = _configProperties;
         productRepository = _productRepository;
         this.eFapsClient = eFapsClient;
@@ -166,7 +166,7 @@ public class ProductService
                     LOG.info("Reading products from: {}", zipEntry.getName());
                     final var writer = new StringWriter();
                     IOUtils.copy(zis, writer, "UTF-8");
-                    final var products = objectMapper.readValue(writer.toString(), new TypeReference<List<Product>>()
+                    final var products = jsonMapper.readValue(writer.toString(), new TypeReference<List<Product>>()
                     {
                     });
                     LOG.info("Loaded products {} - {} ", i, i + products.size());

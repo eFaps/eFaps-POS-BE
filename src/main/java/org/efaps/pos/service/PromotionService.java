@@ -41,7 +41,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 public class PromotionService
@@ -49,7 +49,7 @@ public class PromotionService
 
     private static final Logger LOG = LoggerFactory.getLogger(PromotionService.class);
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
     private final PromotionRepository promotionRepository;
     private final PromotionInfoRepository promotionInfoRepository;
     private final EFapsClient eFapsClient;
@@ -59,14 +59,14 @@ public class PromotionService
     @Value("${org.quartz.jobs.syncPromotionInfos.batchSize:100}")
     private Integer syncPromotionsBatchSize;
 
-    public PromotionService(final ObjectMapper objectMapper,
+    public PromotionService(final JsonMapper jsonMapper,
                             final PromotionRepository promotionRepository,
                             final PromotionInfoRepository promotionInfoRepository,
                             final EFapsClient eFapsClient,
                             final ConfigService configService,
                             final DocumentHelperService documentHelperService)
     {
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
         this.promotionRepository = promotionRepository;
         this.promotionInfoRepository = promotionInfoRepository;
         this.eFapsClient = eFapsClient;
@@ -185,7 +185,7 @@ public class PromotionService
                 for (final var promotionEntity : infoToBeSynced.getPromotions()) {
                     promotionOids.add(promotionEntity.getOid());
                     final var promotion = Converter.toDto(promotionEntity);
-                    promotionStr.add(objectMapper.writeValueAsString(promotion));
+                    promotionStr.add(jsonMapper.writeValueAsString(promotion));
                 }
 
                 final var dto = PromoInfoSyncDto.builder()

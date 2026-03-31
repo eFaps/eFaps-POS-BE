@@ -54,7 +54,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 public class ContactService
@@ -64,21 +64,21 @@ public class ContactService
 
     private final MongoTemplate mongoTemplate;
     private final UserAudtiting userAudtiting;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
     private final ConfigProperties configProperties;
     private final ContactRepository contactRepository;
     private final EFapsClient eFapsClient;
 
     public ContactService(final MongoTemplate mongoTemplate,
                           final UserAudtiting userAudtiting,
-                          final ObjectMapper objectMapper,
+                          final JsonMapper jsonMapper,
                           final ConfigProperties configProperties,
                           final ContactRepository contactRepository,
                           final EFapsClient eFapsClient)
     {
         this.mongoTemplate = mongoTemplate;
         this.userAudtiting = userAudtiting;
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
         this.configProperties = configProperties;
         this.contactRepository = contactRepository;
         this.eFapsClient = eFapsClient;
@@ -179,7 +179,7 @@ public class ContactService
                     LOG.info("Reading contacts from: {}", zipEntry.getName());
                     final var writer = new StringWriter();
                     IOUtils.copy(zis, writer, "UTF-8");
-                    final var contacts = objectMapper.readValue(writer.toString(), new TypeReference<List<ContactDto>>()
+                    final var contacts = jsonMapper.readValue(writer.toString(), new TypeReference<List<ContactDto>>()
                     {
                     });
                     LOG.info("Loaded contacts {} - {} ", i, i + contacts.size());

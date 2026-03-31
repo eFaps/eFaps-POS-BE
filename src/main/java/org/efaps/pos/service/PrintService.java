@@ -75,7 +75,7 @@ import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 import net.sf.jasperreports.json.data.JsonQLDataSource;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 public class PrintService
@@ -87,7 +87,7 @@ public class PrintService
                     .expireAfterWrite(10, TimeUnit.MINUTES)
                     .build();
 
-    private final ObjectMapper jacksonObjectMapper;
+    private final JsonMapper jsonMapper;
     private final PrinterRepository printerRepository;
     private final ConfigProperties configProperties;
     private final GridFsService gridFsService;
@@ -96,7 +96,7 @@ public class PrintService
     private final EmployeeService employeeService;
     private final List<IPrintListener> printListeners;
 
-    public PrintService(final ObjectMapper _jacksonObjectMapper,
+    public PrintService(final JsonMapper jsonMapper,
                         final GridFsService _gridFsService,
                         final ConfigProperties _configProperties,
                         final PrinterRepository _printerRepository,
@@ -105,7 +105,7 @@ public class PrintService
                         final EmployeeService employeeService,
                         final Optional<List<IPrintListener>> _printListeners)
     {
-        jacksonObjectMapper = _jacksonObjectMapper;
+        this.jsonMapper = jsonMapper;
         gridFsService = _gridFsService;
         configProperties = _configProperties;
         printerRepository = _printerRepository;
@@ -123,10 +123,10 @@ public class PrintService
         byte[] ret = null;
         try {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Creating report for {}", jacksonObjectMapper.writerWithDefaultPrettyPrinter()
+                LOG.debug("Creating report for {}", jsonMapper.writerWithDefaultPrettyPrinter()
                                 .writeValueAsString(_object));
             }
-            ret = print2Image(new ByteArrayInputStream(jacksonObjectMapper.writeValueAsBytes(_object)),
+            ret = print2Image(new ByteArrayInputStream(jsonMapper.writeValueAsBytes(_object)),
                             gridFsService.getContent(_reportOid), _parameters);
         } catch (final IllegalStateException | IOException e) {
             LOG.error("Catched", e);
@@ -294,14 +294,14 @@ public class PrintService
     {
         try {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Creating report for {}", jacksonObjectMapper.writerWithDefaultPrettyPrinter()
+                LOG.debug("Creating report for {}", jsonMapper.writerWithDefaultPrettyPrinter()
                                 .writeValueAsString(_object));
             }
             final Map<String, Object> parameters = new HashMap<>();
             if (MapUtils.isNotEmpty(_parameters)) {
                 parameters.putAll(_parameters);
             }
-            final JsonQLDataSource datasource = new JsonQLDataSource(new ByteArrayInputStream(jacksonObjectMapper
+            final JsonQLDataSource datasource = new JsonQLDataSource(new ByteArrayInputStream(jsonMapper
                             .writeValueAsBytes(_object)));
             final JasperPrint jasperPrint = JasperFillManager.fillReport(gridFsService.getContent(_reportOid),
                             parameters, datasource);

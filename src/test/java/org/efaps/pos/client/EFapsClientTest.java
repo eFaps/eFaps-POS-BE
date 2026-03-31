@@ -32,7 +32,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 
 //@ExtendWith(SpringExtension.class)
@@ -46,7 +46,7 @@ public class EFapsClientTest
     private EFapsClient client;
 
     //@Autowired
-    private ObjectMapper mapper;
+    private JsonMapper mapper;
 
     //@Autowired
     private MongoTemplate mongoTemplate;
