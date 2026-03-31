@@ -466,7 +466,7 @@ public final class Converter
         }
         final var prices = INSTANCE.productService.evalPrices(entity);
         return ProductDto.builder()
-                        .withSKU(entity.getSKU())
+                        .withSku(entity.getSKU())
                         .withType(entity.getType())
                         .withDescription(entity.getDescription())
                         .withNote(entity.getNote())

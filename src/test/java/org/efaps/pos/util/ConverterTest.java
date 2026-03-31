@@ -121,7 +121,7 @@ public class ConverterTest
     {
         final ProductDto dto = ProductDto.builder()
                         .withOid("Asda")
-                        .withSKU("100612.001")
+                        .withSku("100612.001")
                         .withDescription("This is the product Description")
                         .withImageOid("1234.1")
                         .withNetPrice(new BigDecimal("12.50"))
