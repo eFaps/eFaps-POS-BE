@@ -53,6 +53,15 @@ public class MongoInit
         mongoTemplate.indexOps(Product.class).createIndex(textIndex);
         mongoTemplate.indexOps(PromotionInfo.class).createIndex(new Index().on("documentId", Direction.ASC));
         mongoTemplate.indexOps(PromotionInfo.class).createIndex(new Index().on("oid", Direction.ASC));
-        mongoTemplate.indexOps(Contact.class).createIndex(new Index().on("oid", Direction.ASC).unique());
+
+        // contact indexes
+        // contact index for oid was initially added without sparse --> if not spare drop it
+        final var indexInfoOpt = mongoTemplate.indexOps(Contact.class).getIndexInfo().stream()
+                        .filter(indexInfo -> "oid".equals(indexInfo.getIndexFields().get(0).getKey()))
+                        .findFirst();
+        if (indexInfoOpt.isPresent() && !indexInfoOpt.get().isSparse()) {
+            mongoTemplate.indexOps(Contact.class).dropIndex(indexInfoOpt.get().getName());
+        }
+        mongoTemplate.indexOps(Contact.class).createIndex(new Index().on("oid", Direction.ASC).unique().sparse());
     }
 }
