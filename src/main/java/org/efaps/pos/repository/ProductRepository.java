@@ -15,8 +15,11 @@
  */
 package org.efaps.pos.repository;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
+import org.efaps.pos.dto.ProductStatus;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.entity.Product;
 import org.springframework.data.domain.Page;
@@ -27,30 +30,86 @@ import org.springframework.data.mongodb.repository.Query;
 public interface ProductRepository
     extends MongoRepository<Product, String>
 {
+
     @Query("""
-        { '$or' : [\
-        { 'description' : { '$regularExpression' : { 'pattern' : '?0', 'options' : 'i'}}}, \
-        { 'sku' : { '$regularExpression' : { 'pattern' : '?0', 'options' : 'i'}}},\
-        { 'barcodes.code' : '?0'}\
-        ]} """)
-    Page<Product> find(String term, Pageable pageable);
+                    { $or : [
+                    { 'description' : { $regex : '?0', '$options' : 'i'}},
+                    { 'sku' : { $regex : '?0', '$options' : 'i'}},
+                    { 'barcodes.code' : '?0'}
+                    ]} """)
+    Page<Product> find(String term,
+                       Pageable pageable);
+
+    @Query("""
+                    { '$and' : [
+                      {'$or' : [
+                        { 'description' : { $regex : '?0', '$options' : 'i'}},
+                        { 'sku' : { $regex : '?0', '$options' : 'i'}},
+                        { 'barcodes.code' : '?0'}
+                      ]},
+                      { 'status' : { $in: ?1}}
+                    ]}
+                    """)
+    Page<Product> find(String term,
+                       Pageable pageable,
+                       Collection<ProductStatus> statuses);
 
     @Query(value = """
-        { \
-        $text : { $search: '?0' }\
-        }""", sort=" { score: { $meta: 'textScore' }}")
-    Page<Product> findText(String term, Pageable pageable);
+                    { \
+                    $text : { $search: '?0' }\
+                    }""", sort = " { score: { $meta: 'textScore' }}")
+    Page<Product> findText(String term,
+                           Pageable pageable);
 
-    @Query("{'categories.categoryOid':'?0'}")
+    @Query(value = """
+                    { $and : [
+                      { $text : { $search: '?0' }},
+                      { 'status' : { $in: ?1}}
+                    ]}
+                    """, sort = " { score: { $meta: 'textScore' }}")
+    Page<Product> findText(String term,
+                           Pageable pageable,
+                           Collection<ProductStatus> statuses);
+
+    @Query("""
+                    {'categories.categoryOid':'?0'}
+                    """)
     List<Product> findByCategoryOid(String oid);
+
+    @Query("""
+                    { $and : [
+                      {'categories.categoryOid':'?0'},
+                      { 'status' : { $in: ?1}}
+                    ]}
+                    """)
+    List<Product> findByCategoryOid(String oid,
+                                    Collection<ProductStatus> statuses);
 
     @Query("{'barcodes.code':'?0'}")
     List<Product> findByBarcode(String barcode);
 
+    @Query("""
+                    { $and : [
+                    {'barcodes.code':'?0'},
+                    { 'status' : { $in: ?1}}
+                    ]}
+                    """)
+    List<Product> findByBarcode(String barcode,
+                                Collection<ProductStatus> statuses);
+
     List<Product> findByType(ProductType type);
+
+    List<Product> findByTypeAndStatusIn(ProductType type,
+                                        Collection<ProductStatus> statuses);
 
     List<Product> findBySku(String sku);
 
+    List<Product> findBySkuAndStatusIn(String sku,
+                                       Collection<ProductStatus> statuses);
+
     @Query("{'configurationBOMs.oid':'?0'}")
     List<Product> findByBomOid(String bomOid);
+
+    Page<Product> findByStatusIn(final Pageable pageable,
+                                 final Set<ProductStatus> statuses);
 }

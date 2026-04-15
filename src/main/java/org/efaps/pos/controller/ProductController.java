@@ -16,11 +16,13 @@
 package org.efaps.pos.controller;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
+import org.efaps.pos.dto.ProductStatus;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.error.NotFoundException;
 import org.efaps.pos.service.ProductService;
@@ -50,9 +52,10 @@ public class ProductController
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<ProductDto> getProducts(final Pageable pageable)
+    public Page<ProductDto> getProducts(final Pageable pageable,
+                                        @RequestParam(name = "status", required = false) final Set<ProductStatus> statuses)
     {
-        return service.getProducts(pageable)
+        return service.getProducts(pageable, statuses)
                         .map(Converter::toDto);
     }
 
@@ -69,17 +72,19 @@ public class ProductController
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "term" })
     public List<ProductDto> findProducts(@RequestParam(name = "term") final String _term,
-                                         @RequestParam(name = "textsearch", required = false) final boolean textSearch)
+                                         @RequestParam(name = "textsearch", required = false) final boolean textSearch,
+                                         @RequestParam(name = "status", required = false) final Set<ProductStatus> statuses)
     {
-        return service.findProducts(_term, textSearch).stream()
+        return service.findProducts(_term, textSearch, statuses).stream()
                         .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "category" })
-    public List<ProductDto> getProductsByCategory(@RequestParam(name = "category") final String categoryOid)
+    public List<ProductDto> getProductsByCategory(@RequestParam(name = "category") final String categoryOid,
+                                                  @RequestParam(name = "status", required = false) final Set<ProductStatus> statuses)
     {
-        return service.findProductsByCategory(categoryOid).stream()
+        return service.findProductsByCategory(categoryOid, statuses).stream()
                         .map(Converter::toDto)
                         .sorted((productDto0,
                                  productDto1) -> {
@@ -99,25 +104,28 @@ public class ProductController
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "barcode" })
-    public List<ProductDto> getProductsByBarcode(@RequestParam(name = "barcode") final String barcode)
+    public List<ProductDto> getProductsByBarcode(@RequestParam(name = "barcode") final String barcode,
+                                                 @RequestParam(name = "status", required = false) final Set<ProductStatus> statuses)
     {
-        return service.findProductsByBarcode(barcode).stream()
+        return service.findProductsByBarcode(barcode, statuses).stream()
                         .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "sku" })
-    public List<ProductDto> getProductsBySku(@RequestParam(name = "sku") final String sku)
+    public List<ProductDto> getProductsBySku(@RequestParam(name = "sku") final String sku,
+                                             @RequestParam(name = "status", required = false) final Set<ProductStatus> statuses)
     {
-        return service.findProductsBySku(sku).stream()
+        return service.findProductsBySku(sku, statuses).stream()
                         .map(Converter::toDto)
                         .collect(Collectors.toList());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "type" })
-    public List<ProductDto> getProductsByType(@RequestParam(name = "type") final ProductType type)
+    public List<ProductDto> getProductsByType(@RequestParam(name = "type") final ProductType type,
+                                              @RequestParam(name = "status", required = false) final Set<ProductStatus> statuses)
     {
-        return service.findProductsByType(type).stream()
+        return service.findProductsByType(type, statuses).stream()
                         .map(Converter::toDto)
                         .collect(Collectors.toList());
     }

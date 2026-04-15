@@ -23,6 +23,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
@@ -31,6 +32,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.ProductRelationType;
+import org.efaps.pos.dto.ProductStatus;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.entity.Product;
 import org.efaps.pos.entity.SyncInfo;
@@ -47,7 +49,6 @@ import org.springframework.stereotype.Service;
 
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.json.JsonMapper;
-
 
 @Service
 public class ProductService
@@ -72,9 +73,16 @@ public class ProductService
         this.eFapsClient = eFapsClient;
     }
 
-    public Page<Product> getProducts(final Pageable pageable)
+    public Page<Product> getProducts(final Pageable pageable,
+                                     final Set<ProductStatus> statuses)
     {
-        return productRepository.findAll(pageable);
+        Page<Product> result;
+        if (statuses != null) {
+            result = productRepository.findByStatusIn(pageable, statuses);
+        } else {
+            result = productRepository.findAll(pageable);
+        }
+        return result;
     }
 
     public Product getProduct(final String _oid)
@@ -82,38 +90,48 @@ public class ProductService
         return _oid == null ? null : productRepository.findById(_oid).orElse(null);
     }
 
-    public List<Product> findProducts(final String _term,
-                                      boolean textSearch)
+    public List<Product> findProducts(final String term,
+                                      boolean textSearch,
+                                      final Set<ProductStatus> statuses)
     {
-        return textSearch
-                        ? productRepository
-                                        .findText(_term, PageRequest.of(0,
-                                                        configProperties.getBeInst().getMaxSearchResult()))
-                                        .toList()
-                        : productRepository
-                                        .find(_term, PageRequest.of(0,
-                                                        configProperties.getBeInst().getMaxSearchResult()))
-                                        .toList();
+        final var pageRequest = PageRequest.of(0, configProperties.getBeInst().getMaxSearchResult());
+        List<Product> result;
+        if (statuses != null) {
+            result = textSearch ? productRepository.findText(term, pageRequest, statuses).toList()
+                            : productRepository.find(term, pageRequest, statuses).toList();
+        } else {
+            result = textSearch ? productRepository.findText(term, pageRequest).toList()
+                            : productRepository.find(term, pageRequest).toList();
+        }
+        return result;
     }
 
-    public List<Product> findProductsByCategory(final String _categoryOid)
+    public List<Product> findProductsByCategory(final String categoryOid,
+                                                final Set<ProductStatus> statuses)
     {
-        return productRepository.findByCategoryOid(_categoryOid);
+        return statuses == null ? productRepository.findByCategoryOid(categoryOid)
+                        : productRepository.findByCategoryOid(categoryOid, statuses);
     }
 
-    public List<Product> findProductsByBarcode(final String _barcode)
+    public List<Product> findProductsByBarcode(final String barcode,
+                                               final Set<ProductStatus> statuses)
     {
-        return productRepository.findByBarcode(_barcode);
+        return statuses == null ? productRepository.findByBarcode(barcode)
+                        : productRepository.findByBarcode(barcode, statuses);
     }
 
-    public List<Product> findProductsBySku(final String sku)
+    public List<Product> findProductsBySku(final String sku,
+                                           final Set<ProductStatus> statuses)
     {
-        return productRepository.findBySku(sku);
+        return statuses == null ? productRepository.findBySku(sku)
+                        : productRepository.findBySkuAndStatusIn(sku, statuses);
     }
 
-    public List<Product> findProductsByType(final ProductType _type)
+    public List<Product> findProductsByType(final ProductType type,
+                                            final Set<ProductStatus> statuses)
     {
-        return productRepository.findByType(_type);
+        return statuses == null ? productRepository.findByType(type)
+                        : productRepository.findByTypeAndStatusIn(type, statuses);
     }
 
     public Product getProductByBomOid(final String bomOid)

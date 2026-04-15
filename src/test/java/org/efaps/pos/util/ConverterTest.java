@@ -133,7 +133,7 @@ public class ConverterTest
 
         final Product product = Converter.toEntity(dto);
         assertEquals(dto.getOid(), product.getOid());
-        assertEquals(dto.getSku(), product.getSKU());
+        assertEquals(dto.getSku(), product.getSku());
         assertEquals(dto.getDescription(), product.getDescription());
         assertEquals(dto.getImageOid(), product.getImageOid());
         assertEquals(dto.getNetPrice(), product.getNetPrice());
@@ -147,7 +147,7 @@ public class ConverterTest
     public void testProductToDto()
     {
         final Product entity = new Product()
-                        .setSKU("100612.001")
+                        .setSku("100612.001")
                         .setDescription("This is the product Description")
                         .setImageOid("1234.1")
                         .setNetPrice(new BigDecimal("12.50"))
@@ -157,7 +157,7 @@ public class ConverterTest
 
         final ProductDto dto = Converter.toDto(entity);
         assertEquals(entity.getOid(), dto.getOid());
-        assertEquals(entity.getSKU(), dto.getSku());
+        assertEquals(entity.getSku(), dto.getSku());
         assertEquals(entity.getDescription(), dto.getDescription());
         assertEquals(entity.getImageOid(), dto.getImageOid());
         assertEquals(entity.getNetPrice(), dto.getNetPrice());

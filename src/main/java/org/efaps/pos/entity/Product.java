@@ -23,6 +23,7 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.Currency;
 import org.efaps.pos.dto.ProductIndividual;
+import org.efaps.pos.dto.ProductStatus;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.pojo.BOMGroupConfig;
 import org.efaps.pos.pojo.Barcode;
@@ -60,6 +61,7 @@ public class Product
     private Set<BOMGroupConfig> bomGroupConfigs;
     private Set<ConfigurationBOM> configurationBOMs;
     private ProductIndividual individual;
+    private ProductStatus status;
 
     @LastModifiedDate
     private Instant lastModifiedDate;
@@ -76,12 +78,12 @@ public class Product
         return this;
     }
 
-    public String getSKU()
+    public String getSku()
     {
         return sku;
     }
 
-    public Product setSKU(final String _sku)
+    public Product setSku(final String _sku)
     {
         sku = _sku;
         return this;
@@ -271,6 +273,17 @@ public class Product
     public Product setIndividual(ProductIndividual individual)
     {
         this.individual = individual;
+        return this;
+    }
+
+    public ProductStatus getStatus()
+    {
+        return status;
+    }
+
+    public Product setStatus(ProductStatus status)
+    {
+        this.status = status;
         return this;
     }
 

@@ -93,6 +93,7 @@ import org.efaps.pos.dto.Product2CategoryDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.ProductHeadDto;
 import org.efaps.pos.dto.ProductRelationDto;
+import org.efaps.pos.dto.ProductStatus;
 import org.efaps.pos.dto.PromoDetailDto;
 import org.efaps.pos.dto.PromoInfoDto;
 import org.efaps.pos.dto.PromotionHeaderDto;
@@ -327,33 +328,34 @@ public final class Converter
                                                         .collect(Collectors.toSet()));
     }
 
-    public static Product toEntity(final ProductDto _dto)
+    public static Product toEntity(final ProductDto dto)
     {
-        final Product ret = new Product().setOid(_dto.getOid())
-                        .setSKU(_dto.getSku())
-                        .setType(_dto.getType())
-                        .setImageOid(_dto.getImageOid())
-                        .setDescription(_dto.getDescription())
-                        .setNote(_dto.getNote())
-                        .setNetPrice(_dto.getNetPrice())
-                        .setCrossPrice(_dto.getCrossPrice())
-                        .setCurrency(_dto.getCurrency())
-                        .setCategories(_dto.getCategories().stream().map(Converter::toEntity)
+        final Product ret = new Product().setOid(dto.getOid())
+                        .setSku(dto.getSku())
+                        .setType(dto.getType())
+                        .setImageOid(dto.getImageOid())
+                        .setDescription(dto.getDescription())
+                        .setNote(dto.getNote())
+                        .setNetPrice(dto.getNetPrice())
+                        .setCrossPrice(dto.getCrossPrice())
+                        .setCurrency(dto.getCurrency())
+                        .setCategories(dto.getCategories().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()))
-                        .setTaxes(_dto.getTaxes().stream().map(_tax -> _tax == null ? null : toEntity(_tax))
+                        .setTaxes(dto.getTaxes().stream().map(_tax -> _tax == null ? null : toEntity(_tax))
                                         .collect(Collectors.toSet()))
-                        .setUoM(_dto.getUoM())
-                        .setUoMCode(_dto.getUoMCode())
-                        .setRelations(_dto.getRelations().stream().map(Converter::toEntity)
+                        .setUoM(dto.getUoM())
+                        .setUoMCode(dto.getUoMCode())
+                        .setRelations(dto.getRelations().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()))
-                        .setIndicationSets(_dto.getIndicationSets().stream().map(Converter::toEntity)
+                        .setIndicationSets(dto.getIndicationSets().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()))
-                        .setBarcodes(_dto.getBarcodes().stream().map(Converter::toEntity).collect(Collectors.toSet()))
-                        .setBomGroupConfigs(_dto.getBomGroupConfigs().stream().map(Converter::toEntity)
+                        .setBarcodes(dto.getBarcodes().stream().map(Converter::toEntity).collect(Collectors.toSet()))
+                        .setBomGroupConfigs(dto.getBomGroupConfigs().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()))
-                        .setConfigurationBOMs(_dto.getConfigurationBOMs().stream().map(Converter::toEntity)
+                        .setConfigurationBOMs(dto.getConfigurationBOMs().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()))
-                        .setIndividual(_dto.getIndividual());
+                        .setIndividual(dto.getIndividual())
+                        .setStatus(dto.getStatus() == null ? ProductStatus.ACTIVE : dto.getStatus());
         return ret;
     }
 
@@ -466,7 +468,7 @@ public final class Converter
         }
         final var prices = INSTANCE.productService.evalPrices(entity);
         return ProductDto.builder()
-                        .withSku(entity.getSKU())
+                        .withSku(entity.getSku())
                         .withType(entity.getType())
                         .withDescription(entity.getDescription())
                         .withNote(entity.getNote())
@@ -512,6 +514,7 @@ public final class Converter
                                                         .map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withIndividual(entity.getIndividual())
+                        .withStatus(entity.getStatus())
                         .build();
     }
 
@@ -1893,9 +1896,10 @@ public final class Converter
                         .withId(entity.getId())
                         .withProduct(ProductHeadDto.builder()
                                         .withOid(product.getOid())
-                                        .withSku(product.getSKU())
+                                        .withSku(product.getSku())
                                         .withDescription(product.getDescription())
                                         .withUoM(product.getUoM())
+                                        .withStatus(product.getStatus())
                                         .build())
                         .withQuantity(entity.getQuantity())
                         .withComment(entity.getComment())

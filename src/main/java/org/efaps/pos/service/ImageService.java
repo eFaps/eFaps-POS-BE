@@ -63,7 +63,7 @@ public class ImageService
         final var imageOids = new HashSet<String>();
         var pageable = Pageable.ofSize(1000);
         while (pageable != null) {
-            final var productPage = productService.getProducts(pageable);
+            final var productPage = productService.getProducts(pageable, null);
             for (final Product product : productPage.getContent()) {
                 if (product.getImageOid() != null) {
                     LOG.debug("Marking Product-Image to be synced {}", product.getImageOid());

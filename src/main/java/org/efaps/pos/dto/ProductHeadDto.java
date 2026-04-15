@@ -25,12 +25,15 @@ public class ProductHeadDto
     private final String sku;
     private final String description;
     private final String uoM;
+    private final ProductStatus status;
+
     private ProductHeadDto(Builder builder)
     {
         this.oid = builder.oid;
         this.sku = builder.sku;
         this.description = builder.description;
         this.uoM = builder.uoM;
+        this.status = builder.status;
     }
     public String getOid()
     {
@@ -52,6 +55,10 @@ public class ProductHeadDto
         return uoM;
     }
 
+    public ProductStatus getStatus()
+    {
+        return status;
+    }
     public static Builder builder()
     {
         return new Builder();
@@ -63,6 +70,7 @@ public class ProductHeadDto
         private String sku;
         private String description;
         private String uoM;
+        private ProductStatus status;
 
         private Builder()
         {
@@ -89,6 +97,12 @@ public class ProductHeadDto
         public Builder withUoM(String uoM)
         {
             this.uoM = uoM;
+            return this;
+        }
+
+        public Builder withStatus(ProductStatus status)
+        {
+            this.status = status;
             return this;
         }
 
