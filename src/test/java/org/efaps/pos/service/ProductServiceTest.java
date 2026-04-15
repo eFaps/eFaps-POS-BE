@@ -59,7 +59,7 @@ public class ProductServiceTest
                         .setDescription("This is a description");
         mongoTemplate.save(product);
 
-        final Page<Product> products = productcService.getProducts(PageRequest.of(0, 20));
+        final Page<Product> products = productcService.getProducts(PageRequest.of(0, 20), null);
         assertEquals(1, products.getContent().size());
         assertEquals("1234.652", products.getContent().get(0).getOid());
         assertEquals("This is a description", products.getContent().get(0).getDescription());
