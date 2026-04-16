@@ -282,8 +282,6 @@ public class ContactService
         final var update = new Update()
                         .setOnInsert("oid", contact.getOid())
                         .setOnInsert("origin", Origin.REMOTE)
-                        .setOnInsert("user", userAudtiting.getCurrentAuditor().get())
-                        .setOnInsert("createdDate", Instant.now())
                         .set("email", contact.getEmail())
                         .set("idNumber", contact.getIdNumber())
                         .set("idType", contact.getIdType())
@@ -291,8 +289,12 @@ public class ContactService
                         .set("firstLastName", contact.getFirstLastName())
                         .set("forename", contact.getForename())
                         .set("secondLastName", contact.getSecondLastName())
-                        .set("lastModifiedBy", userAudtiting.getCurrentAuditor().get())
-                        .set("lastModifiedDate", Instant.now());
+                        .setOnInsert("user", userAudtiting.getCurrentAuditor().get())
+                        .setOnInsert("createdDate", Instant.now())
+                        .set("lastModifiedUser", userAudtiting.getCurrentAuditor().get())
+                        .set("lastModifiedDate", Instant.now())
+                        .inc("version")
+                        .setOnInsert("_class", Contact.class.getName());
         bulkOps.upsert(query, update);
     }
 
