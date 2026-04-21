@@ -115,6 +115,12 @@ public class QuartzConfig
     @Value("${org.quartz.jobs.syncProducts.delay:240}")
     private Integer syncProductsDelay;
 
+    @Value("${org.quartz.jobs.syncCategories.interval:0}")
+    private Integer syncCategoriesInterval;
+
+    @Value("${org.quartz.jobs.syncCategories.delay:360}")
+    private Integer syncCategoriesDelay;
+
     @Value("${org.quartz.jobs.syncLogs.interval:0}")
     private Integer syncLogsInterval;
 
@@ -473,6 +479,32 @@ public class QuartzConfig
         stFactory.setJobDetail(syncProductsJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(syncProductsDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncProductsInterval) * 1000);
+        return stFactory;
+    }
+
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncCategories.interval:0} > 0}")
+    public MethodInvokingJobDetailFactoryBean syncCategoriesJobDetailFactoryBean()
+    {
+        final MethodInvokingJobDetailFactoryBean obj = new MethodInvokingJobDetailFactoryBean();
+        obj.setTargetObject(syncService);
+        obj.setTargetMethod("runSyncJob");
+        obj.setArguments("syncCategories");
+        obj.setConcurrent(false);
+        return obj;
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "#{${org.quartz.jobs.syncCategories.interval:0} > 0}")
+    public SimpleTriggerFactoryBean syncCategoriesTriggerFactoryBean()
+    {
+        LOG.info("Registering Quartz trigger 'syncCategories' with delay: {}s, interval: {}s",
+                        syncCategoriesDelay, syncCategoriesInterval);
+        final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
+        stFactory.setJobDetail(syncCategoriesJobDetailFactoryBean().getObject());
+        stFactory.setStartDelay(syncCategoriesDelay * 1000);
+        stFactory.setRepeatInterval(Math.abs(syncCategoriesInterval) * 1000);
         return stFactory;
     }
 
