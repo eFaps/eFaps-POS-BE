@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.entity;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,7 +25,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.efaps.pos.dto.Permission;
 import org.efaps.pos.dto.Roles;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -62,6 +67,18 @@ public class User
     private Collection<String> workspaceOids;
 
     private Collection<Permission> permissions;
+
+    @CreatedBy
+    private String user;
+
+    @CreatedDate
+    private Instant createdDate;
+
+    @LastModifiedBy
+    private String lastModifiedUser;
+
+    @LastModifiedDate
+    private Instant lastModifiedDate;
 
     public String getId()
     {
@@ -226,5 +243,25 @@ public class User
     public String toString()
     {
         return ReflectionToStringBuilder.toString(this);
+    }
+
+    public String getUser()
+    {
+        return user;
+    }
+
+    public Instant getCreatedDate()
+    {
+        return createdDate;
+    }
+
+    public String getLastModifiedUser()
+    {
+        return lastModifiedUser;
+    }
+
+    public Instant getLastModifiedDate()
+    {
+        return lastModifiedDate;
     }
 }
