@@ -279,7 +279,7 @@ public class EFapsClient
 
     public List<UserDto> getUsers()
     {
-        List<UserDto> ret = new ArrayList<>();
+        List<UserDto> ret = null;
         try {
             final RequestEntity<?> requestEntity = get(getEFapsConfig().getUserPath());
             final ResponseEntity<List<UserDto>> response = getRestTemplate().exchange(requestEntity,

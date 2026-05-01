@@ -19,28 +19,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.config.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
-import org.efaps.pos.entity.Config;
-import org.efaps.pos.entity.Employee;
-import org.efaps.pos.entity.Pos;
-import org.efaps.pos.entity.Printer;
-import org.efaps.pos.entity.Sequence;
 import org.efaps.pos.entity.SyncInfo;
-import org.efaps.pos.entity.User;
-import org.efaps.pos.entity.Warehouse;
 import org.efaps.pos.pojo.StashId;
-import org.efaps.pos.repository.PrinterRepository;
-import org.efaps.pos.repository.SequenceRepository;
-import org.efaps.pos.repository.UserRepository;
-import org.efaps.pos.repository.WarehouseRepository;
-import org.efaps.pos.util.Converter;
 import org.efaps.pos.util.SyncServiceDeactivatedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,11 +41,6 @@ public class SyncService
     private static final Logger LOG = LoggerFactory.getLogger(SyncService.class);
 
     private final MongoTemplate mongoTemplate;
-    private final EFapsClient eFapsClient;
-    private final SequenceRepository sequenceRepository;
-    private final UserRepository userRepository;
-    private final WarehouseRepository warehouseRepository;
-    private final PrinterRepository printerRepository;
     private final ConfigProperties configProperties;
     private final ContactService contactService;
     private final DocumentService documentService;
@@ -92,18 +71,25 @@ public class SyncService
 
     private final InventoryService inventoryService;
 
+    private final UserService userService;
+
+    private final PrintService printService;
+
+    private final SequenceService sequenceService;
+
+    private final PosService posService;
+
+    private final EmployeeService employeeService;
+
+    private final ConfigService configService;
+
     @Autowired
-    public SyncService(final MongoTemplate _mongoTemplate,
-                       final SequenceRepository _sequenceRepository,
-                       final UserRepository _userRepository,
-                       final WarehouseRepository _warehouseRepository,
-                       final PrinterRepository _printerRepository,
-                       final EFapsClient _eFapsClient,
-                       final ConfigProperties _configProperties,
+    public SyncService(final MongoTemplate mongoTemplate,
+                       final ConfigProperties configProperties,
                        final WorkspaceService workspaceService,
                        final ContactService contactService,
                        final DocumentService documentService,
-                       final ExchangeRateService _exchangeRateService,
+                       final ExchangeRateService exchangeRateService,
                        final LogService logService,
                        final PromotionService promotionService,
                        final ProductService productService,
@@ -118,19 +104,20 @@ public class SyncService
                        final ReceiptService receiptService,
                        final TicketService ticketService,
                        final CreditNoteService creditNoteService,
-                       final BalanceService balanceService)
+                       final BalanceService balanceService,
+                       final UserService userService,
+                       final PrintService printService,
+                       final SequenceService sequenceService,
+                       final PosService posService,
+                       final EmployeeService employeeService,
+                       final ConfigService configService)
     {
-        mongoTemplate = _mongoTemplate;
-        sequenceRepository = _sequenceRepository;
-        userRepository = _userRepository;
-        warehouseRepository = _warehouseRepository;
-        printerRepository = _printerRepository;
-        eFapsClient = _eFapsClient;
-        configProperties = _configProperties;
+        this.mongoTemplate = mongoTemplate;
+        this.configProperties = configProperties;
         this.workspaceService = workspaceService;
         this.contactService = contactService;
         this.documentService = documentService;
-        exchangeRateService = _exchangeRateService;
+        this.exchangeRateService = exchangeRateService;
         this.logService = logService;
         this.promotionService = promotionService;
         this.productService = productService;
@@ -146,6 +133,12 @@ public class SyncService
         this.ticketService = ticketService;
         this.creditNoteService = creditNoteService;
         this.balanceService = balanceService;
+        this.userService = userService;
+        this.printService = printService;
+        this.sequenceService= sequenceService;
+        this.posService = posService;
+        this.employeeService = employeeService;
+        this.configService = configService;
     }
 
     public void runSyncJob(final String methodName)
@@ -190,11 +183,8 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Properties");
-        final Map<String, String> properties = eFapsClient.getProperties();
-        if (!properties.isEmpty()) {
-            final Config config = new Config().setId(Config.KEY).setProperties(properties);
-            mongoTemplate.save(config);
+        if (configService.syncProperties(getSync(StashId.PROPERTIESSYNC))) {
+            registerSync(StashId.PROPERTIESSYNC);
         }
     }
 
@@ -245,15 +235,9 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Warehouses");
-        final List<Warehouse> warehouses = eFapsClient.getWarehouses().stream()
-                        .map(Converter::toEntity)
-                        .collect(Collectors.toList());
-        if (!warehouses.isEmpty()) {
-            warehouseRepository.deleteAll();
-            warehouses.forEach(workspace -> warehouseRepository.save(workspace));
+        if (inventoryService.syncWarehouses(getSync(StashId.WAREHOUSESYNC))) {
+            registerSync(StashId.WAREHOUSESYNC);
         }
-        registerSync(StashId.WAREHOUSESYNC);
     }
 
     public void syncExchangeRates()
@@ -284,15 +268,9 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Printers");
-        final List<Printer> printers = eFapsClient.getPrinters().stream()
-                        .map(Converter::toEntity)
-                        .collect(Collectors.toList());
-        if (!printers.isEmpty()) {
-            printerRepository.deleteAll();
-            printers.forEach(printer -> printerRepository.save(printer));
+        if (printService.syncPrinters(getSync(StashId.PRINTERSYNC))) {
+            registerSync(StashId.PRINTERSYNC);
         }
-        registerSync(StashId.PRINTERSYNC);
     }
 
     public void syncPOSs()
@@ -301,22 +279,9 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing POSs");
-        final List<Pos> poss = eFapsClient.getPOSs().stream()
-                        .map(Converter::toEntity)
-                        .collect(Collectors.toList());
-        if (!poss.isEmpty()) {
-            final List<Pos> existingPoss = mongoTemplate.findAll(Pos.class);
-            existingPoss.forEach(existing -> {
-                if (!poss.stream()
-                                .filter(pos -> pos.getOid().equals(existing.getOid())).findFirst()
-                                .isPresent()) {
-                    mongoTemplate.remove(existing);
-                }
-            });
-            poss.forEach(pos -> mongoTemplate.save(pos));
+        if (posService.syncPOSs(getSync(StashId.POSSYNC))) {
+            registerSync(StashId.POSSYNC);
         }
-        registerSync(StashId.POSSYNC);
     }
 
     public void syncUsers()
@@ -325,20 +290,9 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-
-        LOG.info("Syncing Users");
-        final List<User> users = eFapsClient.getUsers().stream()
-                        .map(Converter::toEntity)
-                        .collect(Collectors.toList());
-        users.forEach(user -> userRepository.save(user));
-
-        final var allUsers = userRepository.findAll();
-        allUsers.forEach(existingUser -> {
-            if (users.stream().noneMatch(au -> au.getOid().equals(existingUser.getOid()))) {
-                userRepository.deleteById(existingUser.getId());
-            }
-        });
-        registerSync(StashId.USERSYNC);
+        if (userService.syncUsers(getSync(StashId.USERSYNC))) {
+            registerSync(StashId.USERSYNC);
+        }
     }
 
     public void syncPayables()
@@ -448,28 +402,10 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Sequences");
-        final List<Sequence> sequences = eFapsClient.getSequences().stream()
-                        .map(Converter::toEntity)
-                        .collect(Collectors.toList());
-        for (final Sequence sequence : sequences) {
-            LOG.debug("Syncing Sequence: {}", sequence);
-            final Optional<Sequence> seqOpt = sequenceRepository.findByOid(sequence.getOid());
-            if (seqOpt.isPresent()) {
-                final Sequence es = seqOpt.get();
-                if (es.getSeq() < sequence.getSeq()) {
-                    es.setSeq(sequence.getSeq());
-                    sequenceRepository.save(es);
-                }
-                if (!es.getFormat().equals(sequence.getFormat())) {
-                    es.setFormat(sequence.getFormat());
-                    sequenceRepository.save(es);
-                }
-            } else {
-                sequenceRepository.save(sequence);
-            }
+
+        if (sequenceService.syncSequences(getSync(StashId.SEQUENCESYNC))) {
+            registerSync(StashId.SEQUENCESYNC);
         }
-        registerSync(StashId.SEQUENCESYNC);
     }
 
     public void syncAllContacts()
@@ -504,21 +440,9 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        LOG.info("Syncing Employees");
-        final List<Employee> employees = eFapsClient.getEmployees().stream()
-                        .map(Converter::toEntity)
-                        .collect(Collectors.toList());
-        if (!employees.isEmpty()) {
-            final List<Employee> existingEmployees = mongoTemplate.findAll(Employee.class);
-            existingEmployees.forEach(existing -> {
-                if (!employees.stream().filter(employee -> employee.getOid().equals(existing.getOid())).findFirst()
-                                .isPresent()) {
-                    mongoTemplate.remove(existing);
-                }
-            });
-            employees.forEach(product -> mongoTemplate.save(product));
+        if (employeeService.syncEmployees(getSync(StashId.EMPLOYEESYNC))) {
+            registerSync(StashId.EMPLOYEESYNC);
         }
-        registerSync(StashId.EMPLOYEESYNC);
     }
 
     public void syncPosFiles()
@@ -652,10 +576,15 @@ public class SyncService
 
     public enum SyncDirective
     {
-
-        ALL(null), PROMOTIONS("syncPromotions"), PRODUCTS("syncAllProducts"), WORKSPACES(
-                        "syncWorkspaces"), EXCHANGERATES("syncExchangeRates"), USERS("syncUsers"), CATEGORIES(
-                                        "syncCategories"), INVENTORY("syncInventory"), POSFILES("syncPosFiles");
+        ALL(null),
+        PROMOTIONS("syncPromotions"),
+        PRODUCTS("syncAllProducts"),
+        WORKSPACES("syncWorkspaces"),
+        EXCHANGERATES("syncExchangeRates"),
+        USERS("syncUsers"),
+        CATEGORIES("syncCategories"),
+        INVENTORY("syncInventory"),
+        POSFILES("syncPosFiles");
 
         String method;
 

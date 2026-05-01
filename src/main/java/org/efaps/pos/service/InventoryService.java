@@ -184,4 +184,17 @@ public class InventoryService
         }
         return true;
     }
+
+    public boolean syncWarehouses(final SyncInfo syncInfo)
+    {
+        LOG.info("Syncing Warehouses");
+        final List<Warehouse> warehouses = eFapsClient.getWarehouses().stream()
+                        .map(Converter::toEntity)
+                        .collect(Collectors.toList());
+        if (!warehouses.isEmpty()) {
+            warehouseRepository.deleteAll();
+            warehouses.forEach(workspace -> warehouseRepository.save(workspace));
+        }
+        return true;
+    }
 }

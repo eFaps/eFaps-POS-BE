@@ -16,9 +16,15 @@
 package org.efaps.pos.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.entity.User;
 import org.efaps.pos.repository.UserRepository;
+import org.efaps.pos.util.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,15 +37,20 @@ public class UserService
     implements UserDetailsService
 {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
+
+    private final EFapsClient eFapsClient;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(final UserRepository _userRepository,
-                       final PasswordEncoder _passwordEncoder)
+    public UserService(final EFapsClient eFapsClient,
+                       final UserRepository userRepository,
+                       final PasswordEncoder passwordEncoder)
     {
-        userRepository = _userRepository;
-        passwordEncoder = _passwordEncoder;
+        this.eFapsClient = eFapsClient;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -62,5 +73,30 @@ public class UserService
     public User getUserByOid(final String userOid)
     {
         return userRepository.findOneByOid(userOid).orElse(null);
+    }
+
+    public boolean syncUsers(final SyncInfo syncInfo)
+    {
+        LOG.info("Syncing Users");
+        final var response = eFapsClient.getUsers();
+        boolean ret;
+        if (response == null) {
+            ret = false;
+            LOG.warn("Syncing of Users failed!");
+        } else {
+            final List<User> users = response.stream()
+                            .map(Converter::toEntity)
+                            .collect(Collectors.toList());
+            users.forEach(user -> userRepository.save(user));
+
+            final var allUsers = userRepository.findAll();
+            allUsers.forEach(existingUser -> {
+                if (users.stream().noneMatch(au -> au.getOid().equals(existingUser.getOid()))) {
+                    userRepository.deleteById(existingUser.getId());
+                }
+            });
+            ret = true;
+        }
+        return ret;
     }
 }

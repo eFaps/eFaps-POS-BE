@@ -23,10 +23,12 @@ import org.apache.commons.lang3.EnumUtils;
 import org.efaps.abacus.api.CrossTotalFlow;
 import org.efaps.abacus.api.TaxCalcFlow;
 import org.efaps.abacus.pojo.Configuration;
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.config.ConfigProperties.BEInst;
 import org.efaps.pos.config.ConfigProperties.Extension;
 import org.efaps.pos.entity.Config;
+import org.efaps.pos.entity.SyncInfo;
 import org.efaps.promotionengine.PromotionsConfiguration;
 import org.efaps.promotionengine.process.EngineRule;
 import org.slf4j.Logger;
@@ -36,7 +38,6 @@ import org.springframework.stereotype.Service;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
-
 
 @Service
 public class ConfigService
@@ -50,17 +51,19 @@ public class ConfigService
     public static String LOYALTY_ACTIVATE = "org.efaps.loyalty.Activate";
     public static String UPDATE_ACTIVATE = "org.efaps.pos.Update.Activate";
 
-
     private static final Logger LOG = LoggerFactory.getLogger(ConfigService.class);
 
     private final MongoTemplate mongoTemplate;
+    private final EFapsClient eFapsClient;
     private final ConfigProperties configProperties;
     private final JsonMapper jsonMapper;
 
     public ConfigService(final MongoTemplate mongoTemplate,
+                         final EFapsClient eFapsClient,
                          final ConfigProperties configProperties)
     {
         this.mongoTemplate = mongoTemplate;
+        this.eFapsClient = eFapsClient;
         this.configProperties = configProperties;
         jsonMapper = JsonMapper.builder().build();
     }
@@ -88,7 +91,8 @@ public class ConfigService
                     case "TaxScale" -> config.setTaxScale(Integer.valueOf(entry.getValue()));
                     case "CrossPriceScale" -> config.setCrossPriceScale(Integer.valueOf(entry.getValue()));
                     case "TaxCalcFlow" -> config.setTaxCalcFlow(EnumUtils.getEnum(TaxCalcFlow.class, entry.getValue()));
-                    case "CrossTotalFlow" -> config.setCrossTotalFlow(EnumUtils.getEnum(CrossTotalFlow.class, entry.getValue()));
+                    case "CrossTotalFlow" ->
+                        config.setCrossTotalFlow(EnumUtils.getEnum(CrossTotalFlow.class, entry.getValue()));
                     default -> throw new IllegalArgumentException("Unexpected value: " + entry.getKey());
                 }
 
@@ -142,8 +146,19 @@ public class ConfigService
         try {
             return jsonMapper.readValue(content, HashMap.class);
         } catch (final JacksonException e) {
-           LOG.error("Catched", e);
+            LOG.error("Catched", e);
         }
         return null;
+    }
+
+    public boolean syncProperties(SyncInfo syncInfo)
+    {
+        LOG.info("Syncing Properties");
+        final Map<String, String> properties = eFapsClient.getProperties();
+        if (!properties.isEmpty()) {
+            final Config config = new Config().setId(Config.KEY).setProperties(properties);
+            mongoTemplate.save(config);
+        }
+        return true;
     }
 }

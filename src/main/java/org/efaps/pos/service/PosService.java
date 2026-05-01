@@ -16,23 +16,38 @@
 package org.efaps.pos.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.entity.Pos;
+import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.repository.PosRepository;
+import org.efaps.pos.util.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PosService
 {
-    private final WorkspaceService workspaceService;
+
+    private static final Logger LOG = LoggerFactory.getLogger(PosService.class);
+
     private final PosRepository posRepository;
 
+    private final EFapsClient eFapsClient;
+
+    private final WorkspaceService workspaceService;
+
     @Autowired
-    public PosService(final WorkspaceService _workspaceService, final PosRepository _posRepository)
+    public PosService(final PosRepository posRepository,
+                      final EFapsClient eFapsClient,
+                      final WorkspaceService workspaceService)
     {
-        this.posRepository = _posRepository;
-        this.workspaceService = _workspaceService;
+        this.eFapsClient = eFapsClient;
+        this.posRepository = posRepository;
+        this.workspaceService = workspaceService;
     }
 
     public List<Pos> getPoss()
@@ -48,5 +63,25 @@ public class PosService
     public Pos getPos4Workspace(final String _workspaceOid)
     {
         return getPos(this.workspaceService.getWorkspace(_workspaceOid).getPosOid());
+    }
+
+    public boolean syncPOSs(SyncInfo syncInfo)
+    {
+        LOG.info("Syncing POSs");
+        final List<Pos> poss = eFapsClient.getPOSs().stream()
+                        .map(Converter::toEntity)
+                        .collect(Collectors.toList());
+        if (!poss.isEmpty()) {
+            final List<Pos> existingPoss = posRepository.findAll();
+            existingPoss.forEach(existing -> {
+                if (!poss.stream()
+                                .filter(pos -> pos.getOid().equals(existing.getOid())).findFirst()
+                                .isPresent()) {
+                    posRepository.delete(existing);
+                }
+            });
+            poss.forEach(pos -> posRepository.save(pos));
+        }
+        return true;
     }
 }

@@ -15,11 +15,22 @@
  */
 package org.efaps.pos.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.entity.Pos;
 import org.efaps.pos.entity.Sequence;
+import org.efaps.pos.entity.SyncInfo;
+import org.efaps.pos.repository.SequenceRepository;
+import org.efaps.pos.util.Converter;
+import org.efaps.pos.util.SyncServiceDeactivatedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -31,19 +42,26 @@ import org.springframework.stereotype.Service;
 @Service
 public class SequenceService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(SequenceService.class);
 
     private static String DEFAULTFORMAT = "%05d";
 
     private final MongoTemplate mongoTemplate;
+    private final SequenceRepository sequenceRepository;
+    private final EFapsClient eFapsClient;
     private final ConfigProperties configProperties;
     private final PosService posService;
 
     @Autowired
     public SequenceService(final MongoTemplate mongoTemplate,
+                           final SequenceRepository sequenceRepository,
+                           final EFapsClient eFapsClient,
                            final ConfigProperties configProperties,
                            final PosService posService)
     {
         this.mongoTemplate = mongoTemplate;
+        this.sequenceRepository = sequenceRepository;
+        this.eFapsClient=eFapsClient;
         this.configProperties = configProperties;
         this.posService = posService;
     }
@@ -128,5 +146,33 @@ public class SequenceService
             return getNextNumber(key, format, isOid);
         }
         return String.format(sequence.getFormat() == null ? format : sequence.getFormat(), sequence.getSeq());
+    }
+
+    public boolean syncSequences(SyncInfo syncInfo)
+        throws SyncServiceDeactivatedException
+    {
+
+        LOG.info("Syncing Sequences");
+        final List<Sequence> sequences = eFapsClient.getSequences().stream()
+                        .map(Converter::toEntity)
+                        .collect(Collectors.toList());
+        for (final Sequence sequence : sequences) {
+            LOG.debug("Syncing Sequence: {}", sequence);
+            final Optional<Sequence> seqOpt = sequenceRepository.findByOid(sequence.getOid());
+            if (seqOpt.isPresent()) {
+                final Sequence es = seqOpt.get();
+                if (es.getSeq() < sequence.getSeq()) {
+                    es.setSeq(sequence.getSeq());
+                    sequenceRepository.save(es);
+                }
+                if (!es.getFormat().equals(sequence.getFormat())) {
+                    es.setFormat(sequence.getFormat());
+                    sequenceRepository.save(es);
+                }
+            } else {
+                sequenceRepository.save(sequence);
+            }
+        }
+        return true;
     }
 }

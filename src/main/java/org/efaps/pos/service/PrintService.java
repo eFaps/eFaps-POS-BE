@@ -42,6 +42,7 @@ import javax.print.attribute.HashPrintServiceAttributeSet;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocType;
 import org.efaps.pos.dto.PrintEmployeeRelationDto;
@@ -55,6 +56,7 @@ import org.efaps.pos.entity.Job;
 import org.efaps.pos.entity.Order;
 import org.efaps.pos.entity.Printer;
 import org.efaps.pos.entity.Receipt;
+import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.entity.Ticket;
 import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.listener.IPrintListener;
@@ -87,6 +89,7 @@ public class PrintService
                     .expireAfterWrite(10, TimeUnit.MINUTES)
                     .build();
 
+    private final EFapsClient eFapsClient;
     private final JsonMapper jsonMapper;
     private final PrinterRepository printerRepository;
     private final ConfigProperties configProperties;
@@ -96,7 +99,8 @@ public class PrintService
     private final EmployeeService employeeService;
     private final List<IPrintListener> printListeners;
 
-    public PrintService(final JsonMapper jsonMapper,
+    public PrintService(final EFapsClient eFapsClient,
+                        final JsonMapper jsonMapper,
                         final GridFsService _gridFsService,
                         final ConfigProperties _configProperties,
                         final PrinterRepository _printerRepository,
@@ -105,6 +109,7 @@ public class PrintService
                         final EmployeeService employeeService,
                         final Optional<List<IPrintListener>> _printListeners)
     {
+        this.eFapsClient = eFapsClient;
         this.jsonMapper = jsonMapper;
         gridFsService = _gridFsService;
         configProperties = _configProperties;
@@ -337,5 +342,18 @@ public class PrintService
         for (final IPrintListener listener : printListeners) {
             listener.print(identifier, object);
         }
+    }
+
+    public boolean syncPrinters(final SyncInfo syncInfo)
+    {
+        LOG.info("Syncing Printers");
+        final List<Printer> printers = eFapsClient.getPrinters().stream()
+                        .map(Converter::toEntity)
+                        .collect(Collectors.toList());
+        if (!printers.isEmpty()) {
+            printerRepository.deleteAll();
+            printers.forEach(printer -> printerRepository.save(printer));
+        }
+        return true;
     }
 }
