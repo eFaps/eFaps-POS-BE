@@ -568,17 +568,17 @@ public final class Converter
                                         .build();
     }
 
-    public static User toEntity(final UserDto _dto)
+    public static User toEntity(final UserDto dto)
     {
-        return new User().setOid(_dto.getOid())
-                        .setUsername(_dto.getUsername())
-                        .setPassword(_dto.getPassword())
-                        .setEmployeeOid(_dto.getEmployeeOid())
-                        .setFirstName(_dto.getFirstName())
-                        .setSurName(_dto.getSurName())
-                        .setVisible(_dto.isVisible())
-                        .setWorkspaceOids(_dto.getWorkspaceOids())
-                        .setPermissions(_dto.getPermissions());
+        return new User().setOid(dto.getOid())
+                        .setUsername(dto.getUsername())
+                        .setPassword(dto.getPassword())
+                        .setEmployeeOid(dto.getEmployeeOid())
+                        .setFirstName(dto.getFirstName())
+                        .setSurName(dto.getSurName())
+                        .setVisible(dto.isVisible())
+                        .setWorkspaceOids(dto.getWorkspaceOids())
+                        .setPermissions(dto.getPermissions());
     }
 
     public static Sequence toEntity(final SequenceDto _dto)
