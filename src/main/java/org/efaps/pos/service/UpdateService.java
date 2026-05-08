@@ -32,11 +32,13 @@ import org.efaps.pos.dto.UpdateConfirmationDto;
 import org.efaps.pos.dto.UpdateDto;
 import org.efaps.pos.dto.UpdateStatus;
 import org.efaps.pos.entity.UpdateInfo;
+import org.efaps.pos.util.IdentException;
 import org.efaps.pos.util.VersionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 
 @Service
 public class UpdateService
@@ -74,7 +76,7 @@ public class UpdateService
                                     .withStatus(UpdateStatus.DOWNLOADED)
                                     .withVersion(updateDto.getVersion())
                                     .build());
-                } catch (final IOException e) {
+                } catch (final IOException | RestClientException | IdentException e) {
                     LOG.error("Update preperation failed", e);
                 }
             } else {
@@ -134,7 +136,7 @@ public class UpdateService
     }
 
     protected Path adhereInstructions(final UpdateDto update)
-        throws IOException, ArchiveException
+        throws IOException, ArchiveException, RestClientException, IdentException
     {
         final var tempFolder = getTempFolder(update);
         FileUtils.forceMkdir(tempFolder);

@@ -27,6 +27,7 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.UpdateDto;
 import org.efaps.pos.dto.UpdateInstructionDto;
 import org.efaps.pos.entity.Identifier;
+import org.efaps.pos.util.IdentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +43,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
+import org.springframework.web.client.RestClientException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles(profiles = { "test" })
@@ -74,7 +76,7 @@ public class UpdateServiceTest
 
     @Test
     public void testCreateStructure()
-        throws IOException, ArchiveException
+        throws IOException, ArchiveException, RestClientException, IdentException
     {
 
         final var apple = IOUtils.toByteArray(getClass().getClassLoader().getResourceAsStream("apple.jpeg"));

@@ -447,16 +447,10 @@ public class EFapsClient
     }
 
     public String getFilledInTemplate(final String oid)
+        throws IdentException, RestClientException
     {
-        String ret = null;
-        try {
-            final var requestEntity = get(getEFapsConfig().getUpdatePath() + "/filled-in-template/" + oid);
-            final var response = getRestTemplate().exchange(requestEntity, String.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
-            LOG.error("Catched error during download of TemplatedFile for  oid: '{}'", oid);
-        }
-        return ret;
+        final var requestEntity = get(getEFapsConfig().getUpdatePath() + "/filled-in-template/" + oid);
+        return getRestTemplate().exchange(requestEntity, String.class).getBody();
     }
 
     public BalanceDto postBalance(final BalanceDto _balance)
@@ -638,24 +632,21 @@ public class EFapsClient
     }
 
     public Checkout checkout(final String _oid)
+        throws RestClientException
     {
         Checkout ret = null;
-        try {
-            final URI uri = UriComponentsBuilder.fromUri(getEFapsConfig().getBaseUrl())
-                            .path(getEFapsConfig().getCheckoutPath())
-                            .queryParam("oid", _oid)
-                            .queryParam("ident", getIdentifier())
-                            .build().toUri();
-            final RequestEntity<?> requestEntity = get(uri);
-            final ResponseEntity<byte[]> response = getRestTemplate().exchange(requestEntity, byte[].class);
-            if (response.getBody() != null) {
-                ret = new Checkout();
-                ret.setContent(response.getBody());
-                ret.setContentType(response.getHeaders().getContentType());
-                ret.setFilename(response.getHeaders().getContentDisposition().getFilename());
-            }
-        } catch (final RestClientException e) {
-            LOG.error("Catched error during checkout for oid: '{}'", _oid);
+        final URI uri = UriComponentsBuilder.fromUri(getEFapsConfig().getBaseUrl())
+                        .path(getEFapsConfig().getCheckoutPath())
+                        .queryParam("oid", _oid)
+                        .queryParam("ident", getIdentifier())
+                        .build().toUri();
+        final RequestEntity<?> requestEntity = get(uri);
+        final ResponseEntity<byte[]> response = getRestTemplate().exchange(requestEntity, byte[].class);
+        if (response.getBody() != null) {
+            ret = new Checkout();
+            ret.setContent(response.getBody());
+            ret.setContentType(response.getHeaders().getContentType());
+            ret.setFilename(response.getHeaders().getContentDisposition().getFilename());
         }
         return ret;
     }
