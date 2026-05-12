@@ -59,14 +59,14 @@ public class CategoryService
         return categoryRepository.findById(_oid).orElseThrow(CategoryNotFoundException::new);
     }
 
-    public void sync()
+    public List<Category> syncCategories()
     {
-        LOG.info("Syncing Categories");
+        LOG.info("Syncing all Categories");
         final List<Category> categories = eFapsClient.getCategories().stream()
                         .map(Converter::toEntity)
                         .collect(Collectors.toList());
         if (!categories.isEmpty()) {
-            final var catOids  =categories.stream().map(Category::getOid).collect(Collectors.toSet());
+            final var catOids = categories.stream().map(Category::getOid).collect(Collectors.toSet());
             categoryRepository.findAll().forEach(existing -> {
                 if (!catOids.contains(existing.getOid())) {
                     categoryRepository.delete(existing);
@@ -76,5 +76,6 @@ public class CategoryService
                 categoryRepository.save(category);
             }
         }
+        return categories;
     }
 }

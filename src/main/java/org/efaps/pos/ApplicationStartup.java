@@ -92,7 +92,7 @@ public class ApplicationStartup
                 syncService.syncPOSs();
                 syncService.syncWorkspaces();
                 syncService.syncAllProducts();
-                syncService.syncCategories();
+                syncService.syncAllCategories();
                 syncService.syncPromotions();
                 syncService.syncBalances();
                 syncService.syncReceipts();

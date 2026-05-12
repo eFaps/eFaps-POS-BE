@@ -21,11 +21,13 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
 import org.efaps.pos.client.Checkout;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.dto.StoreStatus;
 import org.efaps.pos.dto.StoreStatusRequestDto;
+import org.efaps.pos.entity.Category;
 import org.efaps.pos.entity.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +105,14 @@ public class ImageService
             imageOids.add(category.getOid());
         }
 
+        if (!imageOids.isEmpty()) {
+            pullImages(new ArrayList<>(imageOids));
+        }
+    }
+
+    protected void pullImages(final List<String> imageOids)
+    {
+
         final var response = eFapsClient.evalStoreStatus(StoreStatusRequestDto.builder()
                         .withOids(new ArrayList<>(imageOids))
                         .build());
@@ -135,6 +145,45 @@ public class ImageService
                             checkout.getFilename(),
                             checkout.getContentType().toString(),
                             status.getModifiedAt());
+        }
+    }
+
+    public void synProductImages(final List<Product> products)
+    {
+        LOG.info("Syncing Images for products");
+        final var imageOids = new HashSet<String>();
+        for (final Product product : products) {
+            if (product.getImageOid() != null) {
+                LOG.debug("Marking Product-Image to be synced {}", product.getImageOid());
+                imageOids.add(product.getImageOid());
+            }
+            for (final var indicationSet : product.getIndicationSets()) {
+                if (indicationSet.getImageOid() != null) {
+                    LOG.debug("Marking IndicationSet-Image to be synced {}", indicationSet.getImageOid());
+                    imageOids.add(indicationSet.getImageOid());
+                }
+                for (final var indication : indicationSet.getIndications()) {
+                    if (indication.getImageOid() != null) {
+                        LOG.debug("Marking Indication-Image to be synced {}", indication.getImageOid());
+                        imageOids.add(indication.getImageOid());
+                    }
+                }
+            }
+        }
+        if (!imageOids.isEmpty()) {
+            pullImages(new ArrayList<>(imageOids));
+        }
+    }
+
+    public void synCategoryImages(final List<Category> categories)
+    {
+        LOG.info("Syncing Images for categories");
+        final var imageOids = new HashSet<String>();
+        for (final var category : categories) {
+            imageOids.add(category.getOid());
+        }
+        if (!imageOids.isEmpty()) {
+            pullImages(new ArrayList<>(imageOids));
         }
     }
 }

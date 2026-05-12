@@ -63,13 +63,13 @@ public class ProductService
 
     @Autowired
     public ProductService(final JsonMapper jsonMapper,
-                          final ConfigProperties _configProperties,
-                          final ProductRepository _productRepository,
+                          final ConfigProperties configProperties,
+                          final ProductRepository productRepository,
                           final EFapsClient eFapsClient)
     {
         this.jsonMapper = jsonMapper;
-        configProperties = _configProperties;
-        productRepository = _productRepository;
+        this.configProperties = configProperties;
+        this.productRepository = productRepository;
         this.eFapsClient = eFapsClient;
     }
 
@@ -227,10 +227,9 @@ public class ProductService
         }
     }
 
-    public boolean syncProducts(final SyncInfo syncInfo)
+    public List<Product> syncProducts(final SyncInfo syncInfo)
     {
         LOG.info("Syncing Products");
-        boolean ret = false;
         final List<Product> allProducts = new ArrayList<>();
         if (syncInfo != null) {
             final var after = OffsetDateTime.of(syncInfo.getLastSync(), ZoneOffset.of("-5")).minusMinutes(10);
@@ -250,10 +249,9 @@ public class ProductService
                     saveToDatabase(product);
                 }
             }
-            ret = true;
         }
         allProducts.forEach(this::validateParent);
-        return ret;
+        return allProducts;
     }
 
     private void saveToDatabase(final Product product)

@@ -135,7 +135,7 @@ public class SyncService
         this.balanceService = balanceService;
         this.userService = userService;
         this.printService = printService;
-        this.sequenceService= sequenceService;
+        this.sequenceService = sequenceService;
         this.posService = posService;
         this.employeeService = employeeService;
         this.configService = configService;
@@ -204,9 +204,21 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        if (productService.syncProducts(getSync(StashId.PRODUCTSYNC))) {
+        final var syncInfo = getSync(StashId.PRODUCTSYNC);
+        if (syncInfo != null) {
+            imageService.synProductImages(productService.syncProducts(syncInfo));
             registerSync(StashId.PRODUCTSYNC);
         }
+    }
+
+    public void syncAllCategories()
+        throws SyncServiceDeactivatedException
+    {
+        if (isDeactivated()) {
+            throw new SyncServiceDeactivatedException();
+        }
+        categoryService.syncCategories();
+        registerSync(StashId.CATEGORYSYNC);
     }
 
     public void syncCategories()
@@ -215,8 +227,11 @@ public class SyncService
         if (isDeactivated()) {
             throw new SyncServiceDeactivatedException();
         }
-        categoryService.sync();
-        registerSync(StashId.CATEGORYSYNC);
+        final var syncInfo = getSync(StashId.CATEGORYSYNC);
+        if (syncInfo != null) {
+            imageService.synCategoryImages(categoryService.syncCategories());
+            registerSync(StashId.CATEGORYSYNC);
+        }
     }
 
     public void syncWorkspaces()
@@ -576,15 +591,10 @@ public class SyncService
 
     public enum SyncDirective
     {
-        ALL(null),
-        PROMOTIONS("syncPromotions"),
-        PRODUCTS("syncAllProducts"),
-        WORKSPACES("syncWorkspaces"),
-        EXCHANGERATES("syncExchangeRates"),
-        USERS("syncUsers"),
-        CATEGORIES("syncCategories"),
-        INVENTORY("syncInventory"),
-        POSFILES("syncPosFiles");
+
+        ALL(null), PROMOTIONS("syncPromotions"), PRODUCTS("syncAllProducts"), WORKSPACES(
+                        "syncWorkspaces"), EXCHANGERATES("syncExchangeRates"), USERS("syncUsers"), CATEGORIES(
+                                        "syncCategories"), INVENTORY("syncInventory"), POSFILES("syncPosFiles");
 
         String method;
 
