@@ -592,9 +592,15 @@ public class SyncService
     public enum SyncDirective
     {
 
-        ALL(null), PROMOTIONS("syncPromotions"), PRODUCTS("syncAllProducts"), WORKSPACES(
-                        "syncWorkspaces"), EXCHANGERATES("syncExchangeRates"), USERS("syncUsers"), CATEGORIES(
-                                        "syncCategories"), INVENTORY("syncInventory"), POSFILES("syncPosFiles");
+        ALL(null),
+        PROMOTIONS("syncPromotions"),
+        PRODUCTS("syncAllProducts"),
+        WORKSPACES("syncWorkspaces"),
+        EXCHANGERATES("syncExchangeRates"),
+        USERS("syncUsers"),
+        CATEGORIES("syncCategories"),
+        INVENTORY("syncInventory"),
+        POSFILES("syncPosFiles");
 
         String method;
 

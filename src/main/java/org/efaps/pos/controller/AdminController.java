@@ -24,6 +24,8 @@ import org.efaps.pos.service.SyncService.SyncDirective;
 import org.efaps.pos.service.VersionService;
 import org.efaps.pos.util.SyncServiceDeactivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,14 +49,16 @@ public class AdminController
     }
 
     @GetMapping(path = "/sync")
-    public void sync(@RequestParam(name = "syncDirective", required = false, defaultValue = "ALL") List<SyncDirective> syncDirectives)
+    @PreAuthorize("hasAuthority('ADMIN_SYNC')")
+    public void sync(final Authentication authentication,
+                     @RequestParam(name = "syncDirective", required = false, defaultValue = "ALL") List<SyncDirective> syncDirectives)
         throws SyncServiceDeactivatedException
     {
         syncService.syncManual(syncDirectives);
     }
 
     @GetMapping(path = "/versions")
-    public Map<String,String> version()
+    public Map<String, String> version()
     {
         return versionService.getVersions();
     }
