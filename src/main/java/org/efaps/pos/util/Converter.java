@@ -369,7 +369,8 @@ public final class Converter
                         .setUoM(dto.getUoM())
                         .setFlags(dto.getFlags())
                         .setActions(dto.getActions() == null ? null
-                                        : dto.getActions().stream().map(Converter::toEntity).toList());
+                                        : dto.getActions().stream().map(Converter::toEntity)
+                                         .collect(Collectors.toList()));
     }
 
     public static BOMAction toEntity(final BOMActionDto dto)
@@ -609,7 +610,7 @@ public final class Converter
                         .withGridSize(_entity.getGridSize())
                         .withFloors(_entity.getFloors() == null ? Collections.emptyList()
                                         : _entity.getFloors().stream().map(Converter::toDto)
-                                                        .collect(Collectors.toList()))
+                                                        .toList())
                         .withCategoryOids(_entity.getCategoryOids() == null ? Collections.emptyList()
                                         : _entity.getCategoryOids())
                         .withFlags(_entity.getFlags())
@@ -660,8 +661,7 @@ public final class Converter
                         .withImageOid(_entity.getImageOid())
                         .withName(_entity.getName())
                         .withSpots(_entity.getSpots() == null ? null
-                                        : _entity.getSpots().stream().map(Converter::toDto)
-                                                        .collect(Collectors.toList()))
+                                        : _entity.getSpots().stream().map(Converter::toDto).toList())
                         .build();
     }
 
@@ -2006,7 +2006,7 @@ public final class Converter
                         .setExchangeRate(fromEntity.getExchangeRate())
                         .setItems(fromEntity.getItems().stream()
                                         .map(Converter::clone)
-                                        .toList())
+                                        .collect(Collectors.toList()))
                         .setNetTotal(fromEntity.getNetTotal())
                         .setNote(fromEntity.getNote())
                         .setPayableAmount(fromEntity.getPayableAmount())
