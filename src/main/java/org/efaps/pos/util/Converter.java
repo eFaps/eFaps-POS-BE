@@ -2025,20 +2025,20 @@ public final class Converter
     public static Item clone(final Item fromItem)
     {
         return new Item()
-                        .setCrossPrice(fromItem.getCrossPrice())
-                        .setCrossUnitPrice(fromItem.getCrossUnitPrice())
-                        .setCurrency(fromItem.getCurrency())
-                        .setExchangeRate(fromItem.getExchangeRate())
                         .setIndex(fromItem.getIndex())
-                        .setNetPrice(fromItem.getNetPrice())
-                        .setNetUnitPrice(fromItem.getNetUnitPrice())
                         .setParentIdx(fromItem.getParentIdx())
                         .setProductOid(fromItem.getProductOid())
                         .setStandInOid(fromItem.getStandInOid())
                         .setQuantity(fromItem.getQuantity())
+                        .setNetUnitPrice(fromItem.getNetUnitPrice())
+                        .setCrossUnitPrice(fromItem.getCrossUnitPrice())
+                        .setNetPrice(fromItem.getNetPrice())
+                        .setCrossPrice(fromItem.getCrossPrice())
+                        .setCurrency(fromItem.getCurrency())
+                        .setExchangeRate(fromItem.getExchangeRate())
+                        .setTaxes(fromItem.getTaxes())
                         .setRemark(fromItem.getRemark())
-                        .setBomOid(fromItem.getBomOid())
-                        .setTaxes(fromItem.getTaxes());
+                        .setBomOid(fromItem.getBomOid());
     }
 
     public static IPayment clone(final IPayment fromPayment)
