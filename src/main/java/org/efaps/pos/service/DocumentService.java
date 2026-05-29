@@ -201,6 +201,7 @@ public class DocumentService
                              final Order order)
     {
         Order storedOrder;
+        order.setWorkspaceOid(workspaceOid);
         if (configService.getInstProperties().getOrder().isSkipCalcOnCreate()) {
             order.setNumber(sequenceService.getNextOrder());
             storedOrder = orderRepository.insert(order);
@@ -243,6 +244,7 @@ public class DocumentService
                              final PosOrderDto dto)
     {
         final var order = orderRepository.findById(id).orElseThrow();
+        order.setWorkspaceOid(workspaceOid);
         Converter.mapToEntity(dto, order);
         final var promoInfo = calculatorService.calculate(workspaceOid, order);
         promotionService.registerInfo(order.getId(), promoInfo);
@@ -255,6 +257,7 @@ public class DocumentService
                              final CreateDocumentDto createOrderDto)
     {
         final var order = orderRepository.findById(orderId).orElseThrow();
+        order.setWorkspaceOid(workspaceOid);
         order.setItems(getItems(createOrderDto));
         order.setDate(LocalDate.now());
         order.setNote(createOrderDto.getNote());
@@ -354,6 +357,7 @@ public class DocumentService
         validateContact(workspaceOid, receipt);
         validateBalance(receipt);
         receipt.setNumber(sequenceService.getNext(workspaceOid, DocType.RECEIPT, null));
+        receipt.setWorkspaceOid(workspaceOid);
         Receipt ret = receiptRepository.insert(receipt);
         verifyPayment(ret);
         try {
@@ -387,6 +391,7 @@ public class DocumentService
         validateContact(workspaceOid, invoice);
         validateBalance(invoice);
         invoice.setNumber(sequenceService.getNext(workspaceOid, DocType.INVOICE, null));
+        invoice.setWorkspaceOid(workspaceOid);
         Invoice ret = invoiceRepository.insert(invoice);
         verifyPayment(ret);
         try {
@@ -419,6 +424,7 @@ public class DocumentService
         validateContact(workspaceOid, ticket);
         validateBalance(ticket);
         ticket.setNumber(sequenceService.getNext(workspaceOid, DocType.TICKET, null));
+        ticket.setWorkspaceOid(workspaceOid);
         Ticket ret = ticketRepository.insert(ticket);
         verifyPayment(ret);
         try {
@@ -442,20 +448,21 @@ public class DocumentService
         return ret;
     }
 
-    public CreditNote createCreditNote(final String _workspaceOid,
-                                       final CreditNote _creditNote)
+    public CreditNote createCreditNote(final String workspaceOid,
+                                       final CreditNote creditNote)
     {
-        validateContact(_workspaceOid, _creditNote);
-        validateBalance(_creditNote);
-        final var reference = ReferenceService.getReferenceByIdent(_creditNote.getSourceDocOid());
-        _creditNote.setNumber(sequenceService.getNext(_workspaceOid, DocType.CREDITNOTE, reference.getDocType()));
-        _creditNote.setDate(LocalDate.now());
-        CreditNote ret = creditNoteRepository.insert(_creditNote);
+        validateContact(workspaceOid, creditNote);
+        validateBalance(creditNote);
+        final var reference = ReferenceService.getReferenceByIdent(creditNote.getSourceDocOid());
+        creditNote.setNumber(sequenceService.getNext(workspaceOid, DocType.CREDITNOTE, reference.getDocType()));
+        creditNote.setDate(LocalDate.now());
+        creditNote.setWorkspaceOid(workspaceOid);
+        CreditNote ret = creditNoteRepository.insert(creditNote);
         try {
             if (!creditNoteListeners.isEmpty()) {
                 PosCreditNoteDto dto = Converter.toDto(ret);
                 for (final ICreditNoteListener listener : creditNoteListeners) {
-                    dto = (PosCreditNoteDto) listener.onCreate(getPos(posService.getPos4Workspace(_workspaceOid)), dto,
+                    dto = (PosCreditNoteDto) listener.onCreate(getPos(posService.getPos4Workspace(workspaceOid)), dto,
                                     configService.getProperties());
                 }
                 ret = creditNoteRepository.save(Converter.mapToEntity(dto, ret));
