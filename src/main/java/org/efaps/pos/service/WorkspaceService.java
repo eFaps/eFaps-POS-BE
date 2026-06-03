@@ -61,9 +61,9 @@ public class WorkspaceService
                         .orElse(null);
     }
 
-    protected Workspace getWorkspace(final String _oid)
+    public Workspace getWorkspace(final String oid)
     {
-        return workspaceRepository.findById(_oid).orElse(null);
+        return workspaceRepository.findById(oid).orElse(null);
     }
 
     public Optional<String> getWarehouseOid4Workspace(final String _oid)
