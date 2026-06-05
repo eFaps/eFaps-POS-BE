@@ -529,6 +529,10 @@ public class CalculatorService
                         yield calcDocument.getNetTotal().multiply(factor);
                     }
                     case AMOUNT -> {
+                        final var positionCross = posDoc.getDiscount().getValue();
+                        yield evaluateNetUnitPrice(positionCross, discountPosition.getTaxes());
+
+                        /**
                         final var targetCross = calcDocument.getCrossTotal().subtract(posDoc.getDiscount().getValue());
                         final var percentage = new BigDecimal(100).setScale(4).multiply(
                                         BigDecimal.ONE.subtract(
@@ -538,12 +542,31 @@ public class CalculatorService
                         final var factor2 = percentage.setScale(4, RoundingMode.HALF_UP)
                                         .divide(new BigDecimal(100), RoundingMode.HALF_UP);
                         yield calcDocument.getNetTotal().multiply(factor2);
-                    }
+                        **/
+                        }
                 };
                 discountPosition.setNetUnitPrice(posNetUnitPrice.negate());
                 calcDocument.addPosition(discountPosition);
             }
         }
+    }
+
+    private BigDecimal evaluateNetUnitPrice(final BigDecimal positionCross,
+                                            List<ITax> taxes)
+    {
+
+        BigDecimal amount = BigDecimal.ZERO;
+        for (final var tax : taxes) {
+            amount = switch (tax.getType()) {
+                case ADVALOREM -> positionCross.setScale(8)
+                                .divide(tax.getPercentage()
+                                                .divide(new BigDecimal(100).setScale(8, RoundingMode.HALF_UP)
+                                                                .add(BigDecimal.ONE)));
+                case PERUNIT -> positionCross.subtract(tax.getAmount());
+                default -> throw new IllegalArgumentException("Unexpected value: ??");
+            };
+        }
+        return amount;
     }
 
     private ITax toAbacusTax(org.efaps.pos.pojo.Tax tax)
