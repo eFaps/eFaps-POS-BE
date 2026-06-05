@@ -530,7 +530,7 @@ public class CalculatorService
                     }
                     case AMOUNT -> {
                         final var positionCross = posDoc.getDiscount().getValue();
-                        yield evaluateNetUnitPrice(positionCross, discountPosition.getTaxes());
+                        yield evaluateNetPrice(positionCross, discountPosition.getTaxes());
 
                         /**
                         final var targetCross = calcDocument.getCrossTotal().subtract(posDoc.getDiscount().getValue());
@@ -551,22 +551,29 @@ public class CalculatorService
         }
     }
 
-    private BigDecimal evaluateNetUnitPrice(final BigDecimal positionCross,
-                                            List<ITax> taxes)
+    private BigDecimal evaluateNetPrice(final BigDecimal crossPrice,
+                                        List<ITax> taxes)
     {
 
         BigDecimal amount = BigDecimal.ZERO;
         for (final var tax : taxes) {
-            amount = switch (tax.getType()) {
-                case ADVALOREM -> positionCross.setScale(8)
-                                .divide(tax.getPercentage()
-                                                .divide(new BigDecimal(100).setScale(8, RoundingMode.HALF_UP)
-                                                                .add(BigDecimal.ONE)));
-                case PERUNIT -> positionCross.subtract(tax.getAmount());
-                default -> throw new IllegalArgumentException("Unexpected value: ??");
-            };
+            switch (tax.getType()) {
+                case ADVALOREM:
+                    final var divisor = tax.getPercentage().divide(
+                                    new BigDecimal(100).setScale(8, RoundingMode.HALF_UP), RoundingMode.HALF_UP)
+                                    .add(BigDecimal.ONE);
+                    final var net = crossPrice.setScale(8).divide(divisor, RoundingMode.HALF_UP);
+                    amount = amount.add(crossPrice.subtract(net));
+                    break;
+                case PERUNIT: {
+                    amount = amount.add(tax.getAmount());
+                    break;
+                }
+                default:
+                    throw new IllegalArgumentException("Unexpected value: ??");
+            }
         }
-        return amount;
+        return crossPrice.subtract(amount);
     }
 
     private ITax toAbacusTax(org.efaps.pos.pojo.Tax tax)
