@@ -18,6 +18,7 @@ package org.efaps.pos.entity;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -62,6 +63,7 @@ public class Product
     private Set<ConfigurationBOM> configurationBOMs;
     private ProductIndividual individual;
     private ProductStatus status;
+    private Map<String, Object> extension;
 
     @LastModifiedDate
     private Instant lastModifiedDate;
@@ -295,6 +297,17 @@ public class Product
     public void setLastModifiedDate(Instant lastModifiedDate)
     {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Map<String, Object> getExtension()
+    {
+        return extension;
+    }
+
+    public Product setExtension(Map<String, Object> extension)
+    {
+        this.extension = extension;
+        return this;
     }
 
     @Override

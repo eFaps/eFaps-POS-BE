@@ -355,7 +355,8 @@ public final class Converter
                         .setConfigurationBOMs(dto.getConfigurationBOMs().stream().map(Converter::toEntity)
                                         .collect(Collectors.toSet()))
                         .setIndividual(dto.getIndividual())
-                        .setStatus(dto.getStatus() == null ? ProductStatus.ACTIVE : dto.getStatus());
+                        .setStatus(dto.getStatus() == null ? ProductStatus.ACTIVE : dto.getStatus())
+                        .setExtension(dto.getExtension());
         return ret;
     }
 
@@ -516,6 +517,7 @@ public final class Converter
                                                         .collect(Collectors.toSet()))
                         .withIndividual(entity.getIndividual())
                         .withStatus(entity.getStatus())
+                        .withExtension(entity.getExtension())
                         .build();
     }
 
