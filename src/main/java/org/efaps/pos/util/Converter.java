@@ -65,6 +65,8 @@ import org.efaps.pos.dto.PaymentElectronicDto;
 import org.efaps.pos.dto.PaymentFreeDto;
 import org.efaps.pos.dto.PaymentLoyaltyPointsAbstractDto;
 import org.efaps.pos.dto.PaymentLoyaltyPointsDto;
+import org.efaps.pos.dto.PaymentLoyaltyVoucherAbstractDto;
+import org.efaps.pos.dto.PaymentLoyaltyVoucherDto;
 import org.efaps.pos.dto.PaymentRedeemCreditNoteDto;
 import org.efaps.pos.dto.PosBalanceDto;
 import org.efaps.pos.dto.PosCreditNoteDto;
@@ -80,6 +82,7 @@ import org.efaps.pos.dto.PosPaymentChangeDto;
 import org.efaps.pos.dto.PosPaymentElectronicDto;
 import org.efaps.pos.dto.PosPaymentFreeDto;
 import org.efaps.pos.dto.PosPaymentLoyaltyPointsDto;
+import org.efaps.pos.dto.PosPaymentLoyaltyVoucherDto;
 import org.efaps.pos.dto.PosPaymentRedeemCreditNoteDto;
 import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosSpotDto;
@@ -156,6 +159,7 @@ import org.efaps.pos.pojo.PaymentChange;
 import org.efaps.pos.pojo.PaymentElectronic;
 import org.efaps.pos.pojo.PaymentFree;
 import org.efaps.pos.pojo.PaymentLoyaltyPoints;
+import org.efaps.pos.pojo.PaymentLoyaltyVoucher;
 import org.efaps.pos.pojo.PaymentRedeemCreditNote;
 import org.efaps.pos.pojo.Product2Category;
 import org.efaps.pos.pojo.ProductRelation;
@@ -174,6 +178,7 @@ import org.efaps.promotionengine.api.IPromotionDetail;
 import org.efaps.promotionengine.dto.PromotionInfoDto;
 import org.efaps.promotionengine.promotion.Promotion;
 import org.springframework.stereotype.Component;
+
 
 @Component
 public final class Converter
@@ -798,6 +803,12 @@ public final class Converter
                                 .setPointsAmount(paymentDto.getPointsAmount());
                 yield entity;
             }
+            case LOYALTY_VOUCHER -> {
+                final var paymentDto = (PaymentLoyaltyVoucherAbstractDto) dto;
+                final var entity = new PaymentLoyaltyVoucher()
+                                .setIdentifier(paymentDto.getIdentifier());
+                yield entity;
+            }
             case REDEEM_CREDITNOTE -> {
                 final var paymentDto = (PosPaymentRedeemCreditNoteDto) dto;
                 yield new PaymentRedeemCreditNote().setRedeemDocOid(paymentDto.getRedeemDocOid());
@@ -923,6 +934,22 @@ public final class Converter
                 INSTANCE.collectorService.add2PaymentDto(builder, entity);
                 yield builder.build();
             }
+            case LOYALTY_VOUCHER -> {
+                final var posEntity = (PaymentLoyaltyVoucher) entity;
+                final var builder = PosPaymentLoyaltyVoucherDto.builder()
+                                .withIdentifier(posEntity.getIdentifier())
+                                .withCollectOrderId(posEntity.getCollectOrderId())
+                                .withIndex(posEntity.getIndex())
+                                .withOid(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
+                                .withInfo(posEntity.getInfo())
+                                .withOperationDateTime(posEntity.getOperationDateTime());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
+            }
             case REDEEM_CREDITNOTE -> {
                 final var posEntity = (PaymentRedeemCreditNote) entity;
                 final var builder = PosPaymentRedeemCreditNoteDto.builder()
@@ -1038,6 +1065,21 @@ public final class Converter
                                 .withPointsAmount(posEntity.getPointsAmount())
                                 .withOperationDateTime(posEntity.getOperationDateTime())
                                 .withMappingKey(posEntity.getMappingKey());
+                INSTANCE.collectorService.add2PaymentDto(builder, entity);
+                yield builder.build();
+            }
+            case LOYALTY_VOUCHER -> {
+                final var posEntity = (PaymentLoyaltyVoucher) entity;
+                final var builder = PaymentLoyaltyVoucherDto.builder()
+                                .withIdentifier(posEntity.getIdentifier())
+                                .withIndex(posEntity.getIndex())
+                                .withOid(posEntity.getOid())
+                                .withType(posEntity.getType())
+                                .withAmount(posEntity.getAmount())
+                                .withCurrency(posEntity.getCurrency())
+                                .withExchangeRate(posEntity.getExchangeRate())
+                                .withInfo(posEntity.getInfo())
+                                .withOperationDateTime(posEntity.getOperationDateTime());
                 INSTANCE.collectorService.add2PaymentDto(builder, entity);
                 yield builder.build();
             }
@@ -2100,6 +2142,21 @@ public final class Converter
             case LOYALTY_POINTS -> {
                 final var from = (PaymentLoyaltyPoints) fromPayment;
                 yield new PaymentLoyaltyPoints()
+                                .setMappingKey(from.getMappingKey())
+                                .setAuthorization(from.getAuthorization())
+                                .setOperationId(from.getOperationId())
+                                .setPointsAmount(from.getPointsAmount())
+                                .setOid(from.getOid())
+                                .setIndex(from.getIndex())
+                                .setAmount(from.getAmount())
+                                .setCollectOrderId(from.getCollectOrderId())
+                                .setCurrency(from.getCurrency())
+                                .setType(from.getType());
+            }
+            case LOYALTY_VOUCHER -> {
+                final var from = (PaymentLoyaltyVoucher) fromPayment;
+                yield new PaymentLoyaltyVoucher()
+                                .setIdentifier(from.getIdentifier())
                                 .setOid(from.getOid())
                                 .setIndex(from.getIndex())
                                 .setAmount(from.getAmount())

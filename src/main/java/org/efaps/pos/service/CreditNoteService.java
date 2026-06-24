@@ -16,11 +16,13 @@
 package org.efaps.pos.service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
+import org.efaps.pos.dto.ValidateForCreditNoteResponseDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.CreditNote;
 import org.efaps.pos.entity.SyncInfo;
@@ -99,5 +101,25 @@ public class CreditNoteService
         if (document instanceof CreditNote) {
             creditNoteRepository.save((CreditNote) document);
         }
+    }
+
+    public ValidateForCreditNoteResponseDto redeemValidity(String ident)
+    {
+        getEFapsClient();
+
+        //Check Status: Ensure the credit note is Open or Partially Redeemed (not Void or Fully Redeemed).
+        return null;
+    }
+
+    public List<CreditNote> retrieveCreditNotes(final String number)
+    {
+        List<CreditNote> creditNotes = creditNoteRepository.findByNumber(number);
+        if (creditNotes.isEmpty()) {
+            final var retrieved = getEFapsClient().retrieveCreditNotes(number);
+            if (retrieved != null) {
+                creditNotes = retrieved.stream().map(Converter::toEntity).toList();
+            }
+        }
+        return creditNotes;
     }
 }

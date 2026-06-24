@@ -68,6 +68,7 @@ import org.efaps.pos.interfaces.IReceiptListener;
 import org.efaps.pos.interfaces.ITicketListener;
 import org.efaps.pos.listener.IDocumentListener;
 import org.efaps.pos.pojo.EmployeeRelation;
+import org.efaps.pos.pojo.PaymentLoyaltyPoints;
 import org.efaps.pos.pojo.PaymentRedeemCreditNote;
 import org.efaps.pos.projection.PayableHead;
 import org.efaps.pos.repository.BalanceRepository;
@@ -798,18 +799,6 @@ public class DocumentService
         return creditNoteRepository.findBySourceDocOid(sourceDocOid);
     }
 
-    public List<CreditNote> retrieveCreditNotes(final String number)
-    {
-        List<CreditNote> creditNotes = creditNoteRepository.findByNumber(number);
-        if (creditNotes.isEmpty()) {
-            final var retrieved = eFapsClient.retrieveCreditNotes(number);
-            if (retrieved != null) {
-                creditNotes = retrieved.stream().map(Converter::toEntity).toList();
-            }
-        }
-        return creditNotes;
-    }
-
     public void retrigger4Receipt(final String identifier)
     {
         LOG.warn("Retriggering for Receipt: {}", identifier);
@@ -996,6 +985,8 @@ public class DocumentService
                         creditNote.setRedeemedById(payable.getId());
                         creditNoteRepository.save(creditNote);
                     }
+                } else if (payment instanceof final PaymentLoyaltyPoints paymentd) {
+
                 }
             }
         }

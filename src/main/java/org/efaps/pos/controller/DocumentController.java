@@ -351,12 +351,6 @@ public class DocumentController
                         .collect(Collectors.toList());
     }
 
-    @GetMapping(path = { "creditnotes" }, produces = MediaType.APPLICATION_JSON_VALUE, params = { "number" })
-    public List<PosCreditNoteDto> retrieveCreditNotes(@RequestParam(name = "number") final String number)
-    {
-        return documentService.retrieveCreditNotes(number).stream().map(Converter::toDto).toList();
-    }
-
     @PostMapping(path = { "creditnotes/validate" }, produces = MediaType.APPLICATION_JSON_VALUE)
     public ValidateForCreditNoteResponseDto validateForCreditNote(@RequestBody final ValidateForCreditNoteDto dto)
     {
