@@ -15,6 +15,8 @@
  */
 package org.efaps.pos.service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +24,11 @@ import java.util.Optional;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
-import org.efaps.pos.dto.ValidateForCreditNoteResponseDto;
+import org.efaps.pos.dto.RedeemValidityDto;
+import org.efaps.pos.dto.RedeemValidityStatus;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.CreditNote;
+import org.efaps.pos.entity.Origin;
 import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.repository.CreditNoteRepository;
 import org.efaps.pos.util.Converter;
@@ -39,6 +43,7 @@ public class CreditNoteService
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreditNoteService.class);
+
     private final CreditNoteRepository creditNoteRepository;
 
     public CreditNoteService(final ConfigProperties configProperties,
@@ -103,11 +108,29 @@ public class CreditNoteService
         }
     }
 
-    public ValidateForCreditNoteResponseDto redeemValidity(String ident)
+    public RedeemValidityDto redeemValidity(final String ident)
     {
-        getEFapsClient();
+        LOG.info("Checking redeem validity for {}", ident);
+        final var creditNoteOpt = getDocumentHelperService().getCreditNote(ident);
+        if (creditNoteOpt.isPresent()) {
+            final var creditNote = creditNoteOpt.get();
+            // if already redeemed locally
+            if (creditNote.getRedeemedById() != null) {
+                return RedeemValidityDto.builder()
+                                .withStatus(RedeemValidityStatus.FULLY)
+                                .build();
+            }
 
-        //Check Status: Ensure the credit note is Open or Partially Redeemed (not Void or Fully Redeemed).
+            // if it is a locally created creditnote and not redeemed and not
+            // synced or less than 30 minutes old
+            if (Origin.LOCAL.equals(creditNote.getOrigin()) && (creditNote.getOid() == null
+                            || creditNote.getCreatedDate().plus(Duration.ofMinutes(30)).isAfter(Instant.now()))) {
+                return RedeemValidityDto.builder()
+                                .withStatus(RedeemValidityStatus.OPEN)
+                                .build();
+            }
+            return getEFapsClient().getCreditNoteRedeemValidity(creditNote.getOid());
+        }
         return null;
     }
 

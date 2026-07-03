@@ -1,10 +1,26 @@
+/*
+ * Copyright © 2003 - 2024 The eFaps Team (-)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.efaps.pos.controller;
 
 import java.util.List;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.PosCreditNoteDto;
-import org.efaps.pos.dto.ValidateForCreditNoteResponseDto;
+import org.efaps.pos.dto.RedeemValidityDto;
+import org.efaps.pos.error.NotFoundException;
 import org.efaps.pos.service.CreditNoteService;
 import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
@@ -21,7 +37,8 @@ public class CreditNoteController
 
     private final CreditNoteService creditNoteService;
 
-    public CreditNoteController(final CreditNoteService creditNoteService) {
+    public CreditNoteController(final CreditNoteService creditNoteService)
+    {
         this.creditNoteService = creditNoteService;
     }
 
@@ -31,10 +48,14 @@ public class CreditNoteController
         return creditNoteService.retrieveCreditNotes(number).stream().map(Converter::toDto).toList();
     }
 
-
     @GetMapping(path = { "creditnotes/{ident}/redeem-validity" }, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ValidateForCreditNoteResponseDto redeemValidity(@PathVariable("ident") final String ident)
+    public RedeemValidityDto redeemValidity(@PathVariable("ident") final String ident)
+        throws NotFoundException
     {
-        return creditNoteService.redeemValidity(ident);
+        final var dto = creditNoteService.redeemValidity(ident);
+        if (dto == null) {
+            throw new NotFoundException("Document not found");
+        }
+        return dto;
     }
 }

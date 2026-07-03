@@ -44,6 +44,7 @@ import org.efaps.pos.dto.PrinterDto;
 import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.PromoInfoSyncDto;
 import org.efaps.pos.dto.ReceiptDto;
+import org.efaps.pos.dto.RedeemValidityDto;
 import org.efaps.pos.dto.ReportToBaseDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.StocktakingDto;
@@ -772,6 +773,19 @@ public class EFapsClient
         try {
             final var requestEntity = get(getEFapsConfig().getCreditnotePath() + "/" + oid);
             final var response = getRestTemplate().exchange(requestEntity, CreditNoteDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of CreditNoteDto", e);
+        }
+        return ret;
+    }
+
+    public RedeemValidityDto getCreditNoteRedeemValidity(final String oid)
+    {
+        RedeemValidityDto ret = null;
+        try {
+            final var requestEntity = get(getEFapsConfig().getCreditnotePath() + "/" + oid + "/redeem-validity");
+            final var response = getRestTemplate().exchange(requestEntity, RedeemValidityDto.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of InvoiceDto", e);
