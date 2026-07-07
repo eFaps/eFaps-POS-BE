@@ -140,7 +140,14 @@ public class CreditNoteService
         if (creditNotes.isEmpty()) {
             final var retrieved = getEFapsClient().retrieveCreditNotes(number);
             if (retrieved != null) {
-                creditNotes = retrieved.stream().map(Converter::toEntity).toList();
+                // if we pull from cloud set the id = oid
+                creditNotes = retrieved.stream()
+                                .map(Converter::toEntity)
+                                .map(entity -> {
+                                    entity.setId(entity.getOid());
+                                    return entity;
+                                })
+                                .toList();
             }
         }
         return creditNotes;
