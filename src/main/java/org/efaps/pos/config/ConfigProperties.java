@@ -394,6 +394,7 @@ public class ConfigProperties
         private String updatePath;
         private String storePath;
         private String reportToBasePath;
+        private String reportStartupPath;
         private String loyaltyPath;
 
         public String getLoyaltyPath()
@@ -724,6 +725,16 @@ public class ConfigProperties
         public void setStorePath(String storePath)
         {
             this.storePath = storePath;
+        }
+
+        public String getReportStartupPath()
+        {
+            return reportStartupPath;
+        }
+
+        public void setReportStartupPath(String reportStartupPath)
+        {
+            this.reportStartupPath = reportStartupPath;
         }
     }
 

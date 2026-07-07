@@ -45,6 +45,7 @@ import org.efaps.pos.dto.ProductDto;
 import org.efaps.pos.dto.PromoInfoSyncDto;
 import org.efaps.pos.dto.ReceiptDto;
 import org.efaps.pos.dto.RedeemValidityDto;
+import org.efaps.pos.dto.ReportStartupDto;
 import org.efaps.pos.dto.ReportToBaseDto;
 import org.efaps.pos.dto.SequenceDto;
 import org.efaps.pos.dto.StocktakingDto;
@@ -611,6 +612,19 @@ public class EFapsClient
         boolean ret = false;
         try {
             final RequestEntity<ReportToBaseDto> requestEntity = post(getEFapsConfig().getReportToBasePath(), dto);
+            final var post = getRestTemplate().exchange(requestEntity, Void.class);
+            ret = post.getStatusCode().is2xxSuccessful();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during post for ReportToBase", e);
+        }
+        return ret;
+    }
+
+    public boolean postReportStartup(final ReportStartupDto dto)
+    {
+        boolean ret = false;
+        try {
+            final RequestEntity<ReportStartupDto> requestEntity = post(getEFapsConfig().getReportStartupPath(), dto);
             final var post = getRestTemplate().exchange(requestEntity, Void.class);
             ret = post.getStatusCode().is2xxSuccessful();
         } catch (final RestClientException | IdentException e) {

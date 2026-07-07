@@ -31,6 +31,7 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.config.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
+import org.efaps.pos.dto.ReportStartupDto;
 import org.efaps.pos.dto.ReportToBaseDto;
 import org.efaps.pos.entity.SyncInfo;
 import org.efaps.pos.listener.IMonitoringReportContributor;
@@ -73,19 +74,7 @@ public class MonitoringService
         throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
         InvocationTargetException
     {
-        var instalationId = "";
-        try {
-            instalationId = String.format("%s - %s - %s - %s - %s - %s - %s",
-                            InetAddress.getLocalHost(),
-                            SystemProperties.getOsName(),
-                            SystemProperties.getOsVersion(),
-                            SystemProperties.getOsArch(),
-                            SystemProperties.getJavaVersion(),
-                            SystemProperties.getJavaVmName(),
-                            SystemProperties.getUserName());
-        } catch (final UnknownHostException e) {
-            LOG.error("Catched error during evaluation of InstalationId", e);
-        }
+        final var instalationId = evalInstalationId();
         final var currentVersion = VersionUtil.evalVersion();
 
         final var syncInfo = mongoTemplate.findById(StashId.REPORTTOBASESYNC.getKey(), SyncInfo.class);
@@ -155,4 +144,50 @@ public class MonitoringService
         mongoTemplate.save(syncInfo);
     }
 
+    private String evalInstalationId()
+    {
+        var instalationId = "";
+        try {
+            instalationId = String.format("%s - %s - %s - %s - %s - %s - %s",
+                            InetAddress.getLocalHost(),
+                            SystemProperties.getOsName(),
+                            SystemProperties.getOsVersion(),
+                            SystemProperties.getOsArch(),
+                            SystemProperties.getJavaVersion(),
+                            SystemProperties.getJavaVmName(),
+                            SystemProperties.getUserName());
+        } catch (final UnknownHostException e) {
+            LOG.error("Catched error during evaluation of InstalationId", e);
+        }
+        return instalationId;
+    }
+
+    public void reportStartup()
+    {
+        final var instalationId = evalInstalationId();
+        final var currentVersion = VersionUtil.evalVersion();
+
+        final var dto = ReportStartupDto.builder()
+                        .withVersion(currentVersion == null ? configProperties.getBeInst().getVersion()
+                                        : currentVersion)
+                        .withInstalationId(instalationId)
+                        .withCreatedAt(OffsetDateTime.now())
+                        .build();
+        send(dto);
+    }
+
+    public void send(final ReportStartupDto dto)
+    {
+        final var retryPolicy = RetryPolicy.<Boolean>builder()
+                        .withMaxAttempts(20)
+                        .withBackoff(Duration.ofSeconds(1), Duration.ofSeconds(300))
+                        .handleResultIf(e -> !e)
+                        .build();
+        final var counter = new AtomicInteger(0);
+        Failsafe.with(retryPolicy).get(x -> {
+            final var count = counter.incrementAndGet();
+            LOG.info("Try {} to send report startup: {}", count, dto);
+            return eFapsClient.postReportStartup(dto);
+        });
+    }
 }

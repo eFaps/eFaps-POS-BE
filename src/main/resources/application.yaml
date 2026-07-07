@@ -63,6 +63,7 @@ efaps:
   stocktakingPath: /servlet/rest/pos/{identifier}/stocktakings
   logEntryPath: /servlet/rest/pos/{identifier}/log-entries
   reportToBasePath: /servlet/rest/pos/{identifier}/report-to-base
+  reportStartupPath: /api/pos/{identifier}/report-startup
   filePath: /api/pos/{identifier}/files
   updatePath: /api/pos/{identifier}/update
   storePath: /api/pos/{identifier}/store
@@ -154,5 +155,6 @@ efaps:
   promotionPath: /api/pos/{identifier}/promotions
   promotionInfoPath: /api/pos/{identifier}/promotion-infos
   reportToBasePath: /api/pos/{identifier}/report-to-base
+  reportStartupPath: /api/pos/{identifier}/report-startup
   storePath: /api/pos/{identifier}/store
   updatePath: /api/pos/{identifier}/update

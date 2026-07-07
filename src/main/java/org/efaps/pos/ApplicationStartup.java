@@ -20,6 +20,7 @@ import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.config.ConfigProperties.Company;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.service.DemoService;
+import org.efaps.pos.service.MonitoringService;
 import org.efaps.pos.service.SyncService;
 import org.efaps.pos.util.VersionUtil;
 import org.slf4j.Logger;
@@ -45,17 +46,20 @@ public class ApplicationStartup
     private final ConfigProperties configProperties;
     private final TaskExecutor taskExecutor;
     private final SyncService syncService;
+    private final MonitoringService monitoringService;
     private DemoService demoService;
 
     public ApplicationStartup(final Environment env,
                               final ConfigProperties configProperties,
                               final TaskExecutor taskExecutor,
-                              final SyncService syncService)
+                              final SyncService syncService,
+                              final MonitoringService monitoringService)
     {
         this.env = env;
         this.configProperties = configProperties;
         this.syncService = syncService;
         this.taskExecutor = taskExecutor;
+        this.monitoringService = monitoringService;
     }
 
     @Override
@@ -86,6 +90,7 @@ public class ApplicationStartup
                 if (company != null) {
                     Context.get().setCompany(company);
                 }
+                monitoringService.reportStartup();
                 syncService.syncProperties();
                 syncService.syncUsers();
                 syncService.syncExchangeRates();
