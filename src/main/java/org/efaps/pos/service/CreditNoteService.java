@@ -130,6 +130,8 @@ public class CreditNoteService
                                 .build();
             }
             return getEFapsClient().getCreditNoteRedeemValidity(creditNote.getOid());
+        } else if (Utils.isOid(ident)) {
+            return getEFapsClient().getCreditNoteRedeemValidity(ident);
         }
         return null;
     }
