@@ -31,8 +31,7 @@
 
     <properties>
         <spring.boot.version>4.1.0</spring.boot.version>
-        <junit.jupiter.version>6.1.2</junit.jupiter.version>
-        <junit.platform.version>6.1.1</junit.platform.version>
+        <junit.version>6.1.2</junit.version>
         <jasperreports.version>7.0.7</jasperreports.version>
     </properties>
     <build>
@@ -329,31 +328,31 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.jupiter.version}</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.jupiter.version}</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-engine</artifactId>
-            <version>${junit.platform.version}</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
-            <version>${junit.platform.version}</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>${junit.jupiter.version}</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
