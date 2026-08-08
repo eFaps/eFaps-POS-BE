@@ -7,6 +7,8 @@ beInst:
   order:
     numberFormat:
 
+        
+        
 spring:
   autoconfigure:
     exclude:

@@ -24,9 +24,11 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface InventoryRepository
     extends MongoRepository<InventoryEntry, String>
 {
-    Collection<InventoryEntry> findByWarehouseOid(String _warehouseOid);
+    Collection<InventoryEntry> findByOid(String oid);
 
-    Collection<InventoryEntry> findByProductOid(String _productOid);
+    Collection<InventoryEntry> findByWarehouseOid(String warehouseOid);
 
-    Optional<InventoryEntry> findByWarehouseOidAndProductOid(String _warehouseOid, String _productOid);
+    Collection<InventoryEntry> findByProductOid(String productOid);
+
+    Optional<InventoryEntry> findByWarehouseOidAndProductOid(String warehouseOid, String productOid);
 }

@@ -133,6 +133,8 @@ public class ConfigProperties
 
         private FileConfig fileConfig = new FileConfig();
 
+        private Inventory inventory = new Inventory();
+
         public void setOrderFormat(String orderFormat)
         {
             LOG.error("Property 'beInst.orderFormat' was moved to 'beInst.order.numberFormat'");
@@ -249,6 +251,15 @@ public class ConfigProperties
             this.skipProductsMissingPrice = skipProductsMissingPrice;
         }
 
+        public Inventory getInventory()
+        {
+            return inventory;
+        }
+
+        public void setInventory(Inventory inventory)
+        {
+            this.inventory = inventory;
+        }
     }
 
     public static class Invoice
@@ -1016,4 +1027,31 @@ public class ConfigProperties
         }
     }
 
+    public static class Inventory
+    {
+
+        public boolean cloudBased;
+
+        public int maxAge = 15;
+
+        public boolean isCloudBased()
+        {
+            return cloudBased;
+        }
+
+        public void setCloudBased(boolean cloudBased)
+        {
+            this.cloudBased = cloudBased;
+        }
+
+        public int getMaxAge()
+        {
+            return maxAge;
+        }
+
+        public void setMaxAge(int maxAge)
+        {
+            this.maxAge = maxAge;
+        }
+    }
 }

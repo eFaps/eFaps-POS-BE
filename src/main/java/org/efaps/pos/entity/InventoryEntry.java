@@ -16,6 +16,7 @@
 package org.efaps.pos.entity;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -34,6 +35,8 @@ public class InventoryEntry
     private String warehouseOid;
 
     private String productOid;
+
+    private Instant updatedAt;
 
     public String getId()
     {
@@ -87,6 +90,17 @@ public class InventoryEntry
     public InventoryEntry setProductOid(final String _productOid)
     {
         this.productOid = _productOid;
+        return this;
+    }
+
+    public Instant getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public InventoryEntry setUpdatedAt(final Instant updatedAt)
+    {
+        this.updatedAt = updatedAt;
         return this;
     }
 }

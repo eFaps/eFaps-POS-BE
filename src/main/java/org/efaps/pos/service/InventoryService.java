@@ -16,6 +16,8 @@
 package org.efaps.pos.service;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.ProductRelationType;
 import org.efaps.pos.dto.ProductType;
 import org.efaps.pos.dto.ValidateStockDto;
@@ -44,8 +47,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class InventoryService
 {
+
     private static final Logger LOG = LoggerFactory.getLogger(InventoryService.class);
 
+    private final ConfigProperties configProperties;
     private final WorkspaceService workspaceService;
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
@@ -53,17 +58,19 @@ public class InventoryService
     private final EFapsClient eFapsClient;
 
     @Autowired
-    public InventoryService(final EFapsClient eFapsClient,
-                            final WorkspaceService _workspaceService,
-                            final WarehouseRepository _warehouseRepository,
-                            final InventoryRepository _inventoryRepository,
-                            final ProductRepository _productRepository)
+    public InventoryService(final ConfigProperties configProperties,
+                            final EFapsClient eFapsClient,
+                            final WorkspaceService workspaceService,
+                            final WarehouseRepository warehouseRepository,
+                            final InventoryRepository inventoryRepository,
+                            final ProductRepository productRepository)
     {
-        this.eFapsClient= eFapsClient;
-        workspaceService = _workspaceService;
-        warehouseRepository = _warehouseRepository;
-        inventoryRepository = _inventoryRepository;
-        productRepository = _productRepository;
+        this.configProperties = configProperties;
+        this.eFapsClient = eFapsClient;
+        this.workspaceService = workspaceService;
+        this.warehouseRepository = warehouseRepository;
+        this.inventoryRepository = inventoryRepository;
+        this.productRepository = productRepository;
     }
 
     public List<Warehouse> getWarehouses()
@@ -76,9 +83,30 @@ public class InventoryService
         return inventoryRepository.findByWarehouseOid(_warehouseOid);
     }
 
-    public Collection<InventoryEntry> getInventory4Product(final String _warehouseOid)
+    public Collection<InventoryEntry> getInventory4Product(final String productOid)
     {
-        return inventoryRepository.findByProductOid(_warehouseOid);
+        Collection<InventoryEntry> entries = inventoryRepository.findByProductOid(productOid);
+
+        if (configProperties.getBeInst().getInventory().isCloudBased()) {
+            final var minutes = configProperties.getBeInst().getInventory().getMaxAge();
+            final var evict =  entries.stream()
+                            .anyMatch(entry -> entry.getUpdatedAt() == null
+                            || Duration.between(entry.getUpdatedAt(), Instant.now()).toMinutes() > minutes);
+            if (entries.isEmpty() || evict) {
+                final var remoteInventory = eFapsClient.getInventory(productOid);
+                LOG.debug("Got inventory from remote for {} - {}", productOid, remoteInventory);
+                if (!entries.isEmpty()) {
+                    inventoryRepository.deleteAll(entries);
+                }
+                entries = remoteInventory.stream()
+                                .map(Converter::toEntity)
+                                .collect(Collectors.toList());
+                entries.forEach(en -> {
+                    inventoryRepository.save(en);
+                });
+            }
+        }
+        return entries;
     }
 
     public Warehouse getWarehouse(final String _oid)
@@ -141,7 +169,7 @@ public class InventoryService
                             final var relProd = productRepository.findById(relation.getProductOid()).orElseThrow();
                             if (relProd.getType().equals(ProductType.STANDART)) {
                                 prodVsQuantity.put(relation.getProductOid(),
-                                            stockEntry.getQuantity().multiply(relation.getQuantity()));
+                                                stockEntry.getQuantity().multiply(relation.getQuantity()));
                             }
                         }
                     });
@@ -170,7 +198,6 @@ public class InventoryService
         }
         return ValidateStockResponseDto.builder().withStock(errorEntries.isEmpty()).withEntries(errorEntries).build();
     }
-
 
     public boolean syncInventory(final SyncInfo syncInfo)
     {

@@ -1600,12 +1600,13 @@ public final class Converter
         return WarehouseDto.builder().withOid(_entity.getOid()).withName(_entity.getName()).build();
     }
 
-    public static InventoryEntry toEntity(final InventoryEntryDto _dto)
+    public static InventoryEntry toEntity(final InventoryEntryDto dto)
     {
-        return new InventoryEntry().setOid(_dto.getOid())
-                        .setQuantity(_dto.getQuantity())
-                        .setProductOid(_dto.getProductOid())
-                        .setWarehouseOid(_dto.getWarehouseOid());
+        return new InventoryEntry().setOid(dto.getOid())
+                        .setQuantity(dto.getQuantity())
+                        .setProductOid(dto.getProductOid())
+                        .setWarehouseOid(dto.getWarehouseOid())
+                        .setUpdatedAt(dto.getUpdatedAt() == null ? null : dto.getUpdatedAt().toInstant());
     }
 
     public static PosInventoryEntryDto toDto(final InventoryEntry _entity)

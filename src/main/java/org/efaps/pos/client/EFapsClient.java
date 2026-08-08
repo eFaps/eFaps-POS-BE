@@ -247,18 +247,23 @@ public class EFapsClient
         return ret;
     }
 
-    public List<InventoryEntryDto> getInventory()
+    public List<InventoryEntryDto> getInventory(final String... productOids)
     {
         List<InventoryEntryDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getInventoryPath());
+            MultiValueMap<String, String> params = null;
+            if (productOids != null && productOids.length > 0) {
+                params = new LinkedMultiValueMap<>();
+                params.put("productOid", List.of(productOids));
+            }
+            final RequestEntity<?> requestEntity = get(getEFapsConfig().getInventoryPath(), params);
             final ResponseEntity<List<InventoryEntryDto>> response = getRestTemplate().exchange(requestEntity,
                             new ParameterizedTypeReference<List<InventoryEntryDto>>()
                             {
                             });
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
-            LOG.error("Catched error during retrieval of workspaces", e);
+            LOG.error("Catched error during retrieval of inventory", e);
         }
         return ret;
     }
