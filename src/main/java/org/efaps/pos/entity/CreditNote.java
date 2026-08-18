@@ -26,6 +26,8 @@ public class CreditNote
 
     private String redeemedById;
 
+    private String creditReason;
+
     public String getSourceDocOid()
     {
         return sourceDocOid;
@@ -45,6 +47,17 @@ public class CreditNote
     public CreditNote setRedeemedById(final String redeemedById)
     {
         this.redeemedById = redeemedById;
+        return this;
+    }
+
+    public String getCreditReason()
+    {
+        return creditReason;
+    }
+
+    public CreditNote setCreditReason(final String creditReason)
+    {
+        this.creditReason = creditReason;
         return this;
     }
 }

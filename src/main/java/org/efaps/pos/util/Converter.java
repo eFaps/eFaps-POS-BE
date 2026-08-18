@@ -248,16 +248,19 @@ public final class Converter
         return ticket.setDiscount(dto.getDiscount() == null ? null : toEntity(dto.getDiscount()));
     }
 
-    public static CreditNote toEntity(final PosCreditNoteDto _dto)
+    public static CreditNote toEntity(final PosCreditNoteDto dto)
     {
-        return mapToEntity(_dto, new CreditNote().setId(_dto.getId()).setSourceDocOid(_dto.getSourceDocOid()));
+        return mapToEntity(dto, new CreditNote().setId(dto.getId())
+                        .setSourceDocOid(dto.getSourceDocOid())
+                        .setCreditReason(dto.getCreditReason()));
     }
 
     public static CreditNote mapToEntity(final PosCreditNoteDto dto,
                                          final CreditNote creditNote)
     {
         map2DocEntity(dto, creditNote);
-        return creditNote.setDiscount(dto.getDiscount() == null ? null : toEntity(dto.getDiscount()));
+        return creditNote.setCreditReason(creditNote.getCreditReason())
+                        .setDiscount(dto.getDiscount() == null ? null : toEntity(dto.getDiscount()));
     }
 
     public static Order toEntity(final PosOrderDto _dto)
@@ -1243,7 +1246,8 @@ public final class Converter
 
     public static CreditNote toEntity(final CreditNoteDto dto)
     {
-        final var entity = new CreditNote();
+        final var entity = new CreditNote()
+                        .setCreditReason(dto.getCreditReason());
         map2DocEntity(dto, entity);
         return entity;
     }
@@ -1349,6 +1353,7 @@ public final class Converter
                         .withId(entity.getId())
                         .withOid(entity.getOid())
                         .withNumber(entity.getNumber())
+                        .withCreditReason(entity.getCreditReason())
                         .withDate(entity.getDate())
                         .withCurrency(entity.getCurrency())
                         .withStatus(entity.getStatus())
@@ -1533,36 +1538,37 @@ public final class Converter
                         .build();
     }
 
-    public static CreditNoteDto toCreditNoteDto(final CreditNote _entity)
+    public static CreditNoteDto toCreditNoteDto(final CreditNote entity)
     {
         return CreditNoteDto.builder()
-                        .withId(_entity.getId())
-                        .withOid(_entity.getOid())
-                        .withNumber(_entity.getNumber())
-                        .withDate(_entity.getDate())
-                        .withCurrency(_entity.getCurrency())
-                        .withStatus(_entity.getStatus())
-                        .withCrossTotal(_entity.getCrossTotal())
-                        .withNetTotal(_entity.getNetTotal())
-                        .withExchangeRate(_entity.getExchangeRate())
-                        .withPayableAmount(_entity.getPayableAmount())
-                        .withContactOid(_entity.getContactOid())
-                        .withLoyaltyContactOid(_entity.getLoyaltyContactOid())
-                        .withWorkspaceOid(_entity.getWorkspaceOid())
-                        .withItems(_entity.getItems() == null ? null
-                                        : _entity.getItems().stream().map(Converter::toItemDto)
+                        .withId(entity.getId())
+                        .withOid(entity.getOid())
+                        .withNumber(entity.getNumber())
+                        .withDate(entity.getDate())
+                        .withCurrency(entity.getCurrency())
+                        .withStatus(entity.getStatus())
+                        .withCrossTotal(entity.getCrossTotal())
+                        .withNetTotal(entity.getNetTotal())
+                        .withExchangeRate(entity.getExchangeRate())
+                        .withPayableAmount(entity.getPayableAmount())
+                        .withContactOid(entity.getContactOid())
+                        .withLoyaltyContactOid(entity.getLoyaltyContactOid())
+                        .withWorkspaceOid(entity.getWorkspaceOid())
+                        .withItems(entity.getItems() == null ? null
+                                        : entity.getItems().stream().map(Converter::toItemDto)
                                                         .collect(Collectors.toSet()))
-                        .withTaxes(_entity.getTaxes() == null ? null
-                                        : _entity.getTaxes().stream().map(Converter::toDto)
+                        .withTaxes(entity.getTaxes() == null ? null
+                                        : entity.getTaxes().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
-                        .withPayments(_entity.getPayments() == null ? null
-                                        : _entity.getPayments().stream().map(Converter::toDto)
+                        .withPayments(entity.getPayments() == null ? null
+                                        : entity.getPayments().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
-                        .withBalanceOid(_entity.getBalanceOid())
-                        .withNote(_entity.getNote())
-                        .withSourceDocOid(_entity.getSourceDocOid())
-                        .withEmployeeRelations(_entity.getEmployeeRelations() == null ? Collections.emptySet()
-                                        : _entity.getEmployeeRelations().stream().map(Converter::toDto)
+                        .withBalanceOid(entity.getBalanceOid())
+                        .withNote(entity.getNote())
+                        .withSourceDocOid(entity.getSourceDocOid())
+                        .withCreditReason(entity.getCreditReason())
+                        .withEmployeeRelations(entity.getEmployeeRelations() == null ? Collections.emptySet()
+                                        : entity.getEmployeeRelations().stream().map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .build();
     }

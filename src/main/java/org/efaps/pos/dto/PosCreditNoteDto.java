@@ -25,6 +25,7 @@ import org.efaps.pos.service.ReferenceService;
 import org.efaps.pos.util.Converter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosCreditNoteDto.Builder.class)
@@ -35,12 +36,14 @@ public class PosCreditNoteDto
 
     private final DiscountDto discount;
     private final String sourceDocOid;
+    private final String creditReason;
 
-    public PosCreditNoteDto(final Builder _builder)
+    public PosCreditNoteDto(final Builder builder)
     {
-        super(_builder);
-        discount = _builder.discount;
-        sourceDocOid = _builder.sourceDocOid;
+        super(builder);
+        discount = builder.discount;
+        sourceDocOid = builder.sourceDocOid;
+        creditReason = builder.creditReason;
     }
 
     public DiscountDto getDiscount()
@@ -71,6 +74,11 @@ public class PosCreditNoteDto
         return Converter.getContactDto(getContactOid());
     }
 
+    public String getCreditReason()
+    {
+        return creditReason;
+    }
+
     public static Builder builder()
     {
         return new Builder();
@@ -83,6 +91,7 @@ public class PosCreditNoteDto
 
         private DiscountDto discount;
         private String sourceDocOid;
+        private String creditReason;
 
         public Builder withDiscount(final DiscountDto _discount)
         {
@@ -107,6 +116,12 @@ public class PosCreditNoteDto
             if (payments != null) {
                 setPayments(payments.stream().map(payment -> (IPaymentDto) payment).toList());
             }
+            return this;
+        }
+
+        public Builder withCreditReason(final String creditReason)
+        {
+            this.creditReason = creditReason;
             return this;
         }
 
