@@ -64,7 +64,8 @@ public class CreditNoteService
         final Collection<CreditNote> tosync = creditNoteRepository.findByOidIsNull();
         for (final CreditNote creditNote : tosync) {
             LOG.debug("Syncing CreditNote: {}", creditNote);
-            if (validateContacts(creditNote, false) && verifyBalance(creditNote, false) && verifySourceDoc(creditNote)) {
+            if (validateContacts(creditNote, false) && verifyBalance(creditNote, false)
+                            && verifySourceDoc(creditNote)) {
                 final var recDto = getEFapsClient().postCreditNote(Converter.toCreditNoteDto(creditNote));
                 LOG.debug("received CreditNote: {}", recDto);
                 if (recDto.getOid() != null) {
@@ -126,7 +127,9 @@ public class CreditNoteService
             if (Origin.LOCAL.equals(creditNote.getOrigin()) && (creditNote.getOid() == null
                             || creditNote.getCreatedDate().plus(Duration.ofMinutes(30)).isAfter(Instant.now()))) {
                 return RedeemValidityDto.builder()
-                                .withStatus(RedeemValidityStatus.OPEN)
+                                .withStatus(creditNote.getPayments().isEmpty()
+                                                ? RedeemValidityStatus.OPEN
+                                                : RedeemValidityStatus.INVALID)
                                 .build();
             }
             return getEFapsClient().getCreditNoteRedeemValidity(creditNote.getOid());
