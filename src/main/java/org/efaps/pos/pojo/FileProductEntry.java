@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.efaps.pos.repository;
+package org.efaps.pos.pojo;
 
-import java.util.List;
-
-import org.efaps.pos.entity.PosFile;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
-
-public interface PosFileRepository
-    extends MongoRepository<PosFile, String>
+public class FileProductEntry
 {
-    @Query(value ="{'tags.?0' : { $regex : '?1'}}")
-    List<PosFile> findByTag(String tagKey, String valueRegex);
 
-    @Query(value ="{'products.productOid' : ?0}")
-    List<PosFile> findByProductOid(String productOid);
+    private String productOid;
+
+    public String getProductOid()
+    {
+        return productOid;
+    }
+
+    public FileProductEntry setProductOid(String productOid)
+    {
+        this.productOid = productOid;
+        return this;
+    }
 }

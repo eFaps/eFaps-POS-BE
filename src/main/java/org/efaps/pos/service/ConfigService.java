@@ -47,6 +47,7 @@ public class ConfigService
     public static String PROMOTIONS_ACTIVATE = "org.efaps.promotions.Activate";
     public static String PROMOTIONS_CONFIG = "org.efaps.promotions.Engine.Config";
     public static String FILE_ACTIVATE = "org.efaps.pos.File.Activate";
+    public static String FILEPROD_ACTIVATE = "org.efaps.pos.FileProduct.Activate";
     public static String EBILL_MAP = "org.efaps.electronicbilling.TaxMapping";
     public static String LOYALTY_ACTIVATE = "org.efaps.loyalty.Activate";
     public static String UPDATE_ACTIVATE = "org.efaps.pos.Update.Activate";

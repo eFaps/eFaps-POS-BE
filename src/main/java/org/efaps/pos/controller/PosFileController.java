@@ -55,4 +55,11 @@ public class PosFileController
     {
         return posFileService.findByTag(tag, valueRegex).stream().map(Converter::toDto).toList();
     }
+
+    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE }, params = {"productOid"} )
+    public List<PosFileDto> findByProductOid(@RequestParam("productOid") final String productOid)
+        throws NotFoundException
+    {
+        return posFileService.findByProductOid(productOid).stream().map(Converter::toDto).toList();
+    }
 }

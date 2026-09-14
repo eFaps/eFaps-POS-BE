@@ -44,6 +44,7 @@ import org.efaps.pos.dto.DocumentHeadDto.Builder;
 import org.efaps.pos.dto.EmployeeDto;
 import org.efaps.pos.dto.EmployeeRelationDto;
 import org.efaps.pos.dto.FileDto;
+import org.efaps.pos.dto.FileProductEntryDto;
 import org.efaps.pos.dto.FloorDto;
 import org.efaps.pos.dto.IPaymentDto;
 import org.efaps.pos.dto.IPosPaymentDto;
@@ -149,6 +150,7 @@ import org.efaps.pos.pojo.Barcode;
 import org.efaps.pos.pojo.ConfigurationBOM;
 import org.efaps.pos.pojo.Discount;
 import org.efaps.pos.pojo.EmployeeRelation;
+import org.efaps.pos.pojo.FileProductEntry;
 import org.efaps.pos.pojo.IPayment;
 import org.efaps.pos.pojo.Indication;
 import org.efaps.pos.pojo.IndicationSet;
@@ -2229,7 +2231,12 @@ public final class Converter
                         .setName(dto.getName())
                         .setDescription(dto.getDescription())
                         .setFileName(dto.getFileName().trim())
-                        .setTags(dto.getTags());
+                        .setTags(dto.getTags())
+                        .setProducts(dto.getProducts() == null ? null
+                                        : dto.getProducts().stream()
+                                                        .map(entry -> new FileProductEntry()
+                                                                        .setProductOid(entry.getProductOid()))
+                                                        .toList());
     }
 
     public static PosFileDto toDto(final PosFile entity)
@@ -2243,6 +2250,11 @@ public final class Converter
                         .withFileName(entity.getFileName())
                         .withPath(path + fileName)
                         .withTags(entity.getTags())
+                        .withProducts(entity.getProducts() == null ? null
+                                        : entity.getProducts().stream()
+                                                        .map(entry -> FileProductEntryDto.builder()
+                                                                        .withProductOid(entry.getProductOid()).build())
+                                                        .toList())
                         .build();
     }
 

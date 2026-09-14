@@ -16,6 +16,7 @@
 package org.efaps.pos.dto;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import tools.jackson.databind.annotation.JsonDeserialize;
@@ -23,12 +24,14 @@ import tools.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(builder = PosFileDto.Builder.class)
 public class PosFileDto
 {
+
     private final String oid;
     private final String name;
     private final String description;
     private final String fileName;
     private final String path;
     private final Map<String, String> tags;
+    private final List<FileProductEntryDto> products;
 
     private PosFileDto(Builder builder)
     {
@@ -38,6 +41,7 @@ public class PosFileDto
         this.fileName = builder.fileName;
         this.path = builder.path;
         this.tags = builder.tags;
+        this.products = builder.products;
     }
 
     public String getOid()
@@ -69,10 +73,17 @@ public class PosFileDto
     {
         return tags;
     }
+
+    public List<FileProductEntryDto> getProducts()
+    {
+        return products;
+    }
+
     public static Builder builder()
     {
         return new Builder();
     }
+
     public static final class Builder
     {
 
@@ -82,6 +93,7 @@ public class PosFileDto
         private String fileName;
         private String path;
         private Map<String, String> tags = Collections.emptyMap();
+        private List<FileProductEntryDto> products;
 
         private Builder()
         {
@@ -120,6 +132,12 @@ public class PosFileDto
         public Builder withTags(Map<String, String> tags)
         {
             this.tags = tags;
+            return this;
+        }
+
+        public Builder withProducts(List<FileProductEntryDto> products)
+        {
+            this.products = products;
             return this;
         }
 

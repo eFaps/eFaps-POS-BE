@@ -16,9 +16,11 @@
 package org.efaps.pos.entity;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.efaps.pos.pojo.FileProductEntry;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -35,6 +37,8 @@ public class PosFile
     private String description;
     private String fileName;
     private Map<String, String> tags;
+    private List<FileProductEntry> products;
+
     @LastModifiedBy
     private String lastModifiedUser;
     @LastModifiedDate
@@ -103,6 +107,17 @@ public class PosFile
     public PosFile setTags(Map<String, String> tags)
     {
         this.tags = tags;
+        return this;
+    }
+
+    public List<FileProductEntry> getProducts()
+    {
+        return products;
+    }
+
+    public PosFile setProducts(List<FileProductEntry> products)
+    {
+        this.products = products;
         return this;
     }
 

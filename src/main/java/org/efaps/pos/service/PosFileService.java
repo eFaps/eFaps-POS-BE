@@ -56,7 +56,8 @@ public class PosFileService
 
     public boolean syncFiles()
     {
-        final var active = BooleanUtils.toBoolean(configService.getSystemConfig(ConfigService.FILE_ACTIVATE));
+        final var active = BooleanUtils.toBoolean(configService.getSystemConfig(ConfigService.FILE_ACTIVATE))
+                        || BooleanUtils.toBoolean(configService.getSystemConfig(ConfigService.FILEPROD_ACTIVATE));
         if (active) {
             LOG.info("Syncing Files");
             final var files = eFapsClient.getFiles();
@@ -128,6 +129,11 @@ public class PosFileService
                                    final String valueRegex)
     {
         return posFileRepository.findByTag(tag, valueRegex);
+    }
+
+    public List<PosFile> findByProductOid(final String productOid)
+    {
+        return posFileRepository.findByProductOid(productOid);
     }
 
     public static String evalFileName(final PosFile posFile)
