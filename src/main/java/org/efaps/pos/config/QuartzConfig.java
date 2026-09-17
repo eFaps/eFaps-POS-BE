@@ -658,7 +658,7 @@ public class QuartzConfig
         LOG.info("Registering Quartz trigger 'syncUsers' with delay: {}s, interval: {}s",
                         syncUsersDelay, syncUsersInterval);
         final SimpleTriggerFactoryBean stFactory = new SimpleTriggerFactoryBean();
-        stFactory.setJobDetail(syncPosFilesJobDetailFactoryBean().getObject());
+        stFactory.setJobDetail(syncUsersJobDetailFactoryBean().getObject());
         stFactory.setStartDelay(syncUsersDelay * 1000);
         stFactory.setRepeatInterval(Math.abs(syncUsersInterval) * 1000);
         return stFactory;
