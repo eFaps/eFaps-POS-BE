@@ -17,11 +17,13 @@ package org.efaps.pos.controller;
 
 import org.efaps.pos.config.IApi;
 import org.efaps.pos.dto.DNIDto;
+import org.efaps.pos.dto.DistrictDto;
 import org.efaps.pos.dto.RUCDto;
 import org.efaps.pos.service.EnquiryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,5 +59,16 @@ public class EnquiryController
                                  @RequestParam("term") final String term)
     {
         return enquiryService.findRUCs(pageable, term);
+    }
+
+    @GetMapping(path = "/district", params = { "lat", "lon" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DistrictDto> getDistrict(@RequestParam("lat") final Double lat,
+                                                   @RequestParam("lon") final Double lon)
+    {
+        final var district = enquiryService.getDistrict(lat, lon);
+        if (district == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(district);
     }
 }

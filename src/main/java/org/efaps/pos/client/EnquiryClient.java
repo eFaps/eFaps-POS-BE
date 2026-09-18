@@ -17,6 +17,7 @@ package org.efaps.pos.client;
 
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DNIDto;
+import org.efaps.pos.dto.DistrictDto;
 import org.efaps.pos.dto.RUCDto;
 import org.efaps.pos.sso.SSOClient;
 import org.slf4j.Logger;
@@ -25,9 +26,11 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -109,6 +112,33 @@ public class EnquiryClient
             ret = response.getBody();
         } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of taxpayer", e);
+        }
+        return ret;
+    }
+
+    public DistrictDto getDistrict(Double lat,
+                                   Double lon)
+    {
+        DistrictDto ret = null;
+        try {
+            final var uri = UriComponentsBuilder.fromUri(getConfig().getEnquiry().getBaseUrl())
+                            .pathSegment(getConfig().getEnquiry().getDistrictPath())
+                            .queryParam("lat", lat)
+                            .queryParam("lon", lon)
+                            .build()
+                            .toUri();
+
+            final var requestEntity = addHeader(RequestEntity.get(uri)).build();
+
+            final ResponseEntity<DistrictDto> response = getRestTemplate().
+                            exchange(requestEntity, DistrictDto.class);
+            ret = response.getBody();
+        } catch (final HttpStatusCodeException e) {
+            if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
+                LOG.info("Not found for lat: {}, lon: {}", lat, lon);
+            }
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during retrieval of DistrictDto", e);
         }
         return ret;
     }

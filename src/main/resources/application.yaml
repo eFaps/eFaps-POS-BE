@@ -7,8 +7,8 @@ beInst:
   order:
     numberFormat:
 
-        
-        
+
+
 spring:
   autoconfigure:
     exclude:
@@ -83,6 +83,7 @@ enquiry:
   baseUrl: https://enquiry.synercom.pe/api
   dniPath: dni
   rucPath: ruc
+  districtPath: district
 
 jwt:
   secret: ThisIsNotVerySecretButItIsAtLeastLongEnoughToHaveMoreThan256Bits

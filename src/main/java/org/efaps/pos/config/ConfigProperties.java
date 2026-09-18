@@ -968,6 +968,7 @@ public class ConfigProperties
         private URI baseUrl;
         private String dniPath;
         private String rucPath;
+        private String districtPath;
 
         public String getRucPath()
         {
@@ -997,6 +998,16 @@ public class ConfigProperties
         public void setBaseUrl(final URI _baseUrl)
         {
             baseUrl = _baseUrl;
+        }
+
+        public String getDistrictPath()
+        {
+            return districtPath;
+        }
+
+        public void setDistrictPath(String districtPath)
+        {
+            this.districtPath = districtPath;
         }
     }
 

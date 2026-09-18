@@ -17,6 +17,7 @@ package org.efaps.pos.service;
 
 import org.efaps.pos.client.EnquiryClient;
 import org.efaps.pos.dto.DNIDto;
+import org.efaps.pos.dto.DistrictDto;
 import org.efaps.pos.dto.RUCDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,5 +48,11 @@ public class EnquiryService
                                  final String term)
     {
         return enquiryClient.findRUCs(pageable, term);
+    }
+
+    public DistrictDto getDistrict(final Double lat,
+                                   final Double lon)
+    {
+        return enquiryClient.getDistrict(lat, lon);
     }
 }
