@@ -15,6 +15,7 @@
  */
 package org.efaps.pos.util;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -824,7 +825,7 @@ public final class Converter
 
         payment.setOid(paymentDto.getOid())
                         .setIndex(dto.getIndex())
-                        .setAmount(paymentDto.getAmount())
+                        .setAmount(paymentDto.getAmount() == null ? BigDecimal.ZERO : paymentDto.getAmount())
                         .setCurrency(paymentDto.getCurrency())
                         .setExchangeRate(paymentDto.getExchangeRate())
                         .setInfo(paymentDto.getInfo())
