@@ -59,7 +59,7 @@ public class CollectorService
     private final WebSocketService webSocketService;
 
     public static Map<String, CollectorState> CACHE = Collections
-                    .synchronizedMap(new PassiveExpiringMap<>(10, TimeUnit.MINUTES));
+                    .synchronizedMap(new PassiveExpiringMap<>(60, TimeUnit.MINUTES));
 
     public CollectorService(final LogService logService,
                             final Optional<List<ICollectorListener>> _collectorListener,
@@ -105,7 +105,6 @@ public class CollectorService
 
             if (initCollectors(dto, responseDetails, collectOrderId, collector.getKey())) {
                 final var collectorState = new CollectorState(collectOrderId);
-                collectorState.setState(State.PENDING);
                 CACHE.put(collectOrderId, collectorState);
                 final Company company = Context.get().getCompany();
                 final var authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -125,7 +124,6 @@ public class CollectorService
                                 LOG.error("Catched CollectorException during collection of order with id: "
                                                 + collectorState.getCollectOrderId(), e);
                             }
-                            collectorState.setState(State.INVALID);
                             final var collectOrderOpt = getCollectOrder(collectorState.getCollectOrderId());
                             if (collectOrderOpt.isPresent()) {
                                 final var intCollectOrder = collectOrderOpt.get();
@@ -135,7 +133,7 @@ public class CollectorService
                         }
                     });
                 }
-                runSocketService(collectorState);
+                runSocketService(collectOrderId);
             }
         }
         return CollectStartResponseDto.builder()
@@ -144,7 +142,7 @@ public class CollectorService
                         .build();
     }
 
-    private void runSocketService(final CollectorState collectorState)
+    private void runSocketService(final String collectOrderId)
     {
         final Company company = Context.get().getCompany();
         final var authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -155,16 +153,13 @@ public class CollectorService
                 var max = 0;
                 var overhang = 0;
                 var collecting = true;
+                // until we reach max, or five times after changing state from PENDING to something else
                 while (max < 1000 && overhang < 5) {
                     Thread.sleep(1000);
-                    webSocketService.notifyCollectOrderState(collectorState);
-                    if (collecting == true && !State.PENDING.equals(collectorState.getState())) {
+                    final var state = collectOrderRepository.findById(collectOrderId).get().getState();
+                    webSocketService.notifyCollectOrderState(collectOrderId, state);
+                    if (collecting == true && !State.PENDING.equals(state)) {
                         collecting = false;
-                        final var storedState = collectOrderRepository.findById(collectorState.getCollectOrderId())
-                                        .get().getState();
-                        if (storedState != collectorState.getState()) {
-                            LOG.debug("Different states for collectOrder {}", collectorState.getCollectOrderId());
-                        }
                     }
                     if (!collecting) {
                         overhang++;
@@ -173,7 +168,7 @@ public class CollectorService
                 }
             } catch (final InterruptedException e) {
                 LOG.error("Catched Exception running Socket Service for collectOrder with id: "
-                                + collectorState.getCollectOrderId(), e);
+                                + collectOrderId, e);
             }
         });
     }
@@ -220,13 +215,13 @@ public class CollectorService
             collectOrder.setState(State.CANCELED);
             collectOrderOpt = Optional.of(collectOrderRepository.save(collectOrder));
         }
-        getCollectorState(_collectOrderId).ifPresent(collectorState -> collectorState.setState(State.CANCELED));
+        getCollectorState(_collectOrderId).ifPresent(CollectorState::cancel);
         return collectOrderOpt;
     }
 
-    public Optional<CollectorState> getCollectorState(final String _collectOrderId)
+    public Optional<CollectorState> getCollectorState(final String collectOrderId)
     {
-        return Optional.ofNullable(CACHE.get(_collectOrderId));
+        return Optional.ofNullable(CACHE.get(collectOrderId));
     }
 
     public void add2PaymentDto(final PaymentAbstractDto.Builder<?> builder,

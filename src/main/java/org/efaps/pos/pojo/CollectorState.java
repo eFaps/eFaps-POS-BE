@@ -24,9 +24,10 @@ public class CollectorState
     private final String collectOrderId;
     private CollectOrder.State state;
 
-    public CollectorState(final String _collectOrderId)
+    public CollectorState(final String collectOrderId)
     {
-        collectOrderId = _collectOrderId;
+        this.collectOrderId = collectOrderId;
+        state = CollectOrder.State.PENDING;
     }
 
     public String getCollectOrderId()
@@ -34,9 +35,9 @@ public class CollectorState
         return collectOrderId;
     }
 
-    public synchronized void setState(final CollectOrder.State _state)
+    public synchronized void cancel()
     {
-        state = _state;
+        state = CollectOrder.State.CANCELED;
     }
 
     public synchronized CollectOrder.State getState()
@@ -45,7 +46,8 @@ public class CollectorState
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return ToStringBuilder.reflectionToString(this);
     }
 }

@@ -18,7 +18,7 @@ package org.efaps.pos.service;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.efaps.pos.pojo.CollectorState;
+import org.efaps.pos.entity.CollectOrder;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -48,10 +48,9 @@ public class WebSocketService
         return ordersEdited;
     }
 
-    public void notifyCollectOrderState(final CollectorState _collectorState)
+    public void notifyCollectOrderState(final String collectOrderId, CollectOrder.State state)
     {
-        template.convertAndSend("/topic/collectOrder/" + _collectorState.getCollectOrderId(),
-                        _collectorState.getState().name());
+        template.convertAndSend("/topic/collectOrder/" + collectOrderId, state.name());
     }
 
 }
