@@ -71,10 +71,10 @@ public class CreditNoteService
                 if (recDto.getOid() != null) {
                     final Optional<CreditNote> opt = creditNoteRepository.findById(recDto.getId());
                     if (opt.isPresent()) {
-                        final CreditNote receipt = opt.get();
-                        receipt.setOid(recDto.getOid());
-                        receipt.setStatus(DocStatus.CLOSED);
-                        creditNoteRepository.save(receipt);
+                        final var persitedCreditNote = opt.get();
+                        persitedCreditNote.setOid(recDto.getOid());
+                        persitedCreditNote.setStatus(DocStatus.CLOSED);
+                        creditNoteRepository.save(persitedCreditNote);
                     }
                 }
             } else {
@@ -133,7 +133,8 @@ public class CreditNoteService
                                 .build();
             }
             return getEFapsClient().getCreditNoteRedeemValidity(creditNote.getOid());
-        } else if (Utils.isOid(ident)) {
+        }
+        if (Utils.isOid(ident)) {
             return getEFapsClient().getCreditNoteRedeemValidity(ident);
         }
         return null;

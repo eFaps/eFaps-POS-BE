@@ -360,7 +360,9 @@ public class DocumentService
         receipt.setNumber(sequenceService.getNext(workspaceOid, DocType.RECEIPT, null));
         receipt.setWorkspaceOid(workspaceOid);
         Receipt ret = receiptRepository.insert(receipt);
-        verifyPayment(ret);
+        if (verifyPayment(ret)) {
+            ret = receiptRepository.save(ret);
+        }
         try {
             if (!receiptListeners.isEmpty()) {
                 PosReceiptDto dto = Converter.toDto(ret);
@@ -394,7 +396,9 @@ public class DocumentService
         invoice.setNumber(sequenceService.getNext(workspaceOid, DocType.INVOICE, null));
         invoice.setWorkspaceOid(workspaceOid);
         Invoice ret = invoiceRepository.insert(invoice);
-        verifyPayment(ret);
+        if (verifyPayment(ret)) {
+            ret = invoiceRepository.save(ret);
+        }
         try {
             if (!invoiceListeners.isEmpty()) {
                 PosInvoiceDto dto = Converter.toDto(ret);
@@ -427,7 +431,9 @@ public class DocumentService
         ticket.setNumber(sequenceService.getNext(workspaceOid, DocType.TICKET, null));
         ticket.setWorkspaceOid(workspaceOid);
         Ticket ret = ticketRepository.insert(ticket);
-        verifyPayment(ret);
+        if (verifyPayment(ret)) {
+            ret = ticketRepository.save(ret);
+        }
         try {
             if (!ticketListeners.isEmpty()) {
                 PosTicketDto dto = Converter.toDto(ret);
@@ -493,7 +499,8 @@ public class DocumentService
         final Optional<Order> orderOpt = orderRepository.findById(_orderId);
         if (orderOpt.isEmpty()) {
             throw new PreconditionException("Order cannot be found");
-        } else if (!DocStatus.OPEN.equals(orderOpt.get().getStatus())) {
+        }
+        if (!DocStatus.OPEN.equals(orderOpt.get().getStatus())) {
             throw new PreconditionException("Order must be in state OPEN");
         }
     }
@@ -970,8 +977,9 @@ public class DocumentService
         return ValidateForCreditNoteResponseDto.builder().withValid(true).build();
     }
 
-    public void verifyPayment(final AbstractPayableDocument<?> payable)
+    public boolean verifyPayment(final AbstractPayableDocument<?> payable)
     {
+        var updated = false;
         if (payable.getPayments() != null) {
             for (final var payment : payable.getPayments()) {
                 if (payment instanceof final PaymentRedeemCreditNote redeemPayment) {
@@ -984,12 +992,17 @@ public class DocumentService
                         final var creditNote = creditNoteRepository.findById(redeemPayment.getRedeemDocOid()).get();
                         creditNote.setRedeemedById(payable.getId());
                         creditNoteRepository.save(creditNote);
+                        if (creditNote.getOid() != null) {
+                            redeemPayment.setRedeemDocOid(creditNote.getOid());
+                            updated = true;
+                        }
                     }
                 } else if (payment instanceof final PaymentLoyaltyPoints paymentd) {
 
                 }
             }
         }
+        return updated;
     }
 
     private void validateRedeemDocument(final String oid,

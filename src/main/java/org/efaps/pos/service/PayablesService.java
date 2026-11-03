@@ -21,6 +21,7 @@ import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.entity.AbstractPayableDocument;
 import org.efaps.pos.entity.Balance;
+import org.efaps.pos.pojo.PaymentRedeemCreditNote;
 import org.efaps.pos.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,37 @@ public abstract class PayablesService
                     ret = true;
                 } else {
                     LOG.error("The found Balance does not have an OID {}", balance);
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Check payable payments for missing oid replacements
+     *
+     */
+    protected boolean verifyPayments(final AbstractPayableDocument<?> payable)
+    {
+        boolean ret = true;
+        if (payable.getPayments() != null) {
+            for (final var payment : payable.getPayments()) {
+                if (payment instanceof final PaymentRedeemCreditNote redeemPayment) {
+                    if (!Utils.isOid(redeemPayment.getRedeemDocOid())) {
+                        ret = false;
+                        final var creditNoteOpt = getDocumentHelperService().getCreditNote(
+                                        redeemPayment.getRedeemDocOid());
+                        if (creditNoteOpt.isPresent()) {
+                            final var creditNote = creditNoteOpt.get();
+                            if (creditNote.getOid() != null) {
+                                redeemPayment.setRedeemDocOid(creditNote.getOid());
+                                persist(payable);
+                                ret = true;
+                            }
+                        } else {
+                            LOG.warn("Invalid creditNote id for payment {} in payable: {}", redeemPayment, payable);
+                        }
+                    }
                 }
             }
         }

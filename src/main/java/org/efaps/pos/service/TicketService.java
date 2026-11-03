@@ -62,10 +62,10 @@ public class TicketService
     {
         boolean ret = false;
         LOG.info("Syncing Tickets");
-        for (final Ticket dto : tosync) {
-            LOG.debug("Syncing Ticket: {}", dto);
-            if (validateContacts(dto, ensure) && verifyBalance(dto, ensure)) {
-                final TicketDto recDto = getEFapsClient().postTicket(Converter.toTicketDto(dto));
+        for (final Ticket ticket : tosync) {
+            if (validateContacts(ticket, ensure) && verifyBalance(ticket, ensure) && verifyPayments(ticket)) {
+                LOG.debug("Syncing Ticket: {}", ticket);
+                final TicketDto recDto = getEFapsClient().postTicket(Converter.toTicketDto(ticket));
                 LOG.debug("received Ticket: {}", recDto);
                 if (recDto.getOid() != null) {
                     final Optional<Ticket> opt = ticketRepository.findById(recDto.getId());
@@ -77,7 +77,7 @@ public class TicketService
                     }
                 }
             } else {
-                LOG.debug("skipped Ticket: {}", dto);
+                LOG.debug("skipped Ticket: {}", ticket);
             }
             ret = true;
         }

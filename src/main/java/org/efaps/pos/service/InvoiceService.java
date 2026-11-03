@@ -71,8 +71,8 @@ public class InvoiceService
     {
         final List<Invoice> updates = new ArrayList<>();
         for (final Invoice invoice : invoices) {
-            LOG.debug("Syncing Invoice: {}", invoice);
-            if (validateContacts(invoice, ensure) && verifyBalance(invoice, ensure)) {
+            if (validateContacts(invoice, ensure) && verifyBalance(invoice, ensure) && verifyPayments(invoice)) {
+                LOG.debug("Syncing Invoice: {}", invoice);
                 final InvoiceDto recDto = getEFapsClient().postInvoice(Converter.toInvoiceDto(invoice));
                 LOG.debug("received Invoice: {}", recDto);
                 if (recDto.getOid() != null) {
