@@ -63,6 +63,7 @@ import org.efaps.promotionengine.condition.StoreCondition;
 import org.efaps.promotionengine.dto.PromotionInfoDto;
 import org.efaps.promotionengine.pojo.Document;
 import org.efaps.promotionengine.pojo.Position;
+import org.efaps.promotionengine.promotion.Promotion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -112,71 +113,70 @@ public class CalculatorService
         if (usesIndex) {
             i = i + 1000;
         }
-
-        // in case of a new creditnote --> calculation is based on the source
-        // document
-        if (calculatorPayloadDto.getSourceDocIdent() != null) {
-            final var sourceDocOpt = documentHelperService.getDocument(calculatorPayloadDto.getSourceDocIdent());
-            if (sourceDocOpt.isPresent()) {
-                final var sourceDoc = sourceDocOpt.get();
-                for (final var pos : calculatorPayloadDto.getPositions()) {
-                    final var itemOpt = sourceDoc.getItems().stream()
-                                    .filter(fitem -> fitem.getIndex().equals(pos.getIndex())).findFirst();
-                    if (itemOpt.isPresent()) {
-                        final var item = itemOpt.get();
-                        document.addPosition(new Position()
-                                        .setNetUnitPrice(item.getNetUnitPrice())
-                                        .setTaxes(item.getTaxes().stream()
-                                                        .map(TaxEntry::getTax)
-                                                        .map(tax -> {
-                                                            taxMap.put(tax.getKey(), tax);
-                                                            return toAbacusTax(tax);
-                                                        })
-                                                        .toList())
-                                        .setIndex(item.getIndex())
-                                        .setProductOid(pos.getProductOid())
-                                        .setQuantity(pos.getQuantity()));
-                    }
-                }
-            }
-        } else {
-            for (final var pos : calculatorPayloadDto.getPositions()) {
-                final var product = productService.getProduct(pos.getProductOid());
-                final var taxes = product.getTaxes().stream().map(tax -> {
-                    taxMap.put(tax.getKey(), tax);
-                    return toAbacusTax(tax);
-                }).toList();
-                final BigDecimal netUnitPrice = evalPrice(pos, product);
-                var index = 0;
-                if (usesIndex) {
-                    if (pos.getIndex() == null) {
-                        LOG.warn("Mixed index for calculator", pos.getBomOid());
-                        index = i++;
-                    } else {
-                        index = pos.getIndex();
-                    }
-                } else {
-                    index = i++;
-                }
-                final var baseProduct = productService.evalBaseProduct(product);
-
-                document.addPosition(new Position()
-                                .setNetUnitPrice(netUnitPrice)
-                                .setTaxes(taxes)
-                                .setIndex(index)
-                                .setProductOid(baseProduct.getOid())
-                                .setStandInOid(baseProduct.getOid().equals(pos.getProductOid()) ? null
-                                                : pos.getProductOid())
-                                .setQuantity(pos.getQuantity()));
-            }
-        }
         final IDocument result;
         if (CollectionUtils.isEmpty(calculatorPayloadDto.getPositions())) {
             result = new EmptyDoc();
         } else {
-            result = calculate(document);
-        }
+            // in case of a new creditnote --> calculation is based on the
+            // source document and promotions must not be applied
+            if (calculatorPayloadDto.getSourceDocIdent() != null) {
+                final var sourceDocOpt = documentHelperService.getDocument(calculatorPayloadDto.getSourceDocIdent());
+                if (sourceDocOpt.isPresent()) {
+                    final var sourceDoc = sourceDocOpt.get();
+                    for (final var pos : calculatorPayloadDto.getPositions()) {
+                        final var itemOpt = sourceDoc.getItems().stream()
+                                        .filter(fitem -> fitem.getIndex().equals(pos.getIndex())).findFirst();
+                        if (itemOpt.isPresent()) {
+                            final var item = itemOpt.get();
+                            document.addPosition(new Position()
+                                            .setNetUnitPrice(item.getNetUnitPrice())
+                                            .setTaxes(item.getTaxes().stream()
+                                                            .map(TaxEntry::getTax)
+                                                            .map(tax -> {
+                                                                taxMap.put(tax.getKey(), tax);
+                                                                return toAbacusTax(tax);
+                                                            })
+                                                            .toList())
+                                            .setIndex(item.getIndex())
+                                            .setProductOid(pos.getProductOid())
+                                            .setQuantity(pos.getQuantity()));
+                        }
+                    }
+                }
+                result = calculate(document, Collections.emptyList());
+            } else {
+                for (final var pos : calculatorPayloadDto.getPositions()) {
+                    final var product = productService.getProduct(pos.getProductOid());
+                    final var taxes = product.getTaxes().stream().map(tax -> {
+                        taxMap.put(tax.getKey(), tax);
+                        return toAbacusTax(tax);
+                    }).toList();
+                    final BigDecimal netUnitPrice = evalPrice(pos, product);
+                    var index = 0;
+                    if (usesIndex) {
+                        if (pos.getIndex() == null) {
+                            LOG.warn("Mixed index for calculator", pos.getBomOid());
+                            index = i++;
+                        } else {
+                            index = pos.getIndex();
+                        }
+                    } else {
+                        index = i++;
+                    }
+                    final var baseProduct = productService.evalBaseProduct(product);
 
+                    document.addPosition(new Position()
+                                    .setNetUnitPrice(netUnitPrice)
+                                    .setTaxes(taxes)
+                                    .setIndex(index)
+                                    .setProductOid(baseProduct.getOid())
+                                    .setStandInOid(baseProduct.getOid().equals(pos.getProductOid()) ? null
+                                                    : pos.getProductOid())
+                                    .setQuantity(pos.getQuantity()));
+                }
+                result = calculate(document);
+            }
+        }
         return CalculatorResponseDto.builder()
                         .withNetTotal(result.getNetTotal())
                         .withTaxTotal(result.getTaxTotal())
@@ -326,11 +326,17 @@ public class CalculatorService
         return ret;
     }
 
-    public IDocument calculate(final IDocument document)
+    protected IDocument calculate(final IDocument document,
+                                  final List<Promotion> promotions)
     {
         final var calculator = new Calculator(getConfig());
-        calculator.calc(document, promotionService.getPromotions(), evalData(), getPromotionsConfig());
+        calculator.calc(document, promotions, evalData(), getPromotionsConfig());
         return document;
+    }
+
+    public IDocument calculate(final IDocument document)
+    {
+        return calculate(document, promotionService.getPromotions());
     }
 
     protected BigDecimal getPayableAmount(final String workspaceOid,
@@ -533,17 +539,19 @@ public class CalculatorService
                         yield evaluateNetPrice(positionCross, discountPosition.getTaxes());
 
                         /**
-                        final var targetCross = calcDocument.getCrossTotal().subtract(posDoc.getDiscount().getValue());
-                        final var percentage = new BigDecimal(100).setScale(4).multiply(
-                                        BigDecimal.ONE.subtract(
-                                                        targetCross.setScale(4).divide(calcDocument.getCrossTotal(),
-                                                                        RoundingMode.HALF_UP)));
-                        LOG.debug("percentage: {}", percentage);
-                        final var factor2 = percentage.setScale(4, RoundingMode.HALF_UP)
-                                        .divide(new BigDecimal(100), RoundingMode.HALF_UP);
-                        yield calcDocument.getNetTotal().multiply(factor2);
-                        **/
-                        }
+                         * final var targetCross =
+                         * calcDocument.getCrossTotal().subtract(posDoc.getDiscount().getValue());
+                         * final var percentage = new
+                         * BigDecimal(100).setScale(4).multiply(
+                         * BigDecimal.ONE.subtract(
+                         * targetCross.setScale(4).divide(calcDocument.getCrossTotal(),
+                         * RoundingMode.HALF_UP))); LOG.debug("percentage: {}",
+                         * percentage); final var factor2 =
+                         * percentage.setScale(4, RoundingMode.HALF_UP)
+                         * .divide(new BigDecimal(100), RoundingMode.HALF_UP);
+                         * yield calcDocument.getNetTotal().multiply(factor2);
+                         **/
+                    }
                 };
                 discountPosition.setNetUnitPrice(posNetUnitPrice.negate());
                 calcDocument.addPosition(discountPosition);
