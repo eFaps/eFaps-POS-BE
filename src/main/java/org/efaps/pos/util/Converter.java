@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -181,7 +182,6 @@ import org.efaps.promotionengine.api.IPromotionDetail;
 import org.efaps.promotionengine.dto.PromotionInfoDto;
 import org.efaps.promotionengine.promotion.Promotion;
 import org.springframework.stereotype.Component;
-
 
 @Component
 public final class Converter
@@ -382,7 +382,7 @@ public final class Converter
                         .setFlags(dto.getFlags())
                         .setActions(dto.getActions() == null ? null
                                         : dto.getActions().stream().map(Converter::toEntity)
-                                         .collect(Collectors.toList()));
+                                                        .collect(Collectors.toList()));
     }
 
     public static BOMAction toEntity(final BOMActionDto dto)
@@ -511,19 +511,13 @@ public final class Converter
                                                         .collect(Collectors.toSet()))
                         .withBomGroupConfigs(entity.getBomGroupConfigs() == null ? null
                                         : entity.getBomGroupConfigs().stream()
-                                                        .sorted((arg,
-                                                                 arg1) -> Integer.valueOf(
-                                                                                 arg.getWeight())
-                                                                                 .compareTo(arg1.getWeight()))
+                                                        .sorted(Comparator.comparing(BOMGroupConfig::getWeight))
                                                         .map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withConfigurationBOMs(entity.getConfigurationBOMs() == null ? null
                                         : entity.getConfigurationBOMs()
                                                         .stream()
-                                                        .sorted((arg,
-                                                                 arg1) -> Integer.valueOf(
-                                                                                 arg.getPosition())
-                                                                                 .compareTo(arg1.getPosition()))
+                                                        .sorted(Comparator.comparing(ConfigurationBOM::getPosition))
                                                         .map(Converter::toDto)
                                                         .collect(Collectors.toSet()))
                         .withIndividual(entity.getIndividual())
@@ -967,6 +961,12 @@ public final class Converter
                                 .withCollectOrderId(posEntity.getCollectOrderId())
                                 .withInfo(posEntity.getInfo())
                                 .withRedeemDocOid(posEntity.getRedeemDocOid());
+                if (posEntity.getRedeemDocOid() != null) {
+                    final var creditNoteOpt = INSTANCE.documentService.findCreditNote(posEntity.getRedeemDocOid());
+                    if (creditNoteOpt.isPresent()) {
+                        builder.withRedeemDocNumber(creditNoteOpt.get().getNumber());
+                    }
+                }
                 INSTANCE.collectorService.add2PaymentDto(builder, entity);
                 yield builder.build();
             }
@@ -1918,7 +1918,8 @@ public final class Converter
     {
         if (dto instanceof final PosDocItemDto posDto) {
             return toEntity(posDto);
-        } else if (dto instanceof final DocItemDto docDto) {
+        }
+        if (dto instanceof final DocItemDto docDto) {
             return toEntity(docDto);
         }
         return null;
@@ -2037,9 +2038,11 @@ public final class Converter
     {
         if (entity instanceof final Receipt receipt) {
             return toDto(receipt, extension);
-        } else if (entity instanceof final Invoice invoice) {
+        }
+        if (entity instanceof final Invoice invoice) {
             return toDto(invoice, extension);
-        } else if (entity instanceof final Ticket ticket) {
+        }
+        if (entity instanceof final Ticket ticket) {
             return toDto(ticket, extension);
         } else if (entity instanceof final CreditNote creditNote) {
             return toDto(creditNote, extension);

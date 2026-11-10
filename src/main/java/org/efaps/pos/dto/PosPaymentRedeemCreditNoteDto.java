@@ -18,6 +18,7 @@ package org.efaps.pos.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = PosPaymentRedeemCreditNoteDto.Builder.class)
@@ -29,12 +30,14 @@ public class PosPaymentRedeemCreditNoteDto
 
     private final PaymentType type;
     private final String collectOrderId;
+    private final String redeemDocNumber;
 
     protected PosPaymentRedeemCreditNoteDto(final Builder builder)
     {
         super(builder);
         this.type = builder.type;
         this.collectOrderId = builder.collectOrderId;
+        this.redeemDocNumber = builder.redeemDocNumber;
     }
 
     @Override
@@ -49,12 +52,19 @@ public class PosPaymentRedeemCreditNoteDto
         return collectOrderId;
     }
 
+    public String getRedeemDocNumber()
+    {
+        return redeemDocNumber;
+    }
+
     @Override
     public String toString()
     {
         return new StringBuilder()
                         .append(super.toString())
                         .append(", type=").append(type)
+                        .append(", collectOrderId=").append(collectOrderId)
+                        .append(", redeemDocNumber=").append(redeemDocNumber)
                         .append("]").toString();
     }
 
@@ -70,6 +80,7 @@ public class PosPaymentRedeemCreditNoteDto
 
         private final PaymentType type = PaymentType.REDEEM_CREDITNOTE;
         private String collectOrderId;
+        private String redeemDocNumber;
 
         public Builder withCollectOrderId(final String collectOrderId)
         {
@@ -79,6 +90,11 @@ public class PosPaymentRedeemCreditNoteDto
 
         public Builder withType(PaymentType type)
         {
+            return this;
+        }
+
+        public Builder withRedeemDocNumber(String redeemDocNumber) {
+            this.redeemDocNumber= redeemDocNumber;
             return this;
         }
 
