@@ -44,22 +44,24 @@ public abstract class PayablesService
         this.balanceService = balanceService;
     }
 
-    protected boolean verifyBalance(final AbstractPayableDocument<?> document,
+    protected boolean verifyBalance(final AbstractPayableDocument<?> payable,
                                     final boolean ensure)
     {
         boolean ret = true;
-        if (!Utils.isOid(document.getBalanceOid())) {
+        if (!Utils.isOid(payable.getBalanceOid())) {
             ret = false;
-            final Optional<Balance> balanceOpt = balanceService.findById(document.getBalanceOid());
+            final Optional<Balance> balanceOpt = balanceService.findById(payable.getBalanceOid());
             if (balanceOpt.isPresent()) {
                 final Balance balance = balanceOpt.get();
                 if (Utils.isOid(balance.getOid())) {
-                    document.setBalanceOid(balance.getOid());
+                    payable.setBalanceOid(balance.getOid());
+                    persist(payable);
                     ret = true;
                 } else if (ensure) {
                     LOG.info("Ensure valid balance by syncing {}", balance);
                     final var syncedBalance = balanceService.syncBalance(balance);
-                    document.setBalanceOid(syncedBalance.getOid());
+                    payable.setBalanceOid(syncedBalance.getOid());
+                    persist(payable);
                     ret = true;
                 } else {
                     LOG.error("The found Balance does not have an OID {}", balance);
