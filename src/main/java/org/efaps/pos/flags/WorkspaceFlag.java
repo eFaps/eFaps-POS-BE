@@ -18,7 +18,7 @@ package org.efaps.pos.flags;
 public enum WorkspaceFlag implements IFlag
 {
 
-    ROUNDPAYABLE(2), ASSIGNSELLER(3);
+    ROUNDPAYABLE(2), ASSIGNSELLER(3), REMOTE(5);
 
     private final int bitIndex;
 

@@ -24,6 +24,8 @@ import java.util.Optional;
 import org.efaps.pos.client.EFapsClient;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DocStatus;
+import org.efaps.pos.dto.EmitValidityDto;
+import org.efaps.pos.dto.EmitValidityResponseDto;
 import org.efaps.pos.dto.RedeemValidityDto;
 import org.efaps.pos.dto.RedeemValidityStatus;
 import org.efaps.pos.entity.AbstractDocument;
@@ -157,5 +159,26 @@ public class CreditNoteService
             }
         }
         return creditNotes;
+    }
+
+    public EmitValidityResponseDto emitValidity(final EmitValidityDto dto)
+    {
+        final EmitValidityResponseDto resp;
+        // first check if a local creditNote exists
+        if (!creditNoteRepository.findBySourceDocOid(dto.getSourceOid()).isEmpty()) {
+            LOG.warn("Document was already used as source document");
+            resp = EmitValidityResponseDto.builder().withValid(false).build();
+        } else if (Utils.isOid(dto.getSourceOid())) {
+            // check remote if given PayableOid is an oid
+            final var response = getEFapsClient().getCreditNoteEmitValidity(dto);
+            if (response != null) {
+                resp = response;
+            } else {
+                resp = EmitValidityResponseDto.builder().withValid(false).build();
+            }
+        } else {
+            resp = EmitValidityResponseDto.builder().withValid(true).build();
+        }
+        return resp;
     }
 }

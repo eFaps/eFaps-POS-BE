@@ -18,6 +18,8 @@ package org.efaps.pos.controller;
 import java.util.List;
 
 import org.efaps.pos.config.IApi;
+import org.efaps.pos.dto.EmitValidityDto;
+import org.efaps.pos.dto.EmitValidityResponseDto;
 import org.efaps.pos.dto.PosCreditNoteDto;
 import org.efaps.pos.dto.RedeemValidityDto;
 import org.efaps.pos.error.NotFoundException;
@@ -26,6 +28,8 @@ import org.efaps.pos.util.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,5 +61,11 @@ public class CreditNoteController
             throw new NotFoundException("Document not found");
         }
         return dto;
+    }
+
+    @PostMapping(path = { "creditnotes/emit-validity" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public EmitValidityResponseDto emitValidity(@RequestBody final EmitValidityDto dto)
+    {
+        return creditNoteService.emitValidity(dto);
     }
 }

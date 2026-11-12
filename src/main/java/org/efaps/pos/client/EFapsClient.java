@@ -31,6 +31,8 @@ import org.efaps.pos.dto.CategoryDto;
 import org.efaps.pos.dto.ContactDto;
 import org.efaps.pos.dto.CreditNoteDto;
 import org.efaps.pos.dto.DumpDto;
+import org.efaps.pos.dto.EmitValidityDto;
+import org.efaps.pos.dto.EmitValidityResponseDto;
 import org.efaps.pos.dto.EmployeeDto;
 import org.efaps.pos.dto.ExchangeRateDto;
 import org.efaps.pos.dto.FileDto;
@@ -805,6 +807,19 @@ public class EFapsClient
         try {
             final var requestEntity = get(getEFapsConfig().getCreditnotePath() + "/" + oid + "/redeem-validity");
             final var response = getRestTemplate().exchange(requestEntity, RedeemValidityDto.class);
+            ret = response.getBody();
+        } catch (final RestClientException | IdentException e) {
+            LOG.error("Catched error during retrieval of InvoiceDto", e);
+        }
+        return ret;
+    }
+
+    public EmitValidityResponseDto getCreditNoteEmitValidity(final EmitValidityDto dto)
+    {
+        EmitValidityResponseDto ret = null;
+        try {
+            final var requestEntity = post(getEFapsConfig().getCreditnotePath() + "/emit-validity", dto);
+            final var response = getRestTemplate().exchange(requestEntity, EmitValidityResponseDto.class);
             ret = response.getBody();
         } catch (final RestClientException | IdentException e) {
             LOG.error("Catched error during retrieval of InvoiceDto", e);

@@ -44,8 +44,6 @@ import org.efaps.pos.dto.PosReceiptDto;
 import org.efaps.pos.dto.PosTicketDto;
 import org.efaps.pos.dto.ProductRelationType;
 import org.efaps.pos.dto.ProductType;
-import org.efaps.pos.dto.ValidateForCreditNoteDto;
-import org.efaps.pos.dto.ValidateForCreditNoteResponseDto;
 import org.efaps.pos.entity.AbstractDocument;
 import org.efaps.pos.entity.AbstractDocument.Item;
 import org.efaps.pos.entity.AbstractPayableDocument;
@@ -595,7 +593,13 @@ public class DocumentService
         }
 
         if (opt.isEmpty() && remote && Utils.isOid(identifier)) {
-
+            final var invoiceDto = eFapsClient.getInvoice(identifier);
+            if (invoiceDto != null) {
+                final var entity = Converter.toEntity(invoiceDto);
+                entity.setOrigin(Origin.REMOTE);
+                final var persisted = invoiceRepository.save(entity);
+                opt = Optional.of(persisted);
+            }
         }
         return opt;
     }
@@ -969,12 +973,6 @@ public class DocumentService
                 orderRepository.save(doc);
             });
         }
-    }
-
-    public ValidateForCreditNoteResponseDto validateForCreditNote(final ValidateForCreditNoteDto dto)
-    {
-        dto.getPayableOid();
-        return ValidateForCreditNoteResponseDto.builder().withValid(true).build();
     }
 
     public boolean verifyPayment(final AbstractPayableDocument<?> payable)
