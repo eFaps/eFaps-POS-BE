@@ -897,6 +897,7 @@ public final class Converter
                                 .withCardNumber(posEntity.getCardNumber())
                                 .withEquipmentIdent(posEntity.getEquipmentIdent())
                                 .withOperationDateTime(posEntity.getOperationDateTime())
+                                .withOperationId(posEntity.getOperationId())
                                 .withServiceProvider(posEntity.getServiceProvider())
                                 .withMappingKey(posEntity.getMappingKey());
                 INSTANCE.collectorService.add2PaymentDto(builder, entity);
