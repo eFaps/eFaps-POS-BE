@@ -894,7 +894,7 @@ public final class Converter
                                 .withInfo(posEntity.getInfo())
                                 .withAuthorization(posEntity.getAuthorization())
                                 .withCardLabel(posEntity.getCardLabel())
-                                .withCardNumber(posEntity.getCardLabel())
+                                .withCardNumber(posEntity.getCardNumber())
                                 .withEquipmentIdent(posEntity.getEquipmentIdent())
                                 .withOperationDateTime(posEntity.getOperationDateTime())
                                 .withServiceProvider(posEntity.getServiceProvider())
@@ -2044,7 +2044,8 @@ public final class Converter
         }
         if (entity instanceof final Ticket ticket) {
             return toDto(ticket, extension);
-        } else if (entity instanceof final CreditNote creditNote) {
+        }
+        if (entity instanceof final CreditNote creditNote) {
             return toDto(creditNote, extension);
         }
         return null;
