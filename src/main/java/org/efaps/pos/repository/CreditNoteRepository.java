@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.efaps.pos.entity.CreditNote;
+import org.efaps.pos.entity.Origin;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface CreditNoteRepository
@@ -32,7 +33,7 @@ public interface CreditNoteRepository
 
     Collection<CreditNote> findByBalanceOid(String _balanceOid);
 
-    Collection<CreditNote> findByDate(LocalDate date);
+    Collection<CreditNote> findByDateAndOriginNot(LocalDate date, Origin origin);
 
     Optional<CreditNote> findByOid(String oid);
 

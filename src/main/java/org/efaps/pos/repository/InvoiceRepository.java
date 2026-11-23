@@ -44,7 +44,7 @@ public interface InvoiceRepository
          or c.email = :email)""")
     Collection<Invoice> findByNumberLikeIgnoreCaseAndOrginIn(String term, Set<Origin> orgings);
 
-    Collection<Invoice> findByDate(LocalDate date);
+    Collection<Invoice> findByDateAndOriginNot(LocalDate date, Origin origin);
 
     Optional<Invoice> findByOid(String oid);
 

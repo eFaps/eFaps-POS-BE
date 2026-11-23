@@ -41,6 +41,7 @@ import org.efaps.pos.dto.SalesReportInfoDto;
 import org.efaps.pos.dto.StoreStatus;
 import org.efaps.pos.dto.StoreStatusRequestDto;
 import org.efaps.pos.entity.AbstractPayableDocument;
+import org.efaps.pos.entity.Origin;
 import org.efaps.pos.entity.Workspace;
 import org.efaps.pos.entity.Workspace.PrintCmd;
 import org.efaps.pos.repository.CreditNoteRepository;
@@ -87,10 +88,10 @@ public class ReportService
     public SalesReportDto getSalesReport(final LocalDate date)
     {
         final List<AbstractPayableDocument<?>> payables = new ArrayList<>();
-        payables.addAll(creditNoteRepository.findByDate(date));
-        payables.addAll(invoiceRepository.findByDate(date));
-        payables.addAll(receiptRepository.findByDate(date));
-        payables.addAll(ticketRepository.findByDate(date));
+        payables.addAll(creditNoteRepository.findByDateAndOriginNot(date, Origin.REMOTE));
+        payables.addAll(invoiceRepository.findByDateAndOriginNot(date, Origin.REMOTE));
+        payables.addAll(receiptRepository.findByDateAndOriginNot(date, Origin.REMOTE));
+        payables.addAll(ticketRepository.findByDateAndOriginNot(date, Origin.REMOTE));
 
         final MultiValuedMap<PaymentGroup, SalesReportEntryDto> values = new ArrayListValuedHashMap<>();
         payables.stream().forEach(payable -> {
