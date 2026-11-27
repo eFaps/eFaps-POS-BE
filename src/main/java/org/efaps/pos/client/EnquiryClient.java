@@ -15,6 +15,8 @@
  */
 package org.efaps.pos.client;
 
+import java.net.URI;
+
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.DNIDto;
 import org.efaps.pos.dto.DistrictDto;
@@ -22,15 +24,13 @@ import org.efaps.pos.dto.RUCDto;
 import org.efaps.pos.sso.SSOClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -41,11 +41,11 @@ public class EnquiryClient
 
     private static final Logger LOG = LoggerFactory.getLogger(EnquiryClient.class);
 
-    public EnquiryClient(final RestTemplateBuilder restTemplateBuilder,
+    public EnquiryClient(final RestClient.Builder restClientBuilder,
                          final ConfigProperties config,
                          final SSOClient ssoClient)
     {
-        super(restTemplateBuilder, config, ssoClient);
+        super(restClientBuilder, config, ssoClient);
     }
 
     public DNIDto getDNI(final String number)
@@ -56,13 +56,8 @@ public class EnquiryClient
                             .pathSegment(getConfig().getEnquiry().getDniPath(), "{number}")
                             .buildAndExpand(number)
                             .toUri();
-
-            final var requestEntity = addHeader(RequestEntity.get(uri)).build();
-            final ResponseEntity<DNIDto> response = getRestTemplate()
-                            .exchange(requestEntity, new ParameterizedTypeReference<DNIDto>()
-                            {
-                            });
-            ret = response.getBody();
+            final var responseSpec = getRestClient().get().uri(uri).retrieve();
+            ret = responseSpec.body(DNIDto.class);
         } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of dni", e);
         }
@@ -78,12 +73,8 @@ public class EnquiryClient
                             .buildAndExpand(number)
                             .toUri();
 
-            final var requestEntity = addHeader(RequestEntity.get(uri)).build();
-            final ResponseEntity<RUCDto> response = getRestTemplate()
-                            .exchange(requestEntity, new ParameterizedTypeReference<RUCDto>()
-                            {
-                            });
-            ret = response.getBody();
+            final var responseSpec = getRestClient().get().uri(uri).retrieve();
+            ret = responseSpec.body(RUCDto.class);
         } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of dni", e);
         }
@@ -102,14 +93,10 @@ public class EnquiryClient
                             .queryParam("page", pageable.getPageNumber())
                             .build()
                             .toUri();
-
-            final var requestEntity = addHeader(RequestEntity.get(uri)).build();
-
-            final ResponseEntity<ClientPage<RUCDto>> response = getRestTemplate()
-                            .exchange(requestEntity, new ParameterizedTypeReference<ClientPage<RUCDto>>()
-                            {
-                            });
-            ret = response.getBody();
+            final var responseSpec = getRestClient().get().uri(uri).retrieve();
+            ret = responseSpec.body(new ParameterizedTypeReference<ClientPage<RUCDto>>()
+            {
+            });
         } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of taxpayer", e);
         }
@@ -128,11 +115,9 @@ public class EnquiryClient
                             .build()
                             .toUri();
 
-            final var requestEntity = addHeader(RequestEntity.get(uri)).build();
+            final var responseSpec = getRestClient().get().uri(uri).retrieve();
+            ret = responseSpec.body(DistrictDto.class);
 
-            final ResponseEntity<DistrictDto> response = getRestTemplate().
-                            exchange(requestEntity, DistrictDto.class);
-            ret = response.getBody();
         } catch (final HttpStatusCodeException e) {
             if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
                 LOG.info("Not found for lat: {}, lon: {}", lat, lon);
@@ -141,5 +126,11 @@ public class EnquiryClient
             LOG.error("Catched error during retrieval of DistrictDto", e);
         }
         return ret;
+    }
+
+    @Override
+    protected URI getBaseUrl()
+    {
+        return getConfig().getEnquiry().getBaseUrl();
     }
 }

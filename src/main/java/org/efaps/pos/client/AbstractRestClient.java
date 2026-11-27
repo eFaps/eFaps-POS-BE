@@ -32,32 +32,47 @@
  */
 package org.efaps.pos.client;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Base64;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.context.Context;
 import org.efaps.pos.sso.SSOClient;
-import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.http.RequestEntity.HeadersBuilder;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.client.ClientHttpRequestInitializer;
+import org.springframework.web.client.RestClient;
 
 public abstract class AbstractRestClient
 {
-    private final RestTemplate restTemplate;
+
+    private final RestClient restClient;
     private final ConfigProperties config;
     private final SSOClient ssoClient;
 
-    public AbstractRestClient(final RestTemplateBuilder _restTemplateBuilder,
-                              final ConfigProperties _config,
-                              final SSOClient _ssoClient) {
-        restTemplate = _restTemplateBuilder
-            .readTimeout(Duration.ofMinutes(10))
-            .build();
-        config = _config;
-        ssoClient = _ssoClient;
+    public AbstractRestClient(final RestClient.Builder restClientBuilder,
+                              final ConfigProperties config,
+                              final SSOClient ssoClient)
+    {
+        this.config = config;
+        this.ssoClient = ssoClient;
+        restClient = restClientBuilder
+                        .baseUrl(getBaseUrl())
+                        .requestInitializer(getRequestInitializer())
+                        .build();
+
+    }
+
+    protected abstract URI getBaseUrl();
+
+    protected ClientHttpRequestInitializer getRequestInitializer()
+    {
+        return request -> {
+            request.getHeaders().set("Authorization", getAuthorization());
+            if (Context.get().getCompany() != null) {
+                request.getHeaders().set("X-CONTEXT-COMPANY", Context.get().getCompany().getKey());
+            }
+        };
     }
 
     protected String getAuthorization()
@@ -72,22 +87,13 @@ public abstract class AbstractRestClient
         return auth;
     }
 
-    protected <T extends HeadersBuilder<T>> HeadersBuilder<T> addHeader(final HeadersBuilder<T> _builder)
+    public RestClient getRestClient()
     {
-        HeadersBuilder<T> ret = _builder.header("Authorization", getAuthorization());
-        if (Context.get().getCompany() != null) {
-            ret = ret.header("X-CONTEXT-COMPANY", Context.get().getCompany().getKey());
-        }
-        return ret;
+        return restClient;
     }
 
-
-    public RestTemplate getRestTemplate()
+    public ConfigProperties getConfig()
     {
-        return restTemplate;
-    }
-
-    public ConfigProperties getConfig() {
         return config;
     }
 

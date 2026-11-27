@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.config.ConfigProperties.EFaps;
@@ -66,18 +67,17 @@ import org.efaps.promotionengine.promotion.Promotion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -90,12 +90,12 @@ public class EFapsClient
     private final MongoTemplate mongoTemplate;
 
     @Autowired
-    public EFapsClient(final RestTemplateBuilder _restTemplateBuilder,
+    public EFapsClient(final RestClient.Builder restClientBuilder,
                        final MongoTemplate _mongoTemplate,
                        final ConfigProperties _config,
                        final SSOClient _ssoClient)
     {
-        super(_restTemplateBuilder, _config, _ssoClient);
+        super(restClientBuilder, _config, _ssoClient);
         mongoTemplate = _mongoTemplate;
     }
 
@@ -103,13 +103,13 @@ public class EFapsClient
     {
         Map<String, String> ret = new HashMap<>();
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getConfigPath());
-            final ResponseEntity<Map<String, String>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<Map<String, String>>()
-                            {
-                            });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+            final var responseSpec = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getConfigPath()))
+                            .retrieve();
+            ret = responseSpec.body(new ParameterizedTypeReference<Map<String, String>>()
+            {
+            });
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of properties", e);
         }
         return ret;
@@ -127,13 +127,13 @@ public class EFapsClient
             if (after != null) {
                 params.put("after", Collections.singletonList(after.toString()));
             }
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getProductPath(), params);
-            final ResponseEntity<List<ProductDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<ProductDto>>()
-                            {
-                            });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+            final var responseSpec = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getProductPath(), params))
+                            .retrieve();
+            ret = responseSpec.body(new ParameterizedTypeReference<List<ProductDto>>()
+            {
+            });
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of products", e);
         }
         return ret;
@@ -143,11 +143,11 @@ public class EFapsClient
     {
         ProductDto ret = null;
         try {
-            final var requestEntity = get(getEFapsConfig().getProductPath() + "/" + productOid);
-            final var response = getRestTemplate().exchange(requestEntity, ProductDto.class);
-            ret = response.getBody();
-
-        } catch (final RestClientException | IdentException e) {
+            final var responseSpec = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getProductPath() + "/" + productOid))
+                            .retrieve();
+            ret = responseSpec.body(ProductDto.class);
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of a product", e);
         }
         return ret;
@@ -157,13 +157,14 @@ public class EFapsClient
     {
         DumpDto ret = null;
         try {
-
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getProductPath() + "/dump");
-            final ResponseEntity<DumpDto> response = getRestTemplate().exchange(requestEntity, DumpDto.class);
-            if (response.getStatusCode() == HttpStatus.OK) {
-                ret = response.getBody();
-            }
-        } catch (final RestClientException | IdentException e) {
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getProductPath() + "/dump"))
+                            .retrieve()
+                            .onStatus(HttpStatusCode::isError, (request,
+                                                                response) -> {
+                                LOG.warn("No dump retrieved");
+                            }).body(DumpDto.class);
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of products", e);
         }
         return ret;
@@ -173,13 +174,15 @@ public class EFapsClient
     {
         DumpDto ret = null;
         try {
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getContactPath() + "/dump"))
+                            .retrieve()
+                            .onStatus(HttpStatusCode::isError, (request,
+                                                                response) -> {
+                                LOG.warn("No dump retrieved");
+                            }).body(DumpDto.class);
 
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getContactPath() + "/dump");
-            final ResponseEntity<DumpDto> response = getRestTemplate().exchange(requestEntity, DumpDto.class);
-            if (response.getStatusCode() == HttpStatus.OK) {
-                ret = response.getBody();
-            }
-        } catch (final RestClientException | IdentException e) {
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of products", e);
         }
         return ret;
@@ -189,13 +192,13 @@ public class EFapsClient
     {
         List<CategoryDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getCategoryPath());
-            final ResponseEntity<List<CategoryDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<CategoryDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getCategoryPath()))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<CategoryDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of categories", e);
         }
         return ret;
@@ -205,13 +208,14 @@ public class EFapsClient
     {
         List<WorkspaceDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getWorkspacePath());
-            final ResponseEntity<List<WorkspaceDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<WorkspaceDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getWorkspacePath()))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<WorkspaceDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of workspaces", e);
         }
         return ret;
@@ -221,13 +225,14 @@ public class EFapsClient
     {
         List<WarehouseDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getWarehousePath());
-            final ResponseEntity<List<WarehouseDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<WarehouseDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getWarehousePath()))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<WarehouseDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of workspaces", e);
         }
         return ret;
@@ -237,13 +242,13 @@ public class EFapsClient
     {
         List<PrinterDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getPrinterPath());
-            final ResponseEntity<List<PrinterDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<PrinterDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getPrinterPath()))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<PrinterDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of workspaces", e);
         }
         return ret;
@@ -258,13 +263,14 @@ public class EFapsClient
                 params = new LinkedMultiValueMap<>();
                 params.put("productOid", List.of(productOids));
             }
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getInventoryPath(), params);
-            final ResponseEntity<List<InventoryEntryDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<InventoryEntryDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getPrinterPath(), params))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<InventoryEntryDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of inventory", e);
         }
         return ret;
@@ -274,13 +280,14 @@ public class EFapsClient
     {
         List<PosDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getPosPath());
-            final ResponseEntity<List<PosDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<PosDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getPosPath()))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<PosDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of poss", e);
         }
         return ret;
@@ -290,13 +297,15 @@ public class EFapsClient
     {
         List<UserDto> ret = null;
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getUserPath());
-            final ResponseEntity<List<UserDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<UserDto>>()
+
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getUserPath()))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<UserDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -306,13 +315,14 @@ public class EFapsClient
     {
         List<SequenceDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getSequencePath());
-            final ResponseEntity<List<SequenceDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<SequenceDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getSequencePath()))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<SequenceDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -330,13 +340,15 @@ public class EFapsClient
             if (after != null) {
                 params.put("after", Collections.singletonList(after.toString()));
             }
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getContactPath(), params);
-            final ResponseEntity<List<ContactDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<ContactDto>>()
+
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getContactPath(), params))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<ContactDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -348,14 +360,14 @@ public class EFapsClient
         try {
             final var uriVariables = new HashMap<String, String>();
             uriVariables.put("oid", oid);
-            final RequestEntity<?> requestEntity = get(
-                            getUriComponent(getEFapsConfig().getContactPath() + "/{oid}", uriVariables, null).toUri());
-            final ResponseEntity<ContactDto> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<ContactDto>()
-                            {
-                            });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getContactPath() + "/{oid}", null,
+                                            new HashMap<>(Map.of("oid", oid))))
+                            .retrieve()
+                            .body(ContactDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -365,13 +377,14 @@ public class EFapsClient
     {
         List<EmployeeDto> ret = new ArrayList<>();
         try {
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getEmployeePath());
-            final ResponseEntity<List<EmployeeDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<EmployeeDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getEmployeePath()))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<EmployeeDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -381,14 +394,15 @@ public class EFapsClient
     {
         List<ExchangeRateDto> ret = null;
         try {
-            final var requestEntity = get(getEFapsConfig().getExchangeRatePath());
 
-            final var response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<ExchangeRateDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getExchangeRatePath()))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<ExchangeRateDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during get for ExchangeRateDto", e);
         }
         return ret;
@@ -398,14 +412,14 @@ public class EFapsClient
     {
         List<Promotion> ret = null;
         try {
-            final var requestEntity = get(getEFapsConfig().getPromotionPath());
-
-            final var response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<Promotion>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getPromotionPath()))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<Promotion>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during get for ExchangeRateDto", e);
         }
         return ret;
@@ -415,14 +429,13 @@ public class EFapsClient
     {
         List<FileDto> ret = null;
         try {
-            final var requestEntity = get(getEFapsConfig().getFilePath());
-
-            final var response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<FileDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getFilePath()))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<FileDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final IdentException e) {
+        } catch (final RestClientException e) {
             LOG.error("Catched error during get for ExchangeRateDto", e);
         }
         return ret;
@@ -432,11 +445,13 @@ public class EFapsClient
     {
         UpdateDto ret = null;
         try {
-            final var requestEntity = get(getEFapsConfig().getUpdatePath());
-            final var response = getRestTemplate().exchange(requestEntity, UpdateDto.class);
-            ret = response.getBody();
-        } catch (final IdentException e) {
-            LOG.error("Catched error during get for UpdateDto", e);
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getUpdatePath()))
+                            .retrieve()
+                            .body(UpdateDto.class);
+
+        } catch (final RestClientException e) {
+            LOG.error("Catched error during  for UpdateDto", e);
         }
         return ret;
     }
@@ -445,11 +460,12 @@ public class EFapsClient
     {
         boolean ret = false;
         try {
-            final var requestEntity = post(getEFapsConfig().getUpdatePath() + "/confirm", dto);
 
-            final var response = getRestTemplate().exchange(requestEntity, Void.class);
+            final var response = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getUpdatePath() + "/confirm"))
+                            .retrieve().toBodilessEntity();
             ret = response.getStatusCode().is2xxSuccessful();
-        } catch (final IdentException e) {
+        } catch (final RestClientException e) {
             LOG.error("Catched error during get for UpdateDto", e);
         }
         return ret;
@@ -458,71 +474,88 @@ public class EFapsClient
     public String getFilledInTemplate(final String oid)
         throws IdentException, RestClientException
     {
-        final var requestEntity = get(getEFapsConfig().getUpdatePath() + "/filled-in-template/" + oid);
-        return getRestTemplate().exchange(requestEntity, String.class).getBody();
+        return getRestClient().get()
+                        .uri(uriBuilder(getEFapsConfig().getUpdatePath() + "/filled-in-template/" + oid))
+                        .retrieve()
+                        .body(String.class);
     }
 
-    public BalanceDto postBalance(final BalanceDto _balance)
+    public BalanceDto postBalance(final BalanceDto balance)
     {
-        BalanceDto ret = _balance;
+        BalanceDto ret = balance;
         try {
-            final RequestEntity<BalanceDto> requestEntity = post(getEFapsConfig().getBalancePath(), _balance);
-            final ResponseEntity<BalanceDto> response = getRestTemplate().exchange(requestEntity, BalanceDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getBalancePath()))
+                            .body(balance)
+                            .retrieve()
+                            .body(BalanceDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for Receipts", e);
         }
         return ret;
     }
 
-    public boolean putBalance(final BalanceDto _balance)
+    public boolean putBalance(final BalanceDto balance)
     {
         boolean ret = false;
         try {
-            final RequestEntity<BalanceDto> requestEntity = put(getEFapsConfig().getBalancePath()
-                            + "/" + _balance.getOid(), _balance);
-            final ResponseEntity<Void> response = getRestTemplate().exchange(requestEntity, Void.class);
+            final var response = getRestClient().put()
+                            .uri(uriBuilder(getEFapsConfig().getBalancePath() + "/" + balance.getOid()))
+                            .body(balance)
+                            .retrieve().toBodilessEntity();
+
             ret = response.getStatusCode().is2xxSuccessful();
-        } catch (final RestClientException | IdentException e) {
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for Balance update", e);
         }
         return ret;
     }
 
-    public ReceiptDto postReceipt(final ReceiptDto _receipt)
+    public ReceiptDto postReceipt(final ReceiptDto receipt)
     {
-        ReceiptDto ret = _receipt;
+        ReceiptDto ret = receipt;
         try {
-            final RequestEntity<ReceiptDto> requestEntity = post(getEFapsConfig().getReceiptPath(), _receipt);
-            final ResponseEntity<ReceiptDto> response = getRestTemplate().exchange(requestEntity, ReceiptDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getReceiptPath()))
+                            .body(receipt)
+                            .retrieve()
+                            .body(ReceiptDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for Receipts", e);
         }
         return ret;
     }
 
-    public InvoiceDto postInvoice(final InvoiceDto _invoice)
+    public InvoiceDto postInvoice(final InvoiceDto invoice)
     {
-        InvoiceDto ret = _invoice;
+        InvoiceDto ret = invoice;
         try {
-            final RequestEntity<InvoiceDto> requestEntity = post(getEFapsConfig().getInvoicePath(), _invoice);
-            final ResponseEntity<InvoiceDto> response = getRestTemplate().exchange(requestEntity, InvoiceDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getInvoicePath()))
+                            .body(invoice)
+                            .retrieve()
+                            .body(InvoiceDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for Invoices", e);
         }
         return ret;
     }
 
-    public TicketDto postTicket(final TicketDto _ticket)
+    public TicketDto postTicket(final TicketDto ticket)
     {
-        TicketDto ret = _ticket;
+        TicketDto ret = ticket;
         try {
-            final RequestEntity<TicketDto> requestEntity = post(getEFapsConfig().getTicketPath(), _ticket);
-            final ResponseEntity<TicketDto> response = getRestTemplate().exchange(requestEntity, TicketDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getTicketPath()))
+                            .body(ticket)
+                            .retrieve()
+                            .body(TicketDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for Tickets", e);
         }
         return ret;
@@ -532,37 +565,47 @@ public class EFapsClient
     {
         CreditNoteDto ret = creditNote;
         try {
-            final RequestEntity<CreditNoteDto> requestEntity = post(getEFapsConfig().getCreditnotePath(), creditNote);
-            final ResponseEntity<CreditNoteDto> response = getRestTemplate().exchange(requestEntity,
-                            CreditNoteDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getCreditnotePath()))
+                            .body(creditNote)
+                            .retrieve()
+                            .body(CreditNoteDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for CreditNotes", e);
         }
         return ret;
     }
 
-    public OrderDto postOrder(final OrderDto _order)
+    public OrderDto postOrder(final OrderDto order)
     {
-        OrderDto ret = _order;
+        OrderDto ret = order;
         try {
-            final RequestEntity<OrderDto> requestEntity = post(getEFapsConfig().getOrderPath(), _order);
-            final ResponseEntity<OrderDto> response = getRestTemplate().exchange(requestEntity, OrderDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getOrderPath()))
+                            .body(order)
+                            .retrieve()
+                            .body(OrderDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for Orders", e);
         }
         return ret;
     }
 
-    public ContactDto postContact(final ContactDto _contact)
+    public ContactDto postContact(final ContactDto contact)
     {
-        ContactDto ret = _contact;
+        ContactDto ret = contact;
         try {
-            final RequestEntity<ContactDto> requestEntity = post(getEFapsConfig().getContactPath(), _contact);
-            final ResponseEntity<ContactDto> response = getRestTemplate().exchange(requestEntity, ContactDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getContactPath()))
+                            .body(contact)
+                            .retrieve()
+                            .body(ContactDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for Contact", e);
         }
         return ret;
@@ -574,12 +617,14 @@ public class EFapsClient
         try {
             final var uriVariables = new HashMap<String, String>();
             uriVariables.put("oid", contact.getOid());
-            final RequestEntity<ContactDto> requestEntity = put(
-                            getUriComponent(getEFapsConfig().getContactPath() + "/{oid}", uriVariables, null).toUri(),
-                            contact);
-            final ResponseEntity<ContactDto> response = getRestTemplate().exchange(requestEntity, ContactDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().put()
+                            .uri(uriBuilder(getEFapsConfig().getContactPath() + "/{oid}"))
+                            .body(contact)
+                            .retrieve()
+                            .body(ContactDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during put for Contact", e);
         }
         return ret;
@@ -589,12 +634,14 @@ public class EFapsClient
     {
         String ret = null;
         try {
-            final RequestEntity<StocktakingDto> requestEntity = post(getEFapsConfig().getStocktakingPath(),
-                            stocktaking);
-            final ResponseEntity<String> response = getRestTemplate().exchange(requestEntity,
-                            String.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getStocktakingPath()))
+                            .body(stocktaking)
+                            .retrieve()
+                            .body(String.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for Stocktaking", e);
         }
         return ret;
@@ -604,11 +651,14 @@ public class EFapsClient
     {
         String ret = null;
         try {
-            final RequestEntity<LogEntryDto> requestEntity = post(getEFapsConfig().getLogEntryPath(), dto);
-            final ResponseEntity<String> response = getRestTemplate().exchange(requestEntity,
-                            String.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getLogEntryPath()))
+                            .body(dto)
+                            .retrieve()
+                            .body(String.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for LogEntry", e);
         }
         return ret;
@@ -618,10 +668,15 @@ public class EFapsClient
     {
         boolean ret = false;
         try {
-            final RequestEntity<ReportToBaseDto> requestEntity = post(getEFapsConfig().getReportToBasePath(), dto);
-            final var post = getRestTemplate().exchange(requestEntity, Void.class);
-            ret = post.getStatusCode().is2xxSuccessful();
-        } catch (final RestClientException | IdentException e) {
+
+            final var response = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getReportToBasePath()))
+                            .body(dto)
+                            .retrieve()
+                            .toBodilessEntity();
+            ret = response.getStatusCode().is2xxSuccessful();
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for ReportToBase", e);
         }
         return ret;
@@ -631,10 +686,14 @@ public class EFapsClient
     {
         boolean ret = false;
         try {
-            final RequestEntity<ReportStartupDto> requestEntity = post(getEFapsConfig().getReportStartupPath(), dto);
-            final var post = getRestTemplate().exchange(requestEntity, Void.class);
-            ret = post.getStatusCode().is2xxSuccessful();
-        } catch (final RestClientException | IdentException e) {
+            final var response = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getReportToBasePath()))
+                            .body(dto)
+                            .retrieve()
+                            .toBodilessEntity();
+            ret = response.getStatusCode().is2xxSuccessful();
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for ReportToBase", e);
         }
         return ret;
@@ -644,26 +703,32 @@ public class EFapsClient
     {
         String ret = null;
         try {
-            final RequestEntity<PromoInfoSyncDto> requestEntity = post(getEFapsConfig().getPromotionInfoPath(), dto);
-            final ResponseEntity<String> response = getRestTemplate().exchange(requestEntity, String.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getPromotionInfoPath()))
+                            .body(dto)
+                            .retrieve()
+                            .body(String.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for ReportToBase", e);
         }
         return ret;
     }
 
-    public Checkout checkout(final String _oid)
+    public Checkout checkout(final String oid)
         throws RestClientException
     {
         Checkout ret = null;
-        final URI uri = UriComponentsBuilder.fromUri(getEFapsConfig().getBaseUrl())
-                        .path(getEFapsConfig().getCheckoutPath())
-                        .queryParam("oid", _oid)
-                        .queryParam("ident", getIdentifier())
-                        .build().toUri();
-        final RequestEntity<?> requestEntity = get(uri);
-        final ResponseEntity<byte[]> response = getRestTemplate().exchange(requestEntity, byte[].class);
+        final var params = new LinkedMultiValueMap<String, String>();
+        params.put("oid", Collections.singletonList(String.valueOf(oid)));
+        params.put("ident", Collections.singletonList(getIdentifier()));
+
+        final var response = getRestClient().get()
+                        .uri(uriBuilder(getEFapsConfig().getCheckoutPath(), params))
+                        .retrieve()
+                        .toEntity(byte[].class);
+
         if (response.getBody() != null) {
             ret = new Checkout();
             ret.setContent(response.getBody());
@@ -679,14 +744,15 @@ public class EFapsClient
         try {
             final var params = new LinkedMultiValueMap<String, String>();
             params.put("number", Collections.singletonList(String.valueOf(number)));
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getInvoicePath(), params);
 
-            final ResponseEntity<List<InvoiceDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<InvoiceDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getInvoicePath(), params))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<InvoiceDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -698,14 +764,15 @@ public class EFapsClient
         try {
             final var params = new LinkedMultiValueMap<String, String>();
             params.put("number", Collections.singletonList(String.valueOf(number)));
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getReceiptPath(), params);
 
-            final ResponseEntity<List<ReceiptDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<ReceiptDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getReceiptPath(), params))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<ReceiptDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -717,14 +784,15 @@ public class EFapsClient
         try {
             final var params = new LinkedMultiValueMap<String, String>();
             params.put("number", Collections.singletonList(String.valueOf(number)));
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getCreditnotePath(), params);
 
-            final ResponseEntity<List<CreditNoteDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<CreditNoteDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getCreditnotePath(), params))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<CreditNoteDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -736,14 +804,15 @@ public class EFapsClient
         try {
             final var params = new LinkedMultiValueMap<String, String>();
             params.put("number", Collections.singletonList(String.valueOf(number)));
-            final RequestEntity<?> requestEntity = get(getEFapsConfig().getTicketPath(), params);
 
-            final ResponseEntity<List<TicketDto>> response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<TicketDto>>()
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getTicketPath(), params))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<TicketDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of users", e);
         }
         return ret;
@@ -753,10 +822,13 @@ public class EFapsClient
     {
         ReceiptDto ret = null;
         try {
-            final var requestEntity = get(getEFapsConfig().getReceiptPath() + "/" + oid);
-            final var response = getRestTemplate().exchange(requestEntity, ReceiptDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getReceiptPath() + "/" + oid))
+                            .retrieve()
+                            .body(ReceiptDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of ReceiptDto", e);
         }
         return ret;
@@ -766,10 +838,13 @@ public class EFapsClient
     {
         InvoiceDto ret = null;
         try {
-            final var requestEntity = get(getEFapsConfig().getInvoicePath() + "/" + oid);
-            final var response = getRestTemplate().exchange(requestEntity, InvoiceDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getInvoicePath() + "/" + oid))
+                            .retrieve()
+                            .body(InvoiceDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of InvoiceDto", e);
         }
         return ret;
@@ -779,10 +854,13 @@ public class EFapsClient
     {
         TicketDto ret = null;
         try {
-            final var requestEntity = get(getEFapsConfig().getTicketPath() + "/" + oid);
-            final var response = getRestTemplate().exchange(requestEntity, TicketDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getTicketPath() + "/" + oid))
+                            .retrieve()
+                            .body(TicketDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of InvoiceDto", e);
         }
         return ret;
@@ -792,10 +870,12 @@ public class EFapsClient
     {
         CreditNoteDto ret = null;
         try {
-            final var requestEntity = get(getEFapsConfig().getCreditnotePath() + "/" + oid);
-            final var response = getRestTemplate().exchange(requestEntity, CreditNoteDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getCreditnotePath() + "/" + oid))
+                            .retrieve()
+                            .body(CreditNoteDto.class);
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of CreditNoteDto", e);
         }
         return ret;
@@ -805,10 +885,13 @@ public class EFapsClient
     {
         RedeemValidityDto ret = null;
         try {
-            final var requestEntity = get(getEFapsConfig().getCreditnotePath() + "/" + oid + "/redeem-validity");
-            final var response = getRestTemplate().exchange(requestEntity, RedeemValidityDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getCreditnotePath() + "/" + oid + "/redeem-validity"))
+                            .retrieve()
+                            .body(RedeemValidityDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of InvoiceDto", e);
         }
         return ret;
@@ -818,10 +901,14 @@ public class EFapsClient
     {
         EmitValidityResponseDto ret = null;
         try {
-            final var requestEntity = post(getEFapsConfig().getCreditnotePath() + "/emit-validity", dto);
-            final var response = getRestTemplate().exchange(requestEntity, EmitValidityResponseDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getCreditnotePath() + "/emit-validity"))
+                            .body(dto)
+                            .retrieve()
+                            .body(EmitValidityResponseDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of InvoiceDto", e);
         }
         return ret;
@@ -831,10 +918,14 @@ public class EFapsClient
     {
         StoreStatusResponseDto ret = null;
         try {
-            final var requestEntity = post(getEFapsConfig().getStorePath(), dto);
-            final var response = getRestTemplate().exchange(requestEntity, StoreStatusResponseDto.class);
-            ret = response.getBody();
-        } catch (final RestClientException | IdentException e) {
+
+            ret = getRestClient().post()
+                            .uri(uriBuilder(getEFapsConfig().getStorePath()))
+                            .body(dto)
+                            .retrieve()
+                            .body(StoreStatusResponseDto.class);
+
+        } catch (final RestClientException e) {
             LOG.error("Catched error during post for ReportToBase", e);
         }
         return ret;
@@ -848,14 +939,14 @@ public class EFapsClient
             final var params = new LinkedMultiValueMap<String, String>();
             params.put("contact-identifier", Collections.singletonList(String.valueOf(term)));
             params.put("include-contact", Collections.singletonList(String.valueOf(includeContact)));
-            final var requestEntity = get(getEFapsConfig().getLoyaltyPath() + "/balance", params);
-            final var response = getRestTemplate().exchange(requestEntity,
-                            new ParameterizedTypeReference<List<LoyaltyPointsBalanceDto>>()
+
+            ret = getRestClient().get()
+                            .uri(uriBuilder(getEFapsConfig().getLoyaltyPath() + "/balance", params))
+                            .retrieve()
+                            .body(new ParameterizedTypeReference<List<LoyaltyPointsBalanceDto>>()
                             {
                             });
-            ret = response.getBody();
-        } catch (final IdentException e) {
-            LOG.error("Catched error during get for LoyaltyBalance", e);
+
         } catch (final HttpStatusCodeException e) {
             if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 ret = new ArrayList<>();
@@ -864,84 +955,6 @@ public class EFapsClient
             }
         }
         return ret;
-    }
-
-    private UriComponents getUriComponent(final String _path)
-        throws IdentException
-    {
-        return getUriComponent(_path, null);
-    }
-
-    private UriComponents getUriComponent(final String _path,
-                                          MultiValueMap<String, String> params)
-        throws IdentException
-    {
-
-        return getUriComponent(_path, new HashMap<>(), params);
-    }
-
-    private UriComponents getUriComponent(final String _path,
-                                          Map<String, String> uriVariables,
-                                          MultiValueMap<String, String> params)
-        throws IdentException
-    {
-        final String ident = getIdentifier();
-        if (ident == null) {
-            throw new IdentException();
-        }
-        uriVariables.put("identifier", ident);
-        return UriComponentsBuilder.fromUri(getEFapsConfig().getBaseUrl())
-                        .path(_path)
-                        .queryParams(params)
-                        .buildAndExpand(uriVariables);
-    }
-
-    public RequestEntity<?> get(final URI _uri)
-    {
-        return addHeader(RequestEntity.get(_uri)).build();
-    }
-
-    public RequestEntity<?> get(final String _path)
-        throws IdentException
-    {
-        return get(getUriComponent(_path).toUri());
-    }
-
-    public RequestEntity<?> get(final String _path,
-                                MultiValueMap<String, String> params)
-        throws IdentException
-    {
-        return get(getUriComponent(_path, params).toUri());
-    }
-
-    public <T> RequestEntity<T> post(final String _path,
-                                     final T _body)
-        throws IdentException
-    {
-        return post(getUriComponent(_path).toUri(), _body);
-    }
-
-    public <T> RequestEntity<T> post(final URI _uri,
-                                     final T _body)
-        throws IdentException
-    {
-        return addHeader(RequestEntity.post(_uri))
-                        .accept(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN).body(_body);
-    }
-
-    public <T> RequestEntity<T> put(final String _path,
-                                    final T _body)
-        throws IdentException
-    {
-        return put(getUriComponent(_path).toUri(), _body);
-    }
-
-    public <T> RequestEntity<T> put(final URI _uri,
-                                    final T _body)
-        throws IdentException
-    {
-        return addHeader(RequestEntity.put(_uri))
-                        .accept(MediaType.APPLICATION_JSON).body(_body);
     }
 
     public String getIdentifier()
@@ -954,12 +967,8 @@ public class EFapsClient
                                 .path(getEFapsConfig().getBackendPath())
                                 .path("/identifier")
                                 .build();
-                final RequestEntity<?> requestEntity = get(uriComp.toUri());
-                final ResponseEntity<String> response = getRestTemplate().exchange(requestEntity,
-                                new ParameterizedTypeReference<String>()
-                                {
-                                });
-                final String ident = response.getBody();
+
+                final String ident = getRestClient().get().uri(uriComp.toUri()).retrieve().body(String.class);
                 if (!ident.contains("deactivated")) {
                     ret = ident;
                     final Identifier newIdentifier = new Identifier()
@@ -981,4 +990,39 @@ public class EFapsClient
     {
         return getConfig().getEFaps();
     }
+
+    @Override
+    protected URI getBaseUrl()
+    {
+        return getEFapsConfig().getBaseUrl();
+    }
+
+    public Function<UriBuilder, URI> uriBuilder(final String path)
+    {
+        return uriBuilder(path, null, new HashMap<>());
+    }
+
+    public Function<UriBuilder, URI> uriBuilder(final String path,
+                                                final MultiValueMap<String, String> params)
+    {
+        return uriBuilder(path, params, new HashMap<>());
+    }
+
+    public Function<UriBuilder, URI> uriBuilder(final String path,
+                                                final Map<String, Object> uriVariables)
+    {
+        return uriBuilder(path, null, uriVariables);
+    }
+
+    public Function<UriBuilder, URI> uriBuilder(final String path,
+                                                final MultiValueMap<String, String> params,
+                                                final Map<String, Object> uriVariables)
+    {
+        uriVariables.put("identifier", getIdentifier());
+        return uriBuilder -> uriBuilder
+                        .path(path)
+                        .queryParams(params)
+                        .build(uriVariables);
+    }
+
 }

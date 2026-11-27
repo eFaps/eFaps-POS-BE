@@ -16,7 +16,6 @@
 package org.efaps.pos.config;
 
 
-import org.springframework.boot.restclient.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
@@ -30,12 +29,6 @@ public class BaseConfig
     public BaseConfig(final ConfigProperties configProperties)
     {
         this.configProperties = configProperties;
-    }
-
-    @Bean
-    public RestTemplateCustomizer restTemplateCustomizer()
-    {
-        return new TemplateCustomizer(configProperties);
     }
 
     @Bean
