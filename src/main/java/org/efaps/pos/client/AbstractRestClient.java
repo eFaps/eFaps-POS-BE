@@ -57,6 +57,7 @@ public abstract class AbstractRestClient
         this.config = config;
         this.ssoClient = ssoClient;
         restClient = restClientBuilder
+                        .clone()
                         .baseUrl(getBaseUrl())
                         .requestInitializer(getRequestInitializer())
                         .build();

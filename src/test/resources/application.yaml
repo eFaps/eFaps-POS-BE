@@ -1,4 +1,4 @@
-#---
+---
 spring:
   config:
     activate:
@@ -53,6 +53,9 @@ sso:
   client_secret:
   username:
   password:
+
+enquiry:
+  baseUrl: https://enquiry.synercom.pe/api
 
 jwt:
   secret: ThisIsNotVerySecretButItIsAtLeastLongEnoughToHaveMoreThan256Bits

@@ -24,32 +24,36 @@ import java.util.Arrays;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
 import org.efaps.pos.client.EFapsClient;
+import org.efaps.pos.config.ConfigProperties;
 import org.efaps.pos.dto.UpdateDto;
 import org.efaps.pos.dto.UpdateInstructionDto;
 import org.efaps.pos.entity.Identifier;
+import org.efaps.pos.sso.SSOClient;
 import org.efaps.pos.util.IdentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.mongodb.test.autoconfigure.AutoConfigureDataMongo;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.restclient.test.autoconfigure.RestClientTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles(profiles = { "test" })
-@SpringBootTest
-@AutoConfigureMockMvc
 @AutoConfigureDataMongo
+@AutoConfigureMockMvc
+@RestClientTest(value = { ConfigProperties.class }, properties= {"efaps.baseUrl=http://localhost:8888/eFaps"})
 public class UpdateServiceTest
 {
 
@@ -57,17 +61,30 @@ public class UpdateServiceTest
     private MongoTemplate mongoTemplate;
 
     @Autowired
-    private UpdateService updateService;
+    private ConfigProperties configProperties;
+
+    @Mock
+    private SSOClient ssoClient;
+
     @Autowired
+    private RestClient.Builder builder1;
+
     private EFapsClient eFapsClient;
 
-    private MockRestServiceServer server;
+    private ConfigService configService;
 
+    private UpdateService updateService;
+
+    private MockRestServiceServer server;
 
     @BeforeEach
     void init()
     {
-        server = MockRestServiceServer.createServer(eFapsClient.getRestTemplate());
+        server = MockRestServiceServer.bindTo(builder1).build();
+        eFapsClient = new EFapsClient(builder1, mongoTemplate, configProperties, ssoClient);
+        configService = new ConfigService(mongoTemplate, eFapsClient, configProperties);
+        updateService = new UpdateService(mongoTemplate, eFapsClient, configService);
+
         mongoTemplate.save(new Identifier()
                         .setId(Identifier.KEY)
                         .setCreated(LocalDateTime.now())
@@ -98,11 +115,11 @@ public class UpdateServiceTest
                                                                         .toString()));
 
         server.expect(requestTo("http://localhost:8888/eFaps/api/checkout?oid=1.3&ident=FAKEIDENT"))
-        .andRespond(MockRestResponseCreators
-                        .withSuccess(spa, MediaType.valueOf("application/zip"))
-                        .header(HttpHeaders.CONTENT_DISPOSITION,
-                                        ContentDisposition.attachment().filename("spa.zip").build()
-                                                        .toString()));
+                        .andRespond(MockRestResponseCreators
+                                        .withSuccess(spa, MediaType.valueOf("application/zip"))
+                                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                                        ContentDisposition.attachment().filename("spa.zip").build()
+                                                                        .toString()));
 
         updateService.adhereInstructions(UpdateDto.builder()
                         .withVersion("26.3.5")

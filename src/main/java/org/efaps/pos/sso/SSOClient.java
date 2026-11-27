@@ -23,16 +23,14 @@ import org.efaps.pos.config.ConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class SSOClient
@@ -40,7 +38,7 @@ public class SSOClient
 
     private static final Logger LOG = LoggerFactory.getLogger(SSOClient.class);
     private final ConfigProperties config;
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
     private String accessToken;
     private String refreshToken;
     private LocalDateTime accessTokenExpires;
@@ -48,10 +46,10 @@ public class SSOClient
 
     @Autowired
     public SSOClient(final ConfigProperties _config,
-                     final RestTemplateBuilder _restTemplateBuilder)
+                     final RestClient.Builder restClientBuilder)
     {
         config = _config;
-        restTemplate = _restTemplateBuilder.build();
+        restClient = restClientBuilder.clone().build();
     }
 
     @SuppressWarnings("rawtypes")
@@ -61,26 +59,31 @@ public class SSOClient
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.set("client_id", config.getSso().getClientId());
+        final MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.set("client_id", config.getSso().getClientId());
         if (StringUtils.isNotEmpty(config.getSso().getClientSecret())) {
-            map.set("client_secret", config.getSso().getClientSecret());
+            formData.set("client_secret", config.getSso().getClientSecret());
         }
         if (refreshToken == null || !LocalDateTime.now().isBefore(refreshTokenExpires)) {
             LOG.debug("  Using Username/Password");
-            map.set("grant_type", "password");
-            map.set("username", config.getSso().getUsername());
-            map.set("password", config.getSso().getPassword());
+            formData.set("grant_type", "password");
+            formData.set("username", config.getSso().getUsername());
+            formData.set("password", config.getSso().getPassword());
         } else {
             LOG.debug("  Using RefreshToken");
-            map.set("grant_type", "refresh_token");
-            map.set("refresh_token", refreshToken);
+            formData.set("grant_type", "refresh_token");
+            formData.set("refresh_token", refreshToken);
         }
 
-        final HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
         ResponseEntity<Map> response = null;
         try {
-            response = restTemplate.postForEntity(config.getSso().getUrl(), request, Map.class);
+            response = restClient.post()
+                .uri(config.getSso().getUrl())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(formData)
+                .retrieve()
+                .toEntity(Map.class);
+
         } catch (final RestClientException e) {
             LOG.error("Catched error during retrieval of properties", e);
         } finally {
